@@ -1,4 +1,4 @@
-// No Run Just Fun — app shell and screens.
+// You Got This! — app shell and screens.
 // Private by design: every byte of your data lives in localStorage on this
 // device. No accounts, no analytics, no tracking, no server. Ever.
 
@@ -49,7 +49,7 @@ function homeScreen() {
 
   app.innerHTML = `
     <header class="topbar">
-      <div class="brand"><img src="icons/icon-192.png" alt="" width="34" height="34"> <span>No Run Just Fun</span></div>
+      <div class="brand"><img src="icons/icon-192.png" alt="" width="34" height="34"> <span>You Got This!</span></div>
       <nav class="topnav">
         <a href="#badges">Badges</a>
         <a href="#settings" aria-label="Settings">Settings</a>
@@ -245,10 +245,7 @@ function sessionScreen(mins) {
 }
 
 function teardownSession() {
-  if (player && player.phase !== 'done') {
-    try { player.endEarly = () => {}; } catch { /* noop */ }
-  }
-  if (player) { try { clearInterval(player._timer); } catch { /* ok */ } }
+  if (player) { try { player.dispose(); } catch { /* ok */ } }
   player = null;
   coach.cancel();
   coach.onCaption = null;

@@ -139,7 +139,17 @@ export class Player {
     this._finish(true);
   }
 
+  // Abandon without reporting (navigation away mid-session).
+  dispose() {
+    clearInterval(this._timer);
+    this.phase = 'done';
+    document.removeEventListener('visibilitychange', this._onVis);
+    try { this._wakeLock?.release(); } catch { /* ok */ }
+  }
+
   _finish(early = false) {
+    if (this._finished) return;
+    this._finished = true;
     clearInterval(this._timer);
     this.phase = 'done';
     document.removeEventListener('visibilitychange', this._onVis);

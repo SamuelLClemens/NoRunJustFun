@@ -8,7 +8,8 @@ export const PHRASES = {
         "Take a breath. You showed up, and that is the hardest part.",
         "This is your time. Move at whatever pace feels kind today.",
         "However today has gone, this space is soft. Let's begin slowly.",
-        "No pressure here. Just you, your breath, and a few easy movements."
+        "No pressure here. Just you, your breath, and a few easy movements.",
+        "Welcome in. This little stretch of time is all yours."
       ],
       "mid": [
         "You're doing beautifully. Keep breathing.",
@@ -28,14 +29,19 @@ export const PHRASES = {
         "You can shake anything out whenever you need to.",
         "This is care, pure and simple. Let it feel that way.",
         "Wherever your mind wandered, just come back to your breath.",
-        "Nice and easy. Your only job is to be here."
+        "Nice and easy. Your only job is to be here.",
+        "Notice your breath. It has been carrying you all day.",
+        "Soft knees, soft jaw. Nothing to prove here.",
+        "Move like you are saying something kind to your body.",
+        "Let it feel nice. That is the whole assignment."
       ],
       "halfway": [
         "Halfway there. You are doing this, quietly and surely.",
         "That's half already. Take a soft breath and carry on.",
         "Halfway now. Everything from here is just gentle momentum.",
         "Half done. Notice how your body has warmed and softened.",
-        "You've reached the middle. No hurry for the rest."
+        "You've reached the middle. No hurry for the rest.",
+        "Halfway there. Stay curious about how you feel."
       ],
       "finishMove": [
         "Lovely. Let that one go.",
