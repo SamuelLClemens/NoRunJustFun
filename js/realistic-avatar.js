@@ -254,17 +254,22 @@ export class RealisticAvatar {
 
   _renderOnce() { if (this.renderer && this.scene && this.ready) this.renderer.render(this.scene, this.camera); }
 
-  // Sample sustained fps once loaded; if the device is too slow, persist a
-  // 'slow' verdict so future sessions auto-fall-back, and notify the caller.
-  watchPerformance(onSlow, { seconds = 3, minFps = 26 } = {}) {
+  // Sample sustained fps once she is loaded AND warmed up, then — only if the
+  // device is genuinely, steadily slow — persist a 'slow' verdict so the NEXT
+  // session quietly uses the lean coach. We deliberately do NOT hot-swap her
+  // out mid-session: that is jarring, and the first seconds after load are full
+  // of one-off jank (decode, shader compile) that must not count. A backgrounded
+  // tab (throttled rAF) is ignored so it cannot trigger a false 'slow'.
+  watchPerformance(onSlow, { warmupMs = 2200, seconds = 5, minFps = 22 } = {}) {
     const run = () => {
       if (!this.ready) { setTimeout(run, 200); return; }
-      const start = performance.now();
-      let frames = 0;
-      const tick = () => {
-        if (!this._running) return;
+      let start = 0, frames = 0, aborted = false;
+      const tick = (ts) => {
+        if (!this._running || aborted) return;
+        if (document.hidden) { aborted = true; return; } // throttled — do not judge
+        if (!start) start = ts;
         frames++;
-        const el = performance.now() - start;
+        const el = ts - start;
         if (el >= seconds * 1000) {
           const fps = frames / (el / 1000);
           if (fps < minFps) { markRealisticSlow(); if (typeof onSlow === 'function') onSlow(fps); }
@@ -272,7 +277,7 @@ export class RealisticAvatar {
         }
         requestAnimationFrame(tick);
       };
-      requestAnimationFrame(tick);
+      setTimeout(() => { if (this._running) requestAnimationFrame(tick); }, warmupMs);
     };
     run();
   }
