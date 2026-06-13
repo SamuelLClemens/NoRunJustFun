@@ -217,11 +217,10 @@ function sessionScreen(mins) {
       avatar.start();
       // if she fails to load, quietly swap to the lean coach for this session
       avatar.onError = () => swapToLeanAvatar(canvas, char);
-      // and if the device renders her too slowly, note it and fall back next time
+      // if the device renders her too slowly, note it so the NEXT session uses
+      // the light coach — but let her finish this one (no jarring mid-session swap)
       avatar.watchPerformance((fps) => {
-        console.info('realistic instructor slow (', Math.round(fps), 'fps) — will use the light coach next time');
-        showToast('Switched the full instructor to standby for smoother playback. The light coach takes over next session.');
-        swapToLeanAvatar(canvas, char);
+        console.info('full instructor runs slowly here (', Math.round(fps), 'fps) — the light coach will lead next session');
       });
     } else {
       avatar = new Avatar(canvas, char);
@@ -301,22 +300,6 @@ function swapToLeanAvatar(oldCanvas, char) {
     console.warn('lean fallback failed:', e);
     fresh.closest('.stage')?.classList.add('no-webgl');
   }
-}
-
-// Small, transient, screen-reader-friendly status message.
-function showToast(text) {
-  let t = document.getElementById('ygt-toast');
-  if (!t) {
-    t = document.createElement('div');
-    t.id = 'ygt-toast';
-    t.className = 'toast';
-    t.setAttribute('role', 'status');
-    document.body.appendChild(t);
-  }
-  t.textContent = text;
-  t.classList.add('show');
-  clearTimeout(showToast._t);
-  showToast._t = setTimeout(() => t.classList.remove('show'), 5200);
 }
 
 function teardownSession() {
