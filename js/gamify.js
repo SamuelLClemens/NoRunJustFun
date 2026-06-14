@@ -2,6 +2,7 @@
 // Consistency makes the garden bloom — never intensity.
 
 import { todayKey } from './state.js';
+import { DURATIONS } from './data/tiers.js';
 
 export const LEVELS = [
   { mins: 0,   title: 'Couch Sprout' },
@@ -129,9 +130,14 @@ export function checkBadges(store, gardenThresholds) {
     'garden-bloom': stage >= 6,
     'level-5': lvl.level >= 5,
     'sessions-25': p.sessions.length >= 25,
-    'all-durations': [7, 15, 30, 45].every((d) => p.durationsTried.includes(d)),
+    // single source of truth — now spans the six-duration matrix [7,15,20,30,45,60].
+    // grandfathered: badges are never revoked, so a v1 holder keeps it.
+    'all-durations': DURATIONS.every((d) => p.durationsTried.includes(d)),
     'bridge-toddlers': (p.moveCounts['bridge'] || 0) >= 10,
     'dog-days': (p.moveCounts['down-dog'] || 0) >= 10,
+    // meditation badges — count of completed meditations; NOT gated on intensity.
+    'first-stillness': (p.meditationCount || 0) >= 1,
+    'settled-ten': (p.meditationCount || 0) >= 10,
   };
 
   const earned = [];
@@ -145,7 +151,7 @@ export function checkBadges(store, gardenThresholds) {
 }
 
 // Record a finished session into the store (caller saves + celebrates).
-export function recordSession(store, { durationKey, minsMoved, completedIds, skippedIds, breathClose, startHour, closeId, early }) {
+export function recordSession(store, { durationKey, minsMoved, completedIds, skippedIds, breathClose, startHour, closeId, early, tier = null, kind = 'movement' }) {
   const p = store.progress;
   p.sessions.push({
     date: todayKey(),
@@ -155,11 +161,18 @@ export function recordSession(store, { durationKey, minsMoved, completedIds, ski
     breathClose: !!breathClose,
     completed: completedIds,
     skipped: skippedIds,
+    tier,
+    kind,
   });
   p.totalMins += minsMoved;
   if (breathClose) p.breathCloses += 1;
+  // garden growth is +1 per completed session regardless of kind/tier — meditation
+  // counts identically to movement (gardenStage reads sessions.length). Consistency,
+  // never intensity. Meditation minutes also accrue to the minutes-based levels.
+  if (kind === 'meditation') p.meditationCount = (p.meditationCount || 0) + 1;
   // duration badges require actually finishing the session, not just starting it
   if (!early && !p.durationsTried.includes(durationKey)) p.durationsTried.push(durationKey);
+  if (!early && tier && !p.tiersTried.includes(tier)) p.tiersTried.push(tier);
   for (const id of completedIds) p.moveCounts[id] = (p.moveCounts[id] || 0) + 1;
   if (closeId) p.lastCloseId = closeId;
 }

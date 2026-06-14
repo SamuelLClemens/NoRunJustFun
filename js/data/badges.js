@@ -83,5 +83,17 @@ export const BADGES = [
     "name": "Downward Dog Days",
     "desc": "Ten downward dogs done — tail wags and back-of-leg sighs of relief all around.",
     "icon": "<svg viewBox='0 0 48 48'><circle cx='10' cy='10' r='5' fill='#FFD45C'/><path d='M9 38 L27 12 L41 38' fill='none' stroke='#5BA869' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/><rect x='4' y='38' width='40' height='4' rx='2' fill='#1F4D2E'/></svg>"
+  },
+  {
+    "id": "first-stillness",
+    "name": "First Stillness",
+    "desc": "You sat with yourself for one whole meditation. Rest is productive, and so is gentleness.",
+    "icon": "<svg viewBox='0 0 48 48'><circle cx='24' cy='20' r='7' fill='#FFD45C'/><path d='M10 40 C10 31 17 27 24 27 C31 27 38 31 38 40 Z' fill='#5BA869'/><path d='M14 40 Q24 35 34 40' fill='none' stroke='#7EC4E8' stroke-width='2.5' stroke-linecap='round'/></svg>"
+  },
+  {
+    "id": "settled-ten",
+    "name": "Ten Times Calmer",
+    "desc": "Ten meditations done — a quiet practice you keep returning to, on the good days and the hard ones.",
+    "icon": "<svg viewBox='0 0 48 48'><circle cx='24' cy='24' r='5' fill='#7EC4E8'/><circle cx='24' cy='24' r='11' fill='none' stroke='#5BA869' stroke-width='3' opacity='0.75'/><circle cx='24' cy='24' r='17' fill='none' stroke='#F58F7C' stroke-width='3' opacity='0.5'/></svg>"
   }
 ];

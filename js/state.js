@@ -2,7 +2,7 @@
 // ever leaves it. Schema migrations keep future updates from wiping progress.
 
 const KEY = 'nrjf.store';
-const CURRENT_VERSION = 1;
+const CURRENT_VERSION = 2;
 
 function defaults() {
   return {
@@ -19,29 +19,50 @@ function defaults() {
       musicOn: false,           // default OFF per iOS autoplay + brief
       musicVol: 0.5,
       seenSafety: false,
+      // --- v2 additions (all optional; default-safe) ---
+      intake: null,             // see js/data/profiles.js; null => default-safe profile
+      guidelineAccepted: false, // user has seen the "exercise guidance, not medical advice" gate
+      consultClinicianAck: false,
+      defaultTier: 'no_sweat',  // last tier chosen, for sane re-entry
+      chairMode: false,         // accessibility: seated/standing-by-chair substitution
+      reducedMotion: 'auto',    // auto | on | off (overrides the media query)
     },
     progress: {
-      sessions: [],             // { date:'YYYY-MM-DD', mins, durationKey, startHour, breathClose, completed:[], skipped:[] }
+      sessions: [],             // { date, mins, durationKey, startHour, breathClose, completed:[], skipped:[], tier, kind }
       totalMins: 0,
       breathCloses: 0,
-      durationsTried: [],       // [7,15,30,45] as tried
+      durationsTried: [],       // now spans [7,15,20,30,45,60]
       moveCounts: {},           // id -> times completed
       badges: {},               // id -> ISO date earned
       lastCloseId: '',
+      // --- v2 additions ---
+      tiersTried: [],           // ['no_sweat',...] for future tier badges
+      meditationCount: 0,       // meditations completed (garden still +1 each, like movement)
+      program: null,            // { id, startedAt, weekIdx, dayIdx } | null — NEVER read by garden/streak/level/badge
     },
   };
 }
 
 function migrate(data) {
   if (!data || typeof data !== 'object') return defaults();
-  // future migrations switch on data.version here, falling through upward
   if (!data.version || data.version > CURRENT_VERSION) return defaults();
   const base = defaults();
-  return {
+  // Additive, lossless: every new field self-defaults via the spread; existing
+  // sessions[], totalMins, badges{}, durationsTried[] carry forward verbatim.
+  const out = {
     version: CURRENT_VERSION,
     profile: { ...base.profile, ...(data.profile || {}) },
     progress: { ...base.progress, ...(data.progress || {}) },
   };
+  // v1 -> v2: tag old sessions as untiered movement days (never fabricate a tier).
+  if ((data.version || 1) < 2) {
+    out.progress.sessions = (out.progress.sessions || []).map((s) =>
+      ('kind' in s) ? s : { ...s, kind: 'movement', tier: null });
+    if (!Array.isArray(out.progress.tiersTried)) out.progress.tiersTried = [];
+    if (typeof out.progress.meditationCount !== 'number') out.progress.meditationCount = 0;
+    if (out.progress.program === undefined) out.progress.program = null;
+  }
+  return out;
 }
 
 function load() {

@@ -1,0 +1,64 @@
+{
+  "_meta": {
+    "count": 14,
+    "note": "Movements/ideas the panel explicitly refused to build."
+  },
+  "rejected": [
+    {
+      "idea": "Full-circumduction neck rolls (continuous circles through full extension)",
+      "why": "Full backward circumduction compresses cervical facets and can provoke dizziness/vertigo or aggravate radiculopathy in a subset of users. The bank correctly already specifies slow HALF-circles; a full-circle version should never be built."
+    },
+    {
+      "idea": "Floor plank / forearm plank (and any progression toward one from wall-incline-press or wall-climbers)",
+      "why": "A full floor plank exceeds the postpartum core ceiling — it routinely domes a healing linea alba and over-pressurises the pelvic floor. The bank deliberately substitutes incline holds and wall climbers; the floor plank must remain explicitly off-limits and unselectable by the assembler."
+    },
+    {
+      "idea": "Unsupported double-leg dead bug (both legs lowering together)",
+      "why": "It behaves like a crunch: high anti-extension demand that domes the abdomen and loads the healing midline. deadbug-supported is correctly capped at feet-supported; the unsupported double-leg lower must never be a selectable progression."
+    },
+    {
+      "idea": "Crunches, sit-ups, Russian twists, bicycle crunches, V-ups, hollow holds",
+      "why": "All are explicit diastasis-recti contraindications (trunk flexion / spinal-flexion loading over a healing linea alba). They are the precise category the safety spec forbids and none should ever be added to the bank."
+    },
+    {
+      "idea": "Any jumping / plyometric cardio (jumping jacks, burpees, jump squats, true skater hops, high-impact running drills)",
+      "why": "Violates the no-impact / no-jump rule and the pelvic-floor-considerate design. Repetitive impact early/symptomatic postpartum risks leakage, prolapse symptoms, and pelvic-floor overload. The bank's grounded, no-hop alternatives (step-jacks, skater-steps, fast-feet) are the correct substitutes."
+    },
+    {
+      "idea": "Deep loaded forward-flexion lifting drills, deep loaded forward lunges with weight, or weighted Russian/standing twists at speed",
+      "why": "Loaded spinal flexion and fast loaded rotation stress the postpartum lumbar spine and pelvic floor and can dome the abdomen. Strength here should stay hinge-pattern, neutral-spine, breath-led; reverse-lunge is the knee-and-spine-friendlier choice already in the bank."
+    },
+    {
+      "idea": "Inversions beyond a mild legs-up (headstand, shoulderstand, deep down-dog held long for hypertensive users)",
+      "why": "True inversions raise intracranial/blood pressure and carry a fall risk; inappropriate for a general postpartum audience and especially anyone with a hypertension flag. Mild legs-up is the safe ceiling."
+    },
+    {
+      "idea": "Building Super-Sweaty without a HARD screening gate",
+      "why": "Several Super-Sweaty drivers (fast-feet, wall-climbers, bird-dog-knee-hover, low-incline wall-press) sit at the edge of the postpartum pelvic-floor/diastasis ceiling. If the gate is advisory rather than enforced, deconditioned or early/symptomatic users will reach moves that can dome the abdomen or provoke leakage. The gate must be a hard prerequisite, with pelvic-floor and (scaffolded) hypertension flags wired in."
+    },
+    {
+      "idea": "Any unsupported double-leg dead bug / leg-lowers (the 'full' dead bug)",
+      "why": "This is functionally a reverse crunch: high anti-extension demand against the rectus and a near-guaranteed doming event in an under-recovered linea alba. The bank already explicitly forbids it inside deadbug-supported — that ban must be enforced at the assembler level so no tier or progression can ever generate it. It sits in the same prohibited family as crunches/sit-ups."
+    },
+    {
+      "idea": "Floor planks and floor push-ups in any tier (including as a 'progression' off wall-incline-press, wall-pushup, or wall-climbers)",
+      "why": "Full planks are explicitly banned by the safety envelope for diastasis risk (sustained high anterior-abdominal load + IAP). The three incline moves are deliberately capped above the floor; the danger is a 'lower the incline' progression silently marching to horizontal. Codify a hard minimum incline floor in the assembler so a near-floor plank can never be produced."
+    },
+    {
+      "idea": "Any jumping / true impact (jumping jacks, skater hops, running, plyometrics, true mountain climbers)",
+      "why": "Repetitive impact loads a healing pelvic floor and is the classic provocateur of postpartum stress urinary incontinence and prolapse symptoms; it violates the no-jumping rule. The bank correctly replaced these with grounded versions (step-jacks, skater-steps, wall-climbers, fast-feet) — the real-impact originals must never be added."
+    },
+    {
+      "idea": "Deep / aggressive abdominal-stretch back-bends (full upward dog, full cobra, wheel, deep camel)",
+      "why": "Aggressive anterior abdominal stretch lengthens an already-overstretched linea alba and can worsen diastasis. baby-cobra and cobra-childs-flow must stay LOW and exhale-led; the 'never a full up-dog/deep back-bend' guard is the only thing keeping them safe — promote it to a hard rule, not a footnote."
+    },
+    {
+      "idea": "Breath-hold / Valsalva-based 'core bracing' cueing anywhere in the bank",
+      "why": "Several strength and breath moves (chair-pose, goddess, squats, hip-hinge, bridge, box-breath holds) become unsafe the moment a user holds the breath and bears down — that is the mechanism that sends pressure down onto a healing pelvic floor. There must be a single global cueing rule, 'exhale and gently lift the pelvic floor on the effort, never bear down,' woven into every loaded move; absence of it is itself a defect."
+    },
+    {
+      "idea": "Treating the 'Super Sweaty screening gate' as a generic readiness checkbox",
+      "why": "For postpartum specifically, the gate must screen for the right things: doming/coning under load, urinary leaking or heaviness/bulging (prolapse symptoms), pelvic girdle/SI/pubic pain, ongoing bleeding, and being <6 weeks (or <12 weeks / not provider-cleared for higher load). A gate that only asks 'do you feel ready?' would wave through exactly the women fast-feet, wall-climbers, deadbug-supported and bird-dog-knee-hover can harm. This is a design defect to fix before any super_sweaty content ships."
+    }
+  ]
+}
