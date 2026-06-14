@@ -9,7 +9,7 @@ function defaults() {
     version: CURRENT_VERSION,
     profile: {
       name: '',
-      character: 'vera',
+      character: 'jasmine',
       voiceURI: '',
       style: 'gentle',          // gentle | cheerleader | funny
       voiceOn: true,
@@ -62,6 +62,11 @@ function migrate(data) {
     if (typeof out.progress.meditationCount !== 'number') out.progress.meditationCount = 0;
     if (out.progress.program === undefined) out.progress.program = null;
   }
+  // Retired-roster remap: the original four coach ids were replaced by the
+  // name-driven cast. Map any stored old id to its nearest new coach so the
+  // picker still highlights a selection. Idempotent — new ids pass through.
+  const remap = { vera: 'jasmine', maya: 'nokeke', amara: 'nokeke', sol: 'aguibou' };
+  if (remap[out.profile.character]) out.profile.character = remap[out.profile.character];
   return out;
 }
 
