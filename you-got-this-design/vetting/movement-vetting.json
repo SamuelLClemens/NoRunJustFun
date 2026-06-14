@@ -1,0 +1,624 @@
+{
+  "_meta": {
+    "count": 68,
+    "distribution": {
+      "approved": 49,
+      "approved_with_modification": 19,
+      "rejected": 0
+    }
+  },
+  "verdicts": [
+    {
+      "id": "neck-rolls",
+      "name": "Slow Neck Circles",
+      "verdict": "approved_with_modification",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Full neck CIRCLES (especially full circumduction through extension) can compress the cervical facets and, in a small subset, provoke dizziness/vertigo or aggravate cervical radiculopathy. The source copy and dose already specify SLOW HALF-circles with no full backward roll, which is the safe form. No impact, no BP concern.",
+      "evidenceBasis": "General cervical-spine mobility consensus; full-circumduction-through-extension is commonly de-emphasised in physiotherapy practice [evidence: thin on a single named guideline — flag; reasoning stated plainly].",
+      "modificationsRequired": "Keep it strictly to slow half-circles (ear-to-shoulder, chin-to-chest arcs) and never a full rearward circumduction. Cue 'if you feel any dizziness, stop and look forward.' Both tiers are non-exertional; correctly not offered as super_sweaty."
+    },
+    {
+      "id": "shoulder-rolls",
+      "name": "Shoulder Rolls",
+      "verdict": "approved_with_modification",
+      "lead": "Women's-health / pelvic-floor specialist",
+      "contraindicationNotes": "The mobility move itself is safe at all tiers. My objection is narrow: it carries a super_sweaty tier. Shoulder rolls cannot generate a vigorous stimulus; the only thing 'briskness' adds is momentum at end range, which is pointless. Approving the super_sweaty label normalises a 'super sweaty warm-up' concept I do not want anchoring the screening gate to a trivial move.",
+      "evidenceBasis": "[evidence: thin — flag] Clinical reasoning: scapular ROM has negligible IAP/pelvic-floor consequence; tier is a labelling, not a safety, issue.",
+      "modificationsRequired": "Drop the super_sweaty tier; cap at slightly_sweaty. Keep the scapular set progression — it is good postural cueing for this cohort."
+    },
+    {
+      "id": "hip-circles",
+      "name": "Standing Hip Circles",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Standing weight-bearing hip circumduction, no load, no impact. The progression adds a small knee bend at the lowest point — keep that minor to avoid an unintended deep loaded squat in a warm-up. Standing balance demand is low; a wall is available.",
+      "evidenceBasis": "General dynamic warm-up principle (ACSM).",
+      "modificationsRequired": "Cap the progression knee-bend depth (small) so it stays a warm-up, not a loaded squat. Offer optional light support for anyone with balance concerns postpartum."
+    },
+    {
+      "id": "arm-sweeps",
+      "name": "Sunrise Arm Sweeps",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Breath-paced arm elevation. The progression pairs a heel-rise (balance + calf) — minor fall risk only. No impact, no BP concern. Overhead reach is unloaded and well tolerated.",
+      "evidenceBasis": "General mobility/warm-up reasoning.",
+      "modificationsRequired": "For the heel-rise progression, cue light fingertip support available. None otherwise."
+    },
+    {
+      "id": "side-reach",
+      "name": "Standing Side Reach",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Standing lateral flexion, unloaded. Safe for diastasis (lateral, not flexion/extension load). The breath-hold progression is a passive stretch hold, fine. No impact.",
+      "evidenceBasis": "General mobility reasoning.",
+      "modificationsRequired": "None."
+    },
+    {
+      "id": "cat-cow",
+      "name": "Cat–Cow",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Quadruped spinal flexion/extension wave. This is gentle, unloaded segmental motion — explicitly endorsed as diastasis-safe reconnection work, NOT a crunch (no trunk flexion against gravity/resistance). The super_sweaty eligibility is only 'a few more rounds, breath-paced' — it is correctly NOT a vigorous cardio driver. The prog rule ('never add load or speed that breaks the breath link') is the right ceiling.",
+      "evidenceBasis": "Pelvic health physiotherapy consensus and ACOG postpartum guidance favour quadruped breath-led core reconnection over crunch-type loading.",
+      "modificationsRequired": "Enforce the stated prog ceiling: breath-paced only, no load. Wrist-loading is present in quadruped — keep wrist-prep available for wrist-sensitive users."
+    },
+    {
+      "id": "dynamic-leg-swings",
+      "name": "Supported Leg Swings",
+      "verdict": "approved_with_modification",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Dynamic ballistic-tending hip flexion/extension swings. Two concerns: (1) end-range momentum bouncing can over-stress a lax postpartum hip/SI joint and adductors — the source already forbids momentum-bouncing, good; (2) single-leg stance is a balance/fall demand. Wall/chair support is specified. No impact if kept smooth.",
+      "evidenceBasis": "General dynamic-warm-up biomechanics; ballistic end-range stretching cautioned in pre-activity warm-up literature [evidence: thin on a single named source — flag].",
+      "modificationsRequired": "Mandate the support (wall/chair) as non-optional, not 'a wall or chair keeps it safe' — make it a required cue. Keep swings controlled with NO end-range bounce. Cross-body swing progression should stay within comfortable adductor range."
+    },
+    {
+      "id": "torso-rotations",
+      "name": "Gentle Standing Torso Twists",
+      "verdict": "approved_with_modification",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Standing rotational spinal mobility. Rotation itself is diastasis-safe (not flexion). The risk is BRISK/fuller rotations with arm momentum creating an uncontrolled torque on a deconditioned/lax postpartum spine and SI joint. The 'super_sweaty' framing as a 'spinal warm-up' is fine ONLY if it stays a warm-up, not a vigorous twisting driver.",
+      "evidenceBasis": "General spinal-mobility reasoning; controlled rotation preferred postpartum (pelvic health physiotherapy consensus on gentle, breath-led rotation).",
+      "modificationsRequired": "Cue 'pelvis stays facing forward, turn from the mid-back, let arms follow softly — no whipping.' Keep the pelvis stable as the source states. Brisk should mean fuller range at a smooth tempo, never momentum-driven trunk whipping."
+    },
+    {
+      "id": "ankle-prep",
+      "name": "Ankle Wake-Ups",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Ankle point/flex and circles, optionally standing with support. Negligible risk. Calf/shin warm-up via heel/toe raises is benign. Balance demand low and support is specified.",
+      "evidenceBasis": "General warm-up reasoning (ACSM).",
+      "modificationsRequired": "None. Keep light support cued for the standing heel/toe-raise progression."
+    },
+    {
+      "id": "wrist-prep",
+      "name": "Wrist and Hand Warm-Up",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Wrist circles, hand open/close, forearm stretch. Specifically valuable because postpartum De Quervain's tenosynovitis ('mother's wrist') is common; this primes wrists before any quadruped/weight-bearing work. The tabletop weight-bearing rock progression must stop short of pain — stated.",
+      "evidenceBasis": "General musculoskeletal reasoning; De Quervain's is a recognised postpartum overuse condition [evidence: well recognised clinically; specific protocol thin — flag].",
+      "modificationsRequired": "Add an explicit cue that if there is sharp thumb-side wrist pain (a De Quervain's flag), reduce weight-bearing and consider chair/upright alternatives. Otherwise approved."
+    },
+    {
+      "id": "spinal-wave-standing",
+      "name": "Standing Spinal Wave",
+      "verdict": "approved_with_modification",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Standing roll-down/roll-up is segmental flexion through to a forward fold and back. Two flags: (1) the bottom position is full standing flexion — keep knees soft and avoid loaded/ballistic bobbing; (2) repeated up-from-fold transitions carry an orthostatic (blood-pressure) drop risk — postpartum women, especially with anaemia or low BP, can feel light-headed.",
+      "evidenceBasis": "General spinal mobility reasoning; orthostatic-hypotension caution on repeated fold-to-stand [evidence: mechanism well established; postpartum-specific magnitude thin — flag].",
+      "modificationsRequired": "Cue 'rise slowly, let your head come up last' and 'if you feel light-headed, pause.' Keep knees soft at the bottom; no ballistic bobbing in the hang."
+    },
+    {
+      "id": "step-out-warmup",
+      "name": "Side Step-Outs",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Low-impact lateral step-outs with both feet grounded. Honours the no-jump rule. Heart-rate elevation is appropriate for warming a moderate/vigorous session. The super_sweaty progression (faster, wider, overhead arms) stays grounded.",
+      "evidenceBasis": "Low-impact aerobic warm-up is consistent with ACOG low-impact postpartum activity guidance and the app's no-jump rule.",
+      "modificationsRequired": "None. Confirm 'both feet grounded, no hop' cue is retained at the faster tempo."
+    },
+    {
+      "id": "bridge",
+      "name": "Bridge Lifts",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Supine hip extension, zero spinal flexion — a flagship diastasis-safe move. Single-leg march and slow eccentric progressions are appropriate and gated correctly (super_sweaty needs the screening gate). One nuance: anyone post ~16 weeks pregnant should avoid prolonged supine, but the target audience is postpartum, so supine is fine. Briefly cue not to over-arch the lumbar at the top.",
+      "evidenceBasis": "ACOG postpartum exercise guidance and pelvic health physiotherapy consensus favour bridges over crunch loading; load progression per ACSM.",
+      "modificationsRequired": "Add cue 'lift from the hips, not by arching the low back' to prevent lumbar hyperextension at the top, especially during single-leg march where pelvis-drop/compensatory arch is common."
+    },
+    {
+      "id": "bird-dog",
+      "name": "Bird Dog",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Quadruped anti-rotation/anti-extension — among the safest postpartum core rebuilders, no flexion or plank load. Wrist weight-bearing is the only minor flag (couple with wrist-prep). The hold and knee-hover progressions are anti-rotation, not flexion.",
+      "evidenceBasis": "Pelvic health physiotherapy consensus and ACOG postpartum guidance specifically endorse bird-dog / quadruped work as diastasis-recti-safe core re-training.",
+      "modificationsRequired": "Cue 'keep the low back flat — no sagging, no arching' to prevent lumbar extension as the limbs extend. Keep wrist-prep available for wrist-sensitive users."
+    },
+    {
+      "id": "pelvic-breath",
+      "name": "Deep Belly Breathing",
+      "verdict": "approved",
+      "lead": "Women's-health / pelvic-floor specialist",
+      "contraindicationNotes": "Foundational diaphragm–pelvic-floor coordination practice — the keystone of the whole flagship. Restorative, no exertional load. One important honesty guard: 'lift on exhale' must NOT become 'grip/clench' — over-recruitment is a real fault that can worsen a hypertonic pelvic floor and is associated with pain/leaking in some women. The existing 'no squeezing or gripping' cue already handles this.",
+      "evidenceBasis": "Diaphragm–pelvic-floor coordination training is central to pelvic health physiotherapy consensus; PFMT is endorsed in ACOG postpartum guidance. [evidence: thin on exact protocol numbers — flag]",
+      "modificationsRequired": "Keep 'no squeezing or gripping' and 'let everything soften on the inhale' verbatim. Add a referral line: if pain, heaviness, or leaking, see a pelvic health physiotherapist — framed as connection practice, not treatment."
+    },
+    {
+      "id": "clamshell",
+      "name": "Clamshells",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Side-lying hip external rotation, no abdominal flexion, no impact. Fully diastasis-safe lateral-hip work. Band and top-hold progressions are benign. Stacked-hip cue prevents lumbar rotation cheat.",
+      "evidenceBasis": "Lateral hip strengthening is a standard pelvic health physiotherapy postpartum component; load progression per ACSM.",
+      "modificationsRequired": "None. Retain 'hips stacked, no rolling back' cue."
+    },
+    {
+      "id": "kickbacks",
+      "name": "Tabletop Kickbacks",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Quadruple hip extension (glute), back held flat — no spinal flexion. The principal risk is lumbar HYPEREXTENSION if the foot drives too high; the source already cues 'back flat and quiet.' Wrist weight-bearing again present.",
+      "evidenceBasis": "Standard knee-down glute exercise consistent with diastasis-safe, low-impact postpartum approach (pelvic health physiotherapy consensus; ACOG).",
+      "modificationsRequired": "Reinforce 'lift no higher than your hips can stay level — height never beats a flat back' (the prog already says this). Keep wrist-prep available."
+    },
+    {
+      "id": "heel-slides",
+      "name": "Heel Slides",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Supine low-load deep-core connection via limb movement, midline held flat — explicitly inside the no-crunch envelope. Correctly NOT a super_sweaty driver. The progression toward supported dead-bug is appropriately staged.",
+      "evidenceBasis": "Standard postpartum/diastasis rehab progression taught by pelvic health physiotherapists [evidence: thin on exact protocol numbers — flag]; clinical principle is graded limb load while maintaining a flat midline.",
+      "modificationsRequired": "Keep the explicit 'belly stays flat — if it domes or cones, slide less far' self-monitoring cue, since doming is the key stop-signal. Frame as connection practice, not treatment (already done)."
+    },
+    {
+      "id": "deadbug-supported",
+      "name": "Supported Dead Bug",
+      "verdict": "approved_with_modification",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Anti-extension deep-core loader. The critical safety boundary is correctly drawn: feet ALWAYS supported, NEVER the unsupported double-leg lower (which behaves like a crunch and can dome a healing linea alba and overload the pelvic floor). The super_sweaty version (slow eccentric, opposite arm overhead) is acceptable ONLY with intact midline control — hence the screening gate.",
+      "evidenceBasis": "Feet-supported dead-bug variants are standard postpartum/diastasis progressions [evidence: thin on exact protocol numbers — flag]; rule is load only as far as the midline stays flat.",
+      "modificationsRequired": "Make the doming/coning stop-signal an explicit spoken cue ('if your belly bulges or domes, bring the limbs back in'). Hard-code at the assembler level that the unsupported double-leg version is never selectable. Keep the screening gate on super_sweaty."
+    },
+    {
+      "id": "bird-dog-knee-hover",
+      "name": "Bird Dog Knee Hover",
+      "verdict": "approved_with_modification",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Quadruped with knees hovering adds significant anti-extension/anti-rotation core demand approaching plank-family load WITHOUT becoming a plank. This is the single most advanced core move in the bank and is appropriately super_sweaty-only with screening. Risk: doming, breath-holding (Valsalva → BP spike), and lumbar sag if control is insufficient. Wrist weight-bearing load is also highest here.",
+      "evidenceBasis": "Anti-rotation quadruped progressions are an accepted LATE-stage postpartum core step in pelvic health physiotherapy practice; gating to top tier with screening reflects appropriateness only once core control is well established.",
+      "modificationsRequired": "Confirm the screening gate is HARD (not advisory) and that prerequisite competence (clean bird-dog and supported dead-bug without doming) is encouraged before exposure. Add explicit 'keep breathing, do not hold your breath' and 'stop if the belly domes' cues. Ensure wrist-prep is offered. Never allow it to drift toward a full plank (prog already forbids)."
+    },
+    {
+      "id": "side-lying-leg-lift",
+      "name": "Side-Lying Leg Lift",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Side-lying hip abduction, longer lever than clamshell, no abdominal flexion, no impact. Diastasis-safe. The 'never above hip height where the waist collapses' rule prevents lumbar side-bend cheat and QL overload.",
+      "evidenceBasis": "Lateral hip strengthening is routine in pelvic health physiotherapy postpartum programming; load per ACSM.",
+      "modificationsRequired": "None. Retain the hip-height cap and the ankle-band/top-hold progressions as written."
+    },
+    {
+      "id": "wall-incline-press",
+      "name": "Wall Incline Plank",
+      "verdict": "approved_with_modification",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "INCLINE anti-extension hold against a raised surface — the correct, explicit substitute for the forbidden floor plank. Load is dialled by incline angle, which is the right adjustable lever. Risks: isometric holds invite breath-holding (Valsalva → BP rise, a real flag if hypertensive), and at lower inclines the move approaches true plank load and could dome the abdomen.",
+      "evidenceBasis": "Incline/wall planks are the standard pelvic-floor-and-diastasis-safe entry to plank-family loading in postpartum physiotherapy [evidence: thin on exact incline angles — flag]; principle is raise the surface until the midline stays flat.",
+      "modificationsRequired": "Hard-code that it NEVER lowers to a floor plank (prog states this — enforce at assembler). Add explicit 'breathe throughout, do not hold your breath' cue (Valsalva/BP). Add doming self-check: 'if your belly bulges, raise back up to a higher surface.' Hypertension flag in the scaffolded screening should cap the lowest incline."
+    },
+    {
+      "id": "pelvic-floor-connect",
+      "name": "Pelvic Floor Connect",
+      "verdict": "approved",
+      "lead": "PT (pelvic health) with sports-medicine physician",
+      "contraindicationNotes": "Restorative connection practice (lift AND release) — non-exertional, correctly not a super_sweaty driver. The single genuine clinical caveat: a subset of postpartum women have an OVERACTIVE/non-relaxing pelvic floor for whom repeated lifts without full release can worsen symptoms; the move's emphasis on the equally-important RELEASE plus a referral is the right mitigation. From a sports-med/joint lens there is no risk.",
+      "evidenceBasis": "Pelvic-floor muscle training endorsed in ACOG postpartum guidance; central pelvic health physiotherapy intervention [evidence: thin on exact rep protocols and on how many contract incorrectly — flag].",
+      "modificationsRequired": "None to the movement; keep the explicit referral language and the equal weighting of release. Ensure copy never frames it as treatment for prolapse/incontinence — connection practice only (already done)."
+    },
+    {
+      "id": "chair-pose",
+      "name": "Chair Pose",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Isometric squat-hold with arms overhead. Two flags: (1) sustained isometric holds raise blood pressure more than dynamic work — relevant for a hypertension flag; (2) overhead arm position adds to the BP/shoulder demand. No impact, knee load is moderate and self-limited.",
+      "evidenceBasis": "ACSM resistance-training/isometric exertion guidance supports submaximal holds for general strength; pair with ACOG postpartum return-to-activity progression.",
+      "modificationsRequired": "Add 'keep breathing steadily — do not hold your breath' cue (counters Valsalva/BP rise during the hold). In the scaffolded screening, isometric holds and overhead arms should be tempered for a hypertension flag. Offer 'arms forward instead of overhead' regression."
+    },
+    {
+      "id": "warrior2",
+      "name": "Warrior II",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Wide-stance isometric leg/hip strengthener. Same isometric-BP caveat as chair-pose but lower (arms horizontal, not overhead). Front-knee tracking over ankle must be cued to protect the knee. No impact.",
+      "evidenceBasis": "General strength benefit per ACSM resistance-training guidance; postpartum suitability per ACOG graded return to activity.",
+      "modificationsRequired": "Retain 'front knee over ankle, not past the toes' and add 'breathe steadily through the hold.' Sink-and-rise pulse (super_sweaty) is fine and reduces the static-BP load."
+    },
+    {
+      "id": "squats",
+      "name": "Invisible Chair Squats",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Bodyweight squat — foundational functional pattern, no impact (no jumping, confirmed). Knee load is self-limited and the heels-down/chest-proud cues protect knees and back. The bottom-pause super_sweaty variant increases time-under-tension safely. Breath coordination matters to protect the pelvic floor (exhale on exertion).",
+      "evidenceBasis": "Squat is a foundational functional pattern; load progression per ACSM; postpartum graded loading aligns with ACOG and pelvic-health physiotherapy consensus on breath-led core engagement.",
+      "modificationsRequired": "Add 'exhale as you stand' cue so intra-abdominal pressure is managed (protects pelvic floor/linea alba) — partially present. Offer a depth regression (squat to a chair) for knee-sensitive users. No jumping (confirmed)."
+    },
+    {
+      "id": "baby-cobra",
+      "name": "Baby Cobra",
+      "verdict": "approved_with_modification",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Prone gentle thoracic extension. This is a back-EXTENSION over a stretched abdominal wall — in early/unhealed diastasis an aggressive prone extension can stretch and stress the linea alba. The source correctly keeps it LOW and gentle and excludes it from super_sweaty. Lumbar hyperextension and any prone position discomfort (breast tenderness postpartum) are minor flags.",
+      "evidenceBasis": "Thoracic extension counters habitual flexed posture (general musculoskeletal reasoning); kept low to respect ACOG postpartum guidance and diastasis caution against aggressive abdominal stretch.",
+      "modificationsRequired": "Keep the lift explicitly LOW (chest just off the floor, ribs stay down) and cue 'lead with the upper back, keep the lift small.' Add a note that very early postpartum or symptomatic diastasis users keep it minimal or skip. Confirm it never becomes upward-dog/full cobra."
+    },
+    {
+      "id": "tree-pose",
+      "name": "Tree Pose",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Single-leg balance hold. Only risk is a fall; reframing wobble as practice is good, but postpartum balance/relaxin-related laxity can be reduced. No impact, no BP, no core-pressure issue.",
+      "evidenceBasis": "Single-leg balance training supports lower-limb stability (general motor-control reasoning); appropriate at all postpartum stages.",
+      "modificationsRequired": "Add 'a wall or chair nearby is smart' cue and 'foot on the calf, not the side of the knee' (protects the standing knee). Otherwise approved."
+    },
+    {
+      "id": "goddess",
+      "name": "Goddess Hold",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Wide isometric squat/pulse. Same isometric-BP caveat as chair-pose. Knees track over toes in external rotation — fine if cued. The pulse variant reduces static-BP load. No impact.",
+      "evidenceBasis": "Isometric and tempo squat variants build lower-limb strength per ACSM; postpartum progression per ACOG and pelvic-health physiotherapy breath guidance.",
+      "modificationsRequired": "Add 'breathe steadily through the hold' (Valsalva/BP). Retain 'knees track over toes' (knee protection). Hypertension flag should temper long static holds in the scaffolded screening."
+    },
+    {
+      "id": "reverse-lunge",
+      "name": "Steady Reverse Lunge",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Single-leg strength; reverse direction keeps the front knee stacked, reducing anterior knee shear vs a forward lunge — a genuinely knee-friendlier choice. Risks are balance (fall) and front-knee tracking. No impact (no jumping). The bottom-pause super_sweaty variant is safe.",
+      "evidenceBasis": "Reverse lunges reduce anterior knee shear vs forward lunges (general biomechanics reasoning); load progression per ACSM; postpartum graded return per ACOG.",
+      "modificationsRequired": "Add 'light support available' for balance and 'front knee stays over the ankle.' Confirm no jumping/plyometric variant is ever added."
+    },
+    {
+      "id": "sit-to-stand",
+      "name": "Sit-to-Stand",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Chair-based functional lower-limb strength and rise-capacity drill — highly relevant to postpartum life and very safe (chair removes fall risk). The hover super_sweaty variant adds eccentric load benignly. Minor orthostatic note on repeated up-from-low transitions.",
+      "evidenceBasis": "Sit-to-stand is a validated functional lower-limb strength and rise-capacity exercise (clinical functional-assessment use); postpartum-appropriate, graded per ACOG.",
+      "modificationsRequired": "Cue 'exhale as you stand' (pelvic-floor pressure management). For the lower-seat super_sweaty variant, ensure the chair is stable. Otherwise approved."
+    },
+    {
+      "id": "wall-pushup",
+      "name": "Wall & Incline Push-Up",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Pressing-strength pattern with load set by incline angle — the explicit safe stand-in for floor push-ups/planks. Wrist extension under load is the chief joint flag (De Quervain's / wrist sensitivity) — incline reduces it vs floor. No impact. At counter height the anti-extension core demand rises but stays well below a floor plank.",
+      "evidenceBasis": "Incline push-ups are a graded regression of the push-up pattern (ACSM resistance-training progression); chosen specifically to avoid the prohibited full plank per diastasis-recti safety consensus.",
+      "modificationsRequired": "Hard-enforce 'never progress to a floor plank' (prog states this). Offer the higher wall version for wrist-sensitive users and pair with wrist-prep. Add 'keep the body in one line, low back not sagging' to protect the lumbar spine."
+    },
+    {
+      "id": "glute-bridge-march",
+      "name": "Marching Bridge",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Bridge with single-leg march — adds single-leg pelvic stability. Zero spinal flexion, diastasis-safe. Key flag: the pelvis must not drop/rotate or the low back arch as one foot lifts; otherwise it loads the lumbar spine and the obliques can dome. Supine position fine for postpartum.",
+      "evidenceBasis": "Bridging and marching bridges are core-stability staples and diastasis-recti-safe alternatives to crunches per pelvic health physiotherapy consensus; load per ACSM.",
+      "modificationsRequired": "Make 'keep the pelvis perfectly level — if it tips or your belly domes, take smaller lifts' an explicit spoken cue. Otherwise approved; correctly gated at super_sweaty for the fuller knee lift."
+    },
+    {
+      "id": "standing-row",
+      "name": "Standing Row",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Scapular-retraction pulling pattern, isometric or banded. Counters postpartum forward-rounded posture — valuable. Minimal joint risk; banded version load is self-selected. Isometric squeeze-holds carry a minor BP/Valsalva note. Hip-hinge posture during rows must keep a neutral spine.",
+      "evidenceBasis": "Rowing strengthens scapular retractors to balance habitual flexed posture (general musculoskeletal reasoning); resistance progression via band per ACSM; postpartum-appropriate.",
+      "modificationsRequired": "Cue 'soft knees, flat back, breathe through the squeeze.' If performed in a hinged stance, ensure the hinge is neutral-spine (see hip-hinge cues). Otherwise approved."
+    },
+    {
+      "id": "hip-hinge",
+      "name": "Hip Hinge",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "The flat-backed hip hinge is the single most protective real-life pattern for postpartum lifting (car seats, toddlers) — high value. The whole point is to AVOID lumbar flexion under load, so cueing a truly neutral spine is essential; a rounded hinge would load the lumbar discs. Light household-object load (super_sweaty) is fine if held close to the body. No impact.",
+      "evidenceBasis": "The hip hinge is the foundational safe-lifting pattern in injury-prevention/occupational-health guidance (general consensus); postpartum graded loading per ACOG and pelvic-health physiotherapy breath cues.",
+      "modificationsRequired": "Make 'hinge from the hips with a long, flat back — bottom travels back, not down' the primary cue, and 'exhale as you stand' for pelvic-floor pressure. Keep any load light and close to the body. Otherwise approved."
+    },
+    {
+      "id": "marching",
+      "name": "Standing March",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Standing march, both feet low, no impact — the universal gateway cardio. The high-knee progression must keep contact soft and 'no hop' (stated). No BP or joint concern.",
+      "evidenceBasis": "Low-impact aerobic activity consistent with ACOG postpartum activity guidance and the app's no-jump rule.",
+      "modificationsRequired": "Retain 'both feet low, no hop' at the high-knee tempo. Otherwise approved. Correctly not super_sweaty by itself (high-knee progression carries the higher tier)."
+    },
+    {
+      "id": "step-touch",
+      "name": "Step-Touch",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Rhythmic side-to-side, one foot always grounded, no impact. Low skill, low risk. Overhead-arm progression adds mild BP/shoulder demand only.",
+      "evidenceBasis": "Low-impact aerobic warm-up/conditioning consistent with ACOG and the no-jump rule.",
+      "modificationsRequired": "None."
+    },
+    {
+      "id": "step-backs",
+      "name": "Step-Backs",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Alternating step-back, both feet contact, no impact. The knee-drive progression raises HR without a hop. Minor balance demand only.",
+      "evidenceBasis": "Low-impact aerobic conditioning consistent with ACOG and the no-jump rule.",
+      "modificationsRequired": "None. Confirm 'no hop' carries into the knee-drive progression."
+    },
+    {
+      "id": "fast-feet",
+      "name": "Light Fast Feet",
+      "verdict": "approved_with_modification",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Interval-style fast feet (20s fast / 20s recovery) — this is the most genuinely VIGOROUS cardio in the bank and is correctly super_sweaty-only. Even kept low and soft-contact, rapid repetitive ground contact raises intra-abdominal pressure and pelvic-floor load; women with stress incontinence or early postpartum may leak or feel heaviness. Provided contact stays soft and there is no hop, impact is minimal but not zero.",
+      "evidenceBasis": "Interval low-impact conditioning is within ACSM vigorous-intensity definitions; pelvic-floor impact-loading caution per pelvic health physiotherapy consensus (return-to-impact is staged) [evidence: precise readiness criteria thin — flag].",
+      "modificationsRequired": "Keep the super_sweaty screening gate HARD. Add an explicit pelvic-floor self-check cue ('if you feel any leaking or heaviness, slow to a march') and offer step-touch/marching as the instant regression. Confirm 'feet stay low, soft contact, no hop' is enforced. This is the move most worth flagging for the scaffolded incontinence/early-postpartum screen."
+    },
+    {
+      "id": "knee-drives",
+      "name": "Standing Knee Drives",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Standing knee-and-arm drive, standing foot planted, no hop. Raises HR and trains coordination. Balance demand is moderate at the quicker tempo. No impact if the planted-foot cue holds.",
+      "evidenceBasis": "Low-impact conditioning consistent with ACOG and the no-jump rule.",
+      "modificationsRequired": "Retain 'standing foot stays planted, no hop.' Offer light support for balance at the vigorous tempo. Otherwise approved."
+    },
+    {
+      "id": "lateral-steps",
+      "name": "Lateral Steps",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Grounded lateral travel with a half-squat option, no impact. Glute/HR load scales safely. The half-squat super_sweaty adds knee/glute load that is self-limited.",
+      "evidenceBasis": "Low-impact conditioning consistent with ACOG and the no-jump rule.",
+      "modificationsRequired": "Cue 'knees track over toes' on the half-squat. Otherwise approved."
+    },
+    {
+      "id": "shadow-box",
+      "name": "Shadow Boxing",
+      "verdict": "approved_with_modification",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Standing punches, feet planted, zero impact — empowering and safe for the lower body/pelvic floor. The chief joint flag is the SHOULDER and ELBOW: rapid end-range punching with full elbow lockout can strain the elbow and shoulder, especially with lax connective tissue. Trunk rotation at speed is generally well tolerated unloaded.",
+      "evidenceBasis": "Upper-body cardio is low-impact and pelvic-floor-friendly; elbow-lockout caution is general musculoskeletal reasoning [evidence: thin on a named source — flag].",
+      "modificationsRequired": "Add 'do not snap the elbows fully straight — keep a soft bend' and 'punch with control, not maximum speed' at the faster super_sweaty tempo. Otherwise approved with feet planted."
+    },
+    {
+      "id": "wall-climbers",
+      "name": "Wall Mountain-Climbers",
+      "verdict": "approved_with_modification",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Wall (incline) mountain-climbers — a plank-free climber stimulus, honouring the no-full-plank rule. The steeper the incline, the more it approaches plank-family anti-extension load and the higher the doming/pelvic-floor pressure and wrist load. The alternating-knee drive at speed raises intra-abdominal pressure. Correctly gated to slightly/super tiers.",
+      "evidenceBasis": "Plank-free wall climber is consistent with diastasis safety consensus (avoids the prohibited full plank); conditioning per ACSM [evidence: thin on a named protocol — flag].",
+      "modificationsRequired": "Hard-enforce 'never walk the feet back to a full horizontal plank' (prog states this — enforce at assembler). Add doming self-check and 'keep breathing' cues. Pair with wrist-prep. Higher (more vertical) wall position should be the slightly_sweaty default; lower incline reserved for screened super_sweaty."
+    },
+    {
+      "id": "step-jacks",
+      "name": "Step-Out Jacks",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "No-jump jacks with one foot always grounded — the explicit pelvic-floor-considerate alternative to jumping jacks. Honours the no-jump rule. The heel-raise progression keeps contact soft. Shoulder overhead-arm reach is the only minor flag (BP/shoulder).",
+      "evidenceBasis": "Low-impact alternative to jumping jacks consistent with ACOG and the app's no-jump rule; pelvic-floor-considerate by design.",
+      "modificationsRequired": "Confirm 'one foot always grounded, no jump' carries into the quicker super_sweaty tempo. Otherwise approved."
+    },
+    {
+      "id": "skater-steps",
+      "name": "Skater Steps",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Grounded skater/curtsy pattern, no hop — the no-impact alternative to plyometric skater hops. Lateral strength/balance challenge. The curtsy step crosses the midline, which can stress the knee if uncontrolled; deeper/faster super_sweaty raises that.",
+      "evidenceBasis": "Low-impact lateral conditioning consistent with ACOG and the no-jump rule.",
+      "modificationsRequired": "Cue 'keep the front knee tracking forward, do not let it collapse inward' on the curtsy, and confirm 'feet stay grounded, no hop.' Otherwise approved."
+    },
+    {
+      "id": "heel-digs",
+      "name": "Heel Digs",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Alternating heel reaches with an arm pull, both feet low, no impact — gentle, low-skill, pelvic-floor-easy. Negligible risk.",
+      "evidenceBasis": "Low-impact warm-up/cardio consistent with ACOG and the no-jump rule.",
+      "modificationsRequired": "None."
+    },
+    {
+      "id": "down-dog",
+      "name": "Downward Dog",
+      "verdict": "approved_with_modification",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Inverted whole-body decompression. Three flags: (1) WRIST weight-bearing in extension under significant load — the most wrist-demanding hold in the bank (De Quervain's relevance); (2) head-below-heart inversion raises a BP/light-headedness consideration, relevant for a hypertension flag or dizziness; (3) the super_sweaty step-to-low-lunge flow raises HR safely but increases wrist transitions. Not a crunch; diastasis-neutral.",
+      "evidenceBasis": "Whole-body stretch; wrist-loading and mild-inversion BP cautions are general musculoskeletal/physiological reasoning [evidence: thin on a named guideline — flag]. Super-sweaty flow gated by the screening gate.",
+      "modificationsRequired": "Offer a forearm/lower-wrist-friendly or knees-on-floor regression and pair with wrist-prep. Add 'come up slowly' and a note for anyone prone to dizziness/high BP. Keep heels-bent option (already cued). Confirm the super_sweaty flow keeps soft, grounded steps (no hop)."
+    },
+    {
+      "id": "low-lunge",
+      "name": "Low Lunge",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Kneeling hip-flexor stretch — high value for the postpartum anterior-hip tightness from feeding/rocking. Back-knee comfort (padding) is cued. As a held stretch it is diastasis-neutral and low-risk. Used as a flow transition in super_sweaty, not a long vigorous hold — appropriate.",
+      "evidenceBasis": "Hip-flexor lengthening counters habitual shortening (general musculoskeletal reasoning); within ACOG low-impact postpartum ceiling.",
+      "modificationsRequired": "Retain 'pad the back knee.' Avoid pushing the front knee past the toes. Otherwise approved."
+    },
+    {
+      "id": "figure-four",
+      "name": "Figure-Four Hug",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Supine outer-hip/glute stretch — fully passive, supported, no load, no impact. One of the safest hip openers. Diastasis-neutral.",
+      "evidenceBasis": "Passive hip stretch within the postpartum ceiling; consistent with ACOG low-impact guidance.",
+      "modificationsRequired": "None."
+    },
+    {
+      "id": "butterfly",
+      "name": "Butterfly Stretch",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Seated inner-thigh/hip stretch, supported, passive. Pelvic relaxin-related laxity means the inner-thigh/adductor range may be larger than expected — cue 'only as far as feels kind' (present) to avoid overstretch. No load, no impact.",
+      "evidenceBasis": "Passive hip stretch within the postpartum ceiling; consistent with ACOG low-impact guidance.",
+      "modificationsRequired": "Keep knee support option (cued in no_sweat). Avoid forcing the fold. Otherwise approved."
+    },
+    {
+      "id": "seated-twist",
+      "name": "Seated Twist",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Gentle seated rotation, breath-led, twist-on-exhale. Rotation is diastasis-safe when soft and open. The source's 'never wrenched' boundary is correct. No load, no impact.",
+      "evidenceBasis": "Gentle controlled spinal rotation appropriate postpartum when kept breath-led (pelvic health physiotherapy consensus; ACOG gradual progression).",
+      "modificationsRequired": "Retain 'twist from the mid-back, grow tall first, never force it.' Otherwise approved."
+    },
+    {
+      "id": "thread-needle",
+      "name": "Thread the Needle",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Quadruped thoracic twist with the shoulder resting down — gentle, supported, low-load. Minor neck/shoulder positional comfort and wrist weight-bearing on the supporting arm. Diastasis-neutral.",
+      "evidenceBasis": "Gentle thoracic rotation within the postpartum ceiling; general mobility reasoning.",
+      "modificationsRequired": "Keep wrist-prep available for the supporting arm. Otherwise approved."
+    },
+    {
+      "id": "forward-fold",
+      "name": "Rag-Doll Fold",
+      "verdict": "approved_with_modification",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Standing rag-doll hang — passive posterior-chain release. The one real flag is ORTHOSTATIC: rising from a full forward fold drops then spikes cerebral perfusion and can cause light-headedness/fainting, more likely postpartum (anaemia, deconditioning, low BP). Knees-soft is cued, which is good. No load, no impact.",
+      "evidenceBasis": "Passive posterior-chain stretch; orthostatic-hypotension caution on rising from a fold (mechanism well established) [evidence: postpartum-specific magnitude thin — flag].",
+      "modificationsRequired": "Make 'rise slowly, roll up bone by bone, let your head come up last' an explicit spoken cue (the source notes this in prog — promote it to a cue). 'If you feel light-headed, pause halfway.' Keep knees soft."
+    },
+    {
+      "id": "sun-flow-gentle",
+      "name": "Gentle Sunrise Flow",
+      "verdict": "approved_with_modification",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Breath-linked flow scaling from restorative to low-impact cardio. Flags depend on the shapes inside it: likely includes forward fold (orthostatic), possibly down-dog (wrist/inversion), and lunges (knee). The super_sweaty continuous-round pacing raises HR appropriately and is gated. No jumping if it stays a flow.",
+      "evidenceBasis": "Low-impact flowing aerobic/mobility work consistent with ACOG postpartum guidance; super-sweaty pacing gated by the screening gate.",
+      "modificationsRequired": "Inherit the per-shape mitigations: 'rise slowly from any fold' (orthostatic), wrist-prep if down-dog is included, knee-tracking in lunges. Confirm no shape introduces a jump or a floor plank. Keep the super_sweaty screening gate. Otherwise approved."
+    },
+    {
+      "id": "crescent-lunge",
+      "name": "Crescent Lunge",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Standing high-lunge hip-flexor opener and leg strengthener, back knee lifted, arms overhead. Flags: balance (fall), front-knee tracking, and overhead arms add mild BP/shoulder demand. Pulses (super_sweaty) increase leg work and HR without impact — gated. No jumping.",
+      "evidenceBasis": "Standing lunge strength/mobility per ACSM and general biomechanics; low-impact, jump-free; super-sweaty pacing gated by the screening gate.",
+      "modificationsRequired": "Cue 'front knee over ankle' and offer light support. 'Breathe steadily' for the arms-overhead hold. Otherwise approved."
+    },
+    {
+      "id": "half-pigeon",
+      "name": "Gentle Half-Pigeon",
+      "verdict": "approved_with_modification",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "The source itself flags this as the RISKIEST hip opener in the bank because of front-KNEE load in a flexed/rotated position — postpartum relaxin-related ligament laxity makes the medial knee and the front-shin position genuinely vulnerable. It is a deep passive stretch (no_sweat/slightly only, correctly never super_sweaty). Pelvic/SI discomfort is also possible.",
+      "evidenceBasis": "Deep hip-opener with front-knee load; knee-protection caution is standard yoga-therapy/physiotherapy practice [evidence: thin on a named source — flag]; kept restorative within the postpartum ceiling.",
+      "modificationsRequired": "Make the strongly-supported/figure-four regression the DEFAULT first offering, not an alternative — i.e. lead with supine figure-four and only offer floor half-pigeon with props for those without knee discomfort. Add 'if you feel anything in the front knee, come out and use the figure-four version.' Keep props (bolster under the hip) mandatory in the cue. Confirm never super_sweaty (correct)."
+    },
+    {
+      "id": "standing-fold-variations",
+      "name": "Standing Forward Fold Variations",
+      "verdict": "approved_with_modification",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "A family of forward folds (supported half-fold, classic, wide-legged). Same orthostatic-on-rising flag as forward-fold, plus the wide-legged variation adds an adductor stretch where postpartum laxity warrants caution. Passive, no load, no impact.",
+      "evidenceBasis": "Passive posterior-chain/adductor stretch within the postpartum ceiling; orthostatic caution on rising (mechanism well established) [evidence: postpartum magnitude thin — flag].",
+      "modificationsRequired": "Promote 'rise slowly, head up last' to a spoken cue (orthostatic). Cap the wide-legged adductor range ('only as far as feels kind'). Keep knees soft/never locked (stated). Default the supported half-fold for less mobile users. Otherwise approved."
+    },
+    {
+      "id": "cobra-childs-flow",
+      "name": "Cobra to Child's Flow",
+      "verdict": "approved_with_modification",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Breath-linked spinal flow pairing baby-cobra (back extension over a stretched abdomen) with child's pose (flexion/rest). Inherits the baby-cobra diastasis caveat: the cobra portion must stay LOW and exhale-led so the linea alba is not over-stretched. The source correctly keeps it gentle and excludes super_sweaty. Wrist load in the cobra-to-childs transition is minor. Child's pose is fully restorative.",
+      "evidenceBasis": "Gentle spinal flow; cobra kept low and exhale-led respects diastasis caution (ACOG postpartum guidance; pelvic health physiotherapy consensus).",
+      "modificationsRequired": "Carry the baby-cobra cap: 'keep the cobra low, ribs heavy, lead with the upper back.' Add a note for symptomatic/early diastasis to keep the lift minimal. Confirm it never becomes upward-dog or a deep back-bend (prog states this)."
+    },
+    {
+      "id": "warrior-1",
+      "name": "Warrior I",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Square-hipped standing strength/stability hold, arms overhead. Flags: front-knee tracking, the squared-hip position can stress the back-leg SI joint/hip in laxer postpartum bodies, and overhead arms add mild BP/shoulder demand. Pulses (super_sweaty) build leg work without impact — gated. No jumping.",
+      "evidenceBasis": "Standing strength pose per ACSM strength reasoning; low-impact, jump-free; super-sweaty pacing gated by the screening gate.",
+      "modificationsRequired": "Cue 'front knee over ankle,' allow a slightly shorter stance / hands-to-hips option if the squared hips pinch, and 'breathe steadily' for the overhead hold. Otherwise approved."
+    },
+    {
+      "id": "childs-pose",
+      "name": "Child's Pose",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Restorative kneeling rest with gentle spinal flexion. Knees-wide option accommodates a postpartum belly and reduces knee/ankle strain. No exertional, BP, or core-pressure concern — it IS the down-regulation. Knee/ankle comfort is the only minor flag.",
+      "evidenceBasis": "Restorative rest consistent with ACOG postpartum guidance favouring gradual low-impact movement [evidence: thin on the specific relaxation claim — flag; parasympathetic tone rises with slow exhalation and supported stillness].",
+      "modificationsRequired": "Retain knees-wide and forehead-supported options. Offer a cushion under the hips/ankles for comfort. Otherwise approved."
+    },
+    {
+      "id": "happy-baby",
+      "name": "Happy Baby",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Supine passive hip/low-back opener with gentle rocking. No load, no impact, tailbone grounded — diastasis-neutral and pelvic-floor-gentle. Widening the knees is a passive range increase only.",
+      "evidenceBasis": "Passive supported hip mobility within the postpartum ceiling (ACOG postpartum activity guidance).",
+      "modificationsRequired": "None. Keep 'tailbone heavy' cue to avoid over-tucking."
+    },
+    {
+      "id": "legs-up",
+      "name": "Legs-Up Rest",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Mild restorative inversion (legs up). Two minor flags: legs-elevated supine can transiently raise central venous return — generally benign but worth a gentle note for anyone with cardiovascular concerns; and there is no 'harder' version, which is exactly right for an anti-compulsion close. No core/pelvic-floor load.",
+      "evidenceBasis": "Restorative practice; calming effect aligns with slow-breathing parasympathetic principles [evidence: mechanism well established for slow breathing; legs-up-specific trials thin — flag].",
+      "modificationsRequired": "Optional gentle note that anyone who feels uncomfortable can lower the legs or bend the knees. Otherwise approved; correctly restorative-only across all tiers."
+    },
+    {
+      "id": "box-breath",
+      "name": "Box Breathing",
+      "verdict": "approved_with_modification",
+      "lead": "Women's-health / pelvic-floor specialist",
+      "contraindicationNotes": "Equal-count breathing with breath-HOLDS (the 'hold for four' phases). This is the one breath move that includes deliberate breath retention. A held breath = a mild Valsalva = transient downward pelvic-floor pressure. For most it is trivial, but for a symptomatic/hypertonic pelvic floor, repeated holds are less ideal than continuous slow breathing. It is restorative and seated, so risk is low, but extended-exhale breathing is the safer default for this cohort.",
+      "evidenceBasis": "[evidence: general slow-breathing autonomic effect well supported; box-breathing-specific trials limited — flag.] Clinical reasoning: breath-holds create mild IAP; continuous exhale-led breathing avoids this.",
+      "modificationsRequired": "Keep the holds GENTLE and explicitly cue 'let the holds be soft and easy — never strain or clench' (the existing 'nice and easy' helps). Where pelvic-floor symptoms are flagged, prefer extended-exhale-breath as the default close instead."
+    },
+    {
+      "id": "kind-close",
+      "name": "Kind Thoughts Close",
+      "verdict": "approved",
+      "lead": "Women's-health / pelvic-floor specialist",
+      "contraindicationNotes": "Affirmation/self-compassion close. No physical load. The only thing in my lane is to confirm the copy never drifts into appearance/'bounce-back' framing — the existing text is correctly about showing up, not bodies.",
+      "evidenceBasis": "[evidence: self-compassion–mood link reasonably supported in psychology literature; postpartum-specific magnitude thin — flag.]",
+      "modificationsRequired": "None. Keep it body-neutral; never reference appearance or weight."
+    },
+    {
+      "id": "supported-rest",
+      "name": "Supported Reclined Rest",
+      "verdict": "approved",
+      "lead": "Women's-health / pelvic-floor specialist",
+      "contraindicationNotes": "Fully-supported propped relaxation — the primary down-regulation rest after vigorous work. No load. The body-scan progression is purely restful. Safe all tiers; especially valuable after super_sweaty sessions.",
+      "evidenceBasis": "[evidence: slow-breathing parasympathetic effect well supported; pose-specific trials thin — flag.] Aligns with ACOG's emphasis on gentle progression/recovery.",
+      "modificationsRequired": "None."
+    },
+    {
+      "id": "reclined-twist",
+      "name": "Gentle Reclined Twist",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Supported supine spinal rotation, slow entry, both shoulders grounded. Gentle, low-load rotation is appropriate postpartum. The deeper-knee progression must keep both shoulders down to avoid forced rotation. Diastasis-neutral, no impact.",
+      "evidenceBasis": "Controlled low-load spinal rotation appropriate postpartum when gentle and breath-led (pelvic health physiotherapy consensus; ACOG gradual progression).",
+      "modificationsRequired": "Retain 'both shoulders stay grounded, never force the rotation.' Otherwise approved."
+    },
+    {
+      "id": "neck-jaw-release",
+      "name": "Neck and Jaw Release",
+      "verdict": "approved",
+      "lead": "Sports-medicine physician + PT",
+      "contraindicationNotes": "Low-load neck/jaw release using only the head's weight — restorative, non-exertional. The source correctly forbids hand pressure that forces range. The diagonal (nose-to-armpit) progression is fine if it stays passive. No BP/impact/core concern.",
+      "evidenceBasis": "Relaxation/jaw-release cue with extended-exhale; extended-exhale autonomic effect well supported [evidence: jaw-relaxation-as-stress-release widely taught but trial evidence thin — flag].",
+      "modificationsRequired": "Keep 'let only the head's weight do the work — never add hand pressure that forces the range.' Otherwise approved."
+    },
+    {
+      "id": "extended-exhale-breath",
+      "name": "Long Slow Breath",
+      "verdict": "approved",
+      "lead": "Women's-health / pelvic-floor specialist",
+      "contraindicationNotes": "Continuous slow breathing with a lengthened exhale and NO breath-holds — the safest breath pattern for this cohort and the best down-regulation tool, with no IAP/pelvic-floor concern. This is exactly the move I would default to over box-breath for any user with pelvic-floor symptoms. The backbone of the Meditation tier.",
+      "evidenceBasis": "Slow breathing with prolonged exhale is well documented to raise parasympathetic (vagal) tone and support stress/HR down-regulation — among the better-supported claims in the bank, consistent with breathing-physiology literature. [evidence: solid for the extended-exhale parasympathetic mechanism.]",
+      "modificationsRequired": "None. Recommend making this (not box-breath) the default close for any profile flagged with pelvic-floor symptoms."
+    }
+  ]
+}

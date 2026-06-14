@@ -43,8 +43,10 @@ export class Player {
     if (this.musicOn) music.start();
     this._requestWakeLock();
     document.addEventListener('visibilitychange', this._onVis);
-    const welcome = personalize(pick(this.style.welcome), this.name);
-    coach.speak(welcome, { interrupt: true });
+    if (!this.plan.isMeditation) {
+      const welcome = personalize(pick(this.style.welcome), this.name);
+      coach.speak(welcome, { interrupt: true });
+    }
     this._next();
     this._timer = setInterval(() => this._tick(), 1000);
   }
@@ -53,15 +55,19 @@ export class Player {
     this.idx += 1;
     if (this.idx >= this.plan.items.length) return this._finish();
     this.phase = 'ready';
-    this.remaining = TRANSITION_SECS;
+    // meditation flows segment-to-segment with no "get ready" gap; workouts use
+    // the tier's rest (TRANSITION_SECS + the tier restAdd).
+    this.remaining = this.plan.isMeditation ? 1 : (this.plan.restSecs || TRANSITION_SECS);
     this._fired = {};
     const item = this.plan.items[this.idx];
-    sound.chime();
+    if (!this.plan.isMeditation) sound.chime();
     this.hooks.moveStart(item, this.idx);
     this.hooks.mirror(false);
-    // first move queues behind the welcome instead of cutting it off
-    const ready = personalize(pick(this.phrases.micro.getReady), this.name, item.ex.name);
-    coach.speak(ready, { interrupt: this.idx > 0 });
+    if (!this.plan.isMeditation) {
+      // first move queues behind the welcome instead of cutting it off
+      const ready = personalize(pick(this.phrases.micro.getReady), this.name, item.ex.name);
+      coach.speak(ready, { interrupt: this.idx > 0 });
+    }
     this.hooks.render(this);
   }
 
@@ -70,7 +76,7 @@ export class Player {
     this.phase = 'move';
     this.remaining = item.secs;
     const lines = [item.ex.why];
-    if (this.idx === Math.floor(this.plan.items.length / 2)) {
+    if (!this.plan.isMeditation && this.idx === Math.floor(this.plan.items.length / 2)) {
       lines.push(personalize(pick(this.style.halfway), this.name));
     }
     coach.speak(lines, { interrupt: true });
@@ -90,7 +96,7 @@ export class Player {
       const item = this.plan.items[this.idx];
       this.completed.push(item.ex.id);
       if (this.idx === this.plan.items.length - 1) this._closeDone = true;
-      if (this.idx % 3 === 2) {
+      if (!this.plan.isMeditation && this.idx % 3 === 2) {
         coach.speak(personalize(pick(this.style.finishMove), this.name), { interrupt: true });
       }
       return this._next();
@@ -99,7 +105,9 @@ export class Player {
   }
 
   _scheduleSpeech() {
+    if (this.plan.isMeditation) return; // segment lines are spoken at segment start, then silence
     const item = this.plan.items[this.idx];
+    if (!item.ex.cues || !item.ex.cues.length) return;
     const frac = 1 - this.remaining / item.secs;
     const fire = (key, fn) => {
       if (!this._fired[key]) { this._fired[key] = true; fn(); }
@@ -176,6 +184,8 @@ export class Player {
       startHour: this.startHour,
       closeId: this.plan.closeId,
       durationKey: this.plan.durationKey,
+      tier: this.plan.tier || null,
+      kind: this.plan.isMeditation ? 'meditation' : 'movement',
     });
   }
 }

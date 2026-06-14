@@ -1,0 +1,1995 @@
+{
+  "_meta": {
+    "scope": "BOTH: one core scaling practice across 6 durations + 5-item themed library",
+    "count": 10
+  },
+  "meditations": [
+    {
+      "id": "med-core-7",
+      "minutes": 7,
+      "theme": "core arrival + breath",
+      "kind": "core_scaling",
+      "intent": "The shortest sibling of the core \"arrive / settle / rest / return\" practice. A complete arrival-and-breath meditation that helps a postpartum woman put down the day, settle her nervous system with slow even breathing, rest in a brief optional awareness, and return gently — without striving, fixing, or performing. Instruction density is deliberately low; the work is the settling, not the talking.",
+      "scaleNote": "This is the floor of the core_scaling family (med-core-7). Longer siblings (15/20/30/45/60) keep this same four-phase arc — arrive, settle, rest, return — and the SAME number of spoken instructions at roughly the same words. They do NOT add more talking. What lengthens is silence: the settling pause after arrival, the breath-dwell between cues, the rest phase, and the return all stretch. In med-core-7 the rest phase is a single ~70s held silence; in longer versions that one silence becomes the bulk of the practice (minutes, not seconds). Spoken caption text stays nearly identical across the family so the practice feels recognisable at any length.",
+      "script": [
+        {
+          "atSec": 0,
+          "say": "Welcome. There is nothing to get right here. Let your eyes close, or soften your gaze toward the floor.",
+          "action": "Spoken slowly. Allow a 3-second pause after the line before the next prompt."
+        },
+        {
+          "atSec": 15,
+          "say": "Find a way to sit or lie down that asks nothing of you. Let the surface underneath you take your weight.",
+          "action": "Gentle body cue: settling into support. No correction of posture."
+        },
+        {
+          "atSec": 30,
+          "say": "You do not need to hold yourself up right now. Let it all be held for these few minutes.",
+          "action": "Silence for ~12 seconds. Let the words land."
+        },
+        {
+          "atSec": 50,
+          "say": "When you are ready, take one slow breath in through the nose. And let it go with a soft sigh.",
+          "action": "Breath pacing: inhale ~4s, audible exhale ~6s. One cycle."
+        },
+        {
+          "atSec": 65,
+          "say": "One more like that. Breathe in, gather the day. Breathe out, set a little of it down.",
+          "action": "Breath pacing: inhale ~4s, long exhale ~6s. Pause ~6s after."
+        },
+        {
+          "atSec": 85,
+          "say": "Now let your breath find its own slow rhythm. We will count it together, easy and even.",
+          "action": "Transition to settle phase. Brief silence ~5s."
+        },
+        {
+          "atSec": 100,
+          "say": "Breathe in for four. Soft and full.",
+          "action": "Breath pacing: guide inhale across 4 counts (~4s)."
+        },
+        {
+          "atSec": 108,
+          "say": "And breathe out for four. Nothing forced.",
+          "action": "Breath pacing: guide exhale across 4 counts (~4s). Then silence ~6s."
+        },
+        {
+          "atSec": 122,
+          "say": "Again, in your own time. In for four. Out for four.",
+          "action": "Breath pacing: one full cycle, then leave ~20s of silent breathing. Do not speak over it."
+        },
+        {
+          "atSec": 155,
+          "say": "Notice the breath moving low, into the belly and ribs, the way it did when you were small.",
+          "action": "Gentle body cue: breath low into belly. Silence ~12s after."
+        },
+        {
+          "atSec": 180,
+          "say": "If thoughts arrive, that is fine. You do not have to chase them or push them away. Let them drift, and come back to the breath.",
+          "action": "Permission-giving. Silence ~15s."
+        },
+        {
+          "atSec": 210,
+          "say": "If it feels right, you can rest your awareness anywhere in the body that feels easy. If noticing the body is too much today, rest with the sound of the breath instead. Either is welcome.",
+          "action": "OPTIONAL body focus with explicit non-body alternative (breath/sound) for trauma-aware safety. No instruction to scan or fix anything."
+        },
+        {
+          "atSec": 235,
+          "say": "Now, for a little while, there is nothing to do. Just breathe, and let yourself be here.",
+          "action": "Enter REST phase. Begin sustained silence."
+        },
+        {
+          "atSec": 250,
+          "say": "",
+          "action": "Silence. Held rest — roughly 70 seconds of quiet breathing. No captions, no cues. This is the heart of the practice; do not fill it."
+        },
+        {
+          "atSec": 322,
+          "say": "Still here, still breathing. You are doing enough simply by staying.",
+          "action": "One soft re-anchor. Spoken quietly, then return to silence ~15s."
+        },
+        {
+          "atSec": 345,
+          "say": "We will begin to come back now. No rush. Let your breath deepen, just a little.",
+          "action": "Enter RETURN phase. Breath pacing: invite one slightly fuller breath."
+        },
+        {
+          "atSec": 365,
+          "say": "Let a small movement return — wiggle your fingers, or your toes. A gentle stretch if your body wants one.",
+          "action": "Gentle body cue: small reawakening movement, offered not required."
+        },
+        {
+          "atSec": 385,
+          "say": "Bring a hand to rest wherever feels kind. Your heart, your belly, your lap.",
+          "action": "Gentle body cue: hand to a self-chosen, comfortable place."
+        },
+        {
+          "atSec": 398,
+          "say": "You made time for yourself today, and that matters. You are exactly where you need to be.",
+          "action": "Affirmation in Vera close voice. Soft pause ~8s."
+        },
+        {
+          "atSec": 412,
+          "say": "When you are ready, open your eyes. Carry a little of this quiet with you.",
+          "action": "Close. Let the final line settle; do not speak again before 420s."
+        }
+      ],
+      "accessibilityNotes": "Every spoken line is also the on-screen caption and pairs with the existing aria-live caption channel, so the full practice is usable with sound off or with a screen reader. Silence stretches (notably the ~70s rest from 250s) should display a calm static \"Resting — just breathe\" caption rather than a blank region, so screen-reader and Deaf users are not left wondering whether playback stalled. Honour the app reduced-motion setting: any avatar or visual breathing animation must hold still or fade to a static frame, and breath pacing can be conveyed by the caption text alone. All body cues are explicitly optional and phrased as invitations (\"if it feels right\", \"if your body wants one\"), so a person who cannot or does not wish to move can complete the practice fully by breathing only. The body-awareness moment (210s) offers a breath/sound alternative so body focus is never required. The session remains skippable and pausable at any point with no penalty, consistent with the every-move-skippable principle.",
+      "disclaimers": [
+        "This meditation is for general relaxation and wellbeing. It is not medical, psychological, or therapeutic advice, and it does not diagnose or treat any condition.",
+        "If at any point you feel distressed, overwhelmed, dizzy, or unsafe, please stop, open your eyes, and return your attention to the room around you. You can leave the practice at any time.",
+        "Meditation and breath awareness can sometimes surface difficult feelings, especially in the postpartum period. If distress persists, please reach out to a qualified health professional, your GP or midwife, or a trusted support service. You deserve support, and asking for it is a sign of strength."
+      ]
+    },
+    {
+      "id": "med-core-15",
+      "minutes": 15,
+      "theme": "core breath + brief body awareness",
+      "kind": "core_scaling",
+      "intent": "A 15-minute core meditation following the arrive / settle / rest / return arc. It seats the practitioner in slow breath, offers a short and explicitly optional pass of gentle body awareness with a breath-or-sound alternative, holds a long quiet rest carried mostly by silence, and returns softly with a single warm affirmation. Default Meditation tier for the 15-minute length; grows the garden +1 like any showing-up day.",
+      "scaleNote": "This 15-minute version lengthens the silences of med-core-7, not the talking. The arc and the count of spoken cues stay almost identical to the 7-minute sibling; what grows is the dwell time. The settling silence after arrival, each pause inside the body-awareness pass, the breath-dwell between guidance, and especially the central rest are all held open longer. Instruction density stays flat and low — roughly the same number of sentences as the 7-minute script, spread across more quiet. Scaling toward 20/30/45/60 continues the same way: extend rest and the inter-cue silences further; never add more instruction.",
+      "script": [
+        {
+          "atSec": 0,
+          "say": "Welcome. There is nothing to get right here. Let yourself land.",
+          "action": "Warm, unhurried tone. No breath instruction yet — just arrival."
+        },
+        {
+          "atSec": 12,
+          "say": "Find a seat or a place to lie down. Let your body be held by whatever is underneath you.",
+          "action": "Gentle body cue (optional posture); allow 8s of settling."
+        },
+        {
+          "atSec": 28,
+          "say": "If it feels okay, let your eyes close. If not, soften your gaze toward the floor.",
+          "action": "Offer eyes-closed as a choice, never a requirement. Pause ~10s."
+        },
+        {
+          "atSec": 45,
+          "say": "Let us begin with the breath. Breathe in slowly through the nose for a count of four.",
+          "action": "Box-breath cadence begins: inhale 4 counts (~4s)."
+        },
+        {
+          "atSec": 53,
+          "say": "Hold, gently, for four.",
+          "action": "Hold 4 counts (~4s), soft and easy."
+        },
+        {
+          "atSec": 60,
+          "say": "And release, slowly, for four.",
+          "action": "Exhale 4 counts (~4s)."
+        },
+        {
+          "atSec": 68,
+          "say": "And rest, empty, for four.",
+          "action": "Hold-out 4 counts (~4s). One full box cycle modelled."
+        },
+        {
+          "atSec": 78,
+          "say": "Stay with that square of breath. In, hold, out, rest. I will be quiet while you find your rhythm.",
+          "action": "Hand the breath over. Then silence — let several box cycles pass unguided (~40s)."
+        },
+        {
+          "atSec": 130,
+          "say": "Let the counting soften now. Just an easy breath in, and a long breath out.",
+          "action": "Release the count; settle into natural extended exhale. Pause ~20s."
+        },
+        {
+          "atSec": 160,
+          "say": "Nothing to fix. Nothing to perform. You are allowed to simply be here.",
+          "action": "Permission-giving cue. Silence ~30s."
+        },
+        {
+          "atSec": 205,
+          "say": "We will take a short, gentle pass of awareness now. This part is completely optional.",
+          "action": "Trauma-aware framing — flag the body-awareness as opt-in before it begins."
+        },
+        {
+          "atSec": 218,
+          "say": "If turning attention toward the body feels welcome, you might notice where you meet your seat. If it does not, stay with the sound of your breath instead — that is just as complete.",
+          "action": "Offer the breath/sound alternative explicitly. No pressure either way. Pause ~12s."
+        },
+        {
+          "atSec": 245,
+          "say": "Wherever your attention rests — body, or breath, or the quiet sounds around you — let it rest lightly.",
+          "action": "Light, non-clinical attention. Silence ~25s."
+        },
+        {
+          "atSec": 285,
+          "say": "You might let the shoulders drop a little. You might let the jaw unclench. Only if it feels good.",
+          "action": "Gentle body cue, fully optional. Pause ~20s."
+        },
+        {
+          "atSec": 320,
+          "say": "There is no map to follow and nowhere you need to scan. Just this one breath, and then the next.",
+          "action": "Close the awareness pass without a full body scan. Silence ~25s."
+        },
+        {
+          "atSec": 360,
+          "say": "Now we rest. I will be mostly quiet for a while. Let the breath carry you. You do not need to do anything.",
+          "action": "Begin the long central rest — the heart of the practice."
+        },
+        {
+          "atSec": 385,
+          "say": "",
+          "action": "Silence. Breath continues on its own, slow and easy (~60s of held quiet)."
+        },
+        {
+          "atSec": 450,
+          "say": "If the mind has wandered, that is completely fine. Wandering is what minds do. Come back to the breath, kindly.",
+          "action": "One soft re-anchor. No correction, no judgement. Then return to silence."
+        },
+        {
+          "atSec": 475,
+          "say": "",
+          "action": "Extended silence — the longest stretch of the practice (~90s). Reduced-motion: avatar holds still here."
+        },
+        {
+          "atSec": 580,
+          "say": "Still resting. Still held. There is nowhere else to be.",
+          "action": "A single quiet touchpoint to reassure, not to direct. Silence ~45s."
+        },
+        {
+          "atSec": 640,
+          "say": "",
+          "action": "Silence continues (~60s). Let the rest be genuinely spacious."
+        },
+        {
+          "atSec": 720,
+          "say": "We will begin to return now, slowly. No rush. Let one breath be a little deeper.",
+          "action": "Begin the return arc. Inhale slightly fuller (~5s). Pause ~15s."
+        },
+        {
+          "atSec": 750,
+          "say": "Notice the sounds of the room coming back. The light beyond your eyelids. The weight of your body.",
+          "action": "Gentle re-orientation to the room. Pause ~20s."
+        },
+        {
+          "atSec": 785,
+          "say": "If you closed your eyes, let them open whenever you are ready. There is no hurry at all.",
+          "action": "Invite eyes open as a choice. Pause ~15s."
+        },
+        {
+          "atSec": 815,
+          "say": "Maybe a small movement — wiggle the fingers, or roll the shoulders once. However your body wants to wake.",
+          "action": "Gentle re-engagement cue, optional. Pause ~15s."
+        },
+        {
+          "atSec": 845,
+          "say": "You showed up, and you stayed. Rest is productive. So is gentleness.",
+          "action": "Affirmation in the established close register. Soft pause ~10s."
+        },
+        {
+          "atSec": 870,
+          "say": "You are exactly where you need to be. This counts. I am glad you were here.",
+          "action": "Closing affirmation. Let it land, then quiet to the end of the session."
+        },
+        {
+          "atSec": 895,
+          "say": "",
+          "action": "Final silence to 900s. Session records as a completed showing-up day."
+        }
+      ],
+      "accessibilityNotes": "Every spoken segment is also the on-screen caption text, paired to an aria-live region so screen-reader users receive the same words at the same pace; silence segments carry an empty caption so nothing is announced during held quiet. Captions never convey meaning by colour alone. Reduced-motion: the avatar should hold still or fade during the long rest (385s, 475s, 640s) — no animated breathing orb or moving figure for users with reduced-motion set; a simple static or text-only indication of breath pacing is sufficient. Opt-outs are built into the script: eyes-closed is always offered as a choice with a gaze-softening alternative; the body-awareness pass (205s–320s) is explicitly optional with a breath-or-sound alternative for anyone for whom body focus is uncomfortable; every body cue (\"let the shoulders drop\", \"wiggle the fingers\") is prefaced with \"if it feels good\" or \"only if\". The practice can be paused or exited at any moment with no penalty and still records as showing up. Audio is never the sole channel — text captions stand alone for users who run muted or are Deaf/hard of hearing.",
+      "disclaimers": [
+        "This meditation is a wellbeing and relaxation practice. It is not medical, psychological, or therapeutic advice, and it is not a substitute for care from a qualified professional.",
+        "If you are recovering from birth, surgery, or injury, follow the guidance of your own healthcare provider about rest and breath work.",
+        "Breath-holds are gentle and optional — if any breath pattern feels uncomfortable, dizzying, or anxiety-provoking, return to your own natural breathing at any time.",
+        "If this practice brings up distress, grief, or overwhelming feelings, it is okay to stop. Please consider reaching out to a trusted person, your healthcare provider, or a local mental-health support line. In an emergency, contact your local emergency services."
+      ]
+    },
+    {
+      "id": "med-core-20",
+      "minutes": 20,
+      "theme": "core breath + body awareness + rest",
+      "kind": "core_scaling",
+      "intent": "The flagship core practice scaled to 20 minutes, following the arrive / settle / rest / return arc. It opens by helping the listener land out of a busy day, settles the nervous system with slow rib-and-belly breath that is gentle on the pelvic floor, offers an explicitly optional, trauma-aware body awareness pass with a breath-or-sound alternative, holds a long stretch of genuine rest with minimal instruction, and returns the listener softly while affirming that simply showing up counted. Vera voice throughout: warm, body-neutral, present-tense, permission-giving, never shaming. Completing this grows the garden +1 exactly like movement, recorded through the same recordSession path so a meditation day is a showing-up day.",
+      "scaleNote": "Relative to the shorter siblings (med-core-7/15), instruction DENSITY stays flat — the same arrive/settle/rest/return beats and roughly the same number of spoken lines appear. What lengthens is SILENCE, not talking: the settling phase, the breath-dwell between cues, the optional body-awareness pass, and above all the central rest are each extended. The 20-minute version adds a fuller, never-rushed optional body pass (absent or very brief in the 7) and a long, sustained rest block (roughly 7 to 9 minutes here versus under a minute in the 7). Spoken lines are spaced further apart; gaps between cues grow from a few seconds toward 30 to 90 seconds of held silence. The closing affirmation arc is identical in wording and feel across all lengths — only its arrival is delayed.",
+      "script": [
+        {
+          "atSec": 0,
+          "say": "Welcome in. Find a comfortable place to settle, sitting or lying down, whatever your body would like right now.",
+          "action": "Soft, unhurried spoken pace. No breath count yet — let the listener arrange themselves."
+        },
+        {
+          "atSec": 14,
+          "say": "There is nothing to fix here and nothing to get right. This is just twenty minutes that belong to you.",
+          "action": "Warm, level tone. Permission-giving."
+        },
+        {
+          "atSec": 30,
+          "say": "Let your eyes close if that feels okay. If you would rather keep them open, simply soften your gaze toward the floor.",
+          "action": "Offer the choice plainly; pause after."
+        },
+        {
+          "atSec": 45,
+          "say": "Let the day land for a moment. You do not have to carry it right now.",
+          "action": "Silence begins to open up after this line — about 20 seconds of quiet."
+        },
+        {
+          "atSec": 70,
+          "say": "Notice the surface holding you. The chair, the floor, the bed. It is doing the work of holding you, so you can stop holding yourself up.",
+          "action": "Gentle body cue: invite weight to settle downward. Pause ~20s."
+        },
+        {
+          "atSec": 100,
+          "say": "Now we will let the breath grow a little slower. No forcing — just an invitation.",
+          "action": "Begin settle phase."
+        },
+        {
+          "atSec": 115,
+          "say": "Breathe in, and feel the ribs widen all around, like a gentle umbrella opening.",
+          "action": "Inhale cue. Pacing: slow inhale ~4 counts."
+        },
+        {
+          "atSec": 124,
+          "say": "And breathe out, slow and easy, longer than the breath in.",
+          "action": "Exhale cue ~6 counts. No gripping, no squeezing."
+        },
+        {
+          "atSec": 134,
+          "say": "Again, breathe in — ribs and belly soften wide.",
+          "action": "Inhale ~4."
+        },
+        {
+          "atSec": 143,
+          "say": "And let it go. Nothing to hold.",
+          "action": "Exhale ~6. Then ~25s silence to let the breath self-pace."
+        },
+        {
+          "atSec": 175,
+          "say": "There is no perfect breath. If counting helps, breathe in for four, and out for six. If counting is a bother, just let the breath be long and kind.",
+          "action": "Offer count as optional. Pause ~30s."
+        },
+        {
+          "atSec": 220,
+          "say": "Let your face soften. The jaw, the space between the brows, the small muscles around the eyes.",
+          "action": "Gentle body cue, top-down, low pressure. Pause ~20s."
+        },
+        {
+          "atSec": 250,
+          "say": "And let your shoulders drop away from your ears. You can let them be heavy.",
+          "action": "Pause ~25s."
+        },
+        {
+          "atSec": 290,
+          "say": "Stay with the slow breath here for a little while. I will be quiet, and you can simply let it carry you.",
+          "action": "Hand off to silence. Sustained quiet ~50s."
+        },
+        {
+          "atSec": 345,
+          "say": "If your mind has wandered, that is completely fine. Minds wander. Just come back to the next breath, with no scolding.",
+          "action": "Self-compassion beat. Pause ~30s."
+        },
+        {
+          "atSec": 390,
+          "say": "In a moment I will offer some gentle attention to the body. This part is always optional.",
+          "action": "Set up the opt-in body pass clearly."
+        },
+        {
+          "atSec": 405,
+          "say": "If noticing the body feels welcome today, let your attention rest softly wherever I mention. If it does not, you are invited to keep your attention on your breath, or on the sounds in the room. Either choice is the practice.",
+          "action": "Trauma-aware opt-out stated explicitly: breath or sound as the non-body alternative."
+        },
+        {
+          "atSec": 430,
+          "say": "We are not searching for anything to change. We are only saying a quiet hello, then moving on.",
+          "action": "Frame as light, non-diagnostic. Pause ~15s."
+        },
+        {
+          "atSec": 455,
+          "say": "If you are with the body — notice your feet, and the lower legs. You might let them feel heavy and at rest.",
+          "action": "Body cue. Those opting out stay with breath or sound. Pause ~30s."
+        },
+        {
+          "atSec": 500,
+          "say": "Now the hips, and the long muscles of the legs. Nowhere to be, nothing to tense. Or stay with your breath.",
+          "action": "Pause ~30s. Keep the alternative live."
+        },
+        {
+          "atSec": 545,
+          "say": "The belly and the lower back. Let the breath move here all on its own, soft and unhurried.",
+          "action": "Body-neutral, no pelvic gripping language. Pause ~30s."
+        },
+        {
+          "atSec": 590,
+          "say": "The chest, the shoulders, the arms, all the way to the hands. You might let the hands be open and easy.",
+          "action": "Pause ~30s."
+        },
+        {
+          "atSec": 635,
+          "say": "And the neck, the face, the whole head, resting. A quiet hello to all of it. Or simply, the next breath.",
+          "action": "Close the body pass. Pause ~25s."
+        },
+        {
+          "atSec": 680,
+          "say": "However you spent that — body, breath, or sound — it was exactly right.",
+          "action": "Affirm both paths equally."
+        },
+        {
+          "atSec": 700,
+          "say": "Now we arrive at rest. For the next several minutes, there is nothing to do at all.",
+          "action": "Begin the long rest phase. This is the heart of the 20-minute scaling."
+        },
+        {
+          "atSec": 715,
+          "say": "You can let the breath go back to its own rhythm. You do not need to deepen it or count it. Just let it breathe you.",
+          "action": "Hand the breath back to autopilot. Then extended silence begins."
+        },
+        {
+          "atSec": 745,
+          "say": "I will be quiet now. Rest here.",
+          "action": "Long sustained silence. ~90s of quiet."
+        },
+        {
+          "atSec": 840,
+          "say": "Still here, still resting. Nothing is required of you.",
+          "action": "Single soft anchor in the silence. ~90s more of quiet follows."
+        },
+        {
+          "atSec": 935,
+          "say": "If thoughts have come and gone, that is just the mind doing its thing. You are still resting underneath them.",
+          "action": "Gentle reassurance, then return to silence. ~85s quiet."
+        },
+        {
+          "atSec": 1025,
+          "say": "A little longer. Let yourself be held by the quiet.",
+          "action": "Final long rest stretch. ~75s of silence."
+        },
+        {
+          "atSec": 1110,
+          "say": "We are going to begin coming back now, slowly, in your own time. No need to rush.",
+          "action": "Begin the return phase gently."
+        },
+        {
+          "atSec": 1125,
+          "say": "Let the breath grow just a touch fuller. Maybe a small movement returns — your fingers, your toes.",
+          "action": "Gentle reawakening body cue, fully optional. Pause ~15s."
+        },
+        {
+          "atSec": 1150,
+          "say": "When you are ready, and only then, let your eyes open, or lift your gaze.",
+          "action": "Return on the listener's timing. Pause ~12s."
+        },
+        {
+          "atSec": 1168,
+          "say": "If it feels welcome, rest a hand on your heart, or anywhere that feels kind, and breathe slow and easy.",
+          "action": "Optional close ritual echoing kind-close: hands on heart, body-neutral, opt-in."
+        },
+        {
+          "atSec": 1182,
+          "say": "You gave yourself this time, and that counts as much as any movement. You really did this.",
+          "action": "Affirmation in Vera voice; this is a showing-up day. Garden grows +1."
+        },
+        {
+          "atSec": 1194,
+          "say": "Carry a little of this quiet with you. It is yours whenever you need it. Take care.",
+          "action": "Soft farewell. Let the final seconds rest in silence to 1200."
+        }
+      ],
+      "accessibilityNotes": "Every spoken segment is also the on-screen caption, paired one-to-one with the audio via aria-live=\"polite\" so a screen-reader user receives the same words at the same pacing; captions persist on screen through the silence that follows each line rather than clearing immediately, so a deaf or hard-of-hearing user is not left staring at a blank screen during the long rest blocks. Reduced-motion: this practice has no required animation; if a calming visual or breath-orb is shown it must honor prefers-reduced-motion and the existing reduced-motion JS, degrading to a static caption card — the avatar/pose layer is not used here and its absence must not be presented as an error. Opt-outs are built into the script itself: eyes may stay open, lying down or sitting are equal, the entire body-awareness pass (atSec 390 to 680) is explicitly optional with a breath-or-sound alternative for trauma-aware reasons, all body cues are invitations (\"you might\", \"if it feels welcome\"), and the final hand-on-heart gesture is optional. The listener may pause, skip, or exit at any moment with no loss — consistent with every move being skippable elsewhere in the app. No countdown timer or progress pressure should be voiced; timing is internal. Silences are intentional and should never be filled with music loud enough to mask the captions; any background audio must respect the existing musicVol/sfxOn/musicOn settings and be independently mutable.",
+      "disclaimers": [
+        "This is a wellbeing and relaxation practice, not medical, psychological, or therapeutic advice, and it is not a substitute for care from a qualified professional.",
+        "If you are recovering from birth, surgery, or any health condition, follow the guidance of your own clinician about whether rest and gentle breathing are right for you today.",
+        "Meditation can sometimes surface strong or uncomfortable feelings. If that happens, you are free to stop at any time, open your eyes, move, or simply step away — ending early is always allowed and still counts.",
+        "Attention to the body is offered as fully optional, with breath or sound as an equal alternative, because body focus is not comfortable for everyone; please choose whatever feels safe for you.",
+        "If you are experiencing significant distress, persistent low mood, intrusive thoughts, or thoughts of harming yourself, this practice is not the right support — please reach out to a doctor, a mental-health professional, or a local crisis or emergency service."
+      ]
+    },
+    {
+      "id": "med-core-30",
+      "minutes": 30,
+      "theme": "core full: settle, breath, body, rest",
+      "kind": "core_scaling",
+      "intent": "The full-length expression of the core \"arrive / settle / rest / return\" arc. The same instruction beats as the shorter siblings, but with much longer, held silences so the practitioner can actually settle, soften, and rest rather than being talked through every moment. Body awareness is offered as a guided invitation that is explicitly optional, with a breath-or-sound alternative available at every step for anyone for whom turning attention inward to the body does not feel safe today. The aim is rest and showing up, never achievement.",
+      "scaleNote": "Versus the shorter siblings (med-core-7/15/20), the instruction density stays flat — the same arrive/settle/body/rest/return beats, in the same warm cadence. What lengthens is silence, not talk. The arrival settles for longer before the first breath cue; the settling phase holds more wordless breaths; the body section dwells longer in each region (or in the breath/sound alternative) with unhurried pauses between prompts; and above all the open rest in the middle expands from under a minute in the short versions to roughly six unbroken minutes here. Returning is also gentler and slower, never abrupt. If this were trimmed to 15 minutes, you would shorten the silences and the central rest first, keeping every spoken beat intact.",
+      "script": [
+        {
+          "atSec": 0,
+          "say": "Welcome. There is nothing to get right here. You showed up, and that is the whole practice.",
+          "action": "Speak slowly and warmly. No breath instruction yet."
+        },
+        {
+          "atSec": 14,
+          "say": "Find a position that feels kind for your body. Seated, lying down, leaning on something. Anything that lets you be supported.",
+          "action": "Gentle body cue: settle into a supported position. Allow time to adjust."
+        },
+        {
+          "atSec": 30,
+          "say": "You can close your eyes, or soften your gaze toward the floor. Whatever feels safe for you right now.",
+          "action": "Permission-giving. Eyes may stay open."
+        },
+        {
+          "atSec": 44,
+          "say": "We will take the next half hour slowly. Most of it is quiet. The quiet is the practice, not a gap in it.",
+          "action": "Set expectation of silence."
+        },
+        {
+          "atSec": 60,
+          "say": "Let the surface beneath you hold your weight. You do not have to hold yourself up for these few minutes.",
+          "action": "Invite the body to be supported."
+        },
+        {
+          "atSec": 78,
+          "say": "",
+          "action": "Silence. Let arrival land. About 40 seconds."
+        },
+        {
+          "atSec": 120,
+          "say": "When you are ready, let your breath arrive. Not changing it. Just noticing the breath that is already here.",
+          "action": "Breath awareness, no pacing yet."
+        },
+        {
+          "atSec": 138,
+          "say": "",
+          "action": "Silence. Natural breathing. About 40 seconds."
+        },
+        {
+          "atSec": 180,
+          "say": "Now, if it feels good, let one breath grow a little slower. In through the nose, and a long, easy breath out.",
+          "action": "First paced breath. In about four seconds, out about six."
+        },
+        {
+          "atSec": 198,
+          "say": "Let your breath set the pace, not the clock. There is no rush in this room.",
+          "action": "Slow, even breathing continues."
+        },
+        {
+          "atSec": 214,
+          "say": "",
+          "action": "Silence. Several slow breaths. About 50 seconds."
+        },
+        {
+          "atSec": 270,
+          "say": "If your mind has wandered already, that is completely normal. Wherever it went, just come back to the breath. No scolding needed.",
+          "action": "Normalize wandering. Warm tone."
+        },
+        {
+          "atSec": 288,
+          "say": "",
+          "action": "Silence. Slow breathing. About 55 seconds."
+        },
+        {
+          "atSec": 348,
+          "say": "Notice the breath out a little more than the breath in. The exhale is the part that helps you settle.",
+          "action": "Lengthen the exhale gently. In about four seconds, out about seven."
+        },
+        {
+          "atSec": 366,
+          "say": "",
+          "action": "Silence. Long exhales. About 70 seconds."
+        },
+        {
+          "atSec": 440,
+          "say": "Good. You can let the breath go back to its own rhythm now. Nothing to manage.",
+          "action": "Release breath control. Return to natural breath."
+        },
+        {
+          "atSec": 456,
+          "say": "",
+          "action": "Silence. Settling. About 60 seconds."
+        },
+        {
+          "atSec": 520,
+          "say": "In a moment I will offer a gentle tour through the body. This part is optional.",
+          "action": "Introduce the body section. Signal choice."
+        },
+        {
+          "atSec": 536,
+          "say": "If turning attention into the body does not feel good today, you are welcome to stay with the breath, or to rest your attention on any sound around you instead. That is a full and complete practice too.",
+          "action": "Offer the non-body alternative clearly: breath or sound."
+        },
+        {
+          "atSec": 558,
+          "say": "Whichever you choose, you are doing it right. Let us begin softly, at the feet.",
+          "action": "Begin body section, or continue breath/sound."
+        },
+        {
+          "atSec": 576,
+          "say": "Bring a little attention down to your feet. Not to change anything. Just to notice they are there.",
+          "action": "Body cue: feet. Or stay with breath/sound."
+        },
+        {
+          "atSec": 592,
+          "say": "",
+          "action": "Silence. Resting attention at the feet. About 35 seconds."
+        },
+        {
+          "atSec": 632,
+          "say": "Let that attention drift up through the legs. Heavy, supported, resting.",
+          "action": "Body cue: legs. Unhurried."
+        },
+        {
+          "atSec": 650,
+          "say": "",
+          "action": "Silence. About 35 seconds."
+        },
+        {
+          "atSec": 690,
+          "say": "Notice the hips and the low belly. This part of you carried so much. You can let it be soft now.",
+          "action": "Body cue: hips and belly. Body-neutral, never shaming."
+        },
+        {
+          "atSec": 708,
+          "say": "",
+          "action": "Silence. About 40 seconds."
+        },
+        {
+          "atSec": 752,
+          "say": "Let your attention float up to the chest and the back. Feel them rise and fall with the breath, all on their own.",
+          "action": "Body cue: chest and back, with breath."
+        },
+        {
+          "atSec": 770,
+          "say": "",
+          "action": "Silence. About 40 seconds."
+        },
+        {
+          "atSec": 814,
+          "say": "Soften the shoulders. Let them drop away from your ears. Soften the jaw.",
+          "action": "Body cue: shoulders and jaw. Echo of the in-app cue."
+        },
+        {
+          "atSec": 830,
+          "say": "",
+          "action": "Silence. About 35 seconds."
+        },
+        {
+          "atSec": 870,
+          "say": "And the whole face. The space between your eyebrows. Let it all be smooth and unbothered.",
+          "action": "Body cue: face. Release."
+        },
+        {
+          "atSec": 888,
+          "say": "",
+          "action": "Silence. About 40 seconds."
+        },
+        {
+          "atSec": 930,
+          "say": "Now let go of any one part. Sense the whole body at once, resting, breathing, held.",
+          "action": "Whole-body awareness, or whole field of breath/sound."
+        },
+        {
+          "atSec": 950,
+          "say": "",
+          "action": "Silence. Whole-body rest. About 50 seconds."
+        },
+        {
+          "atSec": 1010,
+          "say": "From here, we simply rest. There is nothing to do for the next while. You can let go of even the instructions.",
+          "action": "Open the central rest. This is the heart of the practice."
+        },
+        {
+          "atSec": 1028,
+          "say": "If your mind gets busy, that is okay. You do not have to follow it. The breath is always here to come back to.",
+          "action": "Permission to wander and return. Then silence begins."
+        },
+        {
+          "atSec": 1048,
+          "say": "",
+          "action": "Open rest. Long unbroken silence begins. About 2.5 minutes."
+        },
+        {
+          "atSec": 1200,
+          "say": "Still resting. No need to do anything with this quiet. Just let it hold you.",
+          "action": "One soft touchpoint mid-rest. Very gentle, then silence resumes."
+        },
+        {
+          "atSec": 1216,
+          "say": "",
+          "action": "Open rest continues. Long unbroken silence. About 3 minutes."
+        },
+        {
+          "atSec": 1400,
+          "say": "We are going to begin returning, slowly. There is no hurry. Let the room come back to you in its own time.",
+          "action": "Begin the return. Soft, gradual."
+        },
+        {
+          "atSec": 1418,
+          "say": "",
+          "action": "Silence. Resting before re-entry. About 40 seconds."
+        },
+        {
+          "atSec": 1460,
+          "say": "Notice your breath again. A little deeper now, if that feels right. One easy breath in, one slow breath out.",
+          "action": "Re-engage breath. Gentle deepening."
+        },
+        {
+          "atSec": 1478,
+          "say": "",
+          "action": "Silence. A few breaths. About 35 seconds."
+        },
+        {
+          "atSec": 1515,
+          "say": "Let some gentle movement come back. Maybe your fingers, maybe a slow roll of the ankles. Whatever wants to wake.",
+          "action": "Gentle body cue: small movements. Optional."
+        },
+        {
+          "atSec": 1535,
+          "say": "",
+          "action": "Silence. Small movements. About 35 seconds."
+        },
+        {
+          "atSec": 1575,
+          "say": "You might stretch in any way that feels good, or just stay still a moment longer. Both are welcome.",
+          "action": "Optional stretch. No pressure."
+        },
+        {
+          "atSec": 1595,
+          "say": "",
+          "action": "Silence. About 30 seconds."
+        },
+        {
+          "atSec": 1630,
+          "say": "When you are ready, let your eyes open, softly. Take in the light in the room.",
+          "action": "Eyes open, if they were closed. Unhurried."
+        },
+        {
+          "atSec": 1648,
+          "say": "",
+          "action": "Silence. Re-orienting. About 25 seconds."
+        },
+        {
+          "atSec": 1680,
+          "say": "You gave yourself this time. That matters, and it counts, exactly as it is.",
+          "action": "Affirmation. Honor showing up, never intensity."
+        },
+        {
+          "atSec": 1700,
+          "say": "You are exactly where you need to be.",
+          "action": "Signature affirmation. Slow."
+        },
+        {
+          "atSec": 1720,
+          "say": "",
+          "action": "Silence. Let the affirmation settle. About 35 seconds."
+        },
+        {
+          "atSec": 1760,
+          "say": "The practice is finished, but the calm comes with you. Carry one easy breath into the rest of your day.",
+          "action": "Close. Warm, present-tense."
+        },
+        {
+          "atSec": 1782,
+          "say": "Thank you for being here. See you soon.",
+          "action": "Final words. Let silence carry to the end at 1800 seconds."
+        }
+      ],
+      "accessibilityNotes": "Every spoken segment is also the on-screen caption, paired one-to-one with an aria-live region so a screen reader announces each instruction as it appears; silence segments carry an empty caption so nothing stale is read aloud during the quiet. No instruction depends on sight: every close-your-eyes or soften-your-gaze cue and every eyes-open cue is offered as a choice, never assumed, so practitioners who keep their eyes open or who are blind or low-vision are fully included. The practice has no visual or animated dependency — it works as audio plus captions alone, satisfies reduced-motion preferences with no avatar or moving graphics required, and the few movement cues (fingers, ankles, stretch) are always optional. Opt-outs are built into the content itself: the entire body section can be skipped in favor of resting on the breath or on ambient sound, and any single body region can be passed over. As with every move in the app, the session is fully skippable and pausable at any moment. Timings are deliberately generous; a user-controlled pace or pause should never be overridden by the clock.",
+      "disclaimers": [
+        "This meditation is for general relaxation and wellbeing. It is not medical, psychological, or therapeutic advice, and it is not a treatment for any condition.",
+        "If you are postpartum or recovering from pregnancy, birth, or surgery, follow the guidance of your own healthcare provider about what rest, breath, and movement are right for you.",
+        "If at any point you feel distressed, panicked, unsafe, or overwhelmed, you are encouraged to stop, open your eyes, and return your attention to the room around you. There is never any pressure to continue.",
+        "Bringing attention to the body can sometimes surface difficult feelings. The body section is fully optional, and a breath-only or sound-only alternative is offered for this reason. Please use whichever feels safe for you.",
+        "This practice is not a substitute for professional care. If you are experiencing persistent low mood, anxiety, intrusive thoughts, or thoughts of harming yourself, please reach out to a qualified mental health professional, your doctor, or a local crisis or emergency service."
+      ]
+    },
+    {
+      "id": "med-core-45",
+      "minutes": 45,
+      "theme": "core extended with longer settling + rest",
+      "kind": "core_scaling",
+      "intent": "The default Meditation tier at the 45-minute length: a single arrive / settle / rest / return arc that gives a postpartum-aware woman a long, unhurried stretch of stillness. Instruction stays sparse and warm; the time is filled with rest, not more talking. The optional body-awareness pass is framed permission-first with a breath or sound alternative, so a person who does not want to focus on the body can stay regulated and included.",
+      "scaleNote": "Same four-phase arc and the same spoken instructions as the shorter core siblings (med-core-7/15/20/30); nothing is added to the script except silence. Versus med-core-30, every dwell is lengthened: arrival breath settling, the optional body-awareness/breath pass, the long open rest, and the return all hold longer between cues. The deep middle rest (roughly 1200s to 2040s) is the single largest expansion — an unbroken stretch of quiet with only occasional, soft anchoring offered. Instruction density stays flat: the count of spoken cues barely rises from the 30-minute version, so the extra fifteen minutes are experienced as more rest, never more talk.",
+      "script": [
+        {
+          "atSec": 0,
+          "say": "Welcome. There is nothing to fix and nothing to achieve in the next forty-five minutes. This is simply time to be here.",
+          "action": "Spoken slowly, warm and low. Let a long pause follow before the next line."
+        },
+        {
+          "atSec": 18,
+          "say": "Find a position that your body can keep for a while. Seated, lying down, propped on cushions, knees bent. Choose comfort over correctness.",
+          "action": "Allow about 25 seconds for the listener to settle and adjust."
+        },
+        {
+          "atSec": 50,
+          "say": "If your eyes would like to close, let them. If you prefer them open, soften your gaze toward the floor.",
+          "action": "Pause; no rush."
+        },
+        {
+          "atSec": 68,
+          "say": "We begin by arriving. Take one slow breath in through the nose, and a longer breath out through the mouth.",
+          "action": "Breath cue: inhale ~4s, exhale ~6s. Pace your voice to one full breath."
+        },
+        {
+          "atSec": 84,
+          "say": "And again, an easy breath in, and a soft breath out, letting the day land for a moment.",
+          "action": "Breath cue: one more slow inhale and longer exhale. Then silence."
+        },
+        {
+          "atSec": 102,
+          "say": "Now let your breath return to its own rhythm. You do not need to manage it. Just notice it moving.",
+          "action": "Silence for ~40 seconds. Let the listener simply breathe."
+        },
+        {
+          "atSec": 150,
+          "say": "You are exactly where you need to be. There is nowhere else you have to go right now.",
+          "action": "Spoken once, gently, then a long pause."
+        },
+        {
+          "atSec": 175,
+          "say": "Feel the support underneath you. The floor, the cushion, the chair, holding your full weight so you do not have to.",
+          "action": "Silence ~45 seconds. Invite the body to lean into support."
+        },
+        {
+          "atSec": 240,
+          "say": "Wherever your mind has wandered, that is completely normal. Each time you notice, you can come gently back to the breath.",
+          "action": "Soft, reassuring. Then silence ~50 seconds."
+        },
+        {
+          "atSec": 300,
+          "say": "We are settling now. With each breath out, let a little more of your weight soften downward.",
+          "action": "Breath-led; emphasize the exhale. Pause between sentences."
+        },
+        {
+          "atSec": 322,
+          "say": "Soften your jaw. Let your tongue rest low in your mouth. Let the space between your eyebrows be smooth.",
+          "action": "Gentle body cue, optional to follow. Long pause after."
+        },
+        {
+          "atSec": 360,
+          "say": "Let your shoulders drop away from your ears. Let your hands be heavy and open.",
+          "action": "Silence ~50 seconds."
+        },
+        {
+          "atSec": 420,
+          "say": "There is no right way to feel today. Whatever is here, you can let it be here.",
+          "action": "Silence ~60 seconds. Allow stillness to grow."
+        },
+        {
+          "atSec": 500,
+          "say": "In a moment I will offer a gentle pass of awareness through the body. This is completely optional.",
+          "action": "Permission-first framing. Slight pause."
+        },
+        {
+          "atSec": 520,
+          "say": "If noticing the body feels uneasy today, you are welcome to skip it entirely. Instead, simply rest your attention on the sound around you, or on the feeling of the breath at the nose.",
+          "action": "Trauma-aware opt-out. Offer the breath or sound alternative clearly. Pause."
+        },
+        {
+          "atSec": 552,
+          "say": "Both choices are equally good. This is your practice. Stay with whatever keeps you feeling steady.",
+          "action": "Reassuring. Long pause ~30 seconds before beginning the pass."
+        },
+        {
+          "atSec": 600,
+          "say": "If you have chosen the body, bring a soft, curious attention to your feet. Not judging them, just noticing whatever is there.",
+          "action": "Body cue, optional. Those who opted out rest on breath or sound throughout. Silence ~50 seconds."
+        },
+        {
+          "atSec": 670,
+          "say": "Let your awareness drift slowly up through the legs and hips. There is nothing to change. You are only visiting.",
+          "action": "Slow drift. Silence ~55 seconds."
+        },
+        {
+          "atSec": 745,
+          "say": "Notice the belly and the back, soft and rising with the breath. This body has carried so much. You can meet it with kindness.",
+          "action": "Body-neutral, never shaming. Pause; no instruction to engage or tense. Silence ~55 seconds."
+        },
+        {
+          "atSec": 820,
+          "say": "Let attention float up to the chest, the shoulders, the arms, the hands. Letting each part be just as it is.",
+          "action": "Silence ~50 seconds."
+        },
+        {
+          "atSec": 890,
+          "say": "And up to the neck and the face, and the very top of the head. The whole body, simply resting and breathing.",
+          "action": "Close the optional pass gently. Long pause ~40 seconds."
+        },
+        {
+          "atSec": 960,
+          "say": "Now we let go of any focus on parts. For a while, there is nothing to do at all.",
+          "action": "Transition into the long rest. Slow, quiet voice."
+        },
+        {
+          "atSec": 985,
+          "say": "Let the breath move on its own. Let thoughts come and go like weather. You can simply rest here.",
+          "action": "Silence begins. Hold ~75 seconds of quiet."
+        },
+        {
+          "atSec": 1080,
+          "say": "If it helps to have something to return to, the breath is always here, gentle and steady.",
+          "action": "Light anchor only. Silence ~80 seconds."
+        },
+        {
+          "atSec": 1200,
+          "say": "This is the deep rest. You may stay with the breath, or with the quiet, or simply drift. All of it counts as showing up.",
+          "action": "Enter the longest stretch. After this line, hold a very long silence (~120 seconds)."
+        },
+        {
+          "atSec": 1340,
+          "say": "There is nothing to hold onto and nothing to push away. Just this breath, and then the next.",
+          "action": "One soft anchor. Then extended silence ~130 seconds."
+        },
+        {
+          "atSec": 1490,
+          "say": "If your mind has been busy, that is alright. Resting the body still rests you, even when the mind keeps moving.",
+          "action": "Reassurance, no demand. Long silence ~130 seconds."
+        },
+        {
+          "atSec": 1640,
+          "say": "Each breath out, a little more ease. Each breath in, quietly held by the world around you.",
+          "action": "Breath-led, sparse. Extended silence ~130 seconds."
+        },
+        {
+          "atSec": 1790,
+          "say": "You do not have to be finished to be enough. You are allowed to take up this time and space.",
+          "action": "Affirmation drawn from Vera's voice. Long silence ~120 seconds."
+        },
+        {
+          "atSec": 1920,
+          "say": "Stay here in the quiet. We have a little while longer to simply rest.",
+          "action": "Minimal. Final long silence of the rest phase ~120 seconds."
+        },
+        {
+          "atSec": 2040,
+          "say": "We are going to begin making our way back, slowly and gently. There is no hurry.",
+          "action": "Begin the return. Voice warms slightly and grows a touch more present. Pause."
+        },
+        {
+          "atSec": 2070,
+          "say": "Let your breath deepen a little, just by a fraction. A slightly fuller breath in, a slow breath out.",
+          "action": "Breath cue: gently deepen. One slow breath. Pause."
+        },
+        {
+          "atSec": 2110,
+          "say": "Notice the sounds in the room again. The space around you, holding you as it has the whole time.",
+          "action": "Re-orient to surroundings. Silence ~45 seconds."
+        },
+        {
+          "atSec": 2175,
+          "say": "If it feels good, let a little movement return. Wiggle your fingers, your toes. A small stretch wherever you would like one.",
+          "action": "Gentle body cue, optional. Reduced-motion friendly: all movement is invited, never required. Pause ~40 seconds."
+        },
+        {
+          "atSec": 2250,
+          "say": "Take a moment to notice how you feel now, compared to when you arrived. That difference, whatever it is, is yours.",
+          "action": "Reflective. Long pause ~45 seconds."
+        },
+        {
+          "atSec": 2330,
+          "say": "There is no grade for this. Whether your mind was calm or busy, you stayed, and you rested. That is the whole practice.",
+          "action": "Affirming, anti-perfectionist. Pause."
+        },
+        {
+          "atSec": 2370,
+          "say": "Caring for yourself this way teaches everyone around you how it is done.",
+          "action": "Affirmation in Vera's voice. Pause ~40 seconds."
+        },
+        {
+          "atSec": 2450,
+          "say": "Begin to let your eyes open if they were closed, in your own time. Let the light in slowly.",
+          "action": "Re-entry. Gentle, unhurried. Pause ~40 seconds."
+        },
+        {
+          "atSec": 2520,
+          "say": "When you are ready, you can return to the rest of your day, carrying a little of this quiet with you.",
+          "action": "Soft close approaching. Pause."
+        },
+        {
+          "atSec": 2560,
+          "say": "You showed up for yourself today, and showing up is strength. Thank you for being here.",
+          "action": "Closing affirmation. Warm, low. Pause."
+        },
+        {
+          "atSec": 2600,
+          "say": "Rest as long as you like. The practice is complete whenever you are ready.",
+          "action": "Final words. Then quiet to the end; no further prompting through 2700s."
+        }
+      ],
+      "accessibilityNotes": "Every spoken line is also the on-screen caption and is delivered through the existing aria-live caption channel, so a screen-reader or captions-only user receives the full guidance without audio; timestamps let captions advance in sync. Reduced-motion: no visual motion is required at any point, and the only movement cues (settling adjustments at 18s, the optional body pass, finger/toe wiggles at 2175s) are explicitly invited rather than instructed and can be ignored with no loss. Opt-outs: the body-awareness pass (600s to 890s) is introduced permission-first at 500s with a clear non-body alternative — resting attention on ambient sound or on the breath at the nose — for trauma-aware reasons; the listener is told both choices are equally valid. All eye-closing is optional with an open-eyes, soft-gaze alternative. The long silences are intended rest, not gaps to fill; players should not auto-skip them, and a visible \"resting\" caption state is recommended so silence does not read as a stalled or broken session. Any single segment is skippable and the practice may be ended at any time with no penalty, consistent with the app's progression model.",
+      "disclaimers": [
+        "This meditation is for general relaxation and wellbeing. It is not medical, psychological, or therapeutic advice, and it is not a substitute for care from a qualified professional.",
+        "If you are recently postpartum or recovering from any medical event, follow the guidance of your own healthcare provider regarding rest, movement, and breathwork.",
+        "If at any point you feel distressed, overwhelmed, panicked, or unsafe, you are encouraged to stop, open your eyes, and reach out to a trusted person or a qualified mental-health professional. In an emergency, contact your local emergency services or a crisis support line.",
+        "If focusing on the body or the breath increases anxiety, please use the offered sound-based alternative or simply pause the practice. Nothing here is required."
+      ]
+    },
+    {
+      "id": "med-core-60",
+      "minutes": 60,
+      "theme": "core deep: full arc with generous silence",
+      "kind": "core_scaling",
+      "intent": "A 60-minute core meditation following the arrive / settle / rest / return arc. The longest sibling in the med-core family: instruction density stays flat while silences lengthen generously, opening a long, unhurried rest phase. Body-neutral, permission-giving, trauma-aware. Suitable for postpartum women who may want a long restful practice without any pressure to feel a particular way.",
+      "scaleNote": "Same four-phase arc and the same count of spoken instructions as the shorter siblings (med-core-7 through med-core-45) — nothing new is said. What lengthens is the SILENCE between and within phases, not the talking. Versus med-core-45, the four dwell points each grow: the arrival settle, the breath-following dwell, the open awareness, and especially the central rest phase (here a single unbroken stretch of roughly 18 minutes of quiet from ~33:00 to ~51:00, against ~10 minutes in the 45). Spoken text is near-identical in wording to the 45; only timestamps stretch. Do not add more instruction to fill the time — the length IS the practice.",
+      "script": [
+        {
+          "atSec": 0,
+          "say": "Welcome. This is a long, slow hour, and there is nothing to get right. Settle into whatever position can hold you comfortably for a while — seated, or lying down, fully supported.",
+          "action": "Speak slowly. Allow a few seconds of quiet after this line before continuing."
+        },
+        {
+          "atSec": 22,
+          "say": "Let your eyes close if that feels okay, or rest your gaze somewhere soft and still.",
+          "action": "Pause. Let the listener arrive in their own time."
+        },
+        {
+          "atSec": 40,
+          "say": "We will arrive, then settle, then rest for a good long while, then gently return. You do not have to track any of that. I will be here.",
+          "action": "Warm, unhurried tone."
+        },
+        {
+          "atSec": 62,
+          "say": "To begin, let the weight of your body be heavy. Let the surface beneath you take it. There is nothing to hold up right now.",
+          "action": "Gentle body cue: invite releasing into support."
+        },
+        {
+          "atSec": 85,
+          "say": "And take one slow breath in through the nose... and a long, soft breath out.",
+          "action": "Breath pacing: inhale ~4s, exhale ~6s."
+        },
+        {
+          "atSec": 100,
+          "say": "Once more, in your own time. In... and out, letting the day land.",
+          "action": "Breath pacing: one slow round, then silence."
+        },
+        {
+          "atSec": 118,
+          "say": "Now let your breath go back to its own rhythm. You do not need to manage it. We will simply rest here together for a few breaths.",
+          "action": "Silence ~70s. Let the breath be untouched."
+        },
+        {
+          "atSec": 190,
+          "say": "If thoughts are busy, that is completely normal, especially today. You are not doing this wrong. We are only making a little room.",
+          "action": "Reassuring. Then silence ~50s."
+        },
+        {
+          "atSec": 250,
+          "say": "Let us settle a little deeper. Notice three places where your body meets something — the floor, a cushion, the chair. Three points of contact, holding you.",
+          "action": "Gentle body cue: contact and support."
+        },
+        {
+          "atSec": 278,
+          "say": "Feel how each one supports you without any effort from you. You are held.",
+          "action": "Pause. Silence ~60s."
+        },
+        {
+          "atSec": 350,
+          "say": "Soften the place between your eyebrows. Let your jaw be loose, teeth slightly apart.",
+          "action": "Gentle body cue. Pause between the two."
+        },
+        {
+          "atSec": 372,
+          "say": "Let your shoulders melt away from your ears. Nothing to brace against here.",
+          "action": "Gentle body cue. Then silence ~70s."
+        },
+        {
+          "atSec": 450,
+          "say": "Now, if it feels available, bring a little attention to your breath — not changing it, just noticing the breath that is already happening.",
+          "action": "Invite gentle attention to natural breath."
+        },
+        {
+          "atSec": 475,
+          "say": "Maybe you feel it at the nostrils, cool coming in, warmer going out. Maybe in the chest, or the belly rising and falling. Anywhere is fine.",
+          "action": "Offer multiple anchors, no single right answer."
+        },
+        {
+          "atSec": 500,
+          "say": "We will rest our attention there for a while now. When the mind wanders off — and it will — that is the practice. You simply notice, and come back. Kindly, no scolding.",
+          "action": "Then long silence for breath-following: ~150s."
+        },
+        {
+          "atSec": 660,
+          "say": "Wherever your mind went, just come back to one breath. This one.",
+          "action": "Single gentle redirect. Silence ~120s."
+        },
+        {
+          "atSec": 785,
+          "say": "There is no need to breathe deeply or perfectly. An ordinary breath is exactly enough.",
+          "action": "Reassure. Silence ~130s."
+        },
+        {
+          "atSec": 920,
+          "say": "If counting helps the mind settle, you might silently count each out-breath up to five, then begin again at one. Or let counting go entirely. Both are welcome.",
+          "action": "Optional tool, offered not required. Silence ~150s."
+        },
+        {
+          "atSec": 1075,
+          "say": "Coming back once more to the breath, with the same patience you would offer someone you love.",
+          "action": "Silence ~140s."
+        },
+        {
+          "atSec": 1220,
+          "say": "Now I am going to offer something optional. You can rest your attention on the body for a little while — or, if attention on the body does not feel good today, you are very welcome to stay with the breath, or to listen to the sounds around you instead. All three are equally valid. Choose what feels kind.",
+          "action": "Trauma-aware: explicitly offer breath OR sound as a full alternative to body focus."
+        },
+        {
+          "atSec": 1258,
+          "say": "If you are staying with breath or with sound, simply continue resting there now, and let my next words drift past you.",
+          "action": "Give the non-body listener clear permission to opt out. Pause."
+        },
+        {
+          "atSec": 1275,
+          "say": "If you are turning toward the body, let your attention move slowly, like warm light, with no goal of fixing or feeling anything in particular.",
+          "action": "Gentle body cue, low-pressure framing."
+        },
+        {
+          "atSec": 1295,
+          "say": "Begin wherever is easy. Perhaps the feet, heavy and far away. You do not need to move them. Just let them be noticed.",
+          "action": "Body scan: feet. Silence ~55s."
+        },
+        {
+          "atSec": 1355,
+          "say": "Letting attention drift up through the lower legs, the knees, the thighs. Whatever you find, or do not find, is okay.",
+          "action": "Body scan: legs. Silence ~60s."
+        },
+        {
+          "atSec": 1420,
+          "say": "And the hips, the lower back, the belly. This body has carried a great deal. You might let it rest now, without asking anything of it.",
+          "action": "Body scan: center. Body-neutral, no postpartum pressure. Silence ~70s."
+        },
+        {
+          "atSec": 1495,
+          "say": "Up through the chest and the back of the heart, the breath moving quietly underneath. The shoulders, heavy.",
+          "action": "Body scan: torso/shoulders. Silence ~60s."
+        },
+        {
+          "atSec": 1560,
+          "say": "Down the arms to the hands, and softening the whole face — the jaw, the eyes, the small muscles you forget you are holding.",
+          "action": "Body scan: arms, hands, face. Silence ~65s."
+        },
+        {
+          "atSec": 1630,
+          "say": "And now let the whole body be one thing, resting, breathing on its own. Whether you scanned, or stayed with breath, or with sound — we all arrive in the same quiet from here.",
+          "action": "Reunite both paths. Silence ~80s."
+        },
+        {
+          "atSec": 1730,
+          "say": "We are entering the longest part now: simple rest. For a good while, I will say very little. You do not have to do anything at all. Not even meditate. Just be here, held, breathing.",
+          "action": "Transition into the long rest phase. Set expectation of extended silence."
+        },
+        {
+          "atSec": 1760,
+          "say": "If you drift toward sleep, that is allowed. If you stay awake and quiet, that is allowed. Let go of keeping track. I will return to gently bring you back near the end.",
+          "action": "Permission to sleep or stay. Then begin the long unbroken rest."
+        },
+        {
+          "atSec": 1980,
+          "say": "Resting. Nothing to reach for.",
+          "action": "A single soft touchpoint, then silence again. Keep voice barely above the quiet."
+        },
+        {
+          "atSec": 2400,
+          "say": "Still here with you. Still nothing to do.",
+          "action": "One brief reassurance after several minutes of silence, so the listener is not startled. Then long silence."
+        },
+        {
+          "atSec": 3060,
+          "say": "Resting on, breath by breath.",
+          "action": "Final light touchpoint of the rest phase. Then sustained silence until the return begins (~18 min total of quiet across this phase)."
+        },
+        {
+          "atSec": 3180,
+          "say": "Gently now, we begin to return. There is no hurry. Let my voice meet you wherever you are.",
+          "action": "Begin the return phase, very softly so as not to jar."
+        },
+        {
+          "atSec": 3210,
+          "say": "Let the breath become just a little fuller, a little more awake — the way you might stretch before fully waking.",
+          "action": "Breath pacing: invite slightly deeper breaths. Pause ~30s."
+        },
+        {
+          "atSec": 3260,
+          "say": "And if it feels good, let a small movement come back — a slow curl of the fingers, a soft roll of the wrists or ankles. Only what feels welcome.",
+          "action": "Gentle body cue: tiny optional movement. Pause ~30s."
+        },
+        {
+          "atSec": 3320,
+          "say": "Perhaps a gentle stretch through the whole body, or none at all. You decide what your body would like.",
+          "action": "Permission-giving. Pause ~25s."
+        },
+        {
+          "atSec": 3370,
+          "say": "Notice how you feel compared to when you began this hour. Not better or worse — just however you are. That is yours to keep.",
+          "action": "Non-judgmental reflection. Body-neutral."
+        },
+        {
+          "atSec": 3420,
+          "say": "When you are ready, with no rush, let your eyes open if they were closed, and let the light back in slowly.",
+          "action": "Invite return of vision. Pause ~25s."
+        },
+        {
+          "atSec": 3470,
+          "say": "You gave yourself a whole hour of rest today. That is real, and it counts as showing up.",
+          "action": "Affirmation in Vera voice. Celebrate showing up, not performance."
+        },
+        {
+          "atSec": 3510,
+          "say": "Carry a little of this quiet with you. The breath comes with you wherever you go.",
+          "action": "Closing line. Warm, unhurried."
+        },
+        {
+          "atSec": 3560,
+          "say": "Take all the time you need before you move on. This is the end of the practice. Be gentle with yourself.",
+          "action": "Final words. Then silence to 3600. Do not rush the listener out."
+        }
+      ],
+      "accessibilityNotes": "Every spoken line is also the on-screen caption, paired to aria-live so screen-reader users receive the same guidance and the same silences (no extra visual-only cues). Long silent stretches should be signaled non-audibly for Deaf/hard-of-hearing users — keep the last caption on screen during silence and show an unobtrusive \"resting — guidance returns shortly\" status plus a visible time-remaining indicator so silence is never mistaken for the audio having stopped or the app having frozen. Reduced-motion: this practice has no required movement; honor the existing reduced-motion setting and avoid any animated avatar — a still or dimmed screen is appropriate, and the optional return movements (finger curls, ankle rolls) are explicitly optional and never auto-played. Opt-outs: body-focus is fully optional with an equal breath-or-sound alternative offered before the body segment begins (~1220s); the listener can stay with breath or sound for the entire practice. Sleep is permitted; counting is optional. Every line uses permission language (\"if it feels okay\", \"if available\", \"you decide\") so nothing is mandatory. Provide a visible pause/exit control at all times so the user can leave at any moment with no penalty, consistent with the app's every-move-skippable principle.",
+      "disclaimers": [
+        "This is a relaxation and mindfulness practice, not medical, psychological, or therapeutic advice, and it is not a treatment for any condition.",
+        "If you are recovering from birth, surgery, or injury, follow the guidance of your own clinician about rest and movement; the optional gentle movements at the close are invitations only.",
+        "If at any point you feel distressed, panicked, or unsafe — or if difficult feelings or memories surface — it is completely okay to stop, open your eyes, and return to ordinary activity; you may choose the breath or sound focus instead of the body at any time.",
+        "Meditation can occasionally bring up strong emotion. If distress persists or feels overwhelming, please reach out to a qualified mental health professional or your local crisis or support line.",
+        "Do not listen while driving or doing anything that requires your attention; this practice may lead to drowsiness or sleep."
+      ]
+    },
+    {
+      "id": "med-lib-overwhelm-7",
+      "minutes": 7,
+      "theme": "settling an overwhelmed mind (quick reset)",
+      "kind": "library",
+      "intent": "A short, trauma-aware reset for a mind that feels full or scattered. It helps an overwhelmed nervous system find one steady place to land — through orienting, slow breath, and a single point of contact — without requiring stillness, eyes closed, or attention to the body. The aim is not to empty the mind but to give it somewhere kind to rest for a few minutes, so the user leaves a little more settled than she arrived.",
+      "scaleNote": "This is the standalone 7-minute library version focused tightly on quick down-regulation; it shares the arrive/settle/rest/return arc of the core Meditation tier but front-loads orienting and longer-exhale breathing because the entry state is acute overwhelm. Longer siblings (15/20/30) do not add more instruction — they lengthen the three open silences (settling, the steadying anchor, and the rest before return), letting the slowing happen on its own time rather than being talked through. Talking density stays flat as length grows; only the quiet stretches.",
+      "script": [
+        {
+          "atSec": 0,
+          "say": "Hello, and welcome. You do not have to fix anything in the next few minutes. You only have to be here.",
+          "action": "Warm, unhurried tone. No music cue needed; let the voice arrive into quiet."
+        },
+        {
+          "atSec": 12,
+          "say": "Settle into whatever position you are in. Sitting, standing, lying down, holding someone — all of it is fine.",
+          "action": "Permission-giving. Pause 3 seconds after speaking."
+        },
+        {
+          "atSec": 24,
+          "say": "Your eyes can close, or stay open and soft, resting on one calm spot in the room. Whichever feels safer today.",
+          "action": "Offer the open-eyes option first-class, not as an exception. Silence 4 seconds."
+        },
+        {
+          "atSec": 40,
+          "say": "Let us begin by noticing where you are. You are not in the middle of the whole day right now. You are in this one room.",
+          "action": "Orienting to present safety. Gentle pace."
+        },
+        {
+          "atSec": 55,
+          "say": "Look around slowly, or just listen. Name one thing you can see, and one sound that is here with you.",
+          "action": "Orienting cue — engages senses, grounds attention outward. Silence 12 seconds for the user to do this."
+        },
+        {
+          "atSec": 80,
+          "say": "Good. The mind may still feel busy. That is completely allowed. We are not emptying it, only giving it somewhere softer to rest.",
+          "action": "Normalize a busy mind explicitly — reduces the pressure to 'do it right'. Pause 3 seconds."
+        },
+        {
+          "atSec": 98,
+          "say": "Now bring your attention to your breath, wherever it is easiest to feel it. At the nose, or the chest. There is no need to change it yet.",
+          "action": "Breath as anchor. If breath feels activating, the next line offers an out."
+        },
+        {
+          "atSec": 114,
+          "say": "If watching the breath feels like too much, you can rest your attention on a sound instead, or on your feet on the floor. That counts just as much.",
+          "action": "Trauma-aware alternative anchor — breath OR sound OR contact. Silence 8 seconds."
+        },
+        {
+          "atSec": 135,
+          "say": "When you are ready, let the next breath out slowly. A long, easy exhale. Let it be a little longer than the breath in.",
+          "action": "Begin extended-exhale breathing — down-regulating. Model one slow out-breath."
+        },
+        {
+          "atSec": 150,
+          "say": "Breathe in gently. And out, slow and long. Nothing forced. Just letting the exhale carry a little of the load away.",
+          "action": "Breath pacing: in for about 4, out for about 6. Demonstrate one full cycle."
+        },
+        {
+          "atSec": 168,
+          "say": "Let us stay with a few of those together. I will be quiet, and you can let the breath find its own slow rhythm.",
+          "action": "Hand the pace back to the user. Begin first open silence — roughly 22 seconds of quiet for slow breathing."
+        },
+        {
+          "atSec": 195,
+          "say": "If your thoughts wandered off into the day, that is not a mistake. Noticing is the whole practice. Just come back to one slow breath.",
+          "action": "Reframe wandering as success, not failure. Pause 3 seconds."
+        },
+        {
+          "atSec": 214,
+          "say": "Now let your breathing be ordinary again. Let it go back to normal. You can release the long exhale.",
+          "action": "Step down from controlled breathing so the practice does not strain. Silence 4 seconds."
+        },
+        {
+          "atSec": 230,
+          "say": "Let us choose one steady place to rest your attention. Maybe the feeling of where your body meets the chair, the bed, or the ground.",
+          "action": "Single point of contact — a grounding anchor. Body contact is optional; next line keeps the door open."
+        },
+        {
+          "atSec": 248,
+          "say": "Or, if you would rather not focus on the body at all today, simply rest on the quiet sound of the room. Both are right.",
+          "action": "Restate non-body alternative clearly. This is the second open silence — about 30 seconds of rest here."
+        },
+        {
+          "atSec": 285,
+          "say": "You are supported right now. The ground is holding you. There is nothing you need to carry in this exact moment.",
+          "action": "Co-regulating reassurance, present-tense. Slow delivery. Pause 4 seconds."
+        },
+        {
+          "atSec": 305,
+          "say": "Stay here a little longer, in your own quiet. I will leave you some space.",
+          "action": "Third and longest open silence — roughly 35 seconds. Let the rest deepen without words."
+        },
+        {
+          "atSec": 350,
+          "say": "When you feel ready, begin to come back. No rush. Let your breath become a touch deeper.",
+          "action": "Gentle return phase. Pause 3 seconds."
+        },
+        {
+          "atSec": 366,
+          "say": "Maybe a small movement — wiggle your fingers, roll your shoulders, or just open your eyes if they were closed.",
+          "action": "Re-orienting movement, all optional. Silence 6 seconds."
+        },
+        {
+          "atSec": 384,
+          "say": "Notice how you feel now, compared to when we started. Even a small change is yours, and it counts.",
+          "action": "Invite self-noticing without demanding a result. Pause 3 seconds."
+        },
+        {
+          "atSec": 400,
+          "say": "The day is still there, but you met it with a little more steadiness. You showed up for yourself, and that is enough.",
+          "action": "Affirmation in Vera voice — celebrates showing up, never appearance. Warm."
+        },
+        {
+          "atSec": 412,
+          "say": "Whenever you are ready, carry this quiet with you. I will be here when you need it again. Take care.",
+          "action": "Close. Let the final silence hold until 420s, then end gently."
+        }
+      ],
+      "accessibilityNotes": "Every spoken line is the on-screen caption verbatim, paired with the existing aria-live caption channel so screen-reader users receive the full script in sync with audio; timestamps let captions advance without relying on motion. The practice never requires eyes closed — open, soft-gaze is offered as a first-class option at the start and again at return — so it is fully usable with reduced-motion settings and for users who feel unsafe closing their eyes. No visual avatar or animation is required; if the meditation visual is disabled or WebGL is unavailable, the audio plus captions stand alone (graceful caption-only fallback, consistent with the app's existing behavior). Body focus is opt-in throughout: a breath, sound, or feet-on-floor alternative is offered every time the body is mentioned. Position is free (sitting, standing, lying, or holding a child), and any return movement is explicitly optional. The practice is fully pausable and skippable at any moment with no penalty, and all guidance is in present-tense, permission-giving Vera voice with no startling sounds or volume changes.",
+      "disclaimers": [
+        "This is a wellbeing and relaxation practice, not medical, psychological, or therapeutic advice, and it is not a treatment for any health condition.",
+        "If feelings of overwhelm, anxiety, or distress are persistent, intense, or interfering with daily life, please reach out to a qualified healthcare professional, your doctor, or a licensed mental-health provider.",
+        "If you ever feel unsafe, in crisis, or at risk of harming yourself, stop the practice and contact your local emergency services or a crisis support line right away.",
+        "You can pause or stop at any time; if any part of this practice feels uncomfortable or activating, it is completely okay to open your eyes, change position, or end early."
+      ]
+    },
+    {
+      "id": "med-lib-sleep-15",
+      "minutes": 15,
+      "theme": "sleep wind-down / bedtime release",
+      "kind": "library",
+      "intent": "A 15-minute bedtime practice that helps a tired body and a busy mind let go of the day and drift toward sleep. The arc moves from arriving and getting comfortable, through a slow downshift of the breath, into an optional gentle release of tension from the body (with a breath/sound alternative), and finally into long, unbroken silence so the listener can fall asleep without the voice calling them back. The voice deliberately thins out and softens toward the end; there is no wake-up or re-alerting, because the goal is sleep, not return to the day.",
+      "scaleNote": "This is a fixed-length library practice (sleep wind-down), not the scalable core meditation. Compared with a shorter sibling sleep practice (for example a 7-minute bedtime version): the 7-minute version keeps the same arrive / downshift / release / drift arc but compresses each phase, offers only a brief 3-4 region tension release, and reaches final silence sooner. This 15-minute version lengthens by adding more settling at the start, a slower and more complete head-to-toe release with longer dwell on each region, and a much longer closing stretch of near-unbroken silence (roughly the final four minutes) so the listener can actually fall asleep. The added time is spent on silence and slower pacing, never on more talking; instruction density falls steadily across the script.",
+      "script": [
+        {
+          "atSec": 0,
+          "say": "Welcome. There is nothing left to do tonight. This is the part of the day where you get to put everything down.",
+          "action": "Speak slowly and softly, slightly slower than normal speech. Long warm pause after."
+        },
+        {
+          "atSec": 14,
+          "say": "Settle into wherever you are resting. Let the bed, or the floor, take your full weight.",
+          "action": "Body cue: let the body be fully supported by the surface beneath. Pause about 6 seconds."
+        },
+        {
+          "atSec": 26,
+          "say": "If it feels right, let your eyes close. If you would rather keep them softly open, that is fine too.",
+          "action": "Opt-out offered. Silence about 8 seconds."
+        },
+        {
+          "atSec": 40,
+          "say": "There is no posture to hold here, and nothing to get right. You are allowed to be exactly this tired.",
+          "action": "Permission-giving. Pause about 8 seconds."
+        },
+        {
+          "atSec": 56,
+          "say": "Let us begin by letting the day arrive, so it can leave. Notice that you are here, lying down, breathing.",
+          "action": "Silence about 10 seconds."
+        },
+        {
+          "atSec": 74,
+          "say": "Take one slow breath in through the nose. And let it out with a soft sigh through the mouth.",
+          "action": "Breath pacing: inhale ~4 counts, audible exhale ~6 counts. Pause for one full natural breath after."
+        },
+        {
+          "atSec": 90,
+          "say": "Again. Breathe in, gently. And sigh it all the way out.",
+          "action": "Breath pacing: inhale ~4, long exhale ~6-7. Leave space for the breath."
+        },
+        {
+          "atSec": 106,
+          "say": "Once more, the longest exhale yet. In through the nose. And a slow, complete letting go.",
+          "action": "Breath pacing: long exhale ~8 counts. Then silence about 10 seconds."
+        },
+        {
+          "atSec": 126,
+          "say": "Now let your breath find its own quiet rhythm. You do not need to steer it anymore.",
+          "action": "Stop directing the breath. Silence about 12 seconds."
+        },
+        {
+          "atSec": 146,
+          "say": "With each breath out, you can let the bed hold a little more of you. Nothing to carry now.",
+          "action": "Body cue: soften into support on each exhale. Silence about 14 seconds."
+        },
+        {
+          "atSec": 172,
+          "say": "If your mind is still busy, that is completely normal. A busy mind at bedtime is not a problem to fix.",
+          "action": "Trauma-aware reassurance. Pause about 10 seconds."
+        },
+        {
+          "atSec": 192,
+          "say": "You do not have to empty your thoughts. Just let them keep going on without you, like traffic in another street.",
+          "action": "Silence about 14 seconds."
+        },
+        {
+          "atSec": 216,
+          "say": "In a moment we will let the body soften, part by part. This part is optional.",
+          "action": "Introduce optional body release. Pause about 6 seconds."
+        },
+        {
+          "atSec": 228,
+          "say": "If turning attention to your body does not feel restful tonight, you can simply stay with the sound of my voice and the slow flow of your breath instead. Either way is right.",
+          "action": "Explicit non-body alternative offered: rest on breath/sound instead of body. Silence about 12 seconds."
+        },
+        {
+          "atSec": 254,
+          "say": "If you are staying with the body, bring a soft, kind attention to your face. Let the space between your eyebrows go smooth.",
+          "action": "Body cue: release the brow and forehead. Pause about 8 seconds."
+        },
+        {
+          "atSec": 272,
+          "say": "Let your jaw unclench. Let your tongue rest soft in your mouth.",
+          "action": "Body cue: release jaw and tongue. Silence about 12 seconds."
+        },
+        {
+          "atSec": 298,
+          "say": "Let your shoulders melt down, away from your ears, into the surface beneath you.",
+          "action": "Body cue: drop the shoulders. Silence about 12 seconds."
+        },
+        {
+          "atSec": 322,
+          "say": "Soften your arms. Let your hands rest, palms heavy, fingers loose.",
+          "action": "Body cue: release arms and hands. Silence about 14 seconds."
+        },
+        {
+          "atSec": 350,
+          "say": "Let your chest and belly rise and fall on their own. No effort, just the gentle tide of breathing.",
+          "action": "Body cue: passive breath in torso. Silence about 16 seconds."
+        },
+        {
+          "atSec": 382,
+          "say": "If your body has worked hard, carried much, this is its time to be off duty. Let your back and hips give their weight to the bed.",
+          "action": "Body-neutral, never shaming. Body cue: release back and hips. Silence about 16 seconds."
+        },
+        {
+          "atSec": 416,
+          "say": "Let your legs grow heavy. All the way down through your knees, your ankles, the soles of your feet.",
+          "action": "Body cue: release legs and feet. Silence about 18 seconds."
+        },
+        {
+          "atSec": 454,
+          "say": "And now the whole body, soft and heavy and supported. There is nowhere to be but here.",
+          "action": "Whole-body settle. Long silence about 20 seconds."
+        },
+        {
+          "atSec": 494,
+          "say": "If any thought pulls you back, you can let it go on the next breath out. You can always come back to the breath.",
+          "action": "Gentle anchor for both body and non-body listeners. Silence about 18 seconds."
+        },
+        {
+          "atSec": 530,
+          "say": "Each breath out is a small letting go. The day is done. You did enough.",
+          "action": "Affirmation in Vera register. Long silence about 22 seconds."
+        },
+        {
+          "atSec": 574,
+          "say": "You are exactly where you need to be. Resting is allowed. Resting is good.",
+          "action": "Affirmation. Speak quieter now, near a whisper. Long silence about 24 seconds."
+        },
+        {
+          "atSec": 622,
+          "say": "From here, I will say less and less. Let my voice fade into the quiet. You do not need to follow it.",
+          "action": "Signal the taper into silence. Quiet, slow. Silence about 26 seconds."
+        },
+        {
+          "atSec": 674,
+          "say": "Just breathing. Just resting. Drifting is welcome now.",
+          "action": "Near-whisper. Permission to fall asleep. Long silence about 36 seconds."
+        },
+        {
+          "atSec": 746,
+          "say": "Heavy. Warm. Safe to let go.",
+          "action": "Very quiet, spaced words. Then extended silence about 44 seconds."
+        },
+        {
+          "atSec": 834,
+          "say": "Rest now.",
+          "action": "Final words, softest of all. No re-alerting, no wake-up. Hold gentle silence to the end of the track, about 66 seconds, with no further speech."
+        }
+      ],
+      "accessibilityNotes": "On-screen captions mirror the spoken text word for word and remain on screen through each following silence, so a Deaf or hard-of-hearing user reading captions experiences the same long pauses (silence is conveyed by the caption simply holding, with a quiet visual rest indicator, never by blank panic). Action lines (breath pacing, silence, body cues) are exposed to screen readers as descriptive context, not read aloud over the practice. Because this is a bedtime practice, the visual should honor reduced-motion settings: no moving avatar, no animation, dimmed low-contrast-friendly theme; the Three.js avatar stays disabled here and the caption-only fallback is the intended default. Every body-focused cue has an explicit non-body alternative (rest on breath or on the sound of the voice) for trauma-aware reasons, stated up front at 216-228s and reinforced at 494s, so attention to the body is always opt-in. The practice is fully skippable and pausable at any moment; closing your eyes is offered, never required; there is intentionally no end chime or wake-up cue, since the design goal is to fall asleep, but a user may end the session manually at any time.",
+      "disclaimers": [
+        "This practice is for general relaxation and rest. It is not medical, psychological, or therapeutic advice, and it is not a treatment for insomnia, sleep disorders, anxiety, depression, or trauma.",
+        "If sleeplessness, low mood, intrusive thoughts, or distress are persistent or significant, please reach out to a qualified healthcare professional, your GP, or a mental health provider.",
+        "If at any point this practice feels uncomfortable or unsettling, you are encouraged to stop, open your eyes, and rest on the breath or sound instead; you are always in control.",
+        "If you are in crisis or thinking about harming yourself, please contact your local emergency services or a crisis line right away. In the US you can call or text 988.",
+        "Do not use this audio while driving or operating machinery, as it is designed to help you fall asleep."
+      ]
+    },
+    {
+      "id": "med-lib-selfcompassion-15",
+      "minutes": 15,
+      "theme": "self-compassion / kindness to self",
+      "kind": "library",
+      "intent": "A 15-minute trauma-aware self-compassion practice for postpartum women 30-40. It moves from arriving and settling, through meeting a moment of difficulty with kindness, offering oneself the warmth one would give a friend, into a longer restful dwell, and a gentle return. The goal is to soften self-criticism and let warmth land in the body, never to fix or analyse. Generous silence carries the practice; the voice steps back so the kindness can be the user's own.",
+      "scaleNote": "This is the 15-minute member of the self-compassion library series. Compared with a shorter sibling (for example a 7-minute version), the extra minutes are spent in silence and dwelling, not in more instruction. The arc is identical (arrive, settle, meet a difficulty kindly, offer the kind phrases, rest, return) but each silent dwell is longer: the settling pause, the space after the kind-phrase offering, and especially the open restful dwell near the end all stretch out. A shorter sibling would offer the kind phrases once and rest briefly; this 15-minute version repeats the kind phrases at an unhurried pace, then opens a long, unstructured rest where the voice goes quiet for over a minute. Instruction density stays flat; only the silences grow.",
+      "accessibilityNotes": "Every spoken line is shown verbatim as an on-screen caption via the existing aria-live region, so the practice is fully usable with sound off or with a screen reader. Silences are announced once at the start so a screen-reader user is not left wondering whether audio has stopped; long quiet stretches are intentional, not a fault. There is no visual avatar motion required; this is a seated or lying still practice, so reduced-motion settings have no effect on its content. Eyes may stay open or closed throughout, whichever feels safer. The single body-focused cue (hand on heart or belly) is explicitly optional and always paired with a non-body alternative — resting attention on the breath or on the sounds in the room — so nothing forces attention onto the body. Every instruction is an invitation, never a command; the user may pause, skip ahead, shorten, or stop at any moment, and stopping early still counts as showing up.",
+      "disclaimers": [
+        "This is a wellbeing and mindfulness practice, not medical, psychological, or therapeutic advice, and it is not a treatment for any condition.",
+        "Self-compassion practice can sometimes surface difficult feelings. If that happens, you are welcome to open your eyes, shift attention to the sounds around you, or stop the practice entirely — none of that is doing it wrong.",
+        "If you are experiencing persistent low mood, anxiety, intrusive thoughts, or thoughts of harming yourself, please reach out to a qualified health professional or a local crisis or support line. This practice is not a substitute for that care."
+      ],
+      "script": [
+        {
+          "atSec": 0,
+          "say": "Welcome. For the next fifteen minutes, there is nothing to fix and nothing to get right. This is simply time to be kind to yourself.",
+          "action": "Warm, unhurried pace. No breath instruction yet — just let the voice arrive softly."
+        },
+        {
+          "atSec": 14,
+          "say": "There will be long, quiet stretches in this practice. When it goes silent, that is on purpose. The quiet is yours to rest in.",
+          "action": "Announce the silences once, plainly, so a screen-reader listener knows nothing is broken."
+        },
+        {
+          "atSec": 30,
+          "say": "Settle into a position that feels comfortable. Seated or lying down, both are right. Let yourself be held by whatever is underneath you.",
+          "action": "Permission-giving. Allow a settling pause after speaking."
+        },
+        {
+          "atSec": 45,
+          "say": "Your eyes can close, or rest softly downward — whichever feels safer for you today.",
+          "action": "Offer the eyes-open option first so it never feels imposed."
+        },
+        {
+          "atSec": 58,
+          "say": "Take one slow breath in through the nose, and let it go with a long, soft sigh out.",
+          "action": "Breath cue: inhale roughly 4 counts, exhale roughly 6, audible sigh on the out-breath."
+        },
+        {
+          "atSec": 70,
+          "say": "And again, in your own time. Nothing forced. Just letting the breath out a little longer than it comes in.",
+          "action": "Second slow breath, learner-paced. Do not count aloud."
+        },
+        {
+          "atSec": 85,
+          "say": "Now let the breath go back to its own rhythm. You do not have to manage it. Let it breathe you.",
+          "action": "Release breath control. Begin a settling silence."
+        },
+        {
+          "atSec": 98,
+          "say": "",
+          "action": "Silence — about 20 seconds. Let the body settle and the room go quiet."
+        },
+        {
+          "atSec": 120,
+          "say": "Take a moment to notice that you came here. In the middle of everything, you gave yourself this. That is already a kind act.",
+          "action": "Acknowledge the showing-up, in the register of the existing affirmations."
+        },
+        {
+          "atSec": 138,
+          "say": "",
+          "action": "Silence — about 15 seconds."
+        },
+        {
+          "atSec": 155,
+          "say": "If it feels okay, you might rest one hand somewhere that feels soothing — over the heart, or on the belly. Feel the simple warmth of your own hand.",
+          "action": "Optional body cue, offered tentatively. Pause so it can be tried."
+        },
+        {
+          "atSec": 172,
+          "say": "If a hand on the body does not feel right today, that is completely fine. Instead, you can rest your attention on the breath, or on the sounds around you. Any of these is the practice.",
+          "action": "Trauma-aware alternative: explicitly offer breath or sound instead of body focus."
+        },
+        {
+          "atSec": 190,
+          "say": "",
+          "action": "Silence — about 20 seconds. Let the chosen anchor settle."
+        },
+        {
+          "atSec": 212,
+          "say": "Now, gently, bring to mind something that has been a little hard lately. Not the heaviest thing. Just a moment where you have been hard on yourself.",
+          "action": "Invite a mild difficulty only. Keep the voice soft and slow."
+        },
+        {
+          "atSec": 230,
+          "say": "Maybe a tiredness you judged yourself for. A moment you felt you were not enough. You do not need to relive it — just let it be quietly nearby.",
+          "action": "Name common postpartum self-judgments gently, without dwelling."
+        },
+        {
+          "atSec": 248,
+          "say": "If anything feels like too much, you can let the image go and simply come back to your breath. Looking after yourself is the whole point.",
+          "action": "Off-ramp, echoing the skip-is-allowed ethos. Brief pause."
+        },
+        {
+          "atSec": 262,
+          "say": "",
+          "action": "Silence — about 15 seconds."
+        },
+        {
+          "atSec": 280,
+          "say": "See if you can offer yourself one honest sentence: this is a hard moment.",
+          "action": "First self-compassion phrase — mindfulness. Spoken slowly, then let it land."
+        },
+        {
+          "atSec": 292,
+          "say": "",
+          "action": "Silence — about 12 seconds, letting the phrase settle."
+        },
+        {
+          "atSec": 306,
+          "say": "And another: hard moments are part of being human. You are not alone in this. So many people have felt exactly this.",
+          "action": "Second phrase — common humanity. Unhurried."
+        },
+        {
+          "atSec": 322,
+          "say": "",
+          "action": "Silence — about 13 seconds."
+        },
+        {
+          "atSec": 338,
+          "say": "And now the kindest one. Quietly, to yourself: may I be gentle with myself right now.",
+          "action": "Third phrase — kindness. Soft, almost a whisper in pacing."
+        },
+        {
+          "atSec": 352,
+          "say": "",
+          "action": "Silence — about 18 seconds."
+        },
+        {
+          "atSec": 372,
+          "say": "Imagine for a moment that someone you love deeply came to you feeling exactly the way you feel. Someone tired, someone trying so hard.",
+          "action": "Shift to the friend-perspective. Warm and slow."
+        },
+        {
+          "atSec": 390,
+          "say": "You would not scold them. You would soften. You might say, of course this is hard. You are doing your best, and your best is enough.",
+          "action": "Model the kind voice. Let the words be tender."
+        },
+        {
+          "atSec": 406,
+          "say": "See if you can turn that same warmth inward now. The same patience you give so freely to others — let a little of it come home to you.",
+          "action": "Turn the kindness inward. Then a long pause."
+        },
+        {
+          "atSec": 424,
+          "say": "",
+          "action": "Silence — about 22 seconds. This is the emotional centre; give it room."
+        },
+        {
+          "atSec": 448,
+          "say": "Your body has done remarkable things. It deserves your patience, not your criticism.",
+          "action": "Echoes an existing affirmation almost verbatim. Slow delivery."
+        },
+        {
+          "atSec": 462,
+          "say": "",
+          "action": "Silence — about 16 seconds."
+        },
+        {
+          "atSec": 480,
+          "say": "You do not have to be finished to be enough. You are enough, in the unfinished middle of everything.",
+          "action": "Affirmation in Vera's register. Let it rest."
+        },
+        {
+          "atSec": 496,
+          "say": "",
+          "action": "Silence — about 18 seconds."
+        },
+        {
+          "atSec": 516,
+          "say": "Now you can let the words go entirely. No more phrases to repeat. Just rest here, held by your own kindness and your own breath.",
+          "action": "Release all instruction. Open the long restful dwell."
+        },
+        {
+          "atSec": 532,
+          "say": "If your hand is resting on your heart or belly, feel it rise and fall. If not, just feel the breath moving, all on its own.",
+          "action": "Re-offer both anchors equally. Then go quiet for a long while."
+        },
+        {
+          "atSec": 550,
+          "say": "",
+          "action": "Long silence — about 75 seconds. This is the heart of the 15-minute length: open, unstructured rest. Do not fill it."
+        },
+        {
+          "atSec": 628,
+          "say": "Wherever your mind wandered, that is okay. Wandering is not failing. Just gently come back, with the same kindness, to this quiet.",
+          "action": "One soft re-anchoring, mirroring the existing 'wherever your mind wandered' line. Then quiet again."
+        },
+        {
+          "atSec": 645,
+          "say": "",
+          "action": "Silence — about 55 seconds. Let the rest continue, undisturbed."
+        },
+        {
+          "atSec": 702,
+          "say": "",
+          "action": "Continued silence — about 18 more seconds of open rest before the gentle return begins."
+        },
+        {
+          "atSec": 722,
+          "say": "In a little while, we will begin to return. There is no hurry. Stay in the warmth a few breaths longer.",
+          "action": "Signal the turn toward returning, softly. A few slow breaths."
+        },
+        {
+          "atSec": 740,
+          "say": "",
+          "action": "Silence — about 18 seconds."
+        },
+        {
+          "atSec": 760,
+          "say": "Now take one slightly deeper breath in, and let it out slowly. Feeling yourself here, in this room, on this day.",
+          "action": "Begin reorienting. One deeper breath, exhale long."
+        },
+        {
+          "atSec": 778,
+          "say": "Let a small amount of gentle movement come back. Maybe a soft wiggle of the fingers, or a slow roll of the shoulders. Only what feels good.",
+          "action": "Optional gentle re-animating movement; keep it permission-based."
+        },
+        {
+          "atSec": 798,
+          "say": "",
+          "action": "Silence — about 14 seconds, letting movement happen at the user's pace."
+        },
+        {
+          "atSec": 815,
+          "say": "If your eyes have been closed, let them open whenever you are ready. No rush. Let the light back in slowly.",
+          "action": "Re-orient to the room. Soft pacing."
+        },
+        {
+          "atSec": 832,
+          "say": "See if you can carry one small piece of this kindness with you. Not as a task — just a softer way of speaking to yourself for the rest of today.",
+          "action": "Bridge the practice into the day. Warm, no pressure."
+        },
+        {
+          "atSec": 852,
+          "say": "",
+          "action": "Silence — about 12 seconds."
+        },
+        {
+          "atSec": 868,
+          "say": "You showed up for yourself today, and that is its own kind of strength. Thank you for giving yourself this time.",
+          "action": "Close in the sessionDone register. Sincere and quiet."
+        },
+        {
+          "atSec": 884,
+          "say": "Whenever you are ready, the practice is complete. The breath, and the kindness, come with you.",
+          "action": "Final line, echoing the existing close. Let it end softly into silence."
+        },
+        {
+          "atSec": 898,
+          "say": "",
+          "action": "Closing silence to the 900-second mark. End gently, no chime required."
+        }
+      ]
+    },
+    {
+      "id": "med-lib-bodyscan-20",
+      "minutes": 20,
+      "theme": "Body scan — explicitly opt-in about body focus, trauma-aware. A slow, head-to-toe (or foot-to-head) journey of friendly attention, with a standing breath-and-sound alternative offered throughout for anyone for whom turning toward the body does not feel safe today.",
+      "kind": "library",
+      "intent": "Offer a settling, non-striving body scan that rebuilds a kind, neutral relationship with the body at the practitioner's own pace. Every region is an invitation, never an instruction; attention can rest on breath or sound instead of the body at any moment with zero loss. The aim is gentle awareness and permission, not relaxation-on-demand or fixing anything.",
+      "scaleNote": "This 20-minute library body scan is the long sibling of the shorter scans. The added time is spent almost entirely in silence and dwell, not in more talking: each region (feet, legs, pelvis/belly, back, hands/arms, shoulders/neck, face, whole body) gets its own unhurried pass with a long resting silence after the invitation, where the shorter versions group several regions per breath and move on quickly. The settling at the start (0-180s) and the resting integration near the end are both lengthened. Instruction density stays flat — the same number of spoken cues, simply spaced further apart by silence. The opt-out to breath or sound is repeated more often across the longer arc so a person can change their mind at any region.",
+      "accessibilityNotes": "Every spoken segment doubles as an on-screen caption via the existing aria-live cue pairing, so the practice is fully usable with sound off or with a screen reader; nothing depends on hearing the voice. There is no avatar or visual movement to track — this is a captions-and-audio practice, so reduced-motion is honored by default and no pose rig is required. Body focus is opt-in: a non-body alternative (resting attention on the breath or on the sounds in the room) is offered at the start and repeated at each region, so a person can complete the entire practice without ever turning attention to the body. Eyes may stay open or closed throughout. Any position is welcome — lying, seated, or standing — and shifting position at any time is encouraged, not a failure. There is no timer pressure surfaced to the user and every pause is optional; a person may end early at any point and it still counts as showing up. Silences are intentional, not gaps to fill.",
+      "disclaimers": [
+        "This practice is for general wellbeing and relaxation. It is not medical, psychological, or therapeutic advice, and it is not a treatment for any condition.",
+        "Turning attention toward the body can sometimes bring up strong feelings. If that happens, it is welcome to open your eyes, rest your attention on the breath or on sounds instead, or stop entirely. You are always in charge.",
+        "If you are experiencing significant distress, trauma symptoms, or thoughts of harming yourself, please reach out to a qualified professional or a local crisis or support line. This practice is not a substitute for that support.",
+        "Move only in ways that feel safe for your body today. If you are postpartum or have any medical concern, follow the guidance of your own healthcare provider."
+      ],
+      "script": [
+        {
+          "atSec": 0,
+          "say": "Welcome. This is a body scan, and it is entirely yours to shape. There is nothing to fix here, and nothing to get right.",
+          "action": "Warm, unhurried pace. Let the voice settle before continuing."
+        },
+        {
+          "atSec": 14,
+          "say": "Find a position that feels kind. Lying down, sitting, or standing are all welcome. You can change it any time.",
+          "action": "Allow time to settle into position."
+        },
+        {
+          "atSec": 28,
+          "say": "Before we begin, one gentle note. In this practice we will turn attention toward the body, slowly and softly.",
+          "action": "Spoken plainly, no pressure."
+        },
+        {
+          "atSec": 42,
+          "say": "If turning toward the body does not feel right today, that is completely okay. You can rest your attention on your breath, or on the sounds around you, instead.",
+          "action": "Offer the opt-out clearly and warmly."
+        },
+        {
+          "atSec": 58,
+          "say": "Either path is the whole practice. Choose whichever feels more like care right now.",
+          "action": "Silence — about ten seconds — to let the choice land."
+        },
+        {
+          "atSec": 75,
+          "say": "Your eyes can close, or stay open with a soft gaze. Whatever helps you feel safe.",
+          "action": "Gentle body cue: invite soft eyes, no insistence."
+        },
+        {
+          "atSec": 90,
+          "say": "Let us begin by simply arriving. One easy breath in.",
+          "action": "Breath pacing: slow inhale, roughly four seconds."
+        },
+        {
+          "atSec": 98,
+          "say": "And a slow breath out, a little longer than the breath in.",
+          "action": "Breath pacing: long exhale, roughly six seconds."
+        },
+        {
+          "atSec": 110,
+          "say": "There is no special way to breathe. Just let it move on its own, and notice that it is happening.",
+          "action": "Silence — about fifteen seconds — natural breathing."
+        },
+        {
+          "atSec": 135,
+          "say": "Feel the support underneath you. The floor, the chair, the ground. It is holding you, and you do not have to do anything to deserve that.",
+          "action": "Gentle body cue: notice contact and support."
+        },
+        {
+          "atSec": 155,
+          "say": "Let yourself rest into being held for a moment.",
+          "action": "Silence — about twenty-five seconds."
+        },
+        {
+          "atSec": 185,
+          "say": "When you are ready, we will begin to travel slowly through the body, like a warm light moving at its own pace. Remember, breath or sound is always an option instead.",
+          "action": "Bridge into the scan; re-offer the opt-out."
+        },
+        {
+          "atSec": 205,
+          "say": "Let us start far away from the center, at the feet. If it feels okay, bring a soft, curious attention down to your feet.",
+          "action": "Gentle body cue: invite attention to the feet."
+        },
+        {
+          "atSec": 222,
+          "say": "Not searching for anything in particular. Just noticing whatever is there, or noticing nothing at all. Both are fine.",
+          "action": "Silence — about thirty seconds — resting with the feet."
+        },
+        {
+          "atSec": 260,
+          "say": "There is no right sensation to find. Warmth, coolness, tingling, or quiet. You are simply visiting, like saying a kind hello.",
+          "action": "Silence — about twenty-five seconds."
+        },
+        {
+          "atSec": 295,
+          "say": "Now, if you wish, let that soft attention drift up into the lower legs. Shins, calves, the backs of the knees.",
+          "action": "Gentle body cue: invite attention up to the lower legs."
+        },
+        {
+          "atSec": 312,
+          "say": "These legs carry you through your days. You do not need to thank them or change them. Just let them be here with you.",
+          "action": "Silence — about thirty seconds — resting with the lower legs."
+        },
+        {
+          "atSec": 355,
+          "say": "If your mind has wandered off, that is what minds do. Gently come back, without any scolding. Or stay with the breath, if that feels easier.",
+          "action": "Permission-giving; re-offer the breath anchor."
+        },
+        {
+          "atSec": 375,
+          "say": "Let the attention rise to the upper legs. Thighs, the large muscles, resting heavy and soft.",
+          "action": "Gentle body cue: invite attention to the thighs. Silence after — about thirty seconds."
+        },
+        {
+          "atSec": 420,
+          "say": "Nothing to hold, nothing to brace. If you notice gripping anywhere, see if it can soften, just a little. And if it does not, that is okay too.",
+          "action": "Silence — about twenty-five seconds."
+        },
+        {
+          "atSec": 455,
+          "say": "We are arriving now at the center of the body, the pelvis, the hips, the belly. This area can hold a lot of story. Move here only as gently as you like.",
+          "action": "Trauma-aware framing for the center; slow, soft delivery."
+        },
+        {
+          "atSec": 478,
+          "say": "If this region feels tender to visit, you are warmly invited to rest your attention on your breath instead, or on the sounds around you. You lose nothing by doing so.",
+          "action": "Re-offer the opt-out explicitly at the most sensitive region."
+        },
+        {
+          "atSec": 498,
+          "say": "If it feels okay, simply notice the breath rising and falling here, low and slow, with no agenda.",
+          "action": "Silence — about thirty-five seconds — resting with the breath at the center, or wherever attention feels safe."
+        },
+        {
+          "atSec": 545,
+          "say": "You are allowed to take up this space. You are allowed to rest here without earning it.",
+          "action": "Silence — about thirty seconds."
+        },
+        {
+          "atSec": 590,
+          "say": "Let the attention float now to the back. The lower back, then slowly up along the spine.",
+          "action": "Gentle body cue: invite attention to the back."
+        },
+        {
+          "atSec": 607,
+          "say": "So much is carried here, often without notice. You do not have to set anything down. Just let the back know it has your kind attention.",
+          "action": "Silence — about thirty-five seconds — resting with the back."
+        },
+        {
+          "atSec": 655,
+          "say": "And if at any point the silence feels like a lot, the breath is right there, steady, like a friend waiting.",
+          "action": "Reassure about the silence; offer breath anchor."
+        },
+        {
+          "atSec": 678,
+          "say": "Let us visit the hands. They are often busy. Let them be still now, palms open or resting, however is comfortable.",
+          "action": "Gentle body cue: invite attention to the hands. Silence after — about thirty seconds."
+        },
+        {
+          "atSec": 725,
+          "say": "Now up through the arms. The wrists, the forearms, the upper arms. Heavy and at ease.",
+          "action": "Gentle body cue: invite attention to the arms. Silence after — about thirty seconds."
+        },
+        {
+          "atSec": 770,
+          "say": "Nothing to reach for. Nothing to carry. Just arms, resting, off duty for these few minutes.",
+          "action": "Silence — about thirty seconds."
+        },
+        {
+          "atSec": 815,
+          "say": "Bring a soft attention to the shoulders and the neck. A place that quietly holds the weight of long days.",
+          "action": "Gentle body cue: invite attention to shoulders and neck."
+        },
+        {
+          "atSec": 832,
+          "say": "On your next breath out, you might let the shoulders drop a little, away from the ears. Or simply notice them, exactly as they are.",
+          "action": "Breath pacing: one slow exhale. Then silence — about thirty seconds."
+        },
+        {
+          "atSec": 880,
+          "say": "Let the attention rise gently to the face. The jaw, often clenched without our knowing. Let it be a little loose.",
+          "action": "Gentle body cue: invite attention to the jaw and face."
+        },
+        {
+          "atSec": 900,
+          "say": "The space between the eyebrows, softening. The eyes, resting back in their sockets. The whole face, unguarded, with no one to perform for.",
+          "action": "Silence — about thirty-five seconds — resting with the face."
+        },
+        {
+          "atSec": 950,
+          "say": "And now, if it feels welcome, let attention widen to hold the whole body at once. From the feet all the way to the crown of the head.",
+          "action": "Gentle body cue: widen attention to the whole body."
+        },
+        {
+          "atSec": 970,
+          "say": "One body, breathing, resting, here. You do not have to scan or search any more. Just be with all of it, softly.",
+          "action": "Silence — about forty seconds — whole-body rest."
+        },
+        {
+          "atSec": 1025,
+          "say": "Or, if you have stayed with the breath or the sounds this whole time, rest there now, just as whole and just as welcome.",
+          "action": "Silence — about thirty-five seconds. Honor the alternative path equally."
+        },
+        {
+          "atSec": 1075,
+          "say": "Let yourself simply rest. Nothing to do. Nowhere to be. This is enough. You are enough, exactly as you are right now.",
+          "action": "Silence — about forty seconds — open resting."
+        },
+        {
+          "atSec": 1130,
+          "say": "In a moment we will come back. There is no hurry. Let the breath become a touch fuller, if it wants to.",
+          "action": "Breath pacing: a slightly fuller breath, unforced."
+        },
+        {
+          "atSec": 1148,
+          "say": "If your eyes have been closed, let them open when they are ready, taking in the room slowly.",
+          "action": "Gentle body cue: soft return, eyes opening at their own pace."
+        },
+        {
+          "atSec": 1165,
+          "say": "If it feels right, rest a hand on your heart, and let this land. You gave yourself this time. That matters.",
+          "action": "Gentle body cue: hands to heart, matching the existing kind close. Optional."
+        },
+        {
+          "atSec": 1182,
+          "say": "You showed up for yourself today, and that is its own kind of strength. Carry a little of this softness with you.",
+          "action": "Affirmation in Vera voice; warm close."
+        },
+        {
+          "atSec": 1196,
+          "say": "Whenever you are ready, the practice is complete. Be gentle with yourself out there.",
+          "action": "Final words, then silence to the end at 1200s."
+        }
+      ]
+    }
+  ]
+}

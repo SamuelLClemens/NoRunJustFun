@@ -16,10 +16,26 @@ import { PHRASES } from './data/phrases.js';
 import { BADGES } from './data/badges.js';
 import { gardenSVG, GARDEN_STAGE_SESSIONS } from './data/garden.js';
 import { POSES } from './data/poses.js';
+import { NEW_EXERCISES, TIER_ELIGIBILITY } from './data/movements-ext.js';
+import { MODES, TIER_META, DURATIONS } from './data/tiers.js';
+import { buildMeditation, buildMeditationById, MEDITATION_LIBRARY } from './data/meditation.js';
+import { availableTiers, gateMessage, routeTrack, filterPool, evaluateScreening,
+  PARQ_GENERAL, PARQ_POSTPARTUM, LIFE_STAGES, SEX_OPTIONS, AGE_BANDS, INJURY_FLAGS, SPACE_OPTIONS } from './data/profiles.js';
+import { PROGRAMS, getProgram, programSuggestion, advanceProgram } from './data/programs.js';
 
 const app = document.getElementById('app');
 let avatar = null;        // lazy three.js instance, one at a time
 let player = null;
+
+// The full movement pool = frozen 29 + appended new movements. exercises.js stays
+// byte-stable; tier metadata and new moves live in movements-ext.js.
+const ALL_EXERCISES = [...EXERCISES, ...NEW_EXERCISES];
+
+// Honor the reduced-motion preference override (auto | on | off) on every render.
+function applyMotionPref() {
+  const m = store.profile.reducedMotion || 'auto';
+  document.documentElement.dataset.reducedMotion = m;
+}
 
 // Logo lockup — the veronica flower forms the exclamation mark.
 // Keep in sync with the static copy in index.html (.hello-logo).
@@ -94,15 +110,21 @@ function homeScreen() {
         ${lvl.nextTitle ? `<p class="level-next">${lvl.minsToNext} min to ${lvl.nextTitle}</p>` : '<p class="level-next">Top of the garden. Legend.</p>'}
       </section>
 
+      ${programCardHTML()}
       <section class="start-card">
         <h2>How long do you have?</h2>
-        <div class="duration-grid">
-          <button class="duration-btn" data-mins="7"><span class="d-num">7</span><span class="d-label">quick reset</span></button>
-          <button class="duration-btn" data-mins="15"><span class="d-num">15</span><span class="d-label">solid stretch</span></button>
-          <button class="duration-btn" data-mins="30"><span class="d-num">30</span><span class="d-label">full bloom</span></button>
-          <button class="duration-btn" data-mins="45"><span class="d-num">45</span><span class="d-label">the deluxe</span></button>
-        </div>
-        <p class="start-note">minutes of stretch + strength, no equipment, coached by ${esc(getCharacter(store.profile.character).name)}</p>
+        ${Object.values(MODES).map((m) => `
+          <div class="mode-group">
+            <div class="mode-label">${esc(m.label)} <small>${esc(m.blurb)}</small></div>
+            <div class="duration-grid">
+              ${m.durations.map((d) => `<button class="duration-btn" data-mins="${d}"><span class="d-num">${d}</span><span class="d-label">min</span></button>`).join('')}
+            </div>
+          </div>`).join('')}
+        <p class="start-note">pick a length, then choose how it feels — no equipment, coached by ${esc(getCharacter(store.profile.character).name)}</p>
+        <p class="start-note start-links">
+          <a href="#intake">Personalize your sessions</a>
+          <label class="inline-toggle"><input type="checkbox" id="home-chair" ${store.profile.chairMode ? 'checked' : ''}> Chair mode</label>
+        </p>
       </section>
 
       <footer class="privacy-note">
@@ -113,11 +135,228 @@ function homeScreen() {
   app.querySelectorAll('.duration-btn').forEach((b) => {
     b.addEventListener('click', () => {
       sound.unlock();
-      go('#session-' + b.dataset.mins);
+      go('#tier-' + b.dataset.mins);
     });
   });
+  const chair = document.getElementById('home-chair');
+  if (chair) chair.addEventListener('change', (e) => { store.profile.chairMode = e.target.checked; save(); });
+  const progStart = document.getElementById('prog-start');
+  if (progStart) progStart.addEventListener('click', () => { sound.unlock(); go(progStart.dataset.go); });
 
   if (!store.profile.seenSafety) showSafetyOverlay();
+}
+
+// Optional guided-program card: today's suggestion if enrolled, else a soft invite.
+function programCardHTML() {
+  const st = store.progress.program;
+  if (st) {
+    const prog = getProgram(st.id);
+    const sug = programSuggestion(prog, st);
+    if (prog && sug) {
+      const tm = TIER_META[sug.suggestedTier];
+      return `<section class="program-card" aria-label="Your guided path">
+        <div class="prog-row"><strong>${esc(prog.name)}</strong><a href="#programs" class="linkish small">manage</a></div>
+        <p class="prog-sug">${esc(sug.weekLabel)} · today: <strong>${sug.suggestedDuration} min ${esc(tm ? tm.label : sug.suggestedTier)}</strong> — ${esc(sug.theme)}</p>
+        <button class="btn btn-primary" id="prog-start" data-go="#play-${sug.suggestedDuration}-${sug.suggestedTier}">Start today's session</button>
+        <p class="prog-note">Optional, and your garden grows the same whether you follow it or not.</p>
+      </section>`;
+    }
+  }
+  return `<p class="start-note program-invite"><a href="#programs">Want a gentle guided path? Try a program — optional, leave anytime.</a></p>`;
+}
+
+// ---------------------------------------------------------------- tier chooser
+
+function modeFor(mins) {
+  return Object.values(MODES).find((m) => m.durations.includes(mins)) || MODES.got_time;
+}
+
+function tierScreen(mins) {
+  const avail = new Set(availableTiers(store.profile));
+  const workoutTiers = ['no_sweat', 'slightly_sweaty', 'super_sweaty'];
+  const mode = modeFor(mins);
+
+  const tierCard = (t) => {
+    const tm = TIER_META[t];
+    const ok = avail.has(t);
+    const msg = ok ? '' : esc(gateMessage(store.profile, t) || 'Complete the readiness questions to unlock this.');
+    return `<button class="tier-card ${ok ? '' : 'locked'}" data-tier="${t}" ${ok ? '' : 'aria-disabled="true"'}>
+      <strong>${esc(tm.label)}</strong>
+      <small>${esc(tm.blurb)}</small>
+      ${ok ? '' : `<span class="tier-gate">🔒 ${msg}</span>`}
+    </button>`;
+  };
+
+  const libHTML = MEDITATION_LIBRARY.map((m) =>
+    `<button class="med-lib-btn" data-med="${m.id}"><span>${esc(m.theme)}</span><small>${m.minutes} min</small></button>`).join('');
+
+  app.innerHTML = `
+    <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">${mins} min · ${esc(mode.label)}</h1></header>
+    <main class="narrow tier-screen">
+      <section class="card">
+        <h2>How do you want it to feel?</h2>
+        <div class="tier-grid">
+          ${workoutTiers.map(tierCard).join('')}
+          ${tierCard('meditation')}
+        </div>
+      </section>
+      <section class="card">
+        <strong>Browse a meditation</strong>
+        <p class="hint">Or pick the core practice above. A meditation grows your garden exactly like a workout.</p>
+        <div class="med-lib">${libHTML}</div>
+      </section>
+    </main>`;
+
+  app.querySelectorAll('.tier-card').forEach((b) => b.addEventListener('click', () => {
+    const t = b.dataset.tier;
+    if (!avail.has(t)) {
+      // Gated: surface the consult-a-clinician copy and offer the gentler path.
+      alert(gateMessage(store.profile, t) || 'Complete the readiness questions in Personalize to unlock this.');
+      return;
+    }
+    sound.unlock();
+    go(`#play-${mins}-${t}`);
+  }));
+  app.querySelectorAll('.med-lib-btn').forEach((b) => b.addEventListener('click', () => {
+    sound.unlock();
+    go(`#play-lib-${b.dataset.med}`);
+  }));
+}
+
+// ---------------------------------------------------------------- personalize / intake
+
+function intakeScreen() {
+  const p = store.profile;
+  const k = p.intake || {};
+  const opt = (v, label, sel) => `<option value="${esc(v)}" ${sel === v ? 'selected' : ''}>${esc(label)}</option>`;
+  const triState = (key, label, val) => `
+    <label class="parq-item"><span>${esc(label)}</span>
+      <select data-parq="${key}">
+        <option value="" ${val == null ? 'selected' : ''}>Skip</option>
+        <option value="no" ${val === false ? 'selected' : ''}>No</option>
+        <option value="yes" ${val === true ? 'selected' : ''}>Yes</option>
+      </select></label>`;
+  const isPP = ['pp_early', 'pp_recovery', 'pp_strengthening', 'pp_late', 'pregnant'].includes(k.lifeStage);
+  const parq = k.parq || {};
+
+  app.innerHTML = `
+    <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Personalize</h1></header>
+    <main class="narrow settings intake">
+      <section class="card">
+        <p class="hint">Everything here is optional and stays on this device. It only helps us pick safe, comfortable sessions for you — it is never shown as a number, never a goal, and never used to shame. <strong>This is exercise guidance, not medical advice.</strong></p>
+      </section>
+      <section class="card">
+        <label><strong>Life stage</strong>
+          <select id="in-lifeStage">${[{ id: '', label: 'Prefer not to say' }, ...LIFE_STAGES].map((s) => opt(s.id, s.label, k.lifeStage || '')).join('')}</select>
+        </label>
+        <label class="toggle"><input type="checkbox" id="in-cleared" ${k.clearedByClinician ? 'checked' : ''}> A clinician has cleared me for exercise</label>
+        <label><strong>Sex assigned at birth</strong> <small>(only affects safe programming)</small>
+          <select id="in-sex">${[{ v: '', l: 'Prefer not to say' }, ...SEX_OPTIONS.map((s) => ({ v: s, l: s }))].map((o) => opt(o.v, o.l, k.sexAssignedAtBirth || '')).join('')}</select>
+        </label>
+        <label><strong>Age</strong>
+          <select id="in-age">${[{ v: '', l: 'Prefer not to say' }, ...AGE_BANDS.map((a) => ({ v: a, l: a.replace('_', '–').replace('plus', '+').replace('u18', 'under 18') }))].map((o) => opt(o.v, o.l, k.ageBand || '')).join('')}</select>
+        </label>
+        <label><strong>Where do you move?</strong>
+          <select id="in-space">${SPACE_OPTIONS.map((s) => opt(s, s.replace('_', ' '), k.space || 'mat')).join('')}</select>
+        </label>
+      </section>
+      <section class="card">
+        <strong>Anything to work around?</strong>
+        <div class="flag-grid">
+          ${INJURY_FLAGS.map((f) => `<label class="flag"><input type="checkbox" data-injury="${f}" ${(k.injuryFlags || []).includes(f) ? 'checked' : ''}> ${esc(f.replace(/_/g, ' '))}</label>`).join('')}
+        </div>
+      </section>
+      <section class="card">
+        <strong>Quick readiness check</strong>
+        <p class="hint">A standard pre-activity screen. A "yes" on the heart or dizziness questions keeps the most vigorous sessions behind a "check with your clinician first" gate — the gentler sessions and meditation stay open.</p>
+        ${PARQ_GENERAL.map((q) => triState(q.key, q.label, parq[q.key])).join('')}
+        ${isPP ? `<hr><p class="hint">A few postpartum-specific questions:</p>${PARQ_POSTPARTUM.map((q) => triState(q.key, q.label, parq[q.key])).join('')}` : ''}
+      </section>
+      <section class="card">
+        <strong>Accessibility</strong>
+        <label class="toggle"><input type="checkbox" id="in-chair" ${p.chairMode ? 'checked' : ''}> Chair mode <small>(seated / standing-by-chair)</small></label>
+        <label><strong>Motion</strong>
+          <select id="in-motion">${['auto', 'on', 'off'].map((m) => opt(m, m === 'auto' ? 'Follow my device' : m === 'on' ? 'Reduce motion' : 'Full motion', p.reducedMotion || 'auto')).join('')}</select>
+        </label>
+      </section>
+      <section class="card center">
+        <p id="in-summary" class="hint"></p>
+        <button class="btn btn-primary" id="in-save">Save</button>
+      </section>
+    </main>`;
+
+  const readIntake = () => {
+    const get = (id) => document.getElementById(id).value;
+    const parqVals = {};
+    app.querySelectorAll('[data-parq]').forEach((s) => {
+      parqVals[s.dataset.parq] = s.value === '' ? null : s.value === 'yes';
+    });
+    const injuries = [...app.querySelectorAll('[data-injury]:checked')].map((c) => c.dataset.injury);
+    return {
+      sexAssignedAtBirth: get('in-sex') || null,
+      ageBand: get('in-age') || null,
+      lifeStage: get('in-lifeStage') || null,
+      clearedByClinician: document.getElementById('in-cleared').checked,
+      space: get('in-space') || 'mat',
+      injuryFlags: injuries,
+      conditionFlags: (store.profile.intake && store.profile.intake.conditionFlags) || [],
+      parq: parqVals,
+      parqUpdatedAt: new Date().toISOString(),
+    };
+  };
+  const refreshSummary = () => {
+    const probe = { ...store.profile, intake: readIntake(), chairMode: document.getElementById('in-chair').checked };
+    const tiers = availableTiers(probe).map((t) => TIER_META[t].label).join(', ');
+    document.getElementById('in-summary').textContent = `Available now: ${tiers}.`;
+  };
+  app.addEventListener('change', refreshSummary);
+  // life-stage change re-renders to reveal/hide the postpartum questions
+  document.getElementById('in-lifeStage').addEventListener('change', () => {
+    store.profile.intake = readIntake(); save(); intakeScreen();
+  });
+  refreshSummary();
+  document.getElementById('in-save').addEventListener('click', () => {
+    store.profile.intake = readIntake();
+    store.profile.chairMode = document.getElementById('in-chair').checked;
+    store.profile.reducedMotion = document.getElementById('in-motion').value;
+    store.profile.guidelineAccepted = true;
+    save();
+    applyMotionPref();
+    go('#');
+  });
+}
+
+// ---------------------------------------------------------------- programs
+
+function programsScreen() {
+  const st = store.progress.program;
+  app.innerHTML = `
+    <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Guided paths</h1></header>
+    <main class="narrow">
+      <section class="card"><p class="hint">A guided path just suggests today's session. It is optional, you can pause or leave any time, and your garden grows the same whether you follow it or not.</p></section>
+      ${PROGRAMS.map((prog) => {
+        const enrolled = st && st.id === prog.id;
+        return `<section class="card">
+          <strong>${esc(prog.name)}</strong>
+          <p class="hint">${esc(prog.blurb)}</p>
+          ${enrolled
+            ? `<button class="btn" id="leave-${prog.id}">Leave this path</button> <span class="hint">You are on this path.</span>`
+            : `<button class="btn btn-primary" data-enroll="${prog.id}">Start this path</button>`}
+        </section>`;
+      }).join('')}
+    </main>`;
+  app.querySelectorAll('[data-enroll]').forEach((b) => b.addEventListener('click', () => {
+    store.progress.program = { id: b.dataset.enroll, startedAt: todayKey(), weekIdx: 0, dayIdx: 0 };
+    save();
+    go('#');
+  }));
+  PROGRAMS.forEach((prog) => {
+    const lv = document.getElementById('leave-' + prog.id);
+    if (lv) lv.addEventListener('click', () => {
+      // Leaving is penalty-free: completed sessions already grew the garden; nothing is clawed back.
+      store.progress.program = null; save(); go('#');
+    });
+  });
 }
 
 // ---------------------------------------------------------------- safety
@@ -164,8 +403,7 @@ function safetyScreen() {
 
 // ---------------------------------------------------------------- session
 
-function sessionScreen(mins) {
-  const plan = buildSession(mins, EXERCISES, { lastCloseId: store.progress.lastCloseId });
+function sessionScreen(plan) {
   const profile = store.profile;
 
   app.innerHTML = `
@@ -249,7 +487,7 @@ function sessionScreen(mins) {
       moveStart(item, idx) {
         document.getElementById('move-name').textContent = item.ex.name;
         document.getElementById('block-chip').textContent =
-          { arrive: 'arrive', warmup: 'warm-up', main: 'main', winddown: 'wind-down', close: 'breathe' }[item.block] || '';
+          { arrive: 'arrive', warmup: 'warm-up', main: 'main', winddown: 'wind-down', close: 'breathe', meditation: 'meditate' }[item.block] || '';
         dots.setAttribute('aria-label', `Move ${idx + 1} of ${plan.items.length}: ${item.ex.name}`);
         dots.querySelectorAll('.dot').forEach((d, i) => {
           d.classList.toggle('done', i < idx);
@@ -319,6 +557,12 @@ function finishSession(stats) {
   if (stats.minsMoved >= 1 && stats.completedIds.length > 0) {
     recordSession(store, stats);
     newBadges = checkBadges(store, GARDEN_STAGE_SESSIONS);
+    // advance the optional program's suggestion pointer — purely a "what next"
+    // nicety; the garden/streak/level/badge state above never read program state.
+    if (store.progress.program) {
+      const prog = getProgram(store.progress.program.id);
+      if (prog) store.progress.program = advanceProgram(prog, store.progress.program);
+    }
     save();
   }
   const lvlAfter = levelInfo(store.progress.totalMins);
@@ -608,21 +852,61 @@ async function ensureRealisticClass() {
   }
 }
 
+// Build a session plan for a play route, or null if it cannot/should not start.
+function planFor(mins, tier) {
+  if (tier === 'meditation') return buildMeditation(mins);
+  // Safety double-guard: never assemble a tier the screening has gated.
+  if (!availableTiers(store.profile).includes(tier)) return null;
+  const pool = filterPool(ALL_EXERCISES, store.profile);
+  return buildSession(mins, pool, { lastCloseId: store.progress.lastCloseId, tier, tierEligibility: TIER_ELIGIBILITY });
+}
+
 async function render() {
   const seq = ++renderSeq;
   teardownSession();
+  applyMotionPref();
   window.scrollTo(0, 0);
   const h = location.hash || '#';
-  if (h.startsWith('#session-')) {
-    const mins = parseInt(h.slice(9), 10);
-    if ([7, 15, 30, 45].includes(mins)) {
+
+  // tier chooser for a chosen duration
+  if (h.startsWith('#tier-')) {
+    const mins = parseInt(h.slice(6), 10);
+    if (DURATIONS.includes(mins)) return tierScreen(mins);
+  }
+
+  // a themed-library meditation
+  if (h.startsWith('#play-lib-')) {
+    const medId = h.slice('#play-lib-'.length);
+    const plan = buildMeditationById(medId);
+    if (!plan) { homeScreen(); return; }
+    await ensureAvatarClass();
+    if (store.profile.fullInstructorOn) await ensureRealisticClass();
+    if (seq !== renderSeq) return;
+    store.profile.defaultTier = 'meditation'; save();
+    sessionScreen(plan);
+    return;
+  }
+
+  // a tiered workout or the core meditation: #play-{mins}-{tier}
+  if (h.startsWith('#play-')) {
+    const rest = h.slice('#play-'.length);
+    const dash = rest.indexOf('-');
+    const mins = parseInt(rest.slice(0, dash), 10);
+    const tier = rest.slice(dash + 1);
+    if (DURATIONS.includes(mins) && TIER_META[tier]) {
+      const plan = planFor(mins, tier);
+      if (!plan) { go('#tier-' + mins); return; } // gated — send back to the chooser
       await ensureAvatarClass();
       if (store.profile.fullInstructorOn) await ensureRealisticClass();
       if (seq !== renderSeq) return; // superseded while modules loaded
-      sessionScreen(mins);
+      store.profile.defaultTier = tier; save();
+      sessionScreen(plan);
       return;
     }
   }
+
+  if (h === '#intake') return intakeScreen();
+  if (h === '#programs') return programsScreen();
   if (h === '#badges') return badgesScreen();
   if (h === '#settings') return settingsScreen();
   if (h === '#safety') return safetyScreen();
