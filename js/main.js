@@ -87,7 +87,6 @@ function homeScreen() {
     <header class="topbar">
       <div class="brand">${logoSVG()}</div>
       <nav class="topnav">
-        <a href="#money">Money</a>
         <a href="#badges">Badges</a>
         <a href="#settings" aria-label="Settings">Settings</a>
       </nav>
@@ -114,6 +113,45 @@ function homeScreen() {
       </section>
 
       ${programCardHTML()}
+      ${pillarsHTML()}
+
+      <footer class="privacy-note">
+        <p>🌱 <strong>Private by design.</strong> Your progress lives only on this device. No account, no tracking, no data ever leaves your phone. <a href="#safety">Safety notice</a></p>
+      </footer>
+    </main>`;
+
+  app.querySelectorAll('.pillar-card').forEach((b) =>
+    b.addEventListener('click', () => { sound.unlock(); go(b.dataset.go); }));
+  const progStart = document.getElementById('prog-start');
+  if (progStart) progStart.addEventListener('click', () => { sound.unlock(); go(progStart.dataset.go); });
+
+  if (!store.profile.seenSafety) showSafetyOverlay();
+}
+
+// The three pillars (Mind/Body/Soul) — the app's top-level navigation. Each pillar
+// owns its own duration/option step; all of them grow the same shared garden.
+function pillarsHTML() {
+  const pillars = [
+    { go: '#body', cls: 'body', ic: '🤸', title: 'Body', blurb: 'Move — gentle to vigorous, no equipment' },
+    { go: '#mind', cls: 'mind', ic: '📚', title: 'Mind', blurb: 'Learn — money, parenting, communication' },
+    { go: '#soul', cls: 'soul', ic: '🧘', title: 'Soul', blurb: 'Be still — meditation and calm' },
+  ];
+  return `<section class="pillars" aria-label="Choose how to grow today">
+      <div class="pillar-grid">
+        ${pillars.map((p) => `<button class="pillar-card ${p.cls}" data-go="${p.go}">
+          <span class="pillar-ic" aria-hidden="true">${p.ic}</span>
+          <span class="pillar-txt"><strong>${p.title}</strong><small>${esc(p.blurb)}</small></span>
+        </button>`).join('')}
+      </div>
+      <p class="start-note">Whatever you pick, your garden grows the same — consistency, never intensity.</p>
+    </section>`;
+}
+
+// ---------------------------------------------------------------- Body pillar (workouts)
+function bodyScreen() {
+  app.innerHTML = `
+    <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Body · Move</h1></header>
+    <main class="narrow body-screen">
       <section class="start-card">
         <h2>How long do you have?</h2>
         ${Object.values(MODES).map((m) => `
@@ -129,24 +167,81 @@ function homeScreen() {
           <label class="inline-toggle"><input type="checkbox" id="home-chair" ${store.profile.chairMode ? 'checked' : ''}> Chair mode</label>
         </p>
       </section>
-
-      <footer class="privacy-note">
-        <p>🌱 <strong>Private by design.</strong> Your progress lives only on this device. No account, no tracking, no data ever leaves your phone. <a href="#safety">Safety notice</a></p>
-      </footer>
     </main>`;
-
-  app.querySelectorAll('.duration-btn').forEach((b) => {
-    b.addEventListener('click', () => {
-      sound.unlock();
-      go('#tier-' + b.dataset.mins);
-    });
-  });
+  app.querySelectorAll('.duration-btn').forEach((b) =>
+    b.addEventListener('click', () => { sound.unlock(); go('#tier-' + b.dataset.mins); }));
   const chair = document.getElementById('home-chair');
   if (chair) chair.addEventListener('change', (e) => { store.profile.chairMode = e.target.checked; save(); });
-  const progStart = document.getElementById('prog-start');
-  if (progStart) progStart.addEventListener('click', () => { sound.unlock(); go(progStart.dataset.go); });
+}
 
-  if (!store.profile.seenSafety) showSafetyOverlay();
+// ---------------------------------------------------------------- Soul pillar (meditation +)
+function soulScreen() {
+  const durationBtns = DURATIONS.map((m) =>
+    `<button class="duration-btn" data-mins="${m}"><span class="d-num">${m}</span><span class="d-label">min</span></button>`).join('');
+  const libHTML = MEDITATION_LIBRARY.map((m) =>
+    `<button class="med-lib-btn" data-med="${m.id}"><span>${esc(m.theme)}</span><small>${m.minutes} min</small></button>`).join('');
+  const soon = (ic, title, blurb) => `<div class="soul-soon" aria-disabled="true">
+        <span class="pillar-ic" aria-hidden="true">${ic}</span>
+        <span class="pillar-txt"><strong>${esc(title)}</strong><small>${esc(blurb)}</small></span>
+        <span class="soon-tag">Coming soon</span>
+      </div>`;
+  app.innerHTML = `
+    <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Soul · Be still</h1></header>
+    <main class="narrow soul-screen">
+      <section class="card">
+        <h2>Meditate</h2>
+        <p class="hint">Pick how long you have — the core practice scales to fit. A meditation grows your garden exactly like a workout.</p>
+        <div class="duration-grid" id="soul-durations">${durationBtns}</div>
+      </section>
+      <section class="card">
+        <strong>Or browse a theme</strong>
+        <div class="med-lib" id="soul-library">${libHTML}</div>
+      </section>
+      <section class="card soul-future">
+        <h2>More for the soul</h2>
+        <p class="hint">New reflective practices are growing here.</p>
+        ${soon('🔮', 'Crystal energy', 'A calm, exploratory practice')}
+        ${soon('🌙', 'Dream interpretation', 'Reflect gently on your dreams')}
+      </section>
+    </main>`;
+  document.querySelectorAll('#soul-durations .duration-btn').forEach((b) =>
+    b.addEventListener('click', () => { sound.unlock(); go('#play-' + b.dataset.mins + '-meditation'); }));
+  document.querySelectorAll('#soul-library .med-lib-btn').forEach((b) =>
+    b.addEventListener('click', () => { sound.unlock(); go('#play-lib-' + b.dataset.med); }));
+}
+
+// ---------------------------------------------------------------- Mind pillar (learning)
+function mindScreen() {
+  // The learning subjects. A subject is live once it is registered in tracks.js;
+  // the rest show as coming-soon until their content lands (slices 3-4), then
+  // auto-enable here.
+  const subjects = [
+    { id: 'money', ic: '🪙', title: 'Money', blurb: 'Budgeting, compound growth, risk, retirement, property' },
+    { id: 'parenting', ic: '🧸', title: 'Parenting', blurb: 'Child development, positive discipline, connection' },
+    { id: 'communication', ic: '💬', title: 'Communication', blurb: 'Nonviolent Communication — needs, requests, empathy' },
+  ];
+  const cards = subjects.map((s) => {
+    const live = !!getTrack(s.id);
+    const inner = `<span class="fin-lib-ic">${s.ic}</span>
+        <span class="fin-lib-txt"><strong>${esc(s.title)}</strong><small>${esc(s.blurb)}</small></span>`;
+    return live
+      ? `<button class="fin-lib-btn mind-subject" data-track="${esc(s.id)}">${inner}
+        <span class="fin-lib-meta"><span class="fin-mins">Learn →</span></span></button>`
+      : `<div class="fin-lib-btn mind-subject locked" aria-disabled="true">${inner}
+        <span class="fin-lib-meta"><span class="soon-tag">Coming soon</span></span></div>`;
+  }).join('');
+  app.innerHTML = `
+    <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Mind · Learn</h1></header>
+    <main class="narrow finance-section">
+      <div class="fin-banner"><span class="fin-info" aria-hidden="true">🌱</span><span>Bite-size, sourced lessons. Educational only — not professional advice.</span></div>
+      <section class="card">
+        <h2>Pick a subject</h2>
+        <p class="hint">Your coach teaches you, scaled to the time you have. Each subject grows the same garden.</p>
+        <div class="fin-lib" id="mind-subjects">${cards}</div>
+      </section>
+    </main>`;
+  document.querySelectorAll('#mind-subjects .mind-subject[data-track]').forEach((b) =>
+    b.addEventListener('click', () => { location.hash = '#learn-' + b.dataset.track; }));
 }
 
 // Optional guided-program card: today's suggestion if enrolled, else a soft invite.
@@ -190,23 +285,14 @@ function tierScreen(mins) {
     </button>`;
   };
 
-  const libHTML = MEDITATION_LIBRARY.map((m) =>
-    `<button class="med-lib-btn" data-med="${m.id}"><span>${esc(m.theme)}</span><small>${m.minutes} min</small></button>`).join('');
-
   app.innerHTML = `
-    <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">${mins} min · ${esc(mode.label)}</h1></header>
+    <header class="topbar"><a class="back" href="#body">← Back</a><h1 class="page-title">${mins} min · ${esc(mode.label)}</h1></header>
     <main class="narrow tier-screen">
       <section class="card">
         <h2>How do you want it to feel?</h2>
         <div class="tier-grid">
           ${workoutTiers.map(tierCard).join('')}
-          ${tierCard('meditation')}
         </div>
-      </section>
-      <section class="card">
-        <strong>Browse a meditation</strong>
-        <p class="hint">Or pick the core practice above. A meditation grows your garden exactly like a workout.</p>
-        <div class="med-lib">${libHTML}</div>
       </section>
     </main>`;
 
@@ -219,10 +305,6 @@ function tierScreen(mins) {
     }
     sound.unlock();
     go(`#play-${mins}-${t}`);
-  }));
-  app.querySelectorAll('.med-lib-btn').forEach((b) => b.addEventListener('click', () => {
-    sound.unlock();
-    go(`#play-lib-${b.dataset.med}`);
   }));
 }
 
@@ -978,6 +1060,11 @@ async function render() {
     if (seq !== renderSeq) return;
     return startLessonFor(trackId, plan);
   }
+
+  // the three pillars
+  if (h === '#mind') return mindScreen();
+  if (h === '#body') return bodyScreen();
+  if (h === '#soul') return soulScreen();
 
   if (h === '#intake') return intakeScreen();
   if (h === '#programs') return programsScreen();

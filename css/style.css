@@ -453,3 +453,62 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 /* finance: surface the existing on-device natural voice (best free quality) */
 .fin-voice p { margin: 0 0 10px; }
 .fin-voice-on { text-align: center; color: var(--green-600); font-weight: 700; font-size: 0.9rem; }
+
+/* ====================================================================
+   Mind / Body / Soul — the three pillars (ADDITIVE). The home screen's
+   primary navigation; each pillar owns its own duration/option step and
+   all grow the same shared garden. Body = green, Mind = the learning
+   periwinkle (shared with Money), Soul = a calm amethyst.
+   ==================================================================== */
+:root {
+  --soul-accent: #8B6FC7;   /* calm amethyst — the Soul signature */
+  --soul-tint: #F0EBFA;     /* lavender wash for cards/banners */
+  --soul-border: #DDD2F1;
+  --soul-ink: #4A3A6B;      /* readable text on lavender tints */
+}
+
+.pillars { margin-top: 4px; }
+.pillar-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.pillar-card {
+  display: flex; align-items: center; gap: 14px; text-align: left;
+  padding: 16px 18px; border-radius: var(--radius);
+  border: 2px solid #CDE9D3; background: var(--card);
+  box-shadow: var(--shadow-soft); cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.1s ease, background 0.15s ease;
+}
+.pillar-card:hover { transform: translateY(-1px); }
+.pillar-card:active { transform: translateY(0); }
+.pillar-ic { font-size: 1.9rem; line-height: 1; flex: 0 0 auto; width: 52px; height: 52px;
+  display: grid; place-items: center; border-radius: 50%; }
+.pillar-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pillar-txt strong { font-family: var(--font-display); font-size: 1.3rem; }
+.pillar-txt small { color: var(--ink-soft); font-size: 0.86rem; }
+
+.pillar-card.body { border-color: #BFE3C7; }
+.pillar-card.body:hover { border-color: var(--green-500); background: #F2FAF3; }
+.pillar-card.body .pillar-ic { background: #EAF6EC; }
+.pillar-card.mind { border-color: var(--finance-border); }
+.pillar-card.mind:hover { border-color: var(--finance-accent); background: var(--finance-tint); }
+.pillar-card.mind .pillar-ic { background: var(--finance-tint); }
+.pillar-card.soul { border-color: var(--soul-border); }
+.pillar-card.soul:hover { border-color: var(--soul-accent); background: var(--soul-tint); }
+.pillar-card.soul .pillar-ic { background: var(--soul-tint); }
+
+@media (min-width: 560px) {
+  .pillar-grid { grid-template-columns: repeat(3, 1fr); }
+  .pillar-card { flex-direction: column; text-align: center; gap: 8px; }
+  .pillar-txt { align-items: center; }
+}
+
+/* Soul page accents + reserved "coming soon" practices (crystal/dream) */
+.soul-screen .page-title { color: var(--soul-ink); }
+.soul-soon { display: flex; align-items: center; gap: 12px; padding: 12px 14px; opacity: 0.78;
+  border: 2px dashed var(--soul-border); border-radius: var(--radius-sm); margin-top: 8px; background: var(--soul-tint); }
+.soul-soon .pillar-ic { width: 40px; height: 40px; font-size: 1.4rem; background: #fff; }
+.soon-tag { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--soul-ink); background: var(--soul-tint); border: 1px solid var(--soul-border);
+  border-radius: 999px; padding: 2px 8px; margin-left: auto; white-space: nowrap; }
+/* Mind subjects reuse .fin-lib-btn; the not-yet-live ones read as disabled */
+.mind-subject.locked { opacity: 0.72; cursor: default; }
+.mind-subject.locked:hover { border-color: var(--finance-border); background: var(--card); }
+.mind-subject.locked .soon-tag { color: var(--finance-ink); background: var(--finance-tint); border-color: var(--finance-border); }
