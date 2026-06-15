@@ -80,6 +80,77 @@ med = read('js/data/meditation.js')
 for d in DURATIONS:
     ok(f'"med-core-{d}"' in med or f'med-core-{d}' in med, f"meditation core missing duration {d}")
 
+# ---- Finance module (Money Garden) — additive foundations ----------------
+def strip_js_comments(s):
+    s = re.sub(r'/\*.*?\*/', '', s, flags=re.S)   # block comments
+    s = re.sub(r'//[^\n]*', '', s)                # line comments
+    return s
+
+# 10) finance badges are a distinct, 'fin-' namespaced set that cannot collide
+#     with the fitness badges in the shared progress.badges{} ledger
+fb = read('js/data/badges.finance.js')
+fin_badge_ids = re.findall(r'"id":\s*"([^"]+)"', fb)
+fit_badge_ids = re.findall(r'"id":\s*"([^"]+)"', read('js/data/badges.js'))
+ok(len(fin_badge_ids) >= 1, "badges.finance.js defines no FINANCE_BADGES")
+ok(all(i.startswith('fin-') for i in fin_badge_ids), "a finance badge id is not 'fin-' namespaced")
+ok(not (set(fin_badge_ids) & set(fit_badge_ids)), "a finance badge id collides with a fitness badge id")
+ok(len(re.findall(r'"category":\s*"finance"', fb)) >= len(fin_badge_ids),
+   "a finance badge is missing category:'finance'")
+for key in ['"name"', '"desc"', '"icon"']:
+    ok(fb.count(key) >= len(fin_badge_ids), f"a finance badge is missing {key}")
+
+# 11) finance domain module exists and is isolated: it must NOT inflate the
+#     minutes-based levels or the fitness duration badges (no recordSession /
+#     totalMins / durationsTried writes — checked against comment-stripped code)
+fin_code = strip_js_comments(read('js/finance.js'))
+for fn in ['finishFinance', 'checkFinanceBadges', 'recordLessonComplete']:
+    ok(f'export function {fn}' in fin_code, f"finance.js missing export {fn}")
+ok('recordSession(' not in fin_code, "finance.js must not call recordSession (would inflate levels/durations)")
+ok('totalMins' not in fin_code, "finance.js must not write totalMins (no level inflation)")
+ok('durationsTried' not in fin_code, "finance.js must not write durationsTried (protects 'all-durations')")
+
+# 12) finance state is additive — sub-object present, version NOT bumped past 2
+ok('finance:' in st, "state.js defaults() missing the finance sub-object")
+ok('CURRENT_VERSION = 3' not in st,
+   "state.js version bumped — finance must be additive via the migrate spread, not a version bump")
+
+# 13) the player records a plan-level kind so finance lessons are not mislabelled
+ok('this.plan.kind' in read('js/player.js'), "player.js does not honour plan.kind (finance would record as 'movement')")
+
+# 14) finance lessons — accuracy protocol: disclaimer present, fact-heavy topics
+#     are sourced from authoritative US sources, and no promised-return claims
+lessons = read('js/data/lessons.js')
+ok('not financial advice' in lessons, "lessons.js missing the 'not financial advice' disclaimer")
+ok(('not guaranteed' in lessons) or ('guaranteed or risk-free' in lessons) or ('never guaranteed' in lessons),
+   "lessons.js disclaimer does not state returns are not guaranteed")
+ok('SPOKEN_DISCLAIMER' in lessons and 'DISCLAIMER_SEG' in lessons, "lessons.js missing the spoken-disclaimer segment")
+# every fact-heavy curriculum lesson must be present and carry a sources list
+for lid in ['budgeting', 'compound-growth', 'risk-diversification', 'retirement-accounts', 'property-basics']:
+    ok(f"id: '{lid}'" in lessons, f"lessons.js missing curriculum lesson '{lid}'")
+# authoritative source domains (need a strong majority of the official five)
+auth_domains = ['irs.gov', 'investor.gov', 'consumerfinance.gov', 'fdic.gov', 'federalreserve.gov']
+present = [d for d in auth_domains if d in lessons]
+ok(len(present) >= 4, f"lessons.js cites too few authoritative sources ({present})")
+# year-labelled updatable figures (the 2026 IRS limits must be year-stamped)
+ok('2026' in lessons and ('Notice 2025-67' in lessons or 'irs.gov' in lessons), "lessons.js 2026 figures are not year-labelled/sourced")
+# no promised-return language (educational, not advice). These exact promo phrases
+# must never appear; the lessons discuss guarantees only in negated/cautionary form.
+low = lessons.lower()
+for bad in ['guaranteed return', 'guaranteed returns', 'guaranteed profit', 'risk-free return',
+            'risk free return', 'get rich', 'cannot lose money', "can't lose", 'double your money']:
+    ok(bad not in low, f"lessons.js contains a promised-return phrase: '{bad}'")
+
+# 15) finance topic badges award off completed lesson ids
+fin = strip_js_comments(read('js/finance.js'))
+ok("done.has('budgeting')" in fin or 'done.has' in fin, "finance.js topic badges do not key off completed lesson ids")
+
+# 16) service worker precaches the new finance files + bumped past v3.2.0 so
+#     installed PWAs pick them up (addAll is atomic — every path must resolve)
+sw = read('sw.js')
+for f in ['js/finance.js', 'js/finance-screen.js', 'js/data/lessons.js', 'js/data/badges.finance.js']:
+    ok(f"'{f}'" in sw, f"sw.js PRECACHE missing {f}")
+ok("'ygt-v3.2.0'" not in sw, "sw.js CACHE_VERSION must be bumped past v3.2.0 so installed apps pick up finance")
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")

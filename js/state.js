@@ -9,7 +9,7 @@ function defaults() {
     version: CURRENT_VERSION,
     profile: {
       name: '',
-      character: 'vera',
+      character: 'jasmine',
       voiceURI: '',
       style: 'gentle',          // gentle | cheerleader | funny
       voiceOn: true,
@@ -39,6 +39,13 @@ function defaults() {
       tiersTried: [],           // ['no_sweat',...] for future tier badges
       meditationCount: 0,       // meditations completed (garden still +1 each, like movement)
       program: null,            // { id, startedAt, weekIdx, dayIdx } | null — NEVER read by garden/streak/level/badge
+      // --- finance module additions (additive; auto-backfilled for existing users
+      // by migrate()'s spread, so NO version bump). Source of truth for finance
+      // lessons/games + finance badges. On completion, finance ALSO pushes ONE
+      // kind:'finance' record into sessions[] so the shared garden + streak reflect
+      // combined activity — but it never touches totalMins/durationsTried/tiersTried/
+      // moveCounts, so minutes-based levels and fitness duration/move badges are safe.
+      finance: { lessons: [], lessonsCompleted: 0, gamesWon: 0 }, // lessons: { id, date, sources, game?, won? }
     },
   };
 }
@@ -62,6 +69,11 @@ function migrate(data) {
     if (typeof out.progress.meditationCount !== 'number') out.progress.meditationCount = 0;
     if (out.progress.program === undefined) out.progress.program = null;
   }
+  // Retired-roster remap: the original four coach ids were replaced by the
+  // name-driven cast. Map any stored old id to its nearest new coach so the
+  // picker still highlights a selection. Idempotent — new ids pass through.
+  const remap = { vera: 'jasmine', maya: 'nokeke', amara: 'nokeke', sol: 'aguibou' };
+  if (remap[out.profile.character]) out.profile.character = remap[out.profile.character];
   return out;
 }
 

@@ -218,9 +218,56 @@ function buildHair(head, style, hairMat) {
     back.position.set(0, 0.03, -0.085);
     sway.add(back);
     hasSway = true;
+  } else if (style === 'short') {
+    // close crop: a low cap hugging the skull, no sway
+    const crop = new THREE.Mesh(
+      new THREE.SphereGeometry(0.126, 10, 8, 0, Math.PI * 2, 0, Math.PI * 0.6),
+      hairMat,
+    );
+    crop.position.set(0, 0.108, -0.012);
+    crop.rotation.x = -0.32;
+    head.add(crop);
   }
   return hasSway ? sway : null;
 }
+
+// Optional facial hair (male coaches): none | stubble | beard, tinted by its
+// own color so a beard can grey independently of the scalp. Female presets and
+// any "none" preset skip this entirely.
+function buildFacialHair(head, type, color) {
+  if (!type || type === 'none' || !color || color === 'none') return;
+  const opts = { color, flatShading: false };
+  if (type === 'stubble') { opts.transparent = true; opts.opacity = 0.5; }
+  const fmat = new THREE.MeshLambertMaterial(opts);
+  // jaw + chin mass hugging the lower face
+  const jaw = new THREE.Mesh(new THREE.SphereGeometry(type === 'beard' ? 0.072 : 0.066, 12, 9), fmat);
+  jaw.position.set(0, type === 'beard' ? 0.028 : 0.04, 0.05);
+  jaw.scale.set(1.18, type === 'beard' ? 0.92 : 0.62, 0.72);
+  head.add(jaw);
+  // mustache over the lip
+  const mous = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.011, 0.012), fmat);
+  mous.position.set(0, 0.082, 0.1);
+  head.add(mous);
+  if (type === 'beard') {
+    // sideburns tying the beard up toward the hairline
+    for (const sx of [-1, 1]) {
+      const sb = new THREE.Mesh(new THREE.CapsuleGeometry(0.014, 0.05, 3, 8), fmat);
+      sb.position.set(sx * 0.088, 0.092, 0.022);
+      head.add(sb);
+    }
+  }
+}
+
+// Body silhouette per build. These are multipliers on the base geometry only —
+// never on the joint-chain positions — so pose data and rig height stay valid
+// across every build. Males get a higher shoulder-to-hip ratio for a clearer
+// masculine read; females keep an even or slightly hip-led silhouette.
+const BUILDS = {
+  lean:     { shoulder: 0.95, hip: 1.00, chestX: 0.94, limb: 0.86 },
+  athletic: { shoulder: 1.03, hip: 1.00, chestX: 1.03, limb: 0.98 },
+  slim:     { shoulder: 1.00, hip: 0.92, chestX: 0.97, limb: 0.90 },
+  broad:    { shoulder: 1.18, hip: 0.98, chestX: 1.16, limb: 1.12 },
+};
 
 function buildRig(character) {
   const root = new THREE.Group();
@@ -231,16 +278,17 @@ function buildRig(character) {
   const bottom = mat(character.bottom);
   const hairMat = mat(character.hair);
   const dark = mat('#27201b');
+  const b = BUILDS[character.build] || BUILDS.athletic;
 
   // pelvis
-  box(root, 0.26, 0.15, 0.16, bottom, 0, -0.01, 0);
+  box(root, 0.26 * b.hip, 0.15, 0.16, bottom, 0, -0.01, 0);
 
   // torso chain
   joints.spine = joint(root, 0, 0.07, 0);
   capsule(joints.spine, 0.115, 0.14, top, 0.10);
   joints.chest = joint(joints.spine, 0, 0.21, 0);
   const chestMesh = capsule(joints.chest, 0.13, 0.16, top, 0.09);
-  chestMesh.scale.set(1.18, 1, 0.92);
+  chestMesh.scale.set(1.18 * b.chestX, 1, 0.92);
   joints.neck = joint(joints.chest, 0, 0.23, 0);
   capsule(joints.neck, 0.042, 0.05, skin, 0.02);
   joints.head = joint(joints.neck, 0, 0.08, 0);
@@ -259,16 +307,17 @@ function buildRig(character) {
   smile.rotation.z = Math.PI + (Math.PI * 0.125);
   joints.head.add(smile);
   const hairSway = buildHair(joints.head, character.hairStyle, hairMat);
+  buildFacialHair(joints.head, character.facialHair, character.facialHairColor);
 
   // arms (sleeve on upper arm, skin below)
   for (const side of ['L', 'R']) {
     const sx = side === 'L' ? 1 : -1;
-    const sh = joint(joints.chest, sx * 0.185, 0.16, 0);
+    const sh = joint(joints.chest, sx * 0.185 * b.shoulder, 0.16, 0);
     joints['shoulder' + side] = sh;
-    capsule(sh, 0.052, 0.17, top, -0.115);
+    capsule(sh, 0.052 * b.limb, 0.17, top, -0.115);
     const el = joint(sh, 0, -0.26, 0);
     joints['elbow' + side] = el;
-    capsule(el, 0.045, 0.16, skin, -0.105);
+    capsule(el, 0.045 * b.limb, 0.16, skin, -0.105);
     // hand: flattened palm with four relaxed fingers and a thumb
     const hand = sphere(el, 0.05, skin, 0, -0.243, 0.008, 10, 8);
     hand.scale.set(0.82, 1.05, 0.6);
@@ -290,12 +339,12 @@ function buildRig(character) {
   // legs (leggings, bare feet)
   for (const side of ['L', 'R']) {
     const sx = side === 'L' ? 1 : -1;
-    const hp = joint(root, sx * 0.095, -0.05, 0);
+    const hp = joint(root, sx * 0.095 * b.hip, -0.05, 0);
     joints['hip' + side] = hp;
-    capsule(hp, 0.072, 0.25, bottom, -0.165);
+    capsule(hp, 0.072 * b.limb, 0.25, bottom, -0.165);
     const kn = joint(hp, 0, -0.39, 0);
     joints['knee' + side] = kn;
-    capsule(kn, 0.056, 0.24, bottom, -0.155);
+    capsule(kn, 0.056 * b.limb, 0.24, bottom, -0.155);
     const an = joint(kn, 0, -0.375, 0);
     joints['ankle' + side] = an;
     box(an, 0.085, 0.055, 0.19, skin, 0, -0.035, 0.045);
