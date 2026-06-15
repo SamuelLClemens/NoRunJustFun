@@ -10,6 +10,10 @@
 // skipped cardiac question does not silently unlock Super Sweaty.
 
 import { SPACE_FLAGS } from './movements-ext.js';
+import { EXTRA_SPACE_FLAGS } from './movements-ext2.js';
+
+// Chair/floor accessibility flags for every move (original + the new batch).
+const ALL_SPACE_FLAGS = { ...SPACE_FLAGS, ...EXTRA_SPACE_FLAGS };
 
 // ---- Intake field option lists (drive the optional, editable intake UI) ----
 export const SEX_OPTIONS = ['female', 'male', 'intersex', 'prefer_not'];
@@ -167,7 +171,11 @@ export function filterPool(exercises, profile) {
   const k = (profile && profile.intake) || null;
   const chairMode = profile && profile.chairMode;
   const remove = new Set();
-  if (chairMode) (SPACE_FILTER.chair || []).forEach((id) => remove.add(id));
+  if (chairMode) {
+    (SPACE_FILTER.chair || []).forEach((id) => remove.add(id));
+    // new moves declare chair-friendliness via a flag rather than the curated list
+    exercises.forEach((e) => { const f = ALL_SPACE_FLAGS[e.id]; if (f && f.chairOk === false) remove.add(e.id); });
+  }
   if (k) {
     if (k.space && SPACE_FILTER[k.space]) SPACE_FILTER[k.space].forEach((id) => remove.add(id));
     (k.injuryFlags || []).forEach((flag) => (INJURY_FILTER[flag] || []).forEach((id) => remove.add(id)));
@@ -179,4 +187,4 @@ export function filterPool(exercises, profile) {
 }
 
 // Whether a move has an honest chair/standing variant (for chair-mode messaging).
-export function chairOk(id) { return !SPACE_FLAGS[id] || SPACE_FLAGS[id].chairOk; }
+export function chairOk(id) { return !ALL_SPACE_FLAGS[id] || ALL_SPACE_FLAGS[id].chairOk; }

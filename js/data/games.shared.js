@@ -197,13 +197,89 @@ function buildOrder(config, onComplete) {
   return root;
 }
 
+// ---- Blitz: a fast, fun, timed arcade round (knowledge = score) ----------
+// Snap-judge prompts against a clock; correct answers build a combo that multiplies
+// points, a wrong answer resets it. The pool loops until the timer runs out, so it is
+// genuinely arcade-y — and the only edge is actually knowing the lessons. The timer is
+// an interval guarded by root.isConnected, cleared on finish/teardown.
+function buildBlitz(config, onComplete) {
+  const items = config.items || [];
+  const TIME = config.seconds || 30;
+  const WIN_AT = config.winAt || 8;        // correct answers to count as a "win" (game-win badge)
+  const root = el('div', 'game game-blitz');
+  const help = el('p', 'game-help hint', config.intro || 'Tap the right answer as fast as you can — build a streak before the clock runs out!');
+  const hud = el('div', 'blitz-hud');
+  const timeEl = el('span', 'blitz-time');
+  const scoreEl = el('span', 'blitz-score');
+  const comboEl = el('span', 'blitz-combo');
+  hud.append(timeEl, scoreEl, comboEl);
+  const stage = el('div', 'quiz-stage');
+  const startBtn = el('button', 'btn btn-primary', 'Start');
+  root.append(help, hud, stage, startBtn);
+
+  let order = [], i = 0, points = 0, correct = 0, combo = 0, bestCombo = 0, left = TIME, timer = null, done = false;
+
+  const updateHud = () => {
+    timeEl.textContent = '⏱ ' + left + 's';
+    scoreEl.textContent = points + ' pts';
+    comboEl.textContent = combo > 1 ? '🔥 ' + combo : '';
+  };
+
+  const nextItem = () => {
+    if (done) return;
+    if (i >= order.length) { order = shuffle(items); i = 0; }
+    const it = order[i++];
+    let answered = false;
+    stage.innerHTML = '';
+    const q = el('p', 'quiz-prompt', it.prompt);
+    const opts = el('div', 'blitz-opts');
+    shuffle(it.options).forEach((o) => {
+      const b = el('button', 'quiz-opt', o.text); b.type = 'button';
+      b.addEventListener('click', () => {
+        if (done || answered) return;
+        answered = true;
+        if (o.correct) { correct++; combo++; bestCombo = Math.max(bestCombo, combo); points += 10 + Math.min(combo, 8) * 2; b.classList.add('correct'); }
+        else { combo = 0; b.classList.add('wrong'); }
+        updateHud();
+        setTimeout(() => { if (root.isConnected && !done) nextItem(); }, 140);
+      });
+      opts.appendChild(b);
+    });
+    stage.append(q, opts);
+  };
+
+  const finish = () => {
+    if (done) return; done = true;
+    if (timer) { clearInterval(timer); timer = null; }
+    stage.innerHTML = '';
+    setTimeout(() => { if (root.isConnected) onComplete({ won: correct >= WIN_AT, score: points, label: points + ' points · ' + correct + ' right · best streak ' + bestCombo }); }, 250);
+  };
+
+  startBtn.addEventListener('click', () => {
+    startBtn.remove();
+    order = shuffle(items); i = 0; left = TIME; updateHud(); nextItem();
+    timer = setInterval(() => {
+      if (!root.isConnected) { clearInterval(timer); timer = null; return; }
+      left--; updateHud();
+      if (left <= 0) finish();
+    }, 1000);
+  });
+
+  updateHud();
+  return root;
+}
+
 // Turn a plain spec into the game object the hub + gameScreen consume.
 export function makeGame(spec) {
   const build = (onComplete) => {
     if (spec.type === 'quiz') return buildQuiz(spec, onComplete);
     if (spec.type === 'sort') return buildSort(spec, onComplete);
     if (spec.type === 'order') return buildOrder(spec, onComplete);
+    if (spec.type === 'blitz') return buildBlitz(spec, onComplete);
     const e = el('div', 'game'); e.textContent = 'This game is unavailable.'; return e;
   };
   return { id: spec.id, name: spec.name, blurb: spec.blurb, icon: spec.icon, win: spec.win, lose: spec.lose, build };
 }
+
+// The completion quiz reuses the quiz engine directly (see js/learning-screen.js).
+export { buildQuiz };

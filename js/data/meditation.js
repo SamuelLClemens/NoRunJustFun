@@ -2271,7 +2271,1621 @@ const SCRIPTS = {
         "say": "Whenever you are ready, the practice is complete. Be gentle with yourself out there."
       }
     ]
-  }
+  },
+  "med-lib-morning-gentle-7": {
+  "id": "med-lib-morning-gentle-7",
+  "minutes": 7,
+  "theme": "a gentle morning arrival",
+  "kind": "library",
+  "intent": "A slow, kind way to begin the day, with no rush and no list of things to become before the morning is allowed to start. It meets you wherever you are, including a broken night or a body that is tired, and lets you set one soft, optional intention rather than a goal. The aim is simply to arrive in your own morning a little more gently, however the day ahead looks.",
+  "items": [
+    {
+      "id": "med-lib-morning-gentle-7-s0",
+      "name": "Warm open. Speak unhurried, slightly slow.",
+      "secs": 14,
+      "say": "Good morning. Wherever you are, however you slept, you are welcome here. There is nothing you have to be ready for yet."
+    },
+    {
+      "id": "med-lib-morning-gentle-7-s1",
+      "name": "Permission for a hard night. No fixing.",
+      "secs": 16,
+      "say": "If the night was short, or broken, or hard, that is allowed. We are not starting the day by catching up. We are only arriving."
+    },
+    {
+      "id": "med-lib-morning-gentle-7-s2",
+      "name": "Posture freedom, eyes optional.",
+      "secs": 16,
+      "say": "Settle into whatever position you are in. Your eyes can close, or stay open and soft, resting on something gentle nearby. Whichever feels easier."
+    },
+    {
+      "id": "med-lib-morning-gentle-7-s3",
+      "name": "First orienting breath. No force.",
+      "secs": 15,
+      "say": "Let us take one easy breath together. In through the nose, and a slow breath out. Nothing forced, just a little more room than usual."
+    },
+    {
+      "id": "med-lib-morning-gentle-7-s4",
+      "name": "Short rest silence after first breath.",
+      "secs": 40,
+      "say": ""
+    },
+    {
+      "id": "med-lib-morning-gentle-7-s5",
+      "name": "Notice the morning is already here.",
+      "secs": 18,
+      "say": "Notice that the morning has already arrived without your help. The light, the sounds outside, the quiet of the room. You do not have to make any of it happen."
+    },
+    {
+      "id": "med-lib-morning-gentle-7-s6",
+      "name": "Sense one gentle thing. Senses cue.",
+      "secs": 17,
+      "say": "Let one kind thing reach you. The warmth of where you are resting, a sound somewhere in the house, or simply the air on your skin."
+    },
+    {
+      "id": "med-lib-morning-gentle-7-s7",
+      "name": "Open silence to let it land.",
+      "secs": 60,
+      "say": ""
+    },
+    {
+      "id": "med-lib-morning-gentle-7-s8",
+      "name": "Body waking, optional, no demand.",
+      "secs": 18,
+      "say": "If it feels okay, let your body wake the way it wants to. A small stretch, a softening of the shoulders, or no movement at all. You may skip this."
+    },
+    {
+      "id": "med-lib-morning-gentle-7-s9",
+      "name": "Longer middle rest. Hand pace back.",
+      "secs": 80,
+      "say": ""
+    },
+    {
+      "id": "med-lib-morning-gentle-7-s10",
+      "name": "Introduce the soft intention, optional.",
+      "secs": 20,
+      "say": "If you would like, you can set one soft intention for today. Not a goal, not a task. Just a single kind word to carry, like gentle, or steady, or enough."
+    },
+    {
+      "id": "med-lib-morning-gentle-7-s11",
+      "name": "Space to find or skip the word.",
+      "secs": 60,
+      "say": ""
+    },
+    {
+      "id": "med-lib-morning-gentle-7-s12",
+      "name": "Reassure if no word came.",
+      "secs": 16,
+      "say": "If no word came, that is completely fine. Some mornings the only intention is to get through, and that one counts too."
+    },
+    {
+      "id": "med-lib-morning-gentle-7-s13",
+      "name": "Gentle return to the day.",
+      "secs": 16,
+      "say": "When you are ready, and only then, let your breath become a little deeper. Begin to bring your attention back into the room."
+    },
+    {
+      "id": "med-lib-morning-gentle-7-s14",
+      "name": "Close. Carry it lightly.",
+      "secs": 14,
+      "say": "The day is yours to meet at your own pace. You have already begun, gently. Take care of yourself out there."
+    }
+  ],
+  "disclaimers": [
+    "This recording is for general relaxation and wellbeing only. It is not medical, psychological, or therapeutic advice.",
+    "If you feel distressed, dizzy, or unsafe at any point, stop and open your eyes. You can pause or leave this recording whenever you need to.",
+    "Quiet moments like these can sometimes bring up difficult feelings, which is especially common after birth. If that happens, please reach out to a qualified professional, your GP, your midwife, or a support service you trust."
+  ]
+},
+  "med-lib-anxious-mind-15": {
+  "id": "med-lib-anxious-mind-15",
+  "minutes": 15,
+  "theme": "easing an anxious, worried mind",
+  "kind": "library",
+  "intent": "A slow, trauma-aware practice for a mind that feels worried, racing, or on edge, helping the nervous system come down without demanding stillness or a calm you do not feel. It gently grounds the body, lengthens the exhale, and gives the worry somewhere safe to rest, while always offering a way out of any step that feels like too much. It is especially mindful that early parenthood can leave the body braced and watchful, so nothing here asks you to let your guard fully down.",
+  "items": [
+    {
+      "id": "med-lib-anxious-mind-15-s0",
+      "name": "Warm, steady open. Slightly slow pace.",
+      "secs": 15,
+      "say": "Hello, and welcome. If your mind feels fast or full right now, you are in the right place. You do not have to calm down to be here."
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s1",
+      "name": "Normalize anxiety, no pressure to relax.",
+      "secs": 18,
+      "say": "We are not going to force any calm that is not ready to come. We are only going to give the worried part of you a little more room and a little more safety."
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s2",
+      "name": "Posture, eyes open allowed first-class.",
+      "secs": 18,
+      "say": "Settle into whatever position feels safest. You can keep your eyes open, soft and low, resting on one calm spot. There is no need to close them today."
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s3",
+      "name": "Orient to present safety. Right now.",
+      "secs": 18,
+      "say": "Let us begin by noticing where you actually are. Not in the worry, not in the day ahead. Just in this one room, in this one moment."
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s4",
+      "name": "5-sense orienting cue, gentle.",
+      "secs": 24,
+      "say": "Look slowly around you, or just listen. Name to yourself one thing you can see, one thing you can hear, and one thing you can feel touching your skin."
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s5",
+      "name": "Rest after orienting.",
+      "secs": 70,
+      "say": ""
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s6",
+      "name": "Feet and ground anchor.",
+      "secs": 20,
+      "say": "Now feel where your body is held. Your feet on the floor, or your back against something solid. The ground beneath you is steady, and it does not need your effort to keep holding you."
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s7",
+      "name": "Silence to feel grounded.",
+      "secs": 90,
+      "say": ""
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s8",
+      "name": "Breath intro, no force, alternative ready.",
+      "secs": 20,
+      "say": "When you are ready, bring a little attention to your breath, wherever it is easiest to feel. If watching the breath feels uneasy, you can rest on your feet instead. That counts just as much."
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s9",
+      "name": "Extended exhale begins. Down-regulate.",
+      "secs": 18,
+      "say": "Let the next breath out slowly, a long and easy exhale. Let it be a touch longer than the breath in. The slow out-breath is what tells the body it is safe."
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s10",
+      "name": "Pacing a few breaths together.",
+      "secs": 22,
+      "say": "Breathe in gently. And out, slow and long. Again, in. And a long, soft exhale. Nothing pushed, just letting each out-breath set a little of the worry down."
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s11",
+      "name": "Hand pace back. First long silence.",
+      "secs": 55,
+      "say": "Stay with that slow rhythm in your own time now. I will be quiet, and you can let the breath find its own easy pace."
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s12",
+      "name": "Open silence with the slow breath.",
+      "secs": 90,
+      "say": ""
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s13",
+      "name": "Worry as weather, observe not fix.",
+      "secs": 22,
+      "say": "If worried thoughts are still moving, you do not have to chase them or argue with them. Let them pass through like weather, while you stay with the slow breath underneath."
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s14",
+      "name": "Reframe wandering as the practice.",
+      "secs": 18,
+      "say": "And if you drift off into a thought, that is not a failure. Noticing you have drifted is the practice itself. Just come back to one slow breath."
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s15",
+      "name": "Step breath back to ordinary.",
+      "secs": 16,
+      "say": "Now let your breathing be ordinary again. You can release the long exhale. Let it move however it wants to."
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s16",
+      "name": "Single steady place to rest.",
+      "secs": 20,
+      "say": "Let us choose one steady place to rest your attention. Maybe the weight of your hands, or the quiet sound of the room. Pick whatever feels kindest."
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s17",
+      "name": "Co-regulating reassurance, present tense.",
+      "secs": 18,
+      "say": "In this exact moment, there is nothing you have to solve. You are held by the ground, and the worry can wait outside the door for a little while."
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s18",
+      "name": "Settling silence before the deep rest.",
+      "secs": 82,
+      "say": ""
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s19",
+      "name": "Longest open silence. Deep rest.",
+      "secs": 180,
+      "say": ""
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s20",
+      "name": "Begin gentle return. No rush.",
+      "secs": 18,
+      "say": "When you feel ready, and there is no hurry, begin to come back. Let your breath become a little deeper, a little fuller."
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s21",
+      "name": "Re-orienting movement, optional.",
+      "secs": 18,
+      "say": "Maybe a small movement. Wiggle your fingers, roll your shoulders, or open your eyes if they were closed. Move only as much as you want to."
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s22",
+      "name": "Notice any small shift.",
+      "secs": 16,
+      "say": "Notice how you feel now, compared to when we began. Even the smallest softening is real, and it is yours."
+    },
+    {
+      "id": "med-lib-anxious-mind-15-s23",
+      "name": "Close, gentle and steadying.",
+      "secs": 14,
+      "say": "The worry may still be there, and that is alright. You met it with a slower breath and a steadier body. Take care of yourself."
+    }
+  ],
+  "disclaimers": [
+    "This recording is for general relaxation and wellbeing only. It is not medical, psychological, or therapeutic advice, and it is not a treatment for anxiety.",
+    "If you feel distressed, dizzy, panicked, or unsafe at any point, stop and open your eyes. You can pause or leave this recording whenever you need to.",
+    "Slowing down can sometimes bring difficult feelings closer to the surface, which is especially common after birth. If that happens, please reach out to a qualified professional, your GP, your midwife, or a support service you trust."
+  ]
+},
+  "med-lib-box-breath-5": {
+  "id": "med-lib-box-breath-5",
+  "minutes": 5,
+  "theme": "simple paced breathing (box breath)",
+  "kind": "library",
+  "intent": "A short, simple paced breathing practice that walks you through breathing in, holding, breathing out, and holding again, to gently steady the body. The holds are entirely optional, and you are invited to drop them anytime, because breath-holding does not feel right for every body, especially soon after birth. The aim is a little steadiness, not a perfect pattern, and an ordinary breath at the end.",
+  "items": [
+    {
+      "id": "med-lib-box-breath-5-s0",
+      "name": "Warm open. Set the gentle frame.",
+      "secs": 13,
+      "say": "Welcome. This is a simple breathing practice. We will breathe in a slow, even square, and you can shape it however suits you."
+    },
+    {
+      "id": "med-lib-box-breath-5-s1",
+      "name": "Permission to drop the holds, first-class.",
+      "secs": 20,
+      "say": "There will be a few gentle holds along the way. If holding your breath ever feels uncomfortable, you may drop the holds entirely and simply breathe in and out. That works just as well."
+    },
+    {
+      "id": "med-lib-box-breath-5-s2",
+      "name": "Posture, eyes optional.",
+      "secs": 14,
+      "say": "Settle comfortably. Let your eyes close, or stay open and soft. Let your shoulders drop away from your ears."
+    },
+    {
+      "id": "med-lib-box-breath-5-s3",
+      "name": "One natural breath first.",
+      "secs": 14,
+      "say": "Before we begin, take one ordinary breath, just as it is. No counting yet. Simply notice the air coming in, and going out."
+    },
+    {
+      "id": "med-lib-box-breath-5-s4",
+      "name": "Explain the gentle counts.",
+      "secs": 16,
+      "say": "We will count slowly to four for each part. In for four, a soft hold for four, out for four, and a soft hold for four. Let the counts be gentle, not strict."
+    },
+    {
+      "id": "med-lib-box-breath-5-s5",
+      "name": "First guided round.",
+      "secs": 18,
+      "say": "Let us begin. Breathe in, two, three, four. Hold softly, two, three, four. Breathe out, two, three, four. And hold, two, three, four."
+    },
+    {
+      "id": "med-lib-box-breath-5-s6",
+      "name": "Second guided round.",
+      "secs": 18,
+      "say": "Again. In, two, three, four. Hold, or simply pause, two, three, four. Out, two, three, four. And rest, two, three, four."
+    },
+    {
+      "id": "med-lib-box-breath-5-s7",
+      "name": "Third guided round, remind to drop holds.",
+      "secs": 18,
+      "say": "Once more, and remember you can let the holds go anytime. In, two, three, four. Hold, two, three, four. Out, two, three, four. Pause, two, three, four."
+    },
+    {
+      "id": "med-lib-box-breath-5-s8",
+      "name": "Hand pace back. Self-paced silence.",
+      "secs": 75,
+      "say": "Now continue on your own, at whatever pace feels easy. I will be quiet, and you can keep the gentle square going, or let the holds fall away."
+    },
+    {
+      "id": "med-lib-box-breath-5-s9",
+      "name": "Reassure imperfect rhythm.",
+      "secs": 16,
+      "say": "If the rhythm slips, or a count feels too long, just soften it. There is no perfect square. Steady and kind is the whole point."
+    },
+    {
+      "id": "med-lib-box-breath-5-s10",
+      "name": "A little more quiet space.",
+      "secs": 45,
+      "say": ""
+    },
+    {
+      "id": "med-lib-box-breath-5-s11",
+      "name": "Release the pattern.",
+      "secs": 16,
+      "say": "Now let the counting go completely. Let your breath return to its own ordinary rhythm. Nothing to hold, nothing to shape."
+    },
+    {
+      "id": "med-lib-box-breath-5-s12",
+      "name": "Notice and close.",
+      "secs": 17,
+      "say": "Notice the quiet that a few slow breaths can leave behind. Whenever you are ready, open your eyes, and carry a little of this steadiness with you. Take care."
+    }
+  ],
+  "disclaimers": [
+    "This recording is for general relaxation and wellbeing only. It is not medical, psychological, or therapeutic advice.",
+    "If you feel dizzy, lightheaded, breathless, or unsafe at any point, stop the breathing, breathe normally, and open your eyes. You can leave this recording whenever you need to.",
+    "Breathing practices can occasionally surface difficult feelings, which is especially common after birth. If that happens, please reach out to a qualified professional, your GP, your midwife, or a support service you trust."
+  ]
+},
+  "med-lib-gratitude-10": {
+  "id": "med-lib-gratitude-10",
+  "minutes": 10,
+  "theme": "softly noticing small good things",
+  "kind": "library",
+  "intent": "A gentle practice of noticing small good things, without ever pretending a hard day is anything other than hard. It makes room for whatever is heavy first, then lets you rest your attention on something ordinary and kind, with no pressure to feel grateful or to count your blessings. The aim is a quiet softening, not forced positivity, and it honours that some days the only good thing is that you are still here.",
+  "items": [
+    {
+      "id": "med-lib-gratitude-10-s0",
+      "name": "Warm open, set anti-toxic-positivity tone.",
+      "secs": 15,
+      "say": "Hello, and welcome. This is a quiet practice of noticing. Not of forcing yourself to feel grateful, and not of pretending anything is better than it is."
+    },
+    {
+      "id": "med-lib-gratitude-10-s1",
+      "name": "Make room for the hard first.",
+      "secs": 18,
+      "say": "If today has been heavy, let it be heavy. We are not going to paper over it. The hard parts are real, and they are allowed to stay in the room with us."
+    },
+    {
+      "id": "med-lib-gratitude-10-s2",
+      "name": "Posture and eyes optional.",
+      "secs": 15,
+      "say": "Settle into wherever you are. Let your eyes close, or stay open and soft. Let your body be held by whatever is beneath you."
+    },
+    {
+      "id": "med-lib-gratitude-10-s3",
+      "name": "One settling breath.",
+      "secs": 14,
+      "say": "Take one slow, easy breath. In, and a long breath out. Just letting yourself arrive here for a moment."
+    },
+    {
+      "id": "med-lib-gratitude-10-s4",
+      "name": "Rest after breath.",
+      "secs": 60,
+      "say": ""
+    },
+    {
+      "id": "med-lib-gratitude-10-s5",
+      "name": "Notice one small ordinary thing.",
+      "secs": 20,
+      "say": "Now, gently, see if there is one small ordinary thing nearby that is alright. The warmth of a drink, a soft blanket, a quiet patch of light. Nothing grand, just something small that is okay."
+    },
+    {
+      "id": "med-lib-gratitude-10-s6",
+      "name": "Space to find it, no pressure.",
+      "secs": 70,
+      "say": ""
+    },
+    {
+      "id": "med-lib-gratitude-10-s7",
+      "name": "Reassure if nothing comes.",
+      "secs": 18,
+      "say": "If nothing comes to mind, that is completely okay. Some days the kindest thing we can notice is simply that we made it this far. That counts as plenty."
+    },
+    {
+      "id": "med-lib-gratitude-10-s8",
+      "name": "Let the small thing be enough.",
+      "secs": 18,
+      "say": "If you did find something small, you do not have to feel any particular way about it. Just let it be there, a small okay thing, resting quietly beside everything else."
+    },
+    {
+      "id": "med-lib-gratitude-10-s9",
+      "name": "Longer middle rest.",
+      "secs": 100,
+      "say": ""
+    },
+    {
+      "id": "med-lib-gratitude-10-s10",
+      "name": "Notice an ordinary kindness, optional.",
+      "secs": 20,
+      "say": "If it feels okay, you might let one moment of ordinary kindness come to mind. Something someone did, or something you managed for someone else, however small. You may skip this entirely."
+    },
+    {
+      "id": "med-lib-gratitude-10-s11",
+      "name": "Space for the kindness, or rest.",
+      "secs": 78,
+      "say": ""
+    },
+    {
+      "id": "med-lib-gratitude-10-s12",
+      "name": "Gratitude does not erase the hard.",
+      "secs": 20,
+      "say": "Noticing a good thing does not cancel out a hard day. They can sit side by side. You are allowed to hold both at once, the tired and the tender."
+    },
+    {
+      "id": "med-lib-gratitude-10-s13",
+      "name": "Quiet space to hold both.",
+      "secs": 71,
+      "say": ""
+    },
+    {
+      "id": "med-lib-gratitude-10-s14",
+      "name": "Turn the noticing toward yourself.",
+      "secs": 18,
+      "say": "And if you can, let one small bit of that softness turn toward yourself. You are doing more than anyone sees, including, perhaps, you."
+    },
+    {
+      "id": "med-lib-gratitude-10-s15",
+      "name": "Begin gentle return.",
+      "secs": 16,
+      "say": "When you are ready, with no rush at all, let your breath become a little deeper. Begin to bring yourself back into the room."
+    },
+    {
+      "id": "med-lib-gratitude-10-s16",
+      "name": "Re-orienting, optional movement.",
+      "secs": 16,
+      "say": "Maybe a small stretch, or a slow blink, or opening your eyes if they were closed. Move only as much as feels good."
+    },
+    {
+      "id": "med-lib-gratitude-10-s17",
+      "name": "Close, honouring the whole day.",
+      "secs": 13,
+      "say": "Whatever kind of day this is, you noticed one small good thing inside it. That is enough. Take care of yourself."
+    }
+  ],
+  "disclaimers": [
+    "This recording is for general relaxation and wellbeing only. It is not medical, psychological, or therapeutic advice.",
+    "If you feel distressed, dizzy, or unsafe at any point, stop and open your eyes. You can pause or leave this recording whenever you need to.",
+    "Reflecting quietly can sometimes bring up difficult feelings, which is especially common after birth. If that happens, please reach out to a qualified professional, your GP, your midwife, or a support service you trust."
+  ]
+},
+  "med-lib-grounding-senses-7": {
+  "id": "med-lib-grounding-senses-7",
+  "minutes": 7,
+  "theme": "five-senses grounding",
+  "kind": "library",
+  "intent": "A trauma-aware grounding practice for moments of feeling scattered, foggy, or far away from yourself. It uses the five senses to gently bring your attention back to the present room, without asking for stillness, closed eyes, or focus on the body if that does not feel safe. The aim is simply to help you arrive a little more here, at your own pace.",
+  "items": [
+    {
+      "id": "med-lib-grounding-senses-7-s0",
+      "name": "Warm welcome. Unhurried tone.",
+      "secs": 13,
+      "say": "Hello, and welcome. If things feel scattered or far away right now, you are in a good place. There is nothing to fix. We are only going to come back, slowly, to where you are."
+    },
+    {
+      "id": "med-lib-grounding-senses-7-s1",
+      "name": "Permission for position and eyes.",
+      "secs": 16,
+      "say": "Stay in whatever position you are in. Sitting, standing, lying down, holding a little one. Your eyes can stay open, resting softly on the room. Open eyes are welcome here, and often help."
+    },
+    {
+      "id": "med-lib-grounding-senses-7-s2",
+      "name": "Normalize feeling far away.",
+      "secs": 17,
+      "say": "Feeling foggy, or a step removed from yourself, is something a tired nervous system does to cope. It is not wrong, and it is not dangerous. We will just offer it some gentle company."
+    },
+    {
+      "id": "med-lib-grounding-senses-7-s3",
+      "name": "Orient to the room first.",
+      "secs": 16,
+      "say": "Let us begin with the room around you. You are not inside the whole day. You are in this one space, and it is holding you right now."
+    },
+    {
+      "id": "med-lib-grounding-senses-7-s4",
+      "name": "Sense one: sight. Slow looking.",
+      "secs": 24,
+      "say": "Look around, slowly. Notice five things you can see. A color, a shape, a corner, the light. There is no right answer. Just let your eyes land, one thing at a time."
+    },
+    {
+      "id": "med-lib-grounding-senses-7-s5",
+      "name": "Silence for looking.",
+      "secs": 37,
+      "say": ""
+    },
+    {
+      "id": "med-lib-grounding-senses-7-s6",
+      "name": "Sense two: touch.",
+      "secs": 24,
+      "say": "Now notice four things you can feel. The floor under your feet. Fabric against your skin. The temperature of the air. The weight of your own hands resting."
+    },
+    {
+      "id": "med-lib-grounding-senses-7-s7",
+      "name": "Silence for feeling.",
+      "secs": 37,
+      "say": ""
+    },
+    {
+      "id": "med-lib-grounding-senses-7-s8",
+      "name": "Sense three: sound.",
+      "secs": 22,
+      "say": "Now listen for three sounds. Some near, some far away. The hum of the room, something outside, the quiet underneath it all. Let the sounds come to you. You do not have to chase them."
+    },
+    {
+      "id": "med-lib-grounding-senses-7-s9",
+      "name": "Silence for listening.",
+      "secs": 37,
+      "say": ""
+    },
+    {
+      "id": "med-lib-grounding-senses-7-s10",
+      "name": "Sense four: smell, with opt-out.",
+      "secs": 22,
+      "say": "Now notice two things you can smell, if there is anything there. And if not, that is completely fine. You can simply take one slow breath in through the nose, and let it out."
+    },
+    {
+      "id": "med-lib-grounding-senses-7-s11",
+      "name": "Sense five: taste, gentle.",
+      "secs": 20,
+      "say": "And one thing you can taste, or simply the feeling inside your own mouth. Tea, water, the air. Nothing special is needed. Just one small thing, here and now."
+    },
+    {
+      "id": "med-lib-grounding-senses-7-s12",
+      "name": "Gather the senses. Reassurance.",
+      "secs": 18,
+      "say": "See, hear, feel, breathe. All of these are happening right here, in the present. The present is a real place, and you are allowed to rest in it."
+    },
+    {
+      "id": "med-lib-grounding-senses-7-s13",
+      "name": "Longer open silence to settle.",
+      "secs": 24,
+      "say": "Stay here a little while in your own quiet. I will leave you some space. Let the room keep holding you."
+    },
+    {
+      "id": "med-lib-grounding-senses-7-s14",
+      "name": "Quiet continues.",
+      "secs": 40,
+      "say": ""
+    },
+    {
+      "id": "med-lib-grounding-senses-7-s15",
+      "name": "Gentle return.",
+      "secs": 17,
+      "say": "When you are ready, and only then, let your breath become a little deeper. Maybe wiggle your fingers, or roll your shoulders, slow and easy."
+    },
+    {
+      "id": "med-lib-grounding-senses-7-s16",
+      "name": "Notice the shift, no demand.",
+      "secs": 16,
+      "say": "Notice how here you feel now, compared to when we started. Even a small change is yours, and it counts. There is no level you were supposed to reach."
+    },
+    {
+      "id": "med-lib-grounding-senses-7-s17",
+      "name": "Close.",
+      "secs": 20,
+      "say": "You found your way back, gently, in your own time. Carry a little of this steadiness with you. I will be here whenever you need it again. Take care."
+    }
+  ],
+  "disclaimers": [
+    "This is a relaxation and grounding practice for general wellbeing, not medical, psychological, or therapeutic advice.",
+    "If you feel distressed at any point, please open your eyes, stop, and tend to yourself. You can leave this practice anytime.",
+    "Grounding can sometimes surface difficult feelings, especially in the postpartum period. If hard feelings arise or persist, please reach out to a qualified professional or someone you trust."
+  ]
+},
+  "med-lib-letting-go-15": {
+  "id": "med-lib-letting-go-15",
+  "minutes": 15,
+  "theme": "releasing tension and what you cannot control",
+  "kind": "library",
+  "intent": "A fifteen-minute, exhale-focused practice for softening physical tension and loosening your grip on the things outside your control. The arc moves from arriving, through slow extended exhales, into a gentle release of holding in the body, and then into spacious silence. Nothing is forced; letting go here means allowing, not pushing, and you are free to keep hold of anything you are not ready to release.",
+  "items": [
+    {
+      "id": "med-lib-letting-go-15-s0",
+      "name": "Welcome. Warm, slow.",
+      "secs": 15,
+      "say": "Hello, and welcome. For the next little while, there is nothing you have to hold together. You can let the day, and everything in it, set itself down for now."
+    },
+    {
+      "id": "med-lib-letting-go-15-s1",
+      "name": "Position and eyes, permission.",
+      "secs": 16,
+      "say": "Settle into whatever position you are in. Let whatever is beneath you take your weight. Your eyes can close, or stay open and soft on one calm spot. Whichever feels safer today."
+    },
+    {
+      "id": "med-lib-letting-go-15-s2",
+      "name": "Define letting go gently.",
+      "secs": 20,
+      "say": "Letting go is not pushing anything away. It is more like opening a hand that has been clenched for a long time. We will do it slowly, and only as far as feels alright to you."
+    },
+    {
+      "id": "med-lib-letting-go-15-s3",
+      "name": "Settle into present.",
+      "secs": 16,
+      "say": "Let us begin by simply arriving. You are here, in this one room, in this one moment. The rest of the day can wait outside the door for a while."
+    },
+    {
+      "id": "med-lib-letting-go-15-s4",
+      "name": "Notice breath, no change yet.",
+      "secs": 18,
+      "say": "Bring a soft attention to your breath, wherever it is easiest to feel. The nose, the chest, the belly. For now, there is nothing to change. Just notice it moving on its own."
+    },
+    {
+      "id": "med-lib-letting-go-15-s5",
+      "name": "Introduce the long exhale.",
+      "secs": 18,
+      "say": "When you are ready, let the next breath out slowly. A long, easy exhale, a little longer than the breath in. As if you were setting something gently down."
+    },
+    {
+      "id": "med-lib-letting-go-15-s6",
+      "name": "Exhale pacing.",
+      "secs": 20,
+      "say": "Breathe in, unhurried. And out, slow and long. With each exhale, you might let the shoulders drop a touch. Nothing forced. Just letting the out-breath carry a little weight away."
+    },
+    {
+      "id": "med-lib-letting-go-15-s7",
+      "name": "Silence to breathe.",
+      "secs": 57,
+      "say": ""
+    },
+    {
+      "id": "med-lib-letting-go-15-s8",
+      "name": "Breath alternative, trauma-aware.",
+      "secs": 20,
+      "say": "If watching the breath feels like too much, rest your attention on a sound in the room instead, or on the feeling of your feet on the floor. That counts just as much. There is always another way in."
+    },
+    {
+      "id": "med-lib-letting-go-15-s9",
+      "name": "Hand pace back. First silence.",
+      "secs": 30,
+      "say": "Let us stay with a few of those slow exhales together. I will be quiet now, and you can let the breath find its own gentle rhythm."
+    },
+    {
+      "id": "med-lib-letting-go-15-s10",
+      "name": "Silence continues.",
+      "secs": 59,
+      "say": ""
+    },
+    {
+      "id": "med-lib-letting-go-15-s11",
+      "name": "Release tension, head and face.",
+      "secs": 22,
+      "say": "Now, if it feels alright, let us soften the body where it holds. Begin with the face. Let the forehead smooth. Let the jaw unclench, the space between the eyebrows ease. On the next exhale, let it all loosen."
+    },
+    {
+      "id": "med-lib-letting-go-15-s12",
+      "name": "Silence to release.",
+      "secs": 55,
+      "say": ""
+    },
+    {
+      "id": "med-lib-letting-go-15-s13",
+      "name": "Release shoulders and hands.",
+      "secs": 22,
+      "say": "Now the shoulders. Let them fall away from the ears. The arms growing heavy. The hands, which have carried and held so much, allowed to rest open, or however they like. Breathe out, and let them be."
+    },
+    {
+      "id": "med-lib-letting-go-15-s14",
+      "name": "Silence to release.",
+      "secs": 55,
+      "say": ""
+    },
+    {
+      "id": "med-lib-letting-go-15-s15",
+      "name": "Release belly and legs.",
+      "secs": 22,
+      "say": "Now the belly, soft. The back, supported. The legs heavy and at ease. Wherever you are still holding, see if a long exhale can let it loosen, even a little. Only as far as feels safe."
+    },
+    {
+      "id": "med-lib-letting-go-15-s16",
+      "name": "Silence to release.",
+      "secs": 54,
+      "say": ""
+    },
+    {
+      "id": "med-lib-letting-go-15-s17",
+      "name": "Honor what stays. No force.",
+      "secs": 22,
+      "say": "And anything that does not want to let go today, you may keep. The body holds on for reasons. There is no failing here. Softening even one small place is plenty."
+    },
+    {
+      "id": "med-lib-letting-go-15-s18",
+      "name": "Turn to what you cannot control.",
+      "secs": 24,
+      "say": "Now, gently, the things on your mind. The worries, the tasks, the outcomes you cannot decide. Picture setting them on a shelf nearby, just for now. They are not gone. They are only out of your hands for these few minutes."
+    },
+    {
+      "id": "med-lib-letting-go-15-s19",
+      "name": "Exhale-release the uncontrollable.",
+      "secs": 22,
+      "say": "Some things are simply not yours to control, no matter how much you care. With each long exhale, you can loosen your grip on just one of them. Breathe out, and let it be what it is for now."
+    },
+    {
+      "id": "med-lib-letting-go-15-s20",
+      "name": "Reassurance, present-tense.",
+      "secs": 18,
+      "say": "You are supported right now. The ground is holding you. In this exact moment, there is nothing you must carry. The shelf will keep what you set down."
+    },
+    {
+      "id": "med-lib-letting-go-15-s21",
+      "name": "Longest open silence.",
+      "secs": 55,
+      "say": "Stay here, in your own quiet, for a while. I will leave you a long, open space. Just breathing, and letting go, as much or as little as you wish."
+    },
+    {
+      "id": "med-lib-letting-go-15-s22",
+      "name": "Silence continues.",
+      "secs": 83,
+      "say": ""
+    },
+    {
+      "id": "med-lib-letting-go-15-s23",
+      "name": "Silence continues.",
+      "secs": 83,
+      "say": ""
+    },
+    {
+      "id": "med-lib-letting-go-15-s24",
+      "name": "Step down from long exhale.",
+      "secs": 16,
+      "say": "Now let your breathing become ordinary again. You can release the long exhale, and simply let the breath be however it wants to be."
+    },
+    {
+      "id": "med-lib-letting-go-15-s25",
+      "name": "Gentle return.",
+      "secs": 18,
+      "say": "When you feel ready, and there is no rush at all, begin to come back. Let the breath deepen a touch. Maybe a small movement in the fingers or the feet."
+    },
+    {
+      "id": "med-lib-letting-go-15-s26",
+      "name": "Pick back up only what you choose.",
+      "secs": 20,
+      "say": "Whatever you set on the shelf is still there, if you need it. But you might find you can leave a little of it behind. You get to choose what you pick back up."
+    },
+    {
+      "id": "med-lib-letting-go-15-s27",
+      "name": "Close.",
+      "secs": 20,
+      "say": "You let go of something today, even if it was small, and that is real. Carry this looser, softer feeling with you. I will be here when you need it again. Take care."
+    }
+  ],
+  "disclaimers": [
+    "This is a relaxation practice for general wellbeing, not medical, psychological, or therapeutic advice.",
+    "If you feel distressed at any point, please open your eyes, stop, and tend to yourself. You can leave this practice anytime.",
+    "Releasing tension can sometimes surface difficult feelings, especially in the postpartum period. If hard feelings arise or persist, please reach out to a qualified professional or someone you trust."
+  ]
+},
+  "med-lib-refocus-5": {
+  "id": "med-lib-refocus-5",
+  "minutes": 5,
+  "theme": "quick reset between tasks",
+  "kind": "library",
+  "intent": "A short, practical reset to clear the residue of one task before you begin the next. It uses a few slow breaths and a simple closing-and-opening of attention to help you arrive fresh, without needing quiet, stillness, or closed eyes. The aim is a clean, gentle handover from what you just finished to what comes next.",
+  "items": [
+    {
+      "id": "med-lib-refocus-5-s0",
+      "name": "Welcome. Clear, warm.",
+      "secs": 12,
+      "say": "Hello. Let us take a short pause between one thing and the next. A few minutes to set down what is finished, before you pick up what comes next."
+    },
+    {
+      "id": "med-lib-refocus-5-s1",
+      "name": "Position, eyes, permission.",
+      "secs": 14,
+      "say": "Stay right where you are. You can keep your eyes open and soft, or let them close. There is no need to change anything about your body. Just pause."
+    },
+    {
+      "id": "med-lib-refocus-5-s2",
+      "name": "Acknowledge the last task.",
+      "secs": 16,
+      "say": "Whatever you were just doing, let it be done for now, finished or not. You can come back to it. For these few minutes, it does not need your attention."
+    },
+    {
+      "id": "med-lib-refocus-5-s3",
+      "name": "First slow breaths.",
+      "secs": 18,
+      "say": "Take one slow breath in. And a longer breath out. And again, in gently, and out slowly. Let the exhale clear a little space inside."
+    },
+    {
+      "id": "med-lib-refocus-5-s4",
+      "name": "Short silence with breath.",
+      "secs": 22,
+      "say": "Stay with a few of those on your own. In, and slowly out. I will be quiet for a moment."
+    },
+    {
+      "id": "med-lib-refocus-5-s5",
+      "name": "Breathing silence.",
+      "secs": 36,
+      "say": ""
+    },
+    {
+      "id": "med-lib-refocus-5-s6",
+      "name": "Settle attention to one point.",
+      "secs": 18,
+      "say": "Now bring your attention to one simple thing. The feeling of your feet on the floor, or your breath, or a steady sound in the room. Just one place to rest."
+    },
+    {
+      "id": "med-lib-refocus-5-s7",
+      "name": "Brief grounding silence.",
+      "secs": 41,
+      "say": ""
+    },
+    {
+      "id": "med-lib-refocus-5-s8",
+      "name": "Normalize a busy mind.",
+      "secs": 16,
+      "say": "If your mind is already jumping to the next task, that is completely normal. You do not have to empty it. Just let it slow down by one notch."
+    },
+    {
+      "id": "med-lib-refocus-5-s9",
+      "name": "Set a gentle intention.",
+      "secs": 20,
+      "say": "Now think, lightly, of the one thing you are turning to next. Not the whole list. Just the next thing. You do not have to do it well. You only have to begin it."
+    },
+    {
+      "id": "med-lib-refocus-5-s10",
+      "name": "Reassurance.",
+      "secs": 16,
+      "say": "You have a clean moment right now. The last thing is behind you. The next thing has not started yet. You are simply here, ready."
+    },
+    {
+      "id": "med-lib-refocus-5-s11",
+      "name": "Final short silence.",
+      "secs": 40,
+      "say": ""
+    },
+    {
+      "id": "med-lib-refocus-5-s12",
+      "name": "Return and orient.",
+      "secs": 15,
+      "say": "Let your breath become a touch deeper. Open your eyes if they were closed. Look around, and notice you are here, and ready."
+    },
+    {
+      "id": "med-lib-refocus-5-s13",
+      "name": "Close.",
+      "secs": 16,
+      "say": "Carry this small reset with you into what comes next. One thing at a time, gently. I will be here whenever you need another pause. Take care."
+    }
+  ],
+  "disclaimers": [
+    "This is a relaxation and focus practice for general wellbeing, not medical, psychological, or therapeutic advice.",
+    "If you feel distressed at any point, please open your eyes, stop, and tend to yourself. You can leave this practice anytime.",
+    "Pausing can sometimes surface difficult feelings, especially in the postpartum period. If hard feelings arise or persist, please reach out to a qualified professional or someone you trust."
+  ]
+},
+  "med-lib-loving-kindness-15": {
+  "id": "med-lib-loving-kindness-15",
+  "minutes": 15,
+  "theme": "loving-kindness for self and others",
+  "kind": "library",
+  "intent": "A fifteen-minute practice of sending gentle warmth, first to yourself and then outward to others. It is offered as an invitation, never a demand, and it makes room for ambivalence: warmth toward yourself can feel hard, and that is honored throughout. The phrases are simple wishes, and you are always free to soften them, change them, or simply rest in the breath instead.",
+  "items": [
+    {
+      "id": "med-lib-loving-kindness-15-s0",
+      "name": "Welcome. Warm, unhurried.",
+      "secs": 16,
+      "say": "Hello, and welcome. This is a practice of sending a little warmth, starting with yourself. If that already feels difficult, you are not alone, and you are still welcome here exactly as you are."
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s1",
+      "name": "Position and eyes, permission.",
+      "secs": 16,
+      "say": "Settle into whatever position you are in. Your eyes can close, or stay open and soft on a calm spot. Whichever feels safer today."
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s2",
+      "name": "Name that warmth can be hard.",
+      "secs": 20,
+      "say": "A gentle word about this practice. We will offer some kind wishes. If they feel true, lovely. If they feel forced, or even bring up the opposite, that is alright too. We are not performing warmth. We are only making a little room for it."
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s3",
+      "name": "Settle with the breath.",
+      "secs": 18,
+      "say": "Let us begin with a few slow breaths. In gently, and out a little longer. Let the body settle, and let the heart area, the center of the chest, soften just a touch."
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s4",
+      "name": "Short settling silence.",
+      "secs": 68,
+      "say": ""
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s5",
+      "name": "Begin with self, gently.",
+      "secs": 22,
+      "say": "Now, if you are willing, bring yourself to mind. Not the version you think you should be. Just you, as you are today, tired and trying. You might picture yourself, or simply sense your own presence here."
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s6",
+      "name": "First phrases for self.",
+      "secs": 22,
+      "say": "And silently, you might offer yourself a few wishes. May I be at ease. May I be gentle with myself. May I have what I need today. Say them in your own words, or just let them be near."
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s7",
+      "name": "Silence to repeat.",
+      "secs": 70,
+      "say": ""
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s8",
+      "name": "Honor ambivalence toward self.",
+      "secs": 22,
+      "say": "If those words feel hollow, or hard to mean, you do not have to force them. You might simply place a hand on your chest, or wish, may this be a little easier. Even that is a kindness. Ambivalence is welcome here."
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s9",
+      "name": "Silence with self.",
+      "secs": 70,
+      "say": ""
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s10",
+      "name": "Turn to someone easy to love.",
+      "secs": 22,
+      "say": "Now, if you would like, bring to mind someone who is easy to care for. A child, a friend, even a pet. Someone the heart softens toward without much effort. Picture them here with you."
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s11",
+      "name": "Phrases for the loved one.",
+      "secs": 20,
+      "say": "And offer them the same wishes. May you be at ease. May you be safe. May you have what you need. Let the warmth go out to them, as much or as little as it wants to."
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s12",
+      "name": "Silence to repeat.",
+      "secs": 70,
+      "say": ""
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s13",
+      "name": "Turn to someone neutral.",
+      "secs": 22,
+      "say": "Now, perhaps, someone you barely know. Someone you passed today, a voice on the phone, a face in a crowd. They have a whole life, and worries much like yours. You might wish them well, too. May you be at ease."
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s14",
+      "name": "Silence to repeat.",
+      "secs": 67,
+      "say": ""
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s15",
+      "name": "Widen out, fully optional.",
+      "secs": 22,
+      "say": "And if it feels right, you can let the warmth widen further. To everyone in your home, your street, all the tired people doing their best tonight. May we all be at ease. And if widening feels like too much, simply return to your own breath. Either is complete."
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s16",
+      "name": "Come back to self.",
+      "secs": 20,
+      "say": "Now come gently back to yourself. Include yourself in the warmth you have been sending out. You are as deserving of it as anyone you pictured. May you be at ease, too."
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s17",
+      "name": "Reassurance, no scorekeeping.",
+      "secs": 20,
+      "say": "There is no amount of warmth you were supposed to feel. Some days the heart is open, some days it is guarded, and that is human. Showing up for this at all is the kindness."
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s18",
+      "name": "Long open silence.",
+      "secs": 55,
+      "say": "Rest here for a while, in your own quiet. I will leave you a long, open space. Let any warmth that is here simply be, without needing to grow."
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s19",
+      "name": "Silence continues.",
+      "secs": 96,
+      "say": ""
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s20",
+      "name": "Silence continues.",
+      "secs": 89,
+      "say": ""
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s21",
+      "name": "Gentle return.",
+      "secs": 18,
+      "say": "When you feel ready, with no rush, begin to come back. Let the breath deepen a little. A small movement in the hands or feet, and your eyes opening if they were closed."
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s22",
+      "name": "Notice without demand.",
+      "secs": 18,
+      "say": "Notice how you feel now, compared to when we began. Whatever is here is allowed, warmth, numbness, or something in between. You met yourself gently, and that counts."
+    },
+    {
+      "id": "med-lib-loving-kindness-15-s23",
+      "name": "Close.",
+      "secs": 17,
+      "say": "Carry a little of this warmth with you, especially the part you offered yourself. You are worth your own kindness. I will be here whenever you need this again. Take care."
+    }
+  ],
+  "disclaimers": [
+    "This is a relaxation practice for general wellbeing, not medical, psychological, or therapeutic advice.",
+    "If you feel distressed at any point, please open your eyes, stop, and tend to yourself. You can leave this practice anytime.",
+    "Loving-kindness can sometimes surface difficult feelings, especially in the postpartum period. If hard feelings arise or persist, please reach out to a qualified professional or someone you trust."
+  ]
+},
+  "med-lib-frustration-ease-10": {
+  "id": "med-lib-frustration-ease-10",
+  "minutes": 10,
+  "theme": "softening frustration without judging it",
+  "kind": "library",
+  "intent": "A gentle, trauma-aware practice for moments when anger or frustration feels tight and loud inside. It does not ask you to get rid of the feeling or decide whether it is justified; it only helps you make a little safe room around it, so it has space to move and soften on its own. The aim is to be on your own side while the feeling is here, not to fix it or push it away.",
+  "items": [
+    {
+      "id": "med-lib-frustration-ease-10-s0",
+      "name": "Warm, unhurried welcome. No demand to calm down.",
+      "secs": 14,
+      "say": "Hello, and welcome. If you are feeling frustrated or angry right now, you are in the right place. Nothing about that needs to change for us to begin."
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s1",
+      "name": "Permission for position. Pause after.",
+      "secs": 13,
+      "say": "Settle into however you are. Sitting, standing, pacing, lying down. You do not have to be still for this to work."
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s2",
+      "name": "Eyes-open offered first-class.",
+      "secs": 15,
+      "say": "Your eyes can close, or stay open and soft on one spot in the room. Whichever feels safer to you today."
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s3",
+      "name": "Name the feeling as allowed, not a problem.",
+      "secs": 18,
+      "say": "Let us start by letting the frustration simply be here. It is allowed. It is not a sign you are doing anything wrong. Feelings like this make sense."
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s4",
+      "name": "Explicitly remove the judgment task.",
+      "secs": 18,
+      "say": "You do not have to decide right now whether the anger is fair, or too big, or justified. We are not putting it on trial. We are just making room."
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s5",
+      "name": "Locate it gently, opt-out built in.",
+      "secs": 20,
+      "say": "If it feels okay, notice where the feeling sits. Maybe a tightness in the jaw, the chest, the hands. Or, if looking inward is too much, just rest your attention on a sound in the room instead."
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s6",
+      "name": "Breath anchor with alternative.",
+      "secs": 17,
+      "say": "Now find your breath wherever it is easiest. At the nose, the chest, the belly. If watching the breath feels like too much, the feeling of your feet on the floor works just as well."
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s7",
+      "name": "Long, slow exhale to discharge.",
+      "secs": 16,
+      "say": "When you are ready, let one breath out slowly. A long exhale, like a quiet sigh. Anger often softens a little on the way out."
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s8",
+      "name": "Pace, gentle, no force.",
+      "secs": 18,
+      "say": "Breathe in, easy and unhurried. And out, long and slow. Nothing forced. Just letting each exhale loosen one small knot."
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s9",
+      "name": "First open silence.",
+      "secs": 30,
+      "say": "Let us stay with a few of those together. I will be quiet now, and you can let the breath find its own rhythm."
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s10",
+      "name": "Open silence. Hold the quiet.",
+      "secs": 40,
+      "say": ""
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s11",
+      "name": "Open silence. Hold the quiet.",
+      "secs": 30,
+      "say": ""
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s12",
+      "name": "Reframe the feeling as protective.",
+      "secs": 20,
+      "say": "Anger often shows up to protect something that matters to you, or because something felt unfair, or because you are tired and stretched thin. You can thank it for trying, even while you let it ease."
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s13",
+      "name": "Permission for it to stay.",
+      "secs": 18,
+      "say": "If the frustration is still here, that is completely fine. We are not chasing it away. We are letting it sit beside us without running the whole show."
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s14",
+      "name": "Softening image, optional.",
+      "secs": 19,
+      "say": "Imagine the feeling has a little more space around it now. Not gone, just less crowded. Like a tight fist slowly, gently unclenching, at its own pace."
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s15",
+      "name": "Second, longer open silence.",
+      "secs": 45,
+      "say": "Stay here in your own quiet for a while. There is nowhere you need to be. I will leave you some space."
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s16",
+      "name": "Open silence. Hold the quiet.",
+      "secs": 50,
+      "say": ""
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s17",
+      "name": "Open silence. Hold the quiet.",
+      "secs": 44,
+      "say": ""
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s18",
+      "name": "On-your-side reassurance.",
+      "secs": 18,
+      "say": "You are not a bad person for feeling this. You are a person who feels things deeply, and who is being kind to yourself right now. That matters."
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s19",
+      "name": "Third open silence.",
+      "secs": 35,
+      "say": "A little more quiet, if you would like it. Let the breath stay slow."
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s20",
+      "name": "Open silence. Hold the quiet.",
+      "secs": 40,
+      "say": ""
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s21",
+      "name": "Gentle return.",
+      "secs": 16,
+      "say": "When you feel ready, begin to come back. No rush. Let your next breath become a touch deeper."
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s22",
+      "name": "Optional re-orienting movement.",
+      "secs": 16,
+      "say": "Maybe a small movement. Unclench your hands, roll your shoulders, or open your eyes if they were closed."
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s23",
+      "name": "Notice without demanding change.",
+      "secs": 16,
+      "say": "Notice how the feeling sits now, compared to when we started. Maybe it softened. Maybe it did not. Either way, you stayed with it kindly."
+    },
+    {
+      "id": "med-lib-frustration-ease-10-s24",
+      "name": "Affirmation. Warm close.",
+      "secs": 14,
+      "say": "You met something hard without turning on yourself. That takes real care. You can carry this softness with you. Take care."
+    }
+  ],
+  "disclaimers": [
+    "This is a relaxation practice for general wellbeing, not medical, psychological, or therapeutic advice.",
+    "If you feel distressed at any point, you can open your eyes, stop, and leave the practice. You may step away anytime.",
+    "Practices like this can sometimes surface difficult feelings, especially during the postpartum period. If anger or distress feels overwhelming or persistent, please reach out to a qualified professional or someone you trust."
+  ]
+},
+  "med-lib-steady-confidence-7": {
+  "id": "med-lib-steady-confidence-7",
+  "minutes": 7,
+  "theme": "quiet self-trust before something hard",
+  "kind": "library",
+  "intent": "A short, grounded practice for the minutes before something that feels difficult or important. It is not hype and it does not ask you to feel fearless; it helps you find a quiet, steady self-trust underneath the nerves. The aim is to remind you that you can do this at your own pace, with the steadiness that is already yours.",
+  "items": [
+    {
+      "id": "med-lib-steady-confidence-7-s0",
+      "name": "Calm, grounded welcome.",
+      "secs": 14,
+      "say": "Hello, and welcome. Something ahead of you might feel big right now. We are not going to pump you up. We are just going to help you feel steady."
+    },
+    {
+      "id": "med-lib-steady-confidence-7-s1",
+      "name": "Permission for position. Pause.",
+      "secs": 13,
+      "say": "Settle into however you are. Sitting, standing, or on your feet ready to go. All of it is fine."
+    },
+    {
+      "id": "med-lib-steady-confidence-7-s2",
+      "name": "Eyes-open offered first.",
+      "secs": 14,
+      "say": "Your eyes can close, or stay open and soft on one calm spot. Whichever helps you feel more here."
+    },
+    {
+      "id": "med-lib-steady-confidence-7-s3",
+      "name": "Normalize nerves explicitly.",
+      "secs": 17,
+      "say": "If there are nerves, let them be here. Nerves do not mean you are not ready. They often just mean this matters to you. That is allowed."
+    },
+    {
+      "id": "med-lib-steady-confidence-7-s4",
+      "name": "Grounding through contact, opt-out.",
+      "secs": 18,
+      "say": "Feel where your body meets the ground or the chair. Let it hold some of your weight. If focusing on the body is too much, rest on a steady sound instead."
+    },
+    {
+      "id": "med-lib-steady-confidence-7-s5",
+      "name": "Slow exhale to settle.",
+      "secs": 16,
+      "say": "Let one breath out slowly now. A long, easy exhale. Let your shoulders come down a little as it leaves."
+    },
+    {
+      "id": "med-lib-steady-confidence-7-s6",
+      "name": "Breath pacing, unhurried.",
+      "secs": 17,
+      "say": "Breathe in, gentle. And out, slow and long. You are not rushing toward the hard thing. You are right here, getting steady."
+    },
+    {
+      "id": "med-lib-steady-confidence-7-s7",
+      "name": "First open silence.",
+      "secs": 30,
+      "say": "Stay with a few of those breaths in your own quiet. I will give you some space."
+    },
+    {
+      "id": "med-lib-steady-confidence-7-s8",
+      "name": "Open silence. Hold the quiet.",
+      "secs": 40,
+      "say": ""
+    },
+    {
+      "id": "med-lib-steady-confidence-7-s9",
+      "name": "Quiet self-trust, not hype.",
+      "secs": 20,
+      "say": "You have done hard things before. Maybe not this exact one, but hard things. The same steadiness that carried you then is still here, underneath the nerves."
+    },
+    {
+      "id": "med-lib-steady-confidence-7-s10",
+      "name": "Permission to go at own pace.",
+      "secs": 18,
+      "say": "You do not have to do this perfectly. You only have to do it at your own pace, one step at a time. That is more than enough."
+    },
+    {
+      "id": "med-lib-steady-confidence-7-s11",
+      "name": "Second open silence.",
+      "secs": 40,
+      "say": "Rest in that for a moment. Nothing to prove right now. Just quiet, steady ground beneath you."
+    },
+    {
+      "id": "med-lib-steady-confidence-7-s12",
+      "name": "Open silence. Hold the quiet.",
+      "secs": 55,
+      "say": ""
+    },
+    {
+      "id": "med-lib-steady-confidence-7-s13",
+      "name": "Open silence. Hold the quiet.",
+      "secs": 45,
+      "say": ""
+    },
+    {
+      "id": "med-lib-steady-confidence-7-s14",
+      "name": "Grounded affirmation, present tense.",
+      "secs": 18,
+      "say": "Right now, you are calm enough. You are capable enough. You can meet what comes, and you can pause if you need to."
+    },
+    {
+      "id": "med-lib-steady-confidence-7-s15",
+      "name": "Gentle return toward the day.",
+      "secs": 16,
+      "say": "When you are ready, begin to come back. Let your breath become a touch fuller, carrying this steadiness with you."
+    },
+    {
+      "id": "med-lib-steady-confidence-7-s16",
+      "name": "Optional movement.",
+      "secs": 15,
+      "say": "Maybe straighten up a little, feel your feet, or open your eyes if they were closed."
+    },
+    {
+      "id": "med-lib-steady-confidence-7-s17",
+      "name": "Warm, quiet close.",
+      "secs": 14,
+      "say": "You are steadier than the nerves would have you believe. Go gently, at your own pace. You have got this. Take care."
+    }
+  ],
+  "disclaimers": [
+    "This is a relaxation practice for general wellbeing, not medical, psychological, or therapeutic advice.",
+    "If you feel distressed at any point, you can open your eyes, stop, and leave the practice. You may step away anytime.",
+    "Practices like this can sometimes surface difficult feelings, especially during the postpartum period. If anxiety or distress feels overwhelming, please reach out to a qualified professional or someone you trust."
+  ]
+},
+  "med-lib-ease-discomfort-15": {
+  "id": "med-lib-ease-discomfort-15",
+  "minutes": 15,
+  "theme": "gentle awareness for physical discomfort or tension",
+  "kind": "library",
+  "intent": "A slow, trauma-aware practice for moments of physical discomfort or tension, offering gentle, kind attention rather than trying to force the discomfort to leave. Focusing on the body is entirely optional throughout; breath and sound are offered as equal alternatives at every step. This is a relaxation practice only and is never a substitute for medical care.",
+  "items": [
+    {
+      "id": "med-lib-ease-discomfort-15-s0",
+      "name": "Warm welcome, clear non-medical framing.",
+      "secs": 16,
+      "say": "Hello, and welcome. If your body feels uncomfortable or tense right now, this is a gentle place to rest with that. This is not treatment. It is simply a few kind minutes for yourself."
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s1",
+      "name": "Medical-care caveat, plainly stated.",
+      "secs": 18,
+      "say": "This practice will not fix or diagnose anything, and it does not replace medical care. If you are in real pain or worried about your body, please let a doctor or midwife know. This is only here to keep you company."
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s2",
+      "name": "Permission for position.",
+      "secs": 14,
+      "say": "Settle into whatever position is kindest to your body right now. Lying down, propped up, curled on your side. There is no correct way."
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s3",
+      "name": "Eyes-open offered first.",
+      "secs": 14,
+      "say": "Your eyes can close, or stay open and soft. Whichever feels safer and easier to you today."
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s4",
+      "name": "Make body focus opt-in from the start.",
+      "secs": 20,
+      "say": "In this practice we may gently notice the body, but that is always your choice. At any point you can turn your attention to your breath or to a sound in the room instead. Those are not lesser options. They are completely equal."
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s5",
+      "name": "Breath anchor with alternative.",
+      "secs": 18,
+      "say": "Let us begin with the breath, wherever it is easiest to feel. At the nose, or the chest. If even the breath feels like too much, simply listen to the quietest sound you can find."
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s6",
+      "name": "Slow exhale.",
+      "secs": 16,
+      "say": "Let one breath out slowly now. A long, soft exhale. Let it be a little longer than the breath in."
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s7",
+      "name": "Breath pacing.",
+      "secs": 18,
+      "say": "Breathe in, gently. And out, slow and long. Nothing forced. Just letting each exhale soften the edges a little."
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s8",
+      "name": "First open silence.",
+      "secs": 35,
+      "say": "Stay with the breath in your own quiet for a while. I will give you space."
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s9",
+      "name": "Open silence. Hold the quiet.",
+      "secs": 60,
+      "say": ""
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s10",
+      "name": "Open silence. Hold the quiet.",
+      "secs": 50,
+      "say": ""
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s11",
+      "name": "Invite optional, kind body awareness.",
+      "secs": 22,
+      "say": "If you would like to, and only if you would like to, let your attention rest near an area that feels tense or uncomfortable. Not to change it. Just to bring it some gentle, unhurried company. If that does not feel right, stay with the breath instead."
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s12",
+      "name": "Soften the relationship to discomfort.",
+      "secs": 22,
+      "say": "You do not have to make the discomfort go away. We are not fighting it. We are just letting it be here without bracing against it quite so hard. Sometimes that small softening is its own relief."
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s13",
+      "name": "Breath into the area, opt-out repeated.",
+      "secs": 20,
+      "say": "If it helps, imagine the breath moving toward that area, like warmth, like a little more room around it. Or keep your attention entirely on the breath or a sound. Both are completely fine."
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s14",
+      "name": "Second, long open silence.",
+      "secs": 55,
+      "say": "Rest here for a while, in whatever way is gentlest. There is nothing you need to do. I will leave you some quiet."
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s15",
+      "name": "Open silence. Hold the quiet.",
+      "secs": 60,
+      "say": ""
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s16",
+      "name": "Open silence. Hold the quiet.",
+      "secs": 60,
+      "say": ""
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s17",
+      "name": "Permission for discomfort to remain.",
+      "secs": 20,
+      "say": "If the discomfort is still here, that is not a failure. Bodies hold what they hold, especially when they are healing or tired. You have given yours some kindness, and that counts."
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s18",
+      "name": "Reassurance, present tense.",
+      "secs": 18,
+      "say": "Right now, in this moment, you are doing enough simply by resting. The ground is holding you. You do not have to carry anything else right now."
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s19",
+      "name": "Third open silence.",
+      "secs": 60,
+      "say": "A longer quiet now, all yours. Let the breath stay slow and easy."
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s20",
+      "name": "Open silence. Hold the quiet.",
+      "secs": 60,
+      "say": ""
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s21",
+      "name": "Open silence. Hold the quiet.",
+      "secs": 44,
+      "say": ""
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s22",
+      "name": "Whole-body kindness, optional.",
+      "secs": 22,
+      "say": "If it feels okay, let a little kindness spread through the whole body, not just the sore places. This body has carried you through so much. It is doing its best. Or simply rest in the breath. Either is right."
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s23",
+      "name": "Fourth open silence.",
+      "secs": 50,
+      "say": "Stay as long as you like in this quiet. I am here, and there is no hurry."
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s24",
+      "name": "Open silence. Hold the quiet.",
+      "secs": 40,
+      "say": ""
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s25",
+      "name": "Gentle return.",
+      "secs": 16,
+      "say": "When you feel ready, begin to come back, slowly and carefully. Let your breath become a touch deeper."
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s26",
+      "name": "Optional, careful movement.",
+      "secs": 18,
+      "say": "Maybe the smallest movement. A gentle stretch only if it feels good, a wiggle of the fingers, or opening your eyes if they were closed. Move only in ways that feel kind."
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s27",
+      "name": "Notice without demanding change.",
+      "secs": 16,
+      "say": "Notice how your body feels now, compared to when we started. Maybe softer, maybe the same. Whatever is true is okay."
+    },
+    {
+      "id": "med-lib-ease-discomfort-15-s28",
+      "name": "Warm close.",
+      "secs": 18,
+      "say": "You gave your body gentle company instead of pressure today. That is a real kindness. And if you need care, please reach out for it. Take care of yourself."
+    }
+  ],
+  "disclaimers": [
+    "This is a relaxation practice for general wellbeing only. It is not medical advice and is never a substitute for professional medical care, diagnosis, or treatment.",
+    "If you feel distressed or your discomfort worsens at any point, you can open your eyes, stop, and leave the practice. You may step away anytime.",
+    "Practices like this can sometimes surface difficult physical or emotional feelings, especially during the postpartum period. If pain or distress feels overwhelming or persistent, please contact a doctor, midwife, or qualified professional."
+  ]
+},
+  "med-lib-reset-5": {
+  "id": "med-lib-reset-5",
+  "minutes": 5,
+  "theme": "tiny full reset for an overwhelmed moment",
+  "kind": "library",
+  "intent": "A very short, five-minute reset for the middle of a busy, overwhelming day. It asks for almost nothing: no stillness, no eyes closed, no attention to the body. The aim is simply to give your nervous system one small, kind pause, so you can return to the day a little more settled than you left it.",
+  "items": [
+    {
+      "id": "med-lib-reset-5-s0",
+      "name": "Quick, warm welcome.",
+      "secs": 12,
+      "say": "Hello, and welcome. This is only a few minutes. You do not have to fix anything. You only have to be here for a moment."
+    },
+    {
+      "id": "med-lib-reset-5-s1",
+      "name": "Permission for position. No stillness required.",
+      "secs": 13,
+      "say": "Stay exactly where you are. Sitting, standing, holding someone, mid-task. You do not need to stop everything for this to help."
+    },
+    {
+      "id": "med-lib-reset-5-s2",
+      "name": "Eyes-open offered first.",
+      "secs": 13,
+      "say": "Your eyes can close, or stay open and soft on one calm spot. Whichever is easier right now."
+    },
+    {
+      "id": "med-lib-reset-5-s3",
+      "name": "Orient to the present.",
+      "secs": 16,
+      "say": "Let us land for a second. You are not in the middle of the whole day right now. You are just here, in this one small moment."
+    },
+    {
+      "id": "med-lib-reset-5-s4",
+      "name": "One slow exhale, breath alternative noted.",
+      "secs": 17,
+      "say": "Let one breath out slowly. A long, easy exhale. If the breath feels like too much, just feel your feet on the floor instead. That counts."
+    },
+    {
+      "id": "med-lib-reset-5-s5",
+      "name": "A couple of paced breaths.",
+      "secs": 18,
+      "say": "Breathe in, gentle. And out, slow and long. Let this one exhale carry off a little of the load."
+    },
+    {
+      "id": "med-lib-reset-5-s6",
+      "name": "Short open silence.",
+      "secs": 35,
+      "say": "Take a few of those in your own quiet. I will be still for a moment."
+    },
+    {
+      "id": "med-lib-reset-5-s7",
+      "name": "Open silence. Hold the quiet.",
+      "secs": 30,
+      "say": ""
+    },
+    {
+      "id": "med-lib-reset-5-s8",
+      "name": "Normalize the busy mind.",
+      "secs": 18,
+      "say": "The day is still there, and the mind may still be busy. That is completely allowed. We are not emptying it, only giving it one soft pause."
+    },
+    {
+      "id": "med-lib-reset-5-s9",
+      "name": "Second short silence.",
+      "secs": 40,
+      "say": "A little more quiet, just for you. Let the breath stay slow and easy."
+    },
+    {
+      "id": "med-lib-reset-5-s10",
+      "name": "Open silence. Hold the quiet.",
+      "secs": 30,
+      "say": ""
+    },
+    {
+      "id": "med-lib-reset-5-s11",
+      "name": "Reassurance, present tense.",
+      "secs": 16,
+      "say": "Right now, in this small moment, there is nothing you have to carry. The ground is holding you. You are okay enough."
+    },
+    {
+      "id": "med-lib-reset-5-s12",
+      "name": "Gentle return.",
+      "secs": 14,
+      "say": "When you are ready, begin to come back. No rush. Let your next breath become a touch deeper."
+    },
+    {
+      "id": "med-lib-reset-5-s13",
+      "name": "Optional movement.",
+      "secs": 13,
+      "say": "Maybe a small movement. Roll your shoulders, or open your eyes if they were closed."
+    },
+    {
+      "id": "med-lib-reset-5-s14",
+      "name": "Warm, quick close.",
+      "secs": 15,
+      "say": "You gave yourself one kind pause in a full day. That is enough. Carry this little bit of quiet back with you. Take care."
+    }
+  ],
+  "disclaimers": [
+    "This is a relaxation practice for general wellbeing, not medical, psychological, or therapeutic advice.",
+    "If you feel distressed at any point, you can open your eyes, stop, and leave the practice. You may step away anytime.",
+    "Practices like this can sometimes surface difficult feelings, especially during the postpartum period. If overwhelm or distress feels persistent, please reach out to a qualified professional or someone you trust."
+  ]
+}
 };
 
 const CORE_BY_MIN = {"7": "med-core-7", "15": "med-core-15", "20": "med-core-20", "30": "med-core-30", "45": "med-core-45", "60": "med-core-60"};
@@ -2295,7 +3909,19 @@ export const MEDITATION_LIBRARY = [
     "id": "med-lib-bodyscan-20",
     "minutes": 20,
     "theme": "Body scan — explicitly opt-in about body focus, trauma-aware. A slow, head-to-toe (or foot-to-head) journey of friendly attention, with a standing breath-and-sound alternative offered throughout for anyone for whom turning toward the body does not feel safe today."
-  }
+  },
+  {"id": "med-lib-morning-gentle-7", "minutes": 7, "theme": "a gentle morning arrival"},
+  {"id": "med-lib-anxious-mind-15", "minutes": 15, "theme": "easing an anxious, worried mind"},
+  {"id": "med-lib-box-breath-5", "minutes": 5, "theme": "simple paced breathing (box breath)"},
+  {"id": "med-lib-gratitude-10", "minutes": 10, "theme": "softly noticing small good things"},
+  {"id": "med-lib-grounding-senses-7", "minutes": 7, "theme": "five-senses grounding"},
+  {"id": "med-lib-letting-go-15", "minutes": 15, "theme": "releasing tension and what you cannot control"},
+  {"id": "med-lib-refocus-5", "minutes": 5, "theme": "quick reset between tasks"},
+  {"id": "med-lib-loving-kindness-15", "minutes": 15, "theme": "loving-kindness for self and others"},
+  {"id": "med-lib-frustration-ease-10", "minutes": 10, "theme": "softening frustration without judging it"},
+  {"id": "med-lib-steady-confidence-7", "minutes": 7, "theme": "quiet self-trust before something hard"},
+  {"id": "med-lib-ease-discomfort-15", "minutes": 15, "theme": "gentle awareness for physical discomfort or tension"},
+  {"id": "med-lib-reset-5", "minutes": 5, "theme": "tiny full reset for an overwhelmed moment"}
 ];
 
 export const MEDITATIONS = SCRIPTS;

@@ -64,21 +64,39 @@ function alternate(strength, soft) {
 // otherwise check the tierEligibility map (absent => all tiers, preserving v1).
 function tierAllows(e, tier, elig) {
   if (e.blocks.includes('close') || (e.tags && e.tags.includes('breath'))) return true;
-  if (!tier || !elig) return true;
+  if (!tier || tier === 'stretch' || tier === 'yoga') return true; // these gate by category, not intensity
+  if (!elig) return true;
   const te = elig[e.id];
   if (!te || !te.length) return true;
   return te.includes(tier);
 }
 
+// Which categories a workout path may draw from. Breath/close bookends always pass.
+// Exercises borrows stretch moves for its warm-up and cool-down.
+const CATEGORY_POOLS = {
+  stretch: ['stretch'],
+  yoga: ['yoga'],
+  exercise: ['exercise', 'stretch'],
+};
+function categoryAllows(e, category, catMap) {
+  if (!category) return true; // legacy / unscoped
+  if (e.blocks.includes('close') || (e.tags && e.tags.includes('breath'))) return true;
+  const allowed = CATEGORY_POOLS[category];
+  if (!allowed) return true;
+  const c = (catMap && catMap[e.id]) || 'exercise';
+  return allowed.includes(c);
+}
+
 export function buildSession(durationMins, exercises, opts = {}) {
-  const { lastCloseId = '', tier = 'slightly_sweaty', tierEligibility = {} } = opts;
+  const { lastCloseId = '', tier = 'slightly_sweaty', tierEligibility = {}, category = null, workoutCategory = {} } = opts;
   const prof = TIER_PROFILES[tier] || TIER_PROFILES.slightly_sweaty;
   const total = durationMins * 60;
   const restSecs = TRANSITION_SECS + (prof.restAdd || 0);
   const used = new Set();
 
-  // Restrict the working pool to this tier (breath/close always survive).
-  const pool = exercises.filter((e) => tierAllows(e, tier, tierEligibility));
+  // Restrict the working pool to this tier AND workout category (Stretching / Yoga /
+  // Exercises). Breath/close bookends always survive both filters.
+  const pool = exercises.filter((e) => tierAllows(e, tier, tierEligibility) && categoryAllows(e, category, workoutCategory));
 
   // 1) the close — always last, always breath (picked first so the
   //    arrival never duplicates it)
