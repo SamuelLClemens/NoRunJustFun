@@ -64,11 +64,16 @@ export function checkFinanceBadges(store) {
   const f = ensureFinance(store);
   const p = store.progress;
   const streak = financeStreak(store);
+  // ids of lessons (not games) the user has completed, for topic badges
+  const done = new Set(f.lessons.filter((l) => l && !l.game).map((l) => l.id));
   const conditions = {
     'fin-first-lesson': f.lessonsCompleted >= 1,
     'fin-three': f.lessonsCompleted >= 3,
     'fin-seven': f.lessonsCompleted >= 7,
     'fin-streak-3': streak.count >= 3,
+    'fin-budgeter': done.has('budgeting'),
+    'fin-compounder': done.has('compound-growth'),
+    'fin-landlord': done.has('property-basics'),
   };
   const earned = [];
   for (const [id, ok] of Object.entries(conditions)) {
@@ -80,20 +85,24 @@ export function checkFinanceBadges(store) {
   return earned;
 }
 
-// Orchestrator: call once when a finance lesson or game completes. Grows the
-// shared garden by one, awards finance + shared consistency/garden badges, saves
-// once, and returns the data a completion screen needs to celebrate.
-export function finishFinance(store, { id, durationKey = null, sources = 0, game = false, won = true } = {}) {
+// Orchestrator: call once when a finance lesson/session or game completes. A
+// session may cover one lesson (from the catalog) or several (a duration-scaled
+// study session), so it accepts a list of lesson ids. Records each lesson, grows
+// the shared garden by exactly ONE, awards finance + shared consistency/garden
+// badges, saves once, and returns the data a completion screen needs.
+export function finishFinance(store, { lessonIds = [], durationKey = null, sources = 0, game = false, won = true } = {}) {
   ensureFinance(store);
+  const ids = Array.isArray(lessonIds) ? lessonIds.filter(Boolean) : [lessonIds].filter(Boolean);
   const stageBefore = gardenStage(store.progress.sessions.length, GARDEN_STAGE_SESSIONS);
 
-  // 1) finance-specific progress
-  if (game) recordGameComplete(store, { id, won });
-  else recordLessonComplete(store, { id, sources });
+  // 1) finance-specific progress — one ledger entry per lesson covered
+  if (game) recordGameComplete(store, { id: ids[0] || 'finance-game', won });
+  else ids.forEach((lid) => recordLessonComplete(store, { id: lid, sources }));
 
-  // 2) ONE shared garden/streak record — combined activity (criterion 6), zero
-  //    minutes so levels are not inflated. Deliberately bypasses recordSession so
-  //    durationsTried/tiersTried/totalMins/moveCounts/breathCloses stay untouched.
+  // 2) ONE shared garden/streak record per completion — combined activity
+  //    (criterion 6), zero minutes so levels are not inflated. Deliberately
+  //    bypasses recordSession so durationsTried/tiersTried/totalMins/moveCounts/
+  //    breathCloses stay untouched, however many lessons the session covered.
   store.progress.sessions.push({
     date: todayKey(),
     mins: 0,
@@ -104,7 +113,7 @@ export function finishFinance(store, { id, durationKey = null, sources = 0, game
     skipped: [],
     tier: null,
     kind: game ? 'finance-game' : 'finance',
-    lessonId: id,
+    lessonIds: ids,
   });
 
   // 3) badges — the distinct finance set plus the shared consistency/garden

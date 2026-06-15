@@ -361,3 +361,76 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
   animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;
 }
+
+/* ============================================================
+   Finance — "Money Garden" sub-theme (ADDITIVE). Extends the
+   garden tokens: the periwinkle of the veronica logo is the
+   finance signature, gold (sun) is value. No existing rule is
+   modified, so the fitness UI is byte-for-byte unchanged. The
+   duration picker (.duration-grid/.duration-btn) is reused
+   verbatim — no finance override.
+   ============================================================ */
+:root {
+  --finance-accent: #5B6BD0;       /* veronica periwinkle — finance signature */
+  --finance-accent-soft: #7B8FE8;
+  --finance-tint: #ECEEFB;         /* periwinkle wash for banners/cards */
+  --finance-border: #C9CFF4;
+  --finance-ink: #2E3A8C;          /* readable text on periwinkle tints */
+  --finance-gold-deep: #9A6500;    /* readable text on gold tints */
+}
+
+.finance-hero { display: flex; align-items: center; gap: 10px; }
+.finance-hero .veronica { width: 28px; height: 28px; flex: 0 0 auto; }
+
+.fin-banner {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--finance-tint); border: 1px solid var(--finance-border);
+  border-radius: var(--radius-sm); padding: 11px 13px;
+  color: var(--finance-ink); font-size: 0.86rem; line-height: 1.4;
+}
+.fin-banner .fin-info { flex: 0 0 auto; font-size: 1.15rem; line-height: 1.1; }
+.fin-banner strong { color: var(--finance-ink); }
+
+.fin-lib { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 8px; }
+.fin-lib-btn {
+  border: 2px solid var(--finance-border); border-radius: var(--radius-sm); background: var(--card);
+  padding: 12px 14px; display: flex; align-items: center; gap: 12px; text-align: left;
+}
+.fin-lib-btn:hover { border-color: var(--finance-accent); background: var(--finance-tint); }
+.fin-lib-ic { width: 42px; height: 42px; flex: 0 0 auto; display: grid; place-items: center;
+  background: var(--sun-200); border-radius: 13px; }
+.fin-lib-txt { flex: 1; min-width: 0; }
+.fin-lib-txt strong { display: block; }
+.fin-lib-txt small { color: var(--ink-soft); }
+.fin-lib-meta { flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.fin-mins { font-family: var(--font-display); font-weight: 600; color: var(--finance-accent); }
+.fin-src-pill { background: var(--sun-200); color: var(--finance-gold-deep);
+  border: 1px solid var(--sun-300); border-radius: 999px; padding: 2px 8px;
+  font-size: 0.68rem; font-weight: 800; white-space: nowrap; }
+.fin-done-tag { color: var(--green-600); font-weight: 800; font-size: 0.72rem; }
+
+/* finance badges — distinct gold + periwinkle treatment vs the green fitness set */
+.badge-cell.finance { background: #FFFCF2; box-shadow: inset 0 0 0 2px var(--finance-border), var(--shadow-soft); }
+.badge-cell.finance strong { color: var(--finance-ink); }
+.badge-cell.finance .badge-date { color: var(--finance-accent); }
+.badge-section-label { grid-column: 1 / -1; margin: 8px 2px 0; font-family: var(--font-display);
+  font-weight: 600; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+.badge-section-label .veronica { width: 20px; height: 20px; }
+
+/* sources list (accuracy protocol — every fact-heavy lesson cites its sources) */
+.fin-sources { text-align: left; margin-top: 10px; }
+.fin-sources h3 { font-size: 1rem; }
+.fin-sources ul { list-style: none; padding: 0; margin: 6px 0 0; display: flex; flex-direction: column; gap: 6px; }
+.fin-sources li { font-size: 0.82rem; color: var(--ink-soft); }
+.fin-sources a { color: var(--finance-accent); font-weight: 700; word-break: break-word; }
+.fin-sources .fin-year { color: var(--finance-gold-deep); font-weight: 800; }
+
+/* collapsible transcript (accessibility: read what the coach said) */
+.fin-transcript { text-align: left; margin-top: 10px; }
+.fin-transcript summary { cursor: pointer; font-weight: 800; color: var(--green-700); }
+.fin-transcript p { font-size: 0.9rem; color: var(--ink); margin: 8px 0; }
+.fin-transcript .fin-seg-name { font-weight: 800; color: var(--ink); }
+
+@media (min-width: 560px) {
+  .fin-lib { grid-template-columns: repeat(2, 1fr); }
+}

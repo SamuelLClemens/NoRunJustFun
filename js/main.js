@@ -22,6 +22,9 @@ import { buildMeditation, buildMeditationById, MEDITATION_LIBRARY } from './data
 import { availableTiers, gateMessage, routeTrack, filterPool, evaluateScreening,
   PARQ_GENERAL, PARQ_POSTPARTUM, LIFE_STAGES, SEX_OPTIONS, AGE_BANDS, INJURY_FLAGS, SPACE_OPTIONS } from './data/profiles.js';
 import { PROGRAMS, getProgram, programSuggestion, advanceProgram } from './data/programs.js';
+import { buildLessonById, buildLessonSession } from './data/lessons.js';
+import { FINANCE_BADGES } from './data/badges.finance.js';
+import { moneyGardenScreen, financeDone } from './finance-screen.js';
 
 const app = document.getElementById('app');
 let avatar = null;        // lazy three.js instance, one at a time
@@ -85,6 +88,7 @@ function homeScreen() {
     <header class="topbar">
       <div class="brand">${logoSVG()}</div>
       <nav class="topnav">
+        <a href="#money">Money</a>
         <a href="#badges">Badges</a>
         <a href="#settings" aria-label="Settings">Settings</a>
       </nav>
@@ -487,7 +491,7 @@ function sessionScreen(plan) {
       moveStart(item, idx) {
         document.getElementById('move-name').textContent = item.ex.name;
         document.getElementById('block-chip').textContent =
-          { arrive: 'arrive', warmup: 'warm-up', main: 'main', winddown: 'wind-down', close: 'breathe', meditation: 'meditate' }[item.block] || '';
+          { arrive: 'arrive', warmup: 'warm-up', main: 'main', winddown: 'wind-down', close: 'breathe', meditation: 'meditate', lesson: 'learn' }[item.block] || '';
         dots.setAttribute('aria-label', `Move ${idx + 1} of ${plan.items.length}: ${item.ex.name}`);
         dots.querySelectorAll('.dot').forEach((d, i) => {
           d.classList.toggle('done', i < idx);
@@ -504,7 +508,7 @@ function sessionScreen(plan) {
         document.getElementById('ring-num').textContent = pl.phase === 'paused' ? '⏸' : String(Math.max(pl.remaining, 0));
         document.getElementById('btn-pause').textContent = pl.phase === 'paused' ? 'Resume' : 'Pause';
       },
-      done(stats) { finishSession(stats); },
+      done(stats) { (plan.onDone || finishSession)(stats); },
     },
   });
 
@@ -608,19 +612,21 @@ function finishSession(stats) {
 
 function badgesScreen() {
   const earned = store.progress.badges;
+  const cell = (b) => {
+    const got = earned[b.id];
+    return `<div class="badge-cell ${b.category === 'finance' ? 'finance ' : ''}${got ? 'earned' : 'locked'}">
+      <div class="badge-icon">${b.icon}</div>
+      <strong>${esc(b.name)}</strong>
+      <small>${esc(b.desc)}</small>
+      ${got ? `<span class="badge-date">${new Date(got).toLocaleDateString()}</span>` : '<span class="badge-lock" aria-label="Locked">🔒</span>'}
+    </div>`;
+  };
   app.innerHTML = `
     <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Badges</h1></header>
     <main class="narrow">
       <div class="badge-grid">
-        ${BADGES.map((b) => {
-          const got = earned[b.id];
-          return `<div class="badge-cell ${got ? 'earned' : 'locked'}">
-            <div class="badge-icon">${b.icon}</div>
-            <strong>${esc(b.name)}</strong>
-            <small>${esc(b.desc)}</small>
-            ${got ? `<span class="badge-date">${new Date(got).toLocaleDateString()}</span>` : '<span class="badge-lock" aria-label="Locked">🔒</span>'}
-          </div>`;
-        }).join('')}
+        ${BADGES.map(cell).join('')}
+        ${FINANCE_BADGES.length ? `<div class="badge-section-label">🌸 Money badges</div>${FINANCE_BADGES.map(cell).join('')}` : ''}
       </div>
     </main>`;
 }
@@ -852,6 +858,21 @@ async function ensureRealisticClass() {
   }
 }
 
+// Finance lessons reuse the session player. On completion we tear down the
+// avatar/Player (as finishSession does) then hand off to the Money Garden
+// completion screen, which records the result and celebrates. An early exit
+// records nothing and just returns to the hub.
+function startFinanceLesson(plan) {
+  plan.onDone = (stats) => {
+    if (avatar) { avatar.dispose(); avatar = null; }
+    player = null;
+    history.replaceState(null, '', location.pathname + location.search + '#money');
+    if (stats && stats.early) { go('#money'); return; }
+    financeDone(plan);
+  };
+  sessionScreen(plan);
+}
+
 // Build a session plan for a play route, or null if it cannot/should not start.
 function planFor(mins, tier) {
   if (tier === 'meditation') return buildMeditation(mins);
@@ -902,6 +923,33 @@ async function render() {
       store.profile.defaultTier = tier; save();
       sessionScreen(plan);
       return;
+    }
+  }
+
+  // finance — the Money Garden hub
+  if (h === '#money') return moneyGardenScreen();
+
+  // a specific catalog lesson: #fin-lib-<id>  (checked before #fin- prefix)
+  if (h.startsWith('#fin-lib-')) {
+    const id = h.slice('#fin-lib-'.length);
+    const plan = buildLessonById(id);
+    if (!plan) { moneyGardenScreen(); return; }
+    await ensureAvatarClass();
+    if (store.profile.fullInstructorOn) await ensureRealisticClass();
+    if (seq !== renderSeq) return;
+    return startFinanceLesson(plan);
+  }
+
+  // a duration-scaled study session: #fin-<mins>
+  if (h.startsWith('#fin-')) {
+    const mins = parseInt(h.slice('#fin-'.length), 10);
+    if (DURATIONS.includes(mins)) {
+      const plan = buildLessonSession(mins);
+      if (!plan || !plan.items.length) { moneyGardenScreen(); return; }
+      await ensureAvatarClass();
+      if (store.profile.fullInstructorOn) await ensureRealisticClass();
+      if (seq !== renderSeq) return;
+      return startFinanceLesson(plan);
     }
   }
 
