@@ -19,7 +19,7 @@ import { streakInfo, checkBadges, gardenStage } from './gamify.js';
 import { GARDEN_STAGE_SESSIONS } from './data/garden.js';
 import { getTrack } from './data/tracks.js';
 
-const blankTrack = () => ({ lessons: [], lessonsCompleted: 0, gamesWon: 0 });
+const blankTrack = () => ({ lessons: [], lessonsCompleted: 0, gamesWon: 0, quizBest: 0, completedAt: null });
 
 // Defensive backfill (mirrors the old ensureFinance). state.js defaults()/migrate()
 // already provide progress.learning for every load; this guards a store object
@@ -32,6 +32,8 @@ export function ensureTrack(store, trackId) {
   if (!Array.isArray(t.lessons)) t.lessons = [];
   if (typeof t.lessonsCompleted !== 'number') t.lessonsCompleted = 0;
   if (typeof t.gamesWon !== 'number') t.gamesWon = 0;
+  if (typeof t.quizBest !== 'number') t.quizBest = 0;
+  if (!('completedAt' in t)) t.completedAt = null;
   return t;
 }
 
@@ -69,7 +71,7 @@ export function checkTrackBadges(store, trackId) {
   const t = ensureTrack(store, trackId);
   const p = store.progress;
   const streak = trackStreak(store, trackId);
-  const done = new Set(t.lessons.filter((l) => l && !l.game).map((l) => l.id));
+  const done = new Set(t.lessons.filter((l) => l && !l.game && !l.quiz).map((l) => l.id));
 
   const cb = track.countBadges || {};
   const conditions = {};
@@ -157,6 +159,39 @@ export function finishLearning(store, trackId, { lessonIds = [], durationKey = n
     grew: stageAfter > stageBefore,
     stageAfter,
     streak: streakInfo(store.progress.sessions),
+    trackStreak: trackStreak(store, trackId),
+  };
+}
+
+// Record a finished subject quiz. Tracks the best score (%), and the FIRST time the
+// learner scores 100% it stamps completedAt (the subject is "completed"; it can still
+// be reviewed/retaken, but the date sticks). Like a lesson/game, a quiz attempt grows
+// the SHARED garden by exactly one (isolated: mins 0, kind:'<track>-quiz', never touches
+// totalMins/durationsTried/moveCounts), and the ledger entry feeds the dashboard log.
+export function recordQuiz(store, trackId, { score = 0, total = 0 } = {}) {
+  const t = ensureTrack(store, trackId);
+  const pct = total > 0 ? Math.round((score / total) * 100) : 0;
+  const best = Math.max(t.quizBest || 0, pct);
+  t.quizBest = best;
+  const justCompleted = pct >= 100 && !t.completedAt;
+  if (justCompleted) t.completedAt = new Date().toISOString();
+  // ledger entry (quiz:true keeps it out of the topic-badge "done" set and lessonsCompleted)
+  t.lessons.push({ id: trackId + '-quiz', date: todayKey(), quiz: true, score: pct });
+
+  const stageBefore = gardenStage(store.progress.sessions.length, GARDEN_STAGE_SESSIONS);
+  store.progress.sessions.push({
+    date: todayKey(), mins: 0, durationKey: null, breathClose: false,
+    completed: [], skipped: [], tier: null, kind: trackId + '-quiz', lessonIds: [],
+  });
+  const earnedTrack = checkTrackBadges(store, trackId);
+  const earnedShared = checkBadges(store, GARDEN_STAGE_SESSIONS);
+  save();
+  const stageAfter = gardenStage(store.progress.sessions.length, GARDEN_STAGE_SESSIONS);
+  return {
+    pct, best, justCompleted,
+    earned: [...earnedTrack, ...earnedShared],
+    grew: stageAfter > stageBefore,
+    stageAfter,
     trackStreak: trackStreak(store, trackId),
   };
 }

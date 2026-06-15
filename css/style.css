@@ -632,3 +632,22 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 .takeaway-list { margin: 4px 0; padding-left: 1.15rem; }
 .takeaway-list li { margin: 5px 0; line-height: 1.45; }
 .takeaway-list li::marker { color: var(--finance-accent, #B5478B); }
+
+/* blitz arcade — timed HUD + big two-up options */
+.game-blitz { width: 100%; max-width: 460px; }
+.blitz-hud { display: flex; justify-content: space-between; gap: 8px; width: 100%; font-weight: 800;
+  color: var(--finance-ink, #7A2E5E); margin: 2px 0 8px; font-variant-numeric: tabular-nums; }
+.blitz-combo { color: var(--finance-accent, #B5478B); }
+.blitz-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+.blitz-opts .quiz-opt { text-align: center; font-size: 1.05rem; padding: 18px 12px; }
+
+/* completion quiz card + done tag */
+.fin-quiz.is-complete { border: 2px solid var(--green-500); background: #EAF6EC; }
+.fin-quiz-status { margin: 6px 0 10px; color: var(--ink-soft); }
+.fin-done-tag { color: var(--green-700); font-weight: 800; }
+
+/* expert tips */
+.tip-list { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 11px; }
+.tip-list li { border-left: 3px solid var(--finance-accent, #B5478B); padding: 1px 0 1px 12px; }
+.tip-from { display: block; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.02em; text-transform: uppercase; color: var(--finance-ink, #7A2E5E); }
+.tip-text { display: block; line-height: 1.45; }

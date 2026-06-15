@@ -171,12 +171,16 @@ ok('recordSession(' not in learn_code, "learning.js must not call recordSession 
 ok('totalMins' not in learn_code, "learning.js must not write totalMins (no level inflation)")
 ok('durationsTried' not in learn_code, "learning.js must not write durationsTried (protects 'all-durations')")
 
-# 12) learning state migration — additive & lossless: v3 with a v2->v3 branch that
-#     moves the legacy progress.finance blob into learning.money
-ok('CURRENT_VERSION = 3' in st, "state.js CURRENT_VERSION must be 3 (learning unification)")
+# 12) learning state migration — additive & lossless: v4, retaining the v2->v3 branch
+#     that moved the legacy progress.finance blob into learning.money, plus a v3->v4
+#     branch adding the dashboard fields (on-device only).
+ok('CURRENT_VERSION = 4' in st, "state.js CURRENT_VERSION must be 4 (dashboard additions)")
 ok('learning:' in st, "state.js defaults() missing the learning sub-object")
 ok('data.progress.finance' in st, "state.js v2->v3 branch does not migrate the legacy progress.finance blob")
 ok('(data.version || 1) < 3' in st, "state.js missing the v2->v3 migration branch guard")
+ok('(data.version || 1) < 4' in st, "state.js missing the v3->v4 migration branch guard")
+for f in ['birthday', 'weightUnit', 'weights', 'quizBest', 'completedAt']:
+    ok(f in st, f"state.js v4 missing the '{f}' field")
 
 # 13) the player records a plan-level kind so learning lessons are not mislabelled
 ok('this.plan.kind' in read('js/player.js'), "player.js does not honour plan.kind (learning would record as 'movement')")
@@ -261,6 +265,30 @@ ok('takeawayGroups' in screen and 'Major takeaways' in screen,
    'learning-screen.js does not render the Major takeaways section')
 ok('takeawayGroups' in read('js/data/lessons.shared.js'),
    'lessons.shared.js does not thread takeawayGroups through its plan builders')
+
+# 18) dashboard era: completion quizzes (100% -> completed + date), fun arcade games,
+#     expert tips and top takeaways. All per-subject content lives in learn-extras.js
+#     and is wired through the registry; the completion model lives in learning.js.
+extras = read('js/data/learn-extras.js') if exists('js/data/learn-extras.js') else ''
+ok('export const LEARN_EXTRAS' in extras, 'learn-extras.js missing LEARN_EXTRAS export')
+ok(extras.count('makeGame(') >= 4, 'learn-extras.js should build one arcade game per subject via makeGame()')
+ok("'js/data/learn-extras.js'" in sw, 'sw.js PRECACHE missing js/data/learn-extras.js')
+ok('buildBlitz' in games_shared, 'games.shared.js missing the buildBlitz arcade engine')
+ok('export { buildQuiz }' in games_shared, 'games.shared.js must export buildQuiz for the completion quiz')
+ok('export function recordQuiz' in learn_code, 'learning.js missing recordQuiz (completion model)')
+ok('quizBest' in learn_code and 'completedAt' in learn_code, 'learning.js does not track quizBest/completedAt')
+screen2 = read('js/learning-screen.js')
+ok('export function quizScreen' in screen2, 'learning-screen.js missing quizScreen')
+ok('recordQuiz(' in screen2, 'learning-screen.js quizDone must call recordQuiz')
+ok('function party(' in screen2, 'learning-screen.js missing the tiered celebration helper')
+main_src = read('js/main.js')
+ok("=== 'quiz'" in main_src, 'main.js missing the #learn-<track>-quiz route')
+for sid in ['money', 'parenting', 'communication', 'memory']:
+    ok(f'"{sid}":' in extras, f'learn-extras.js missing subject {sid}')
+    ok(f'LEARN_EXTRAS.{sid}.quiz' in tracks_src, f'tracks.js: {sid} quiz not wired into the registry')
+    ok(f'LEARN_EXTRAS.{sid}.expertTips' in tracks_src, f'tracks.js: {sid} expertTips not wired')
+    ok(f'LEARN_EXTRAS.{sid}.topTakeaways' in tracks_src, f'tracks.js: {sid} topTakeaways not wired')
+    ok(f'LEARN_EXTRAS.{sid}.arcade' in tracks_src, f'tracks.js: {sid} arcade game not wired into games')
 
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:

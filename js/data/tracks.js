@@ -47,6 +47,7 @@ import { MEMORY_CONCEPT_GAMES } from './games.memory.concept.js';
 import { MONEY_GAMES } from './games.money.js';
 import { PARENTING_GAMES } from './games.parenting.js';
 import { COMMUNICATION_GAMES } from './games.communication.js';
+import { LEARN_EXTRAS } from './learn-extras.js';
 
 // ---- per-track SVG assets (kept byte-identical to the shipped finance visuals) ----
 
@@ -141,8 +142,11 @@ export const TRACKS = {
       'fin-compounder': ['compound-growth'],
       'fin-landlord': ['property-basics'],
     },
-    games: MONEY_GAMES,
+    games: [...MONEY_GAMES, LEARN_EXTRAS.money.arcade],
     gameBadges: { firstWin: 'fin-gamer', fiveWins: 'fin-sharp' },
+    quiz: LEARN_EXTRAS.money.quiz,
+    expertTips: LEARN_EXTRAS.money.expertTips,
+    topTakeaways: LEARN_EXTRAS.money.topTakeaways,
   },
 
   parenting: {
@@ -169,8 +173,11 @@ export const TRACKS = {
       'par-positive': ['positive-discipline'],
       'par-coach': ['emotion-coaching'],
     },
-    games: PARENTING_GAMES,
+    games: [...PARENTING_GAMES, LEARN_EXTRAS.parenting.arcade],
     gameBadges: { firstWin: 'par-gamer', fiveWins: 'par-sharp' },
+    quiz: LEARN_EXTRAS.parenting.quiz,
+    expertTips: LEARN_EXTRAS.parenting.expertTips,
+    topTakeaways: LEARN_EXTRAS.parenting.topTakeaways,
   },
 
   communication: {
@@ -197,8 +204,11 @@ export const TRACKS = {
       'com-feeler': ['nvc-feelings'],
       'com-empath': ['nvc-empathy-safety'],
     },
-    games: COMMUNICATION_GAMES,
+    games: [...COMMUNICATION_GAMES, LEARN_EXTRAS.communication.arcade],
     gameBadges: { firstWin: 'com-gamer', fiveWins: 'com-sharp' },
+    quiz: LEARN_EXTRAS.communication.quiz,
+    expertTips: LEARN_EXTRAS.communication.expertTips,
+    topTakeaways: LEARN_EXTRAS.communication.topTakeaways,
   },
 
   memory: {
@@ -216,7 +226,7 @@ export const TRACKS = {
       buildLessonSession: memoryBuildSession,
     },
     // the first track with interactive games — practice, not a cure (the lessons say so)
-    games: [...MEMORY_GAMES, ...MEMORY_CONCEPT_GAMES],
+    games: [...MEMORY_GAMES, ...MEMORY_CONCEPT_GAMES, LEARN_EXTRAS.memory.arcade],
     gamesBlurb: 'A quick, playful warm-up — fun practice, not a magic brain boost (the lessons explain the evidence).',
     prop: { className: 'lesson-prop', svg: lightbulbProp, onClass: 'lesson-prop-on', delayMs: 450 },
     coachCue: 'switches on a little lightbulb',
@@ -230,6 +240,9 @@ export const TRACKS = {
     },
     // game-win badges, driven by this track's gamesWon counter (see js/learning.js)
     gameBadges: { firstWin: 'mem-gamer', fiveWins: 'mem-sharp' },
+    quiz: LEARN_EXTRAS.memory.quiz,
+    expertTips: LEARN_EXTRAS.memory.expertTips,
+    topTakeaways: LEARN_EXTRAS.memory.topTakeaways,
   },
 };
 

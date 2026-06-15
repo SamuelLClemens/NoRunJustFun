@@ -23,7 +23,7 @@ import { availableTiers, gateMessage, routeTrack, filterPool, evaluateScreening,
   PARQ_GENERAL, PARQ_POSTPARTUM, LIFE_STAGES, SEX_OPTIONS, AGE_BANDS, INJURY_FLAGS, SPACE_OPTIONS } from './data/profiles.js';
 import { PROGRAMS, getProgram, programSuggestion, advanceProgram } from './data/programs.js';
 import { getTrack, TRACK_LIST } from './data/tracks.js';
-import { trackHubScreen, learningDone, gameScreen } from './learning-screen.js';
+import { trackHubScreen, learningDone, gameScreen, quizScreen } from './learning-screen.js';
 
 const app = document.getElementById('app');
 let avatar = null;        // lazy three.js instance, one at a time
@@ -1049,6 +1049,7 @@ async function render() {
     if (!track) { homeScreen(); return; }
     const tail = dash === -1 ? '' : rest.slice(dash + 1);
     if (tail === '') return trackHubScreen(trackId);
+    if (tail === 'quiz') return quizScreen(trackId);
     if (tail.startsWith('game-')) return gameScreen(trackId, tail.slice('game-'.length));
 
     let plan = null;
