@@ -678,6 +678,15 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 .you-log-date { color: var(--ink-soft); font-size: 0.82rem; flex: 0 0 auto; }
 .you-log-what { min-width: 0; }
 
+/* Body workout paths (Stretching / Yoga / Exercises) */
+.move-paths { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.move-path { display: flex; align-items: center; gap: 14px; text-align: left; width: 100%;
+  border: 2px solid var(--line, #E3E0D8); border-radius: var(--radius-sm); background: #fff; padding: 16px; cursor: pointer; font: inherit; color: inherit; transition: border-color 0.15s ease, background 0.15s ease; }
+.move-path:hover { border-color: var(--green-500); background: #F3FAF4; }
+.move-path-ic { font-size: 1.9rem; flex: 0 0 auto; line-height: 1; }
+.move-path-txt strong { display: block; font-size: 1.05rem; }
+.move-path-txt small { color: var(--ink-soft); }
+
 /* birthday party overlay */
 .birthday-card { max-width: 390px; }
 .bday-emoji { font-size: 2.6rem; line-height: 1; }

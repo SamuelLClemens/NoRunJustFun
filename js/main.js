@@ -17,6 +17,7 @@ import { BADGES } from './data/badges.js';
 import { gardenSVG, GARDEN_STAGE_SESSIONS } from './data/garden.js';
 import { POSES } from './data/poses.js';
 import { NEW_EXERCISES, TIER_ELIGIBILITY } from './data/movements-ext.js';
+import { EXTRA_EXERCISES, EXTRA_TIER_ELIGIBILITY, WORKOUT_CATEGORY } from './data/movements-ext2.js';
 import { MODES, TIER_META, DURATIONS } from './data/tiers.js';
 import { buildMeditation, buildMeditationById, MEDITATION_LIBRARY } from './data/meditation.js';
 import { availableTiers, gateMessage, routeTrack, filterPool, evaluateScreening,
@@ -31,7 +32,8 @@ let player = null;
 
 // The full movement pool = frozen 29 + appended new movements. exercises.js stays
 // byte-stable; tier metadata and new moves live in movements-ext.js.
-const ALL_EXERCISES = [...EXERCISES, ...NEW_EXERCISES];
+const ALL_EXERCISES = [...EXERCISES, ...NEW_EXERCISES, ...EXTRA_EXERCISES];
+const ALL_TIER_ELIGIBILITY = { ...TIER_ELIGIBILITY, ...EXTRA_TIER_ELIGIBILITY };
 
 // Honor the reduced-motion preference override (auto | on | off) on every render.
 function applyMotionPref() {
@@ -151,9 +153,44 @@ function pillarsHTML() {
 }
 
 // ---------------------------------------------------------------- Body pillar (workouts)
+// Body now offers three movement paths. Each scopes the session pool to its category
+// (see WORKOUT_CATEGORY + buildSession). Stretching/Yoga are gentle and go straight to
+// a duration; Exercises adds the intensity chooser (and screening) afterwards.
 function bodyScreen() {
+  const paths = [
+    { go: '#move-stretch', ic: '🙆', title: 'Stretching', blurb: 'Gentle lengthening and mobility — feel loose and calm' },
+    { go: '#move-yoga', ic: '🧘', title: 'Yoga', blurb: 'Mindful, breath-linked poses and simple flows' },
+    { go: '#move-exercise', ic: '💪', title: 'Exercises', blurb: 'Build strength and gentle cardio — choose your intensity' },
+  ];
   app.innerHTML = `
     <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Body · Move</h1></header>
+    <main class="narrow body-screen">
+      <section class="card">
+        <h2>How do you want to move?</h2>
+        <p class="hint">No equipment — just you, the floor, a wall, and maybe a chair. Coached by ${esc(getCharacter(store.profile.character).name)}.</p>
+        <div class="move-paths">
+          ${paths.map((p) => `<button class="move-path" data-go="${p.go}">
+            <span class="move-path-ic" aria-hidden="true">${p.ic}</span>
+            <span class="move-path-txt"><strong>${esc(p.title)}</strong><small>${esc(p.blurb)}</small></span>
+          </button>`).join('')}
+        </div>
+      </section>
+    </main>`;
+  app.querySelectorAll('.move-path').forEach((b) =>
+    b.addEventListener('click', () => { sound.unlock(); go(b.dataset.go); }));
+}
+
+const MOVE_META = {
+  stretch: { label: 'Stretching', note: 'gentle lengthening and mobility' },
+  yoga: { label: 'Yoga', note: 'breath-linked poses and flow' },
+  exercise: { label: 'Exercises', note: 'strength and gentle cardio' },
+};
+
+function moveScreen(category) {
+  const meta = MOVE_META[category];
+  if (!meta) { go('#body'); return; }
+  app.innerHTML = `
+    <header class="topbar"><a class="back" href="#body">← Back</a><h1 class="page-title">${esc(meta.label)}</h1></header>
     <main class="narrow body-screen">
       <section class="start-card">
         <h2>How long do you have?</h2>
@@ -164,15 +201,19 @@ function bodyScreen() {
               ${m.durations.map((d) => `<button class="duration-btn" data-mins="${d}"><span class="d-num">${d}</span><span class="d-label">min</span></button>`).join('')}
             </div>
           </div>`).join('')}
-        <p class="start-note">pick a length, then choose how it feels — no equipment, coached by ${esc(getCharacter(store.profile.character).name)}</p>
+        <p class="start-note">${esc(meta.note)} · no equipment${category === 'exercise' ? ', then choose how it feels' : ''}, coached by ${esc(getCharacter(store.profile.character).name)}</p>
         <p class="start-note start-links">
-          <a href="#intake">Personalize your sessions</a>
+          ${category === 'exercise' ? '<a href="#intake">Personalize your sessions</a>' : ''}
           <label class="inline-toggle"><input type="checkbox" id="home-chair" ${store.profile.chairMode ? 'checked' : ''}> Chair mode</label>
         </p>
       </section>
     </main>`;
   app.querySelectorAll('.duration-btn').forEach((b) =>
-    b.addEventListener('click', () => { sound.unlock(); go('#tier-' + b.dataset.mins); }));
+    b.addEventListener('click', () => {
+      sound.unlock();
+      if (category === 'exercise') go('#tier-' + b.dataset.mins);
+      else go('#play-' + b.dataset.mins + '-' + category);
+    }));
   const chair = document.getElementById('home-chair');
   if (chair) chair.addEventListener('change', (e) => { store.profile.chairMode = e.target.checked; save(); });
 }
@@ -1185,10 +1226,15 @@ function startLessonFor(trackId, plan) {
 // Build a session plan for a play route, or null if it cannot/should not start.
 function planFor(mins, tier) {
   if (tier === 'meditation') return buildMeditation(mins);
-  // Safety double-guard: never assemble a tier the screening has gated.
-  if (!availableTiers(store.profile).includes(tier)) return null;
+  // The Body paths: Stretching / Yoga scope the pool by category (always available);
+  // Exercises uses the intensity tiers, which the screening can gate.
+  const category = (tier === 'stretch' || tier === 'yoga') ? tier : 'exercise';
+  if (category === 'exercise' && !availableTiers(store.profile).includes(tier)) return null;
   const pool = filterPool(ALL_EXERCISES, store.profile);
-  return buildSession(mins, pool, { lastCloseId: store.progress.lastCloseId, tier, tierEligibility: TIER_ELIGIBILITY });
+  return buildSession(mins, pool, {
+    lastCloseId: store.progress.lastCloseId, tier,
+    tierEligibility: ALL_TIER_ELIGIBILITY, category, workoutCategory: WORKOUT_CATEGORY,
+  });
 }
 
 async function render() {
@@ -1276,6 +1322,10 @@ async function render() {
   // the three pillars
   if (h === '#mind') return mindScreen();
   if (h === '#body') return bodyScreen();
+  if (h.startsWith('#move-')) {
+    const cat = h.slice('#move-'.length);
+    if (MOVE_META[cat]) return moveScreen(cat);
+  }
   if (h === '#soul') return soulScreen();
 
   if (h === '#intake') return intakeScreen();

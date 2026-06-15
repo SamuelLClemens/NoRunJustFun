@@ -301,6 +301,35 @@ ok('ageFromBirthday' in main_src, 'main.js does not derive age from birthday')
 for needle in ['fetch(', 'sendBeacon', 'XMLHttpRequest']:
     ok(needle not in main_src, f"main.js must not transmit data ('{needle}') — weight/birthday stay on-device")
 
+# 20) Body restructure into three paths (Stretching / Yoga / Exercises) + 50 new
+#     no-equipment moves, and the expanded meditation library.
+ext2 = read('js/data/movements-ext2.js') if exists('js/data/movements-ext2.js') else ''
+for sym in ['EXTRA_EXERCISES', 'EXTRA_TIER_ELIGIBILITY', 'EXTRA_SPACE_FLAGS', 'WORKOUT_CATEGORY']:
+    ok(f'export const {sym}' in ext2, f'movements-ext2.js missing {sym}')
+ok('js/data/movements-ext2.js' in sw, 'sw.js PRECACHE missing js/data/movements-ext2.js')
+extra_block = ext2.split('export const EXTRA_EXERCISES')[1].split('export const EXTRA_TIER_ELIGIBILITY')[0] if 'EXTRA_EXERCISES' in ext2 else ''
+extra_ids = re.findall(r'"id":\s*"([^"]+)"', extra_block)
+ok(len(extra_ids) >= 50, f'expected >=50 new moves, found {len(extra_ids)}')
+ok(all(re.fullmatch(r'[a-z0-9-]+', i) for i in extra_ids), 'a new move id is not kebab-case')
+ok(not (set(extra_ids) & set(FROZEN)) and not (set(extra_ids) & set(new_ids)), 'a new move id collides with an existing id')
+for i in extra_ids:
+    for b in BANNED:
+        ok(b not in i.lower(), f"banned pattern '{b}' in new move '{i}'")
+catmap = dict(re.findall(r'"([a-z0-9-]+)":\s*"(stretch|yoga|exercise|breath)"', ext2.split('export const WORKOUT_CATEGORY')[-1]))
+for i in extra_ids:
+    ok(catmap.get(i) in ('stretch', 'yoga', 'exercise'), f"new move '{i}' has no workout category")
+ok(set(FROZEN).issubset(set(catmap)), 'WORKOUT_CATEGORY does not cover all frozen moves')
+ok('stretch:' in tiers and 'yoga:' in tiers and 'WORKOUT_PATHS' in tiers, 'tiers.js missing the stretch/yoga session types')
+seng = read('js/sessionEngine.js')
+ok('categoryAllows' in seng and 'workoutCategory' in seng, 'sessionEngine.js missing workout-category filtering')
+ok('function moveScreen' in main_src and "startsWith('#move-')" in main_src, 'main.js missing the workout-path screen/route')
+for go in ['#move-stretch', '#move-yoga', '#move-exercise']:
+    ok(go in main_src, f'main.js missing the {go} path')
+libcount = med.split('export const MEDITATION_LIBRARY')[1].split('];')[0].count('"id":')
+ok(libcount >= 16, f'expected >=16 library meditations, found {libcount}')
+for mid in ['med-lib-morning-gentle-7', 'med-lib-box-breath-5', 'med-lib-loving-kindness-15', 'med-lib-reset-5']:
+    ok(f'"{mid}"' in med, f'meditation library missing {mid}')
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")
