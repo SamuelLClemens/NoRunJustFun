@@ -180,7 +180,7 @@ function soulScreen() {
     `<button class="duration-btn" data-mins="${m}"><span class="d-num">${m}</span><span class="d-label">min</span></button>`).join('');
   const libHTML = MEDITATION_LIBRARY.map((m) =>
     `<button class="med-lib-btn" data-med="${m.id}"><span>${esc(m.theme)}</span><small>${m.minutes} min</small></button>`).join('');
-  const soon = (ic, title, blurb) => `<div class="soul-soon" aria-disabled="true">
+  const soon = (ic, title, blurb) => `<div class="soul-soon">
         <span class="pillar-ic" aria-hidden="true">${ic}</span>
         <span class="pillar-txt"><strong>${esc(title)}</strong><small>${esc(blurb)}</small></span>
         <span class="soon-tag">Coming soon</span>
@@ -222,13 +222,13 @@ function mindScreen() {
   ];
   const cards = subjects.map((s) => {
     const live = !!getTrack(s.id);
-    const inner = `<span class="fin-lib-ic">${s.ic}</span>
+    const inner = `<span class="fin-lib-ic" aria-hidden="true">${s.ic}</span>
         <span class="fin-lib-txt"><strong>${esc(s.title)}</strong><small>${esc(s.blurb)}</small></span>`;
     return live
       ? `<button class="fin-lib-btn mind-subject" data-track="${esc(s.id)}">${inner}
         <span class="fin-lib-meta"><span class="fin-mins">Learn →</span></span></button>`
-      : `<div class="fin-lib-btn mind-subject locked" aria-disabled="true">${inner}
-        <span class="fin-lib-meta"><span class="soon-tag">Coming soon</span></span></div>`;
+      : `<button class="fin-lib-btn mind-subject locked" disabled>${inner}
+        <span class="fin-lib-meta"><span class="soon-tag">Coming soon</span></span></button>`;
   }).join('');
   app.innerHTML = `
     <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Mind · Learn</h1></header>

@@ -540,10 +540,19 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 /* distinct badge treatments per learning subject (cf. .badge-cell.finance) */
 .badge-cell.parenting { background: #FFF8F5; box-shadow: inset 0 0 0 2px #F3D3C6, var(--shadow-soft); }
 .badge-cell.parenting strong { color: #8A3D26; }
-.badge-cell.parenting .badge-date { color: #E07856; }
+.badge-cell.parenting .badge-date { color: #8A3D26; }  /* AA on #FFF8F5 (7.2:1) */
 .badge-cell.communication { background: #F4FBF9; box-shadow: inset 0 0 0 2px #BFE6DF, var(--shadow-soft); }
 .badge-cell.communication strong { color: #1F6E63; }
-.badge-cell.communication .badge-date { color: #2F9E8F; }
+.badge-cell.communication .badge-date { color: #1F6E63; }  /* AA on #F4FBF9 (5.8:1) */
+
+/* The coral/teal accents pass AA for borders/fills/large headings but NOT for the
+   small accent TEXT (.fin-mins ~14px, source links ~14px) on white cards. Within the
+   two new subjects' scope, paint that small text in the darker, AA-passing ink. Money
+   (#5B6BD0, 4.7:1) is unaffected. */
+[data-track="parenting"] .fin-mins, [data-track="parenting"] .fin-sources a,
+[data-track="communication"] .fin-mins, [data-track="communication"] .fin-sources a {
+  color: var(--finance-ink);
+}
 
 /* the coach's instructor "prop" for the new subjects — a 2D emblem that rises
    onto the stage a beat after arriving (parenting = storybook, communication =

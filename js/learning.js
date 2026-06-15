@@ -78,7 +78,10 @@ export function checkTrackBadges(store, trackId) {
   if (cb.seven) conditions[cb.seven] = t.lessonsCompleted >= 7;
   if (cb.streak3) conditions[cb.streak3] = streak.count >= 3;
   for (const [badgeId, lessonIds] of Object.entries(track.topicBadges || {})) {
-    conditions[badgeId] = (lessonIds || []).every((lid) => done.has(lid));
+    const need = lessonIds || [];
+    // length>0 guard: [].every(...) is vacuously true, so a misconfigured empty
+    // topicBadge would otherwise auto-award on the first completion.
+    conditions[badgeId] = need.length > 0 && need.every((lid) => done.has(lid));
   }
 
   const earned = [];
@@ -99,6 +102,18 @@ export function checkTrackBadges(store, trackId) {
 export function finishLearning(store, trackId, { lessonIds = [], durationKey = null, sources = 0, game = false, won = true } = {}) {
   ensureTrack(store, trackId);
   const ids = Array.isArray(lessonIds) ? lessonIds.filter(Boolean) : [lessonIds].filter(Boolean);
+  // A non-game completion that covers zero lessons must not grow the shared garden
+  // (which is per-completion) while crediting nothing to the track — that would
+  // desync the shared and per-track views. Dormant with current content (a session
+  // always fits >= 1 lesson), but a defensive guard against future content/config.
+  if (!game && ids.length === 0) {
+    return {
+      earned: [], grew: false,
+      stageAfter: gardenStage(store.progress.sessions.length, GARDEN_STAGE_SESSIONS),
+      streak: streakInfo(store.progress.sessions),
+      trackStreak: trackStreak(store, trackId),
+    };
+  }
   const stageBefore = gardenStage(store.progress.sessions.length, GARDEN_STAGE_SESSIONS);
 
   // 1) track-specific progress — one ledger entry per lesson covered
