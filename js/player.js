@@ -185,7 +185,7 @@ export class Player {
       closeId: this.plan.closeId,
       durationKey: this.plan.durationKey,
       tier: this.plan.tier || null,
-      kind: this.plan.isMeditation ? 'meditation' : 'movement',
+      kind: this.plan.kind || (this.plan.isMeditation ? 'meditation' : 'movement'),
     });
   }
 }

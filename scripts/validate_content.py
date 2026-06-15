@@ -80,6 +80,43 @@ med = read('js/data/meditation.js')
 for d in DURATIONS:
     ok(f'"med-core-{d}"' in med or f'med-core-{d}' in med, f"meditation core missing duration {d}")
 
+# ---- Finance module (Money Garden) — additive foundations ----------------
+def strip_js_comments(s):
+    s = re.sub(r'/\*.*?\*/', '', s, flags=re.S)   # block comments
+    s = re.sub(r'//[^\n]*', '', s)                # line comments
+    return s
+
+# 10) finance badges are a distinct, 'fin-' namespaced set that cannot collide
+#     with the fitness badges in the shared progress.badges{} ledger
+fb = read('js/data/badges.finance.js')
+fin_badge_ids = re.findall(r'"id":\s*"([^"]+)"', fb)
+fit_badge_ids = re.findall(r'"id":\s*"([^"]+)"', read('js/data/badges.js'))
+ok(len(fin_badge_ids) >= 1, "badges.finance.js defines no FINANCE_BADGES")
+ok(all(i.startswith('fin-') for i in fin_badge_ids), "a finance badge id is not 'fin-' namespaced")
+ok(not (set(fin_badge_ids) & set(fit_badge_ids)), "a finance badge id collides with a fitness badge id")
+ok(len(re.findall(r'"category":\s*"finance"', fb)) >= len(fin_badge_ids),
+   "a finance badge is missing category:'finance'")
+for key in ['"name"', '"desc"', '"icon"']:
+    ok(fb.count(key) >= len(fin_badge_ids), f"a finance badge is missing {key}")
+
+# 11) finance domain module exists and is isolated: it must NOT inflate the
+#     minutes-based levels or the fitness duration badges (no recordSession /
+#     totalMins / durationsTried writes — checked against comment-stripped code)
+fin_code = strip_js_comments(read('js/finance.js'))
+for fn in ['finishFinance', 'checkFinanceBadges', 'recordLessonComplete']:
+    ok(f'export function {fn}' in fin_code, f"finance.js missing export {fn}")
+ok('recordSession(' not in fin_code, "finance.js must not call recordSession (would inflate levels/durations)")
+ok('totalMins' not in fin_code, "finance.js must not write totalMins (no level inflation)")
+ok('durationsTried' not in fin_code, "finance.js must not write durationsTried (protects 'all-durations')")
+
+# 12) finance state is additive — sub-object present, version NOT bumped past 2
+ok('finance:' in st, "state.js defaults() missing the finance sub-object")
+ok('CURRENT_VERSION = 3' not in st,
+   "state.js version bumped — finance must be additive via the migrate spread, not a version bump")
+
+# 13) the player records a plan-level kind so finance lessons are not mislabelled
+ok('this.plan.kind' in read('js/player.js'), "player.js does not honour plan.kind (finance would record as 'movement')")
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")
