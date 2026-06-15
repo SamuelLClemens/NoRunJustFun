@@ -565,3 +565,36 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 }
 .stage .lesson-prop svg { width: 100%; height: auto; display: block; }
 .stage.lesson-prop-on .lesson-prop { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+
+/* ====================================================================
+   Memory subject (ADDITIVE) — orchid theme + the two memory games.
+   ==================================================================== */
+[data-track="memory"] {
+  --finance-accent: #B5478B;
+  --finance-accent-soft: #D77FB6;
+  --finance-tint: #F7E9F2;
+  --finance-border: #E6C7DC;
+  --finance-ink: #7A2E5E;
+  --finance-gold-deep: #7A2E5E;
+}
+.badge-cell.memory { background: #FDF6FA; box-shadow: inset 0 0 0 2px #E6C7DC, var(--shadow-soft); }
+.badge-cell.memory strong { color: #7A2E5E; }
+.badge-cell.memory .badge-date { color: #7A2E5E; }
+
+/* games — quick, tap-based memory practice */
+.game { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.game-help { text-align: center; max-width: 34ch; }
+.game-status { font-weight: 700; color: var(--finance-ink, #7A2E5E); text-align: center; min-height: 1.2em; margin: 0; }
+.game-done-btns { display: flex; flex-direction: column; gap: 8px; align-items: stretch; margin-top: 8px; }
+
+.match-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; max-width: 320px; }
+.match-card { aspect-ratio: 1 / 1; border: 2px solid var(--finance-border, #E6C7DC); border-radius: var(--radius-sm); background: var(--finance-tint, #F7E9F2); font-size: 1.7rem; cursor: pointer; display: grid; place-items: center; transition: background 0.15s ease, transform 0.1s ease, border-color 0.15s ease; }
+.match-card:hover { transform: translateY(-1px); }
+.match-card.flipped { background: #fff; border-color: var(--finance-accent, #B5478B); }
+.match-card.matched { background: #EAF6EC; border-color: var(--green-500); cursor: default; }
+.match-card span { line-height: 1; }
+
+.seq-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; max-width: 260px; }
+.seq-tile { aspect-ratio: 1 / 1; border: 2px solid var(--finance-border, #E6C7DC); border-radius: var(--radius-sm); background: var(--finance-tint, #F7E9F2); cursor: pointer; transition: background 0.1s ease, transform 0.08s ease, box-shadow 0.1s ease; }
+.seq-tile:hover { transform: translateY(-1px); }
+.seq-tile.lit { background: var(--finance-accent, #B5478B); box-shadow: 0 0 16px var(--finance-accent-soft, #D77FB6); }

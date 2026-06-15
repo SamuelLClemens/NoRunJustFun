@@ -60,6 +60,13 @@ export function trackHubScreen(trackId) {
     </button>`;
   }).join('');
 
+  const gamesHTML = (track.games && track.games.length) ? track.games.map((g) =>
+    `<button class="fin-lib-btn" data-game="${esc(g.id)}">
+      <span class="fin-lib-ic" aria-hidden="true">${g.icon}</span>
+      <span class="fin-lib-txt"><strong>${esc(g.name)}</strong><small>${esc(g.blurb)}</small></span>
+      <span class="fin-lib-meta"><span class="fin-mins">Play →</span></span>
+    </button>`).join('') : '';
+
   app.innerHTML = `
     <header class="topbar">
       <a class="back" href="#mind">← Back</a>
@@ -89,6 +96,12 @@ export function trackHubScreen(trackId) {
         <div class="fin-lib" id="fin-library">${lessonCards}</div>
       </section>
 
+      ${gamesHTML ? `<section class="card">
+        <h2>Play a game</h2>
+        <p class="hint">A quick, playful warm-up — fun practice, not a magic brain boost (the lessons explain the evidence).</p>
+        <div class="fin-lib" id="fin-games">${gamesHTML}</div>
+      </section>` : ''}
+
       <p class="privacy-note"><a href="#badges">See your ${label} badges →</a></p>
     </main>`;
 
@@ -96,6 +109,8 @@ export function trackHubScreen(trackId) {
     b.addEventListener('click', () => { location.hash = '#learn-' + trackId + '-' + b.dataset.mins; }));
   document.querySelectorAll('#fin-library .fin-lib-btn').forEach((b) =>
     b.addEventListener('click', () => { location.hash = '#learn-' + trackId + '-lib-' + b.dataset.lesson; }));
+  document.querySelectorAll('#fin-games .fin-lib-btn').forEach((b) =>
+    b.addEventListener('click', () => { location.hash = '#learn-' + trackId + '-game-' + b.dataset.game; }));
   const vbtn = document.getElementById('fin-voice-on');
   if (vbtn) vbtn.addEventListener('click', () => {
     store.profile.naturalOn = true; save();
@@ -168,4 +183,64 @@ export function learningDone(trackId, plan) {
     </main>`;
 
   document.getElementById('btn-learn-home').addEventListener('click', () => { location.hash = '#learn-' + trackId; });
+}
+
+// ---------------------------------------------------------------- games
+
+// Mount a track's interactive game (e.g. memory). The game module renders its own
+// UI and calls back when finished; we then record the outcome and show a result.
+// Games are quick, tap-based, and dependency-free (see js/data/games.memory.js).
+export function gameScreen(trackId, gameId) {
+  const track = getTrack(trackId);
+  const game = track && track.games && track.games.find((g) => g.id === gameId);
+  if (!game) { location.hash = '#learn-' + trackId; return; }
+  app.innerHTML = `
+    <header class="topbar">
+      <a class="back" href="#learn-${esc(trackId)}">← Back</a>
+      <h1 class="page-title finance-hero">${esc(game.name)}</h1>
+    </header>
+    <main class="narrow finance-section game-screen" data-track="${esc(trackId)}">
+      <div id="game-mount"></div>
+    </main>`;
+  const mount = document.getElementById('game-mount');
+  let finished = false;
+  const el = game.build((result) => {
+    if (finished) return;
+    finished = true;
+    gameDone(trackId, game, result || {});
+  });
+  mount.appendChild(el);
+}
+
+function gameDone(trackId, game, result) {
+  const track = getTrack(trackId);
+  const allBadges = [...BADGES, ...allTrackBadges()];
+  // lessonIds carries the specific game id so the ledger records 'match'/'sequence'
+  // (not the generic fallback). Game entries are filtered out of the topic-badge set,
+  // and game-win badges key off gamesWon, so this never affects badge awards.
+  const r = finishLearning(store, trackId, { game: true, lessonIds: [game.id], won: !!result.won });
+  celebrate();
+  if (r.earned.length) setTimeout(() => sound.sparkle(), 700);
+
+  const badgeCards = r.earned.map((id) => {
+    const b = allBadges.find((x) => x.id === id);
+    return b ? `<div class="badge-pop">${b.icon}<div><strong>${esc(b.name)}</strong><br><small>${esc(b.desc)}</small></div></div>` : '';
+  }).join('');
+
+  app.innerHTML = `
+    <main class="narrow done-screen" data-track="${esc(trackId)}">
+      <section class="card center">
+        <div class="garden-svg small">${gardenSVG(r.stageAfter)}</div>
+        <h2>${result.won ? 'Nice memory work! 🧠' : 'Good effort! 🌱'}</h2>
+        <p class="done-stats"><strong>${esc(game.name)}</strong>${result.label ? ' · ' + esc(result.label) : ''}</p>
+        ${r.grew ? '<p class="grew">Your garden just grew. Go look at it.</p>' : ''}
+        ${badgeCards ? `<div class="badge-pops"><h3>New badge${r.earned.length > 1 ? 's' : ''}!</h3>${badgeCards}</div>` : ''}
+        <div class="game-done-btns">
+          <button class="btn btn-primary" id="btn-game-again">Play again</button>
+          <button class="btn" id="btn-game-home">Back to ${esc(track ? track.homeLabel.toLowerCase() : 'lessons')}</button>
+        </div>
+      </section>
+    </main>`;
+  document.getElementById('btn-game-again').addEventListener('click', () => gameScreen(trackId, game.id));
+  document.getElementById('btn-game-home').addEventListener('click', () => { location.hash = '#learn-' + trackId; });
 }

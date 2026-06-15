@@ -83,6 +83,10 @@ export function checkTrackBadges(store, trackId) {
     // topicBadge would otherwise auto-award on the first completion.
     conditions[badgeId] = need.length > 0 && need.every((lid) => done.has(lid));
   }
+  // game-win badges, keyed off this track's gamesWon counter
+  const gb = track.gameBadges || {};
+  if (gb.firstWin) conditions[gb.firstWin] = t.gamesWon >= 1;
+  if (gb.fiveWins) conditions[gb.fiveWins] = t.gamesWon >= 5;
 
   const earned = [];
   for (const [id, ok] of Object.entries(conditions)) {

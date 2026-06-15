@@ -7,7 +7,8 @@
 // Finance ("Money Garden") is the first registered track. Its content + badges live
 // in their original, audited files (js/data/lessons.js, js/data/badges.finance.js) —
 // unchanged — and are simply referenced here, so money behaves and looks identical.
-// Slices 3-4 append 'parenting' and 'communication' the same way.
+// 'parenting', 'communication' and 'memory' are appended the same way; 'memory' is
+// the first track to also carry interactive games (js/data/games.memory.js).
 
 import { FINANCE_BADGES } from './badges.finance.js';
 import {
@@ -33,6 +34,15 @@ import {
   COMMUNICATION_DISCLAIMER,
   COMMUNICATION_DISCLAIMER_SHORT,
 } from './lessons.communication.js';
+import { MEMORY_BADGES } from './badges.memory.js';
+import {
+  LESSON_LIBRARY as MEMORY_LIBRARY,
+  buildLessonById as memoryBuildById,
+  buildLessonSession as memoryBuildSession,
+  MEMORY_DISCLAIMER,
+  MEMORY_DISCLAIMER_SHORT,
+} from './lessons.memory.js';
+import { MEMORY_GAMES } from './games.memory.js';
 
 // ---- per-track SVG assets (kept byte-identical to the shipped finance visuals) ----
 
@@ -79,6 +89,20 @@ const commIcon = `<svg viewBox="0 0 40 40" width="26" height="26" aria-hidden="t
 const bubblesProp = `<div class="lesson-prop" aria-hidden="true"><svg viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg">
   <path d="M10 8h40a6 6 0 0 1 6 6v15a6 6 0 0 1-6 6H26l-10 8v-8h-6a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6z" fill="#54C2B2" stroke="#2F9E8F" stroke-width="3" stroke-linejoin="round"/>
   <path d="M44 30h26a6 6 0 0 1 6 6v9a6 6 0 0 1-6 6v7l-9-7H52a6 6 0 0 1-6-6" fill="#E4F4F1" stroke="#2F9E8F" stroke-width="3" stroke-linejoin="round"/></svg></div>`;
+
+// Memory assets — an orchid bloom, a little lightbulb icon, and a lightbulb the coach
+// "switches on" (the spark of recall) a beat after arriving.
+function memoryBloom(cls = 'veronica') {
+  return `<svg class="${cls}" viewBox="-16 -16 32 32" aria-hidden="true" focusable="false">
+    <g fill="#B5478B"><ellipse cy="-8" rx="5" ry="8"/><ellipse cy="-8" rx="5" ry="8" transform="rotate(72)"/><ellipse cy="-8" rx="5" ry="8" transform="rotate(144)"/><ellipse cy="-8" rx="5" ry="8" transform="rotate(216)"/><ellipse cy="-8" rx="5" ry="8" transform="rotate(288)"/></g>
+    <circle r="4" fill="#FFD45C"/></svg>`;
+}
+const memoryIcon = `<svg viewBox="0 0 40 40" width="26" height="26" aria-hidden="true"><circle cx="20" cy="20" r="14" fill="#F7E9F2" stroke="#B5478B" stroke-width="2"/><path d="M20 11a7 7 0 0 0-4 12.6c.8.6 1.2 1.3 1.3 2.2h5.4c.1-.9.5-1.6 1.3-2.2A7 7 0 0 0 20 11z" fill="#D77FB6"/><rect x="17.5" y="27" width="5" height="2.6" rx="1.3" fill="#7A2E5E"/></svg>`;
+const lightbulbProp = `<div class="lesson-prop" aria-hidden="true"><svg viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg">
+  <g stroke="#FFD45C" stroke-width="3" stroke-linecap="round"><path d="M40 6V1"/><path d="M19 14l-4-4"/><path d="M61 14l4-4"/></g>
+  <path d="M40 10a16 16 0 0 0-9 29c2 1.4 3.1 3.1 3.3 5.2h11.4c.2-2.1 1.3-3.8 3.3-5.2A16 16 0 0 0 40 10z" fill="#FBE9A0" stroke="#B5478B" stroke-width="3" stroke-linejoin="round"/>
+  <rect x="33" y="47" width="14" height="6" rx="2" fill="#B5478B"/>
+  <path d="M35 53h10" stroke="#7A2E5E" stroke-width="2.5" stroke-linecap="round"/></svg></div>`;
 
 // ---- the registry ---------------------------------------------------------
 
@@ -166,10 +190,40 @@ export const TRACKS = {
       'com-empath': ['nvc-empathy-safety'],
     },
   },
+
+  memory: {
+    id: 'memory',
+    name: 'Memory training',
+    homeLabel: 'Memory',
+    blurb: 'How memory works, evidence-based techniques (spacing, retrieval, the memory palace) — plus games to practice.',
+    badgePrefix: 'mem-',
+    badges: MEMORY_BADGES,
+    disclaimer: MEMORY_DISCLAIMER,
+    disclaimerShort: MEMORY_DISCLAIMER_SHORT,
+    lessons: {
+      LESSON_LIBRARY: MEMORY_LIBRARY,
+      buildLessonById: memoryBuildById,
+      buildLessonSession: memoryBuildSession,
+    },
+    // the first track with interactive games — practice, not a cure (the lessons say so)
+    games: MEMORY_GAMES,
+    prop: { className: 'lesson-prop', svg: lightbulbProp, onClass: 'lesson-prop-on', delayMs: 450 },
+    coachCue: 'switches on a little lightbulb',
+    theme: { token: 'memory', flowerSVG: memoryBloom, lessonIcon: memoryIcon, badgeEmoji: '🧠' },
+    doneHeading: 'Memory, strengthened. 🌼',
+    countBadges: { first: 'mem-first-lesson', three: 'mem-three', seven: 'mem-seven', streak3: 'mem-streak-3' },
+    topicBadges: {
+      'mem-foundations': ['how-memory-works'],
+      'mem-retrieval': ['retrieval-practice'],
+      'mem-palace': ['memory-techniques'],
+    },
+    // game-win badges, driven by this track's gamesWon counter (see js/learning.js)
+    gameBadges: { firstWin: 'mem-gamer', fiveWins: 'mem-sharp' },
+  },
 };
 
-// Ordered for display (hub list, badges screen). All three Mind subjects are live.
-export const TRACK_LIST = ['money', 'parenting', 'communication'];
+// Ordered for display (hub list, badges screen). All four Mind subjects are live.
+export const TRACK_LIST = ['money', 'parenting', 'communication', 'memory'];
 export const DEFAULT_TRACK = 'money';
 
 export function getTrack(id) { return TRACKS[id] || null; }

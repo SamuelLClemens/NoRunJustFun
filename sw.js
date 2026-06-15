@@ -1,7 +1,7 @@
 // Offline support: precache the whole app on install, serve cache-first.
 // Bump CACHE_VERSION with every release so updates roll out cleanly.
 
-const CACHE_VERSION = 'ygt-v3.5.0';
+const CACHE_VERSION = 'ygt-v3.6.0';
 
 const PRECACHE = [
   './',
@@ -32,8 +32,11 @@ const PRECACHE = [
   'js/data/lessons.shared.js',
   'js/data/lessons.parenting.js',
   'js/data/lessons.communication.js',
+  'js/data/lessons.memory.js',
   'js/data/badges.parenting.js',
   'js/data/badges.communication.js',
+  'js/data/badges.memory.js',
+  'js/data/games.memory.js',
   'js/data/exercises.js',
   'js/data/phrases.js',
   'js/data/badges.js',

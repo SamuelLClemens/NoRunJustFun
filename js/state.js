@@ -50,6 +50,7 @@ function defaults() {
         money:         { lessons: [], lessonsCompleted: 0, gamesWon: 0 }, // lessons: { id, date, sources, game?, won? }
         parenting:     { lessons: [], lessonsCompleted: 0, gamesWon: 0 },
         communication: { lessons: [], lessonsCompleted: 0, gamesWon: 0 },
+        memory:        { lessons: [], lessonsCompleted: 0, gamesWon: 0 }, // first track with games -> gamesWon used
       },
     },
   };
@@ -84,6 +85,7 @@ function migrate(data) {
         money:         { lessons: [], lessonsCompleted: 0, gamesWon: 0 },
         parenting:     { lessons: [], lessonsCompleted: 0, gamesWon: 0 },
         communication: { lessons: [], lessonsCompleted: 0, gamesWon: 0 },
+        memory:        { lessons: [], lessonsCompleted: 0, gamesWon: 0 },
       };
     }
     const f = data.progress && data.progress.finance;
