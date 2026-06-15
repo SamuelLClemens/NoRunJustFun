@@ -862,6 +862,15 @@ async function ensureRealisticClass() {
 // avatar/Player (as finishSession does) then hand off to the Money Garden
 // completion screen, which records the result and celebrates. An early exit
 // records nothing and just returns to the hub.
+const GLASSES_SVG = `<div class="fin-glasses" aria-hidden="true"><svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+  <g fill="rgba(123,143,232,0.20)" stroke="#2E3A8C" stroke-width="6" stroke-linecap="round">
+    <rect x="10" y="20" width="74" height="48" rx="22"/>
+    <rect x="116" y="20" width="74" height="48" rx="22"/>
+    <path d="M84 36 q16 -9 32 0" fill="none"/>
+    <path d="M10 30 L1 21" fill="none"/>
+    <path d="M190 30 L199 21" fill="none"/>
+  </g></svg></div>`;
+
 function startFinanceLesson(plan) {
   plan.onDone = (stats) => {
     if (avatar) { avatar.dispose(); avatar = null; }
@@ -871,6 +880,13 @@ function startFinanceLesson(plan) {
     financeDone(plan);
   };
   sessionScreen(plan);
+  // the coach puts on reading glasses, a beat after arriving, to mark the shift
+  // into a finance lesson (criterion 3). Additive: only the finance path runs this.
+  const stage = document.querySelector('.session .stage');
+  if (stage && !stage.querySelector('.fin-glasses')) {
+    stage.insertAdjacentHTML('beforeend', GLASSES_SVG);
+    setTimeout(() => stage.classList.add('glasses-on'), 450);
+  }
 }
 
 // Build a session plan for a play route, or null if it cannot/should not start.

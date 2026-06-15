@@ -5,7 +5,8 @@
 // it imports moneyGardenScreen() for the #money route and financeDone() as the
 // lesson's onDone handler.
 
-import { store } from './state.js';
+import { store, save } from './state.js';
+import { naturalVoice } from './natural-voice.js';
 import { finishFinance, financeStreak } from './finance.js';
 import { gardenStage, streakInfo } from './gamify.js';
 import { gardenSVG, GARDEN_STAGE_SESSIONS } from './data/garden.js';
@@ -45,6 +46,11 @@ export function moneyGardenScreen() {
   const durationBtns = DURATIONS.map((m) =>
     `<button class="duration-btn" data-mins="${m}"><span class="d-num">${m}</span><span class="d-label">MIN</span></button>`).join('');
 
+  const naturalOn = !!store.profile.naturalOn;
+  const voiceCard = naturalOn
+    ? `<p class="fin-voice-on">🔊 Lifelike voice is on — your coach narrates on your device, and captions are always on too.</p>`
+    : `<section class="card fin-voice"><p>Want the warmest, most lifelike narration? Turn on the natural voice — a one-time download that then runs entirely on your device. Captions stay on either way.</p><button class="btn btn-primary" id="fin-voice-on">🔊 Use the lifelike voice</button></section>`;
+
   const lessonCards = LESSON_LIBRARY.map((L) => {
     const done = lessonDone(L.id);
     return `<button class="fin-lib-btn" data-lesson="${esc(L.id)}">
@@ -74,6 +80,8 @@ export function moneyGardenScreen() {
         <p class="hint">Workouts, meditations, and money lessons all grow the same garden.${fs.count > 1 ? ` You have learned on <strong>${fs.count} days</strong> in a row.` : ''}</p>
       </section>
 
+      ${voiceCard}
+
       <section class="card">
         <h2>Learn a little today</h2>
         <p class="hint">Pick how long you have — your coach puts on their glasses and teaches you, scaled to fit.</p>
@@ -92,6 +100,12 @@ export function moneyGardenScreen() {
     b.addEventListener('click', () => { location.hash = '#fin-' + b.dataset.mins; }));
   document.querySelectorAll('#fin-library .fin-lib-btn').forEach((b) =>
     b.addEventListener('click', () => { location.hash = '#fin-lib-' + b.dataset.lesson; }));
+  const vbtn = document.getElementById('fin-voice-on');
+  if (vbtn) vbtn.addEventListener('click', () => {
+    store.profile.naturalOn = true; save();
+    try { naturalVoice.enable(); } catch { /* system voice + captions cover it */ }
+    moneyGardenScreen();
+  });
 }
 
 // ---------------------------------------------------------------- completion
