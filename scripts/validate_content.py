@@ -121,6 +121,20 @@ LEARN_SUBJECTS = {
         'disclaimer_markers': ['not therapy', 'not a substitute'],
         'banned': ['guaranteed', 'always works', 'never fails', 'fix anyone'],
     },
+    'memory': {
+        'badges': 'js/data/badges.memory.js', 'prefix': 'mem-', 'category': 'memory',
+        'lessons': 'js/data/lessons.memory.js',
+        'curriculum': [],
+        'auth_domains': ['nia.nih.gov', 'ftc.gov', 'stanford.edu', 'cdc.gov', 'ncbi.nlm.nih.gov', 'sagepub.com'],
+        'auth_min': 4,
+        'disclaimer_markers': ['not medical advice', 'not a substitute'],
+        # honest-content guards: the lessons are explicit that games are practice, not a
+        # cognitive cure, so these over-promising phrases must never appear. ('cure',
+        # 'sharper' and 'proven' are deliberately NOT banned — they occur legitimately in
+        # negated form, e.g. "not a cure", "not a proven way".)
+        'banned': ['guaranteed', 'photographic memory', 'make you smarter', 'get smarter',
+                   'boost your', 'scientifically proven'],
+    },
 }
 
 # 10) learning badges are distinct, prefix-namespaced sets that cannot collide

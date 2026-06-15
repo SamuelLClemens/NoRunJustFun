@@ -1,0 +1,182 @@
+// Memory lessons for the Mind learning track. EDUCATIONAL ONLY.
+//
+// Authored by a panel of domain experts and adversarially fact-checked against
+// the cited authoritative sources (web-verified), mirroring the finance build.
+// Every fact-bearing lesson carries a `sources` list; numbers are spelled out in
+// `say` text so text-to-speech reads them naturally. A lesson reuses the quiet,
+// segment-by-segment meditation playback path; kind:'memory' attributes it.
+//
+// Plan builders + the catalog library come from the shared factory
+// (js/data/lessons.shared.js) so the duration-scaling logic lives in one place.
+
+import { makeDisclaimerSeg, makeLessonModule } from './lessons.shared.js';
+
+export const MEMORY_DISCLAIMER = "This is general educational information about memory and learning, not medical advice, and not a substitute for a doctor. The games here are for fun and practice, not a proven way to raise intelligence or prevent cognitive decline. If you are worried about your memory, please talk to a qualified professional.";
+
+export const MEMORY_DISCLAIMER_SHORT = "Educational only — memory tips, not medical advice. Games are practice, not a cure.";
+
+const SPOKEN_DISCLAIMER = "One honest note before we start: this is general education about memory, not medical advice. The techniques here are evidence-based, but no game or trick is a shortcut to a sharper mind, and real memory worries are worth a doctor's time.";
+
+const DISCLAIMER_SEG = makeDisclaimerSeg('mem', SPOKEN_DISCLAIMER);
+
+// ---- lesson content (expert-authored, source-verified) -------------------
+
+const LESSONS = {
+  "welcome-memory": {
+    id: "welcome-memory", title: "Welcome to memory training", topic: "intro",
+    blurb: "An honest, encouraging start — what helps your memory, and what does not.",
+    yearLabel: "",
+    sources: [],
+    segments: [
+      { id: "wm-hello", name: "Welcome", secs: 18, core: true, say: "Welcome to memory training. Forgetting is normal, not a personal failing, and memory is a skill you can genuinely strengthen with the right habits. We will keep this honest, plain, and encouraging." },
+      { id: "wm-frame", name: "How this works", secs: 16, core: true, say: "We will take one idea at a time, from real cognitive science: how memory works, the techniques that actually help, and a clear-eyed look at what brain games can and cannot do." },
+      { id: "wm-disclaimer", name: "One honest note", secs: 15, core: true, say: SPOKEN_DISCLAIMER },
+      { id: "wm-close", name: "Ready when you are", secs: 11, core: true, say: "That is the whole promise. Whenever you are ready, pick a topic or play a quick game, and let us grow something good together." }
+    ],
+  },
+  "how-memory-works": {
+    id: "how-memory-works", title: "How memory actually works", topic: "foundations",
+    blurb: "A friendly tour of how memory forms, fades, and can be strengthened — grounded in cognitive science, though it is general information and not medical advice.",
+    yearLabel: "2026",
+    sources: [
+      { org: "National Institute on Aging (NIH)", title: "Memory, Forgetfulness, and Aging: What's Normal and What's Not?", url: "https://www.nia.nih.gov/health/memory-loss-and-forgetfulness", year: "2024" },
+      { org: "U.S. Federal Trade Commission", title: "Lumosity to Pay $2 Million to Settle FTC Deceptive Advertising Charges for Its \"Brain Training\" Program", url: "https://www.ftc.gov/news-events/news/press-releases/2016/01/lumosity-pay-2-million-settle-ftc-deceptive-advertising-charges-its-brain-training-program", year: "2016" },
+      { org: "Stanford Center on Longevity & Max Planck Institute for Human Development", title: "A Consensus on the Brain Training Industry from the Scientific Community", url: "https://longevity.stanford.edu/a-consensus-on-the-brain-training-industry-from-the-scientific-community-2/", year: "2014" },
+      { org: "Psychological Science (Roediger & Karpicke)", title: "Test-Enhanced Learning: Taking Memory Tests Improves Long-Term Retention", url: "https://journals.sagepub.com/doi/10.1111/j.1467-9280.2006.01693.x", year: "2006" }
+    ],
+    segments: [
+      { id: "how-memory-works-three-stages", name: "Three stages", secs: 21, core: true, say: "Let us start simply. Memory works in three stages. First, encoding, which is taking something in, like the name of someone you just met. Second, storage, which is holding onto it over time. And third, retrieval, which is finding it again when you need it. When a memory slips, it usually is not gone forever. Often it was just never encoded well in the first place, because your attention was somewhere else." },
+      { id: "how-memory-works-short-vs-long", name: "Short-term and long-term", secs: 22, core: true, say: "Now picture two kinds of memory. There is short-term, or working, memory, which is like the small desk where you hold a phone number for the few seconds it takes to dial it. It is limited, and it clears quickly. Then there is long-term memory, the vast back room where lasting knowledge and experiences live. The interesting part is that things do not move from the desk to the back room on their own. They get there through attention, meaning, and a little repetition." },
+      { id: "how-memory-works-reconstructive", name: "Not a recording", secs: 20, core: false, say: "Here is something that surprises many people. Memory is not a video recording. It is reconstructive. Each time you recall an event, your brain rebuilds it from pieces, and small details can shift without you noticing. This is normal and human. It does not mean your memory is broken. It simply means remembering is an active act of rebuilding, not pressing play on a tape." },
+      { id: "how-memory-works-forgetting-curve", name: "The forgetting curve", secs: 22, core: true, say: "In the eighteen-eighties, a researcher named Hermann Ebbinghaus studied his own memory and noticed a pattern now called the forgetting curve. Without any review, we forget a large share of new material within the first day, and it keeps fading after that. That can sound discouraging, but it is actually good news, because it points to the fix. The curve is not destiny. A short review at the right moment flattens it out." },
+      { id: "how-memory-works-what-helps", name: "What actually helps", secs: 23, core: true, say: "So what genuinely strengthens memory? Cognitive science points to a few reliable habits. Spacing out your review over days, rather than cramming, helps a lot. So does retrieval practice, which means testing yourself instead of just rereading. A classic study by Roediger and Karpicke found that recalling material strengthens it more than studying it again. Connecting new ideas to things you already know helps too, and so does sleep, which is when the brain consolidates the day's learning." },
+      { id: "how-memory-works-brain-games", name: "About brain games", secs: 21, core: false, say: "A gentle, honest word about brain-training games. They can be fun, and you usually do get better at the specific game you practice. But a twenty-fourteen consensus statement from the Stanford Center on Longevity and the Max Planck Institute found little evidence that they improve broad thinking in everyday life. And in twenty-sixteen, the Federal Trade Commission, a U.S. consumer-protection agency, fined one popular brain-game maker for overstating its claims. Enjoy them as practice, not as a shortcut." },
+      { id: "how-memory-works-normal-aging", name: "Normal versus not", secs: 22, core: false, say: "As we age, occasionally forgetting a name or where you left the keys is a normal part of life, according to the National Institute on Aging. This lesson is general information, not medical advice, and it is not a substitute for a doctor. If memory changes start interfering with everyday tasks, or if you are worried about memory loss or possible dementia in yourself or someone close to you, that is a good reason to talk with a medical professional." },
+      { id: "how-memory-works-takeaway", name: "The takeaway", secs: 18, core: true, say: "So here is the kind takeaway. Forgetting is not a flaw in you. It is simply how memory works, and it follows rules you can work with. Pay attention when you encode, space out your review, test yourself gently, and protect your sleep. Small, steady habits do far more than any single trick. Be patient with yourself, and your memory will meet you halfway." }
+    ],
+  },
+  "spaced-repetition": {
+    id: "spaced-repetition", title: "Spaced repetition — beat the forgetting curve", topic: "technique",
+    blurb: "Spreading your reviews across days tends to build far more durable memory than cramming, though it asks for steady effort over time.",
+    yearLabel: "2006",
+    sources: [
+      { org: "Cepeda, Pashler, Vul, Wixted & Rohrer (Psychological Bulletin), via York University", title: "Distributed practice in verbal recall tasks: A review and quantitative synthesis", url: "https://www.yorku.ca/ncepeda/publications/CPVWR2006.html", year: "2006" },
+      { org: "Cepeda, Vul, Rohrer, Wixted & Pashler (Psychological Science), via ERIC, U.S. Department of Education", title: "Spacing Effects in Learning: A Temporal Ridgeline of Optimal Retention", url: "https://files.eric.ed.gov/fulltext/ED505660.pdf", year: "2008" },
+      { org: "Stanford Center on Longevity & Max Planck Institute for Human Development", title: "A Consensus on the Brain Training Industry from the Scientific Community", url: "https://longevity.stanford.edu/a-consensus-on-the-brain-training-industry-from-the-scientific-community/", year: "2014" },
+      { org: "U.S. Federal Trade Commission", title: "Lumosity to Pay $2 Million to Settle FTC Deceptive Advertising Charges for Its \"Brain Training\" Program", url: "https://www.ftc.gov/news-events/news/press-releases/2016/01/lumosity-pay-2-million-settle-ftc-deceptive-advertising-charges-its-brain-training-program", year: "2016" },
+      { org: "National Institute on Aging (NIH)", title: "Memory, Forgetfulness, and Aging: What's Normal and What's Not?", url: "https://www.nia.nih.gov/health/memory-loss-and-forgetfulness/memory-problems-forgetfulness-and-aging", year: "" }
+    ],
+    segments: [
+      { id: "spaced-repetition-the-spacing-effect", name: "The spacing effect", secs: 21, core: true, say: "Here is one of the most reliable findings in the science of learning. If you study something a few times, spreading those reviews across several days tends to build much more lasting memory than packing the same minutes into one sitting. Same effort, better staying power. Researchers call this the spacing effect, and it is one of the sturdier results we have." },
+      { id: "spaced-repetition-why-cramming-fades", name: "Why cramming fades", secs: 19, core: false, say: "Cramming can feel productive, because the material is fresh and easy to recall in the moment. The catch is that this kind of memory fades fast. Way back in the eighteen hundreds, Hermann Ebbinghaus mapped how quickly we forget, charting what became known as the forgetting curve. Each well-timed review pushes back against that slide." },
+      { id: "spaced-repetition-the-evidence", name: "What the research shows", secs: 22, core: true, say: "A large review by Nicholas Cepeda and colleagues, published in two thousand six, pulled together hundreds of experiments on this question. Across that work, spaced study reliably beat massed study for long-term retention. They also reported a useful pattern, that the longer you want to remember something, the wider you should space your reviews. Short gaps for next week, longer gaps for next year." },
+      { id: "spaced-repetition-how-to-apply", name: "How to apply it", secs: 22, core: true, say: "Putting this to work is simple. Instead of one long study block, break it into short sessions across days. A flashcard app that schedules reviews for you is a friendly way to start. A common approach is an expanding schedule, where you revisit something after one day, then three, then a week, stretching the gap as you get it right. The robust finding is the spacing itself, so do not fuss over the exact intervals." },
+      { id: "spaced-repetition-the-leitner-system", name: "The Leitner system", secs: 20, core: false, say: "If you like paper, try the Leitner system. Sort your flashcards into a few boxes. Cards you answer correctly move to a box you review less often, while cards you miss drop back to a box you see every day. Over time, the hard items get more practice and the easy ones quietly settle in. It is spaced repetition you can hold in your hands." },
+      { id: "spaced-repetition-honest-caveat", name: "The honest catch", secs: 19, core: false, say: "Now the honest part. Spacing works, but it asks something of you. It only pays off if you actually come back and do the reviews, again and again, over weeks. And those return visits can feel harder than cramming, because the material has faded a little. That mild difficulty is the point. It is the effort that makes the memory stick." },
+      { id: "spaced-repetition-about-brain-games", name: "A word on brain games", secs: 23, core: false, say: "You may wonder how this compares to commercial brain-training games. Be a little cautious there. In twenty fourteen, a large group of scientists organized by the Stanford Center on Longevity and the Max Planck Institute concluded that such games mostly make you better at the games themselves, with little solid evidence that the gains carry over to everyday thinking. In twenty sixteen, the Federal Trade Commission, a United States consumer agency, fined the maker of Lumosity for overstated claims. Enjoy the games, but treat spacing as the better-supported tool." },
+      { id: "spaced-repetition-takeaway", name: "Your takeaway", secs: 18, core: true, say: "So here is the takeaway. Spread your reviews out instead of cramming, and let the gaps do the heavy lifting. Start with one deck of cards and a simple schedule. One gentle note, this is general learning information, not medical advice. If memory worries are weighing on you, please talk with a doctor." }
+    ],
+  },
+  "retrieval-practice": {
+    id: "retrieval-practice", title: "Retrieval practice — testing yourself works", topic: "technique",
+    blurb: "Closing the book and recalling what you can tends to build memory more durably than re-reading, though it feels harder in the moment and is not a fix for medical memory concerns.",
+    yearLabel: "2006",
+    sources: [
+      { org: "Roediger & Karpicke, Psychological Science", title: "Test-Enhanced Learning: Taking Memory Tests Improves Long-Term Retention", url: "https://journals.sagepub.com/doi/10.1111/j.1467-9280.2006.01693.x", year: "2006" },
+      { org: "Greving & Richter, Frontiers in Psychology", title: "Examining the Testing Effect in University Teaching: Retrievability and Question Format Matter", url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC6288371/", year: "2018" },
+      { org: "Stanford Center on Longevity & Max Planck Institute for Human Development", title: "A Consensus on the Brain Training Industry from the Scientific Community", url: "https://longevity.stanford.edu/a-consensus-on-the-brain-training-industry-from-the-scientific-community/", year: "2014" },
+      { org: "U.S. Federal Trade Commission", title: "Lumosity to Pay $2 Million to Settle FTC Deceptive Advertising Charges for Its \"Brain Training\" Program", url: "https://www.ftc.gov/news-events/news/press-releases/2016/01/lumosity-pay-2-million-settle-ftc-deceptive-advertising-charges-its-brain-training-program", year: "2016" },
+      { org: "National Institute on Aging (NIH)", title: "Memory Problems, Forgetfulness, and Aging", url: "https://www.nia.nih.gov/health/memory-loss-and-forgetfulness/memory-problems-forgetfulness-and-aging", year: "" }
+    ],
+    segments: [
+      { id: "retrieval-practice-the-instinct", name: "The familiar instinct", secs: 18, core: true, say: "When we want something to stick, most of us re-read it, or run a highlighter over the important lines. It feels productive, and it feels reassuring. But here is a gentle surprise from memory research: the act of reading something again is not the part that does the heavy lifting." },
+      { id: "retrieval-practice-the-idea", name: "What retrieval practice is", secs: 20, core: true, say: "Retrieval practice means pulling information out of your own memory instead of putting it back in. In plain terms: close the book and write down what you remember, or ask yourself a question and answer it before you peek. This is sometimes called the testing effect, because a quiz turns out to do more than measure what you know. It also helps build it." },
+      { id: "retrieval-practice-the-study", name: "A classic experiment", secs: 22, core: true, say: "In two thousand six, researchers Henry Roediger and Jeffrey Karpicke ran a careful study. Some students re-read a passage several times. Others read it once, then practiced recalling it. After five minutes, the re-readers did a little better. But after two days, and again after a week, the students who had practiced recalling remembered substantially more. The benefit showed up over time." },
+      { id: "retrieval-practice-desirable-difficulty", name: "Why harder can help", secs: 21, core: false, say: "Here is the part that feels strange. Recalling from memory is more effortful than re-reading, and in the moment it can feel like you are doing worse. Psychologists call this a desirable difficulty. The small struggle of searching your memory appears to be exactly what strengthens the path back to it. The ease of re-reading can fool us into thinking we have learned more than we have." },
+      { id: "retrieval-practice-try-it", name: "How to try it", secs: 19, core: true, say: "You do not need any special tools. After reading a page, look away and say or write the main points in your own words. Use simple flashcards and answer before flipping. At the end of a chapter, jot down everything you can recall, then check what you missed. Even getting an answer wrong, and then seeing the correct one, helps the next time around." },
+      { id: "retrieval-practice-honest-limits", name: "An honest word on brain games", secs: 22, core: false, say: "It is worth being honest about what does not have strong backing. Commercial brain-training games can be fun, and you may get better at the games themselves, but the evidence that this carries over to sharper thinking in daily life is weak. In two thousand fourteen, a large group of scientists organized by the Stanford Center on Longevity said as much, and in two thousand sixteen the United States Federal Trade Commission acted against one popular maker for overstated claims." },
+      { id: "retrieval-practice-takeaway", name: "The takeaway", secs: 20, core: true, say: "So here is the warm, simple takeaway. Testing yourself, gently and often, tends to build memory more than re-reading does, even though it feels harder. This is general educational information, not medical advice, and not a substitute for a doctor. If memory changes worry you, please speak with a health professional. For everyday learning, though, closing the book and recalling is a kind, effective place to start." }
+    ],
+  },
+  "memory-techniques": {
+    id: "memory-techniques", title: "Mnemonics & the memory palace", topic: "technique",
+    blurb: "Encoding techniques like the method of loci can sharply improve how much you recall in studies, though they are learnable skills that take practice, not a shortcut to general intelligence.",
+    yearLabel: "2017",
+    sources: [
+      { org: "National Library of Medicine (PubMed) / Neuron", title: "Mnemonic Training Reshapes Brain Networks to Support Superior Memory (Dresler et al., 2017)", url: "https://pubmed.ncbi.nlm.nih.gov/28279356/", year: "2017" },
+      { org: "Stanford Center on Longevity & Max Planck Institute for Human Development", title: "A Consensus on the Brain Training Industry from the Scientific Community", url: "https://longevity.stanford.edu/a-consensus-on-the-brain-training-industry-from-the-scientific-community/", year: "2014" },
+      { org: "U.S. Federal Trade Commission", title: "Lumosity to Pay $2 Million to Settle FTC Deceptive Advertising Charges for Its \"Brain Training\" Program", url: "https://www.ftc.gov/news-events/news/press-releases/2016/01/lumosity-pay-2-million-settle-ftc-deceptive-advertising-charges-its-brain-training-program", year: "2016" },
+      { org: "National Institute on Aging (NIH)", title: "Memory, Forgetfulness, and Aging: What's Normal and What's Not?", url: "https://www.nia.nih.gov/health/memory-loss-and-forgetfulness", year: "" },
+      { org: "Psychological Science (Roediger & Karpicke)", title: "Test-Enhanced Learning: Taking Memory Tests Improves Long-Term Retention", url: "https://journals.sagepub.com/doi/10.1111/j.1467-9280.2006.01693.x", year: "2006" }
+    ],
+    segments: [
+      { id: "memory-techniques-why-encoding", name: "Encoding is the secret", secs: 20, core: true, say: "Here is a gentle truth about memory: we rarely forget things because our brain is broken. More often, the information never got encoded well in the first place. The good news is that how you take something in is largely a skill you can shape. A few simple encoding tricks can make a surprising difference, and that is what this lesson is about." },
+      { id: "memory-techniques-chunking", name: "Chunking", secs: 17, core: true, say: "Start with chunking: grouping small pieces into larger, meaningful units. A phone number is easier to hold as three little clusters than as ten loose digits. Your working memory can only juggle a few items at once, so bundling them into chunks lets each slot carry more. Look for natural groups whenever you face a long string of anything." },
+      { id: "memory-techniques-elaboration-dual", name: "Meaning and images", secs: 22, core: true, say: "Two more tricks work hand in hand. Elaboration means connecting new information to something you already know, so it has somewhere to stick. And dual coding means pairing words with a mental picture. If you meet someone named Rose, you might picture a bright red rose, linking the sound to a vivid image. Cognitive research consistently shows that meaningful, well-connected material is far easier to retrieve than something you tried to memorize flat." },
+      { id: "memory-techniques-loci", name: "The memory palace", secs: 23, core: true, say: "Now the star of the show: the method of loci, also called the memory palace. Choose a route you know by heart, like the walk through your own home. Then place a vivid image of each thing you want to remember at a spot along that route. To recall the list, you simply take the mental walk and notice what is waiting at each stop. It feels strange at first, and that is normal. It is a technique that rewards a little practice." },
+      { id: "memory-techniques-dresler", name: "What the research shows", secs: 23, core: false, say: "Does it actually work for ordinary people? A study led by Martin Dresler, published in the journal Neuron in twenty seventeen, trained everyday volunteers in the method of loci for about thirty minutes a day over six weeks. Their recall of a seventy-two-word list rose sharply, from about twenty six words to roughly sixty two. Four months later, without further training, they still recalled around twenty more words than they had at the start. So this is a real, learnable skill, not magic, and not a sign of a special brain." },
+      { id: "memory-techniques-brain-games", name: "An honest word on brain games", secs: 24, core: false, say: "It is worth being honest about commercial brain-training games. In twenty fourteen, a large group of scientists organized by the Stanford Center on Longevity and the Max Planck Institute for Human Development concluded there is no compelling evidence such games improve everyday thinking or hold off cognitive decline. And in twenty sixteen, the United States Federal Trade Commission, the F T C, fined the maker of Lumosity two million dollars for claims it could not support. The skill you practice in a game tends to stay narrow, so enjoy them as fun, not as a path to broad mental gains." },
+      { id: "memory-techniques-practice-retrieval", name: "Practice by retrieving", secs: 18, core: false, say: "Whatever technique you choose, the real strength comes from using it. Research by Henry Roediger and Jeffrey Karpicke shows that testing yourself, called retrieval practice, builds far more durable memory than simply rereading. So after you place your images, close your eyes and try to walk the route from memory. The act of pulling it back is where the learning truly happens." },
+      { id: "memory-techniques-takeaway", name: "Your gentle takeaway", secs: 20, core: true, say: "So here is the takeaway: chunk, make things meaningful, pair words with images, and try a memory palace for lists you care about. These are skills that grow with practice, not promises about your intelligence. And a kind reminder: this is general education, not medical advice. If you notice changes in your memory that worry you, please talk with a doctor, who can offer real guidance." }
+    ],
+  },
+  "lifestyle-and-memory": {
+    id: "lifestyle-and-memory", title: "Sleep, movement & memory", topic: "lifestyle",
+    blurb: "Sleep, movement, and calm attention all help your memory work at its best — these are gentle, well-supported supports, not a cure for any condition.",
+    yearLabel: "2014–2025",
+    sources: [
+      { org: "National Institute on Aging (NIH)", title: "Cognitive Health and Older Adults", url: "https://www.nia.nih.gov/health/brain-health/cognitive-health-and-older-adults", year: "2025" },
+      { org: "Centers for Disease Control and Prevention", title: "About Sleep", url: "https://www.cdc.gov/sleep/about/index.html", year: "2024" },
+      { org: "Federal Trade Commission", title: "Lumosity to Pay $2 Million to Settle FTC Deceptive Advertising Charges for Its \"Brain Training\" Program", url: "https://www.ftc.gov/news-events/news/press-releases/2016/01/lumosity-pay-2-million-settle-ftc-deceptive-advertising-charges-its-brain-training-program", year: "2016" },
+      { org: "Stanford Center on Longevity & Max Planck Institute for Human Development", title: "A Consensus on the Brain Training Industry from the Scientific Community", url: "https://longevity.stanford.edu/a-consensus-on-the-brain-training-industry-from-the-scientific-community/", year: "2014" }
+    ],
+    segments: [
+      { id: "lifestyle-and-memory-everyday-shapes-memory", name: "Memory lives in your day", secs: 18, core: true, say: "Here is a gentle truth worth holding onto. Your memory is not just something happening inside your head in the moment. It is shaped by how you sleep, how you move, and how calm and focused your day feels. Small everyday habits give your memory a quieter, steadier place to work." },
+      { id: "lifestyle-and-memory-sleep-consolidates", name: "Sleep does the filing", secs: 22, core: true, say: "While you sleep, your brain quietly sorts through the day and helps move new experiences into longer-lasting memory. The Centers for Disease Control and Prevention, often shortened to the C D C, notes that good sleep helps improve your attention and memory. So pulling an all-nighter before a big test often backfires. You may feel awake, but the part of you that files and holds new information has been skipped over." },
+      { id: "lifestyle-and-memory-how-much-sleep", name: "How much, gently", secs: 17, core: false, say: "Most adults do best with about seven to nine hours of sleep, according to the National Institute on Aging. If that feels far away, do not worry. You do not have to fix it all tonight. Even shifting your bedtime fifteen minutes earlier, or dimming screens before bed, is a kind and real step." },
+      { id: "lifestyle-and-memory-movement", name: "Movement helps the brain", secs: 20, core: true, say: "Moving your body supports your brain too. The National Institute on Aging notes that regular physical activity may help maintain some aspects of thinking, can ease stress, and may improve sleep, which circles right back to memory. This does not have to mean the gym. A short walk after lunch, a little stretching, or dancing in the kitchen all count." },
+      { id: "lifestyle-and-memory-stress-and-attention", name: "Stress and the divided mind", secs: 21, core: true, say: "Two everyday things make it harder for memories to form in the first place. One is chronic stress, which keeps the mind too busy to encode well. The other is divided attention. When you are half-listening while scrolling your phone, the moment often never lands as a memory. The fix is gentle. Give one thing your attention at a time, even for a minute, and it has a far better chance of sticking." },
+      { id: "lifestyle-and-memory-brain-games-honest", name: "About brain-training games", secs: 24, core: false, say: "You may wonder about brain-training apps. Here is an honest take. In two thousand fourteen, a large group of scientists organized by the Stanford Center on Longevity and the Max Planck Institute concluded there was no compelling evidence that these games improve general thinking in everyday life. And in two thousand sixteen, the Federal Trade Commission had the maker of Lumosity pay two million dollars over claims it could not back up. You usually get better at the specific game you practice, but that improvement rarely carries over to everyday life. That is the honest limit." },
+      { id: "lifestyle-and-memory-not-medical-advice", name: "A caring caveat", secs: 18, core: false, say: "One important note. These habits support your memory. They are general, educational information, not medical advice, and not a substitute for a doctor. They are not a cure for any condition. If you or someone you love is worried about memory, or notices changes that feel concerning, please talk with a medical professional. That is a wise and caring step, not an overreaction." },
+      { id: "lifestyle-and-memory-takeaway", name: "The gentle takeaway", secs: 17, core: true, say: "So here is what to carry with you. Protect your sleep, move your body in ways you enjoy, and give your attention to one thing at a time. None of this has to be perfect. These are kind, steady supports for a memory that is already working hard for you every single day." }
+    ],
+  },
+  "brain-games-truth": {
+    id: "brain-games-truth", title: "Do brain games really work?", topic: "evidence",
+    blurb: "Brain-training games reliably make you better at the game itself, but the evidence that they sharpen everyday memory or general thinking is weak and contested.",
+    yearLabel: "2014–2016",
+    sources: [
+      { org: "U.S. Federal Trade Commission", title: "Lumosity to Pay $2 Million to Settle FTC Deceptive Advertising Charges for Its \"Brain Training\" Program", url: "https://www.ftc.gov/news-events/news/press-releases/2016/01/lumosity-pay-2-million-settle-ftc-deceptive-advertising-charges-its-brain-training-program", year: "2016" },
+      { org: "Stanford Center on Longevity & Max Planck Institute for Human Development", title: "A Consensus on the Brain Training Industry from the Scientific Community", url: "https://longevity.stanford.edu/a-consensus-on-the-brain-training-industry-from-the-scientific-community/", year: "2014" },
+      { org: "National Institute on Aging (NIH)", title: "Cognitive Health and Older Adults", url: "https://www.nia.nih.gov/health/brain-health/cognitive-health-and-older-adults", year: "2024" },
+      { org: "U.S. Federal Trade Commission", title: "Mind the gap: What Lumosity promised vs. what it could prove", url: "https://www.ftc.gov/business-guidance/blog/2016/01/mind-gap-what-lumosity-promised-vs-what-it-could-prove", year: "2016" }
+    ],
+    segments: [
+      { id: "brain-games-truth-the-honest-question", name: "The honest question", secs: 18, core: true, say: "Let us ask something out loud. Do those colorful brain-training games actually work? It is a fair question, and the honest answer is more interesting than a simple yes or no. So let us look at what the research really shows, calmly and without the hype." },
+      { id: "brain-games-truth-near-transfer", name: "You get good at the game", secs: 19, core: true, say: "Here is the part that is genuinely true. When you practice a game, you get better at that game. Researchers call this near transfer. Play a matching puzzle every day and your matching score climbs. That is real, and it feels great. The harder question is whether that skill spreads to anything beyond the screen." },
+      { id: "brain-games-truth-far-transfer", name: "Where the evidence gets thin", secs: 22, core: true, say: "That spreading is called far transfer, and this is where the evidence gets shaky. In two thousand fourteen, the Stanford Center on Longevity and the Max Planck Institute for Human Development published a consensus statement signed by dozens of scientists. Their shared view was that the research does not support the idea that brain games improve everyday thinking or hold off cognitive decline. Some researchers with industry ties pushed back, so the debate continues, but the cautious reading is well founded." },
+      { id: "brain-games-truth-lumosity", name: "When claims went too far", secs: 21, core: false, say: "Some companies promised far more than the science could back up. In two thousand sixteen, the United States Federal Trade Commission, the F T C, took action against the maker of Lumosity for deceptive advertising. The order carried a fifty million dollar judgment, suspended to a two million dollar payment. The company had suggested its games could stave off memory loss, dementia, and even Alzheimer's, and it simply did not have the evidence." },
+      { id: "brain-games-truth-the-reframe", name: "So why still play?", secs: 18, core: true, say: "None of this means games are bad. They are fun, they pull you in, and a quick round makes a lovely warm-up before focused work. Think of a game like stretching before a walk. Pleasant and motivating, just not the walk itself. Enjoy them for what they truly are." },
+      { id: "brain-games-truth-what-transfers", name: "What actually transfers", secs: 22, core: true, say: "So what does carry over into real life? The techniques in our other lessons. Spacing your practice over days, testing yourself instead of rereading, linking new facts to things you already know, and building vivid mental walks for lists. Add good sleep and regular movement, and you are supporting your memory in ways the research genuinely backs." },
+      { id: "brain-games-truth-takeaway", name: "The honest takeaway", secs: 16, core: true, say: "Here is the takeaway. Play the games because they are enjoyable, not because they promise to make you sharper. The real gains come from how you study and how you live. That is an honest, hopeful place to stand." },
+      { id: "brain-games-truth-medical-caveat", name: "A gentle medical note", secs: 17, core: false, say: "One caring note before we close. This is general education, not medical advice, and it does not replace a doctor. If you or someone you love has real worries about memory, confusion, or possible dementia, please reach out to a medical professional. That conversation is worth having." }
+    ],
+  },
+};
+
+// Curriculum order for the duration-scaled study session (welcome is the intro).
+const CURRICULUM = ["how-memory-works", "spaced-repetition", "retrieval-practice", "memory-techniques", "lifestyle-and-memory", "brain-games-truth"];
+
+const mod = makeLessonModule({
+  LESSONS, CURRICULUM,
+  welcomeId: "welcome-memory",
+  disclaimerSeg: DISCLAIMER_SEG,
+  sessionTitle: "Memory basics",
+  kind: "memory",
+});
+
+export const LESSON_LIBRARY = mod.LESSON_LIBRARY;
+export const buildLessonById = mod.buildLessonById;
+export const buildLessonSession = mod.buildLessonSession;
+// exported so the validator can assert sourcing/disclaimer rules
+export { LESSONS };

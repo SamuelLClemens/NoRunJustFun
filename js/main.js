@@ -23,7 +23,7 @@ import { availableTiers, gateMessage, routeTrack, filterPool, evaluateScreening,
   PARQ_GENERAL, PARQ_POSTPARTUM, LIFE_STAGES, SEX_OPTIONS, AGE_BANDS, INJURY_FLAGS, SPACE_OPTIONS } from './data/profiles.js';
 import { PROGRAMS, getProgram, programSuggestion, advanceProgram } from './data/programs.js';
 import { getTrack, TRACK_LIST } from './data/tracks.js';
-import { trackHubScreen, learningDone } from './learning-screen.js';
+import { trackHubScreen, learningDone, gameScreen } from './learning-screen.js';
 
 const app = document.getElementById('app');
 let avatar = null;        // lazy three.js instance, one at a time
@@ -131,9 +131,11 @@ function homeScreen() {
 // The three pillars (Mind/Body/Soul) — the app's top-level navigation. Each pillar
 // owns its own duration/option step; all of them grow the same shared garden.
 function pillarsHTML() {
+  // Mind subtitle is derived from the registry so it never drifts as subjects are added.
+  const mindSubjects = TRACK_LIST.map((id) => (getTrack(id) ? getTrack(id).homeLabel.toLowerCase() : null)).filter(Boolean).join(', ');
   const pillars = [
     { go: '#body', cls: 'body', ic: '🤸', title: 'Body', blurb: 'Move — gentle to vigorous, no equipment' },
-    { go: '#mind', cls: 'mind', ic: '📚', title: 'Mind', blurb: 'Learn — money, parenting, communication' },
+    { go: '#mind', cls: 'mind', ic: '📚', title: 'Mind', blurb: 'Learn — ' + mindSubjects },
     { go: '#soul', cls: 'soul', ic: '🧘', title: 'Soul', blurb: 'Be still — meditation and calm' },
   ];
   return `<section class="pillars" aria-label="Choose how to grow today">
@@ -219,6 +221,7 @@ function mindScreen() {
     { id: 'money', ic: '🪙', title: 'Money', blurb: 'Budgeting, compound growth, risk, retirement, property' },
     { id: 'parenting', ic: '🧸', title: 'Parenting', blurb: 'Child development, positive discipline, connection' },
     { id: 'communication', ic: '💬', title: 'Communication', blurb: 'Nonviolent Communication — needs, requests, empathy' },
+    { id: 'memory', ic: '🧠', title: 'Memory', blurb: 'How memory works, evidence-based techniques, and games to practice' },
   ];
   const cards = subjects.map((s) => {
     const live = !!getTrack(s.id);
@@ -1046,6 +1049,7 @@ async function render() {
     if (!track) { homeScreen(); return; }
     const tail = dash === -1 ? '' : rest.slice(dash + 1);
     if (tail === '') return trackHubScreen(trackId);
+    if (tail.startsWith('game-')) return gameScreen(trackId, tail.slice('game-'.length));
 
     let plan = null;
     if (tail.startsWith('lib-')) {
