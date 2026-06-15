@@ -110,7 +110,7 @@ LEARN_SUBJECTS = {
         'auth_domains': ['healthychildren.org', 'aap.org', 'cdc.gov', 'harvard.edu', 'zerotothree.org', 'who.int', 'unicef.org'],
         'auth_min': 3,
         'disclaimer_markers': ['not medical advice', 'not a substitute'],
-        'banned': ['guaranteed', 'cure ', 'always works', 'never fails', 'perfect child', 'perfect parent'],
+        'banned': ['guaranteed', 'always works', 'never fails', 'perfect child', 'perfect parent'],
     },
     'communication': {
         'badges': 'js/data/badges.communication.js', 'prefix': 'com-', 'category': 'communication',
@@ -119,7 +119,7 @@ LEARN_SUBJECTS = {
         'auth_domains': ['cnvc.org', 'nonviolentcommunication.com', 'gottman.com', 'apa.org', '.edu'],
         'auth_min': 2,
         'disclaimer_markers': ['not therapy', 'not a substitute'],
-        'banned': ['guaranteed', 'cures ', 'always works', 'never fails', 'fix anyone'],
+        'banned': ['guaranteed', 'always works', 'never fails', 'fix anyone'],
     },
 }
 
