@@ -52,5 +52,19 @@ export const COMMUNICATION_BADGES = [
     "name": "Deep Listener",
     "desc": "You practiced empathy and self-empathy — and learned the firm boundary: this is not for danger, where safety comes first.",
     "icon": "<svg viewBox='0 0 48 48'><path d='M30 11c-7 0-12 5-12 11 0 3 1.4 5.6 3.6 7.5L20 36l7-3.2c.9 .2 2 .2 3 .2 7 0 12-5 12-11S37 11 30 11z' fill='#2F9E8F'/><path d='M14 22c-3 0-5 2-5 4.6 0 1.4 .7 2.7 1.8 3.6L10 34l3.6-1.6' fill='none' stroke='#54C2B2' stroke-width='2.5' stroke-linejoin='round'/><circle cx='26' cy='22' r='1.8' fill='#fff'/><circle cx='31' cy='22' r='1.8' fill='#fff'/><circle cx='36' cy='22' r='1.8' fill='#fff'/></svg>"
+  },
+  {
+    "id": "com-gamer",
+    "category": "communication",
+    "name": "Word Player",
+    "desc": "You won your first communication game. Spotting observations, feelings, and requests gets easier with play.",
+    "icon": "<svg viewBox='0 0 48 48'><rect x='8' y='16' width='32' height='20' rx='9' fill='#54C2B2' stroke='#2F9E8F' stroke-width='2'/><path d='M14 26h6M17 23v6' stroke='#fff' stroke-width='2' stroke-linecap='round'/><circle cx='31' cy='23' r='2.3' fill='#fff'/><circle cx='35' cy='29' r='2.3' fill='#1F6E63'/></svg>"
+  },
+  {
+    "id": "com-sharp",
+    "category": "communication",
+    "name": "Clear Speaker",
+    "desc": "Five communication games won. Observations over evaluations, requests over demands — it is becoming natural.",
+    "icon": "<svg viewBox='0 0 48 48'><path d='M9 12h26a3 3 0 0 1 3 3v13a3 3 0 0 1-3 3H19l-8 7v-7a3 3 0 0 1-2-3V15a3 3 0 0 1 3-3z' fill='#54C2B2' stroke='#2F9E8F' stroke-width='2' stroke-linejoin='round'/><path d='M16 27l5-12 4 8 3-5 4 9' fill='none' stroke='#fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>"
   }
 ];

@@ -54,5 +54,19 @@ export const FINANCE_BADGES = [
     "name": "Ground Floor",
     "desc": "Mortgages, cap rate, leverage, REITs — you know the ground rules of property now, risks and all.",
     "icon": "<svg viewBox='0 0 48 48'><path d='M10 40 V20 L24 9 L38 20 V40 Z' fill='#FFD45C' stroke='#F4A300' stroke-width='2' stroke-linejoin='round'/><rect x='20' y='28' width='8' height='12' fill='#5B6BD0'/><circle cx='24' cy='14' r='2.6' fill='#5BA869'/></svg>"
+  },
+  {
+    "id": "fin-gamer",
+    "category": "finance",
+    "name": "Money Mover",
+    "desc": "You won your first money game. A playful way to make budgeting and compounding stick.",
+    "icon": "<svg viewBox='0 0 48 48'><rect x='8' y='16' width='32' height='20' rx='9' fill='#FFD45C' stroke='#F4A300' stroke-width='2'/><path d='M14 26h6M17 23v6' stroke='#9A6500' stroke-width='2' stroke-linecap='round'/><circle cx='31' cy='23' r='2.3' fill='#5B6BD0'/><circle cx='35' cy='29' r='2.3' fill='#9A6500'/></svg>"
+  },
+  {
+    "id": "fin-sharp",
+    "category": "finance",
+    "name": "Quick Cents",
+    "desc": "Five money games won. Risk, reward, and the right questions are second nature now.",
+    "icon": "<svg viewBox='0 0 48 48'><circle cx='24' cy='24' r='15' fill='none' stroke='#5B6BD0' stroke-width='2.5'/><path d='M26 10l-9 16h6l-2 12 11-17h-7z' fill='#FFD45C' stroke='#F4A300' stroke-width='1.5' stroke-linejoin='round'/></svg>"
   }
 ];

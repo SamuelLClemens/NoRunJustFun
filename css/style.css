@@ -598,3 +598,37 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 .seq-tile { aspect-ratio: 1 / 1; border: 2px solid var(--finance-border, #E6C7DC); border-radius: var(--radius-sm); background: var(--finance-tint, #F7E9F2); cursor: pointer; transition: background 0.1s ease, transform 0.08s ease, box-shadow 0.1s ease; }
 .seq-tile:hover { transform: translateY(-1px); }
 .seq-tile.lit { background: var(--finance-accent, #B5478B); box-shadow: 0 0 16px var(--finance-accent-soft, #D77FB6); }
+
+/* data-driven concept games: quiz / sort / order (themed per [data-track]) */
+.game-quiz, .game-sort, .game-order { width: 100%; max-width: 440px; }
+.quiz-stage, .sort-stage { width: 100%; }
+.quiz-prompt { font-weight: 600; text-align: center; margin: 4px 0 12px; line-height: 1.4; }
+.sort-item { font-weight: 600; text-align: center; margin: 4px 0 12px; padding: 14px 12px; font-size: 1.05rem;
+  background: var(--finance-tint, #F7E9F2); border: 2px solid var(--finance-border, #E6C7DC); border-radius: var(--radius-sm); }
+.quiz-opts { display: flex; flex-direction: column; gap: 8px; }
+.sort-buckets { display: flex; flex-wrap: wrap; gap: 8px; }
+.quiz-opt, .sort-bucket, .order-chip {
+  padding: 12px 14px; border-radius: var(--radius-sm); border: 2px solid var(--finance-border, #E6C7DC);
+  background: #fff; cursor: pointer; font: inherit; color: inherit;
+  transition: border-color 0.15s ease, background 0.15s ease; }
+.quiz-opt, .order-chip { width: 100%; text-align: left; }
+.sort-bucket { flex: 1 1 40%; text-align: center; font-weight: 600; }
+.quiz-opt:hover:not(:disabled), .sort-bucket:hover:not(:disabled), .order-chip:hover:not(:disabled) {
+  border-color: var(--finance-accent, #B5478B); background: var(--finance-tint, #F7E9F2); }
+.quiz-opt:disabled, .sort-bucket:disabled { cursor: default; }
+.quiz-opt.correct, .sort-bucket.correct, .order-pick.correct { background: #EAF6EC; border-color: var(--green-500); }
+.quiz-opt.wrong, .sort-bucket.wrong, .order-pick.wrong { background: #FBEAEA; border-color: #D9534F; }
+.quiz-feedback { min-height: 1.2em; margin: 10px 0 6px; color: var(--ink-soft); text-align: center; line-height: 1.4; }
+.quiz-next { width: 100%; }
+.order-answer { width: 100%; list-style: decimal inside; margin: 8px 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.order-pick { background: var(--finance-tint, #F7E9F2); border: 2px solid var(--finance-border, #E6C7DC); border-radius: var(--radius-sm); padding: 8px 10px; }
+.order-pool { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.order-chip.used { opacity: 0.4; cursor: default; }
+
+/* major takeaways card on the lesson completion screen */
+.fin-takeaways h3 { color: var(--finance-ink, #7A2E5E); }
+.fin-takeaways .takeaway-group + .takeaway-group { margin-top: 10px; }
+.fin-takeaways h4 { margin: 8px 0 2px; font-size: 0.95rem; color: var(--finance-ink, #7A2E5E); }
+.takeaway-list { margin: 4px 0; padding-left: 1.15rem; }
+.takeaway-list li { margin: 5px 0; line-height: 1.45; }
+.takeaway-list li::marker { color: var(--finance-accent, #B5478B); }

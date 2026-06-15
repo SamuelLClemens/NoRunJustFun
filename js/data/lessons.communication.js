@@ -37,6 +37,7 @@ const LESSONS = {
   "nvc-overview": {
     id: "nvc-overview", title: "What Nonviolent Communication is (and is not)", topic: "foundations",
     blurb: "A gentle introduction to Nonviolent Communication, the four-part framework developed by Marshall Rosenberg, and what it is honestly not.",
+    takeaways: [ "NVC is one influential approach developed by Marshall Rosenberg and CNVC.", "Its aim is connection and mutual understanding, not winning.", "Four parts: observations, feelings, needs, and requests (OFNR).", "Educational only — not therapy, and never for abuse or danger." ],
     yearLabel: "2026",
     sources: [
       { org: "Center for Nonviolent Communication", title: "What is NVC?", url: "https://www.cnvc.org/learn/what-is-nvc", year: "" },
@@ -58,6 +59,7 @@ const LESSONS = {
   "nvc-observations": {
     id: "nvc-observations", title: "Observations, not evaluations", topic: "observations",
     blurb: "Learn to separate what actually happened from the story you tell about it — the first step of Nonviolent Communication, and a gentle way to be heard without sparking defensiveness.",
+    takeaways: [ "An observation is what a camera could record, with no story added.", "An evaluation lays a judgement on top, like lazy or always.", "Blending the two sounds like criticism and invites defending.", "This is for ordinary friction, not for abuse, coercion, or danger." ],
     yearLabel: "NVC framework per the Center for Nonviolent Communication; affect-labeling research per Lieberman et al., 2007",
     sources: [
       { org: "Center for Nonviolent Communication (CNVC)", title: "Founder of our organization, Dr. Marshall Rosenberg", url: "https://www.cnvc.org/about/marshall", year: "2015" },
@@ -81,6 +83,7 @@ const LESSONS = {
   "nvc-feelings": {
     id: "nvc-feelings", title: "Feelings versus thoughts", topic: "feelings",
     blurb: "Learn to tell real feelings from interpretations dressed as feelings, and why naming an emotion can quietly calm the brain.",
+    takeaways: [ "A feeling describes what is alive in you; a thought describes someone else.", "Faux feelings like ignored or disrespected name what you think was done.", "If \"I think that\" fits, it was a thought wearing a feeling's clothes.", "Naming a genuine feeling can gently calm your own nervous system." ],
     yearLabel: "2007",
     sources: [
       { org: "Center for Nonviolent Communication", title: "Feelings and Needs Inventory", url: "https://www.cnvc.org/store/feelings-and-needs-inventory", year: "" },
@@ -103,6 +106,7 @@ const LESSONS = {
   "nvc-needs": {
     id: "nvc-needs", title: "Universal human needs", topic: "needs",
     blurb: "Learn the Nonviolent Communication idea that beneath every feeling lives a universal human need, and that most conflict is a clash of strategies, not of needs.",
+    takeaways: [ "Beneath every feeling lives a universal human need we all share.", "A need names no person; a strategy is one specific way to meet it.", "Most conflict is a clash of strategies, not of needs.", "One need has many roads — connection can be a call, meal, or walk." ],
     yearLabel: "2015",
     sources: [
       { org: "Center for Nonviolent Communication (CNVC)", title: "Feelings and Needs Inventory", url: "https://www.cnvc.org/store/feelings-and-needs-inventory", year: "" },
@@ -124,6 +128,7 @@ const LESSONS = {
   "nvc-requests": {
     id: "nvc-requests", title: "Requests, not demands", topic: "requests",
     blurb: "Learn to ask for what you want in a way that invites a real yes — and how to tell, by your own reaction to a no, whether you made a request or a demand.",
+    takeaways: [ "A clear request says what you do want, concrete and doable now.", "Request or demand can sound identical until the other person says no.", "A request leaves room for a true yes or no; a demand pressures.", "NVC is never for abuse or danger — your safety comes first." ],
     yearLabel: "",
     sources: [
       { org: "Center for Nonviolent Communication", title: "The Purpose of Nonviolent Communication", url: "https://www.cnvc.org/about/purpose-of-nvc", year: "" },
@@ -147,6 +152,7 @@ const LESSONS = {
   "nvc-empathy-safety": {
     id: "nvc-empathy-safety", title: "Empathy, self-empathy & staying safe", topic: "empathy",
     blurb: "How empathy means being present and guessing feelings and needs — plus the safety boundary that this is education, not therapy or crisis support.",
+    takeaways: [ "Empathy is presence, not advice or fixing — being with another.", "Practice self-empathy first; you cannot pour from an empty cup.", "When something stings, you can turn toward your needs or theirs.", "You are never required to empathize your way through harm." ],
     yearLabel: "",
     sources: [
       { org: "Center for Nonviolent Communication (CNVC)", title: "What is NVC?", url: "https://www.cnvc.org/learn/what-is-nvc", year: "" },

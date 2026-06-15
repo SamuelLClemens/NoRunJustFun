@@ -37,6 +37,7 @@ const LESSONS = {
   "how-memory-works": {
     id: "how-memory-works", title: "How memory actually works", topic: "foundations",
     blurb: "A friendly tour of how memory forms, fades, and can be strengthened — grounded in cognitive science, though it is general information and not medical advice.",
+    takeaways: [ "Memory works in three stages: encoding, storage, retrieval.", "Most slips happen because attention was elsewhere during encoding.", "The forgetting curve fades fast, but a timed review flattens it.", "Pay attention, space reviews, test yourself, and protect sleep." ],
     yearLabel: "2026",
     sources: [
       { org: "National Institute on Aging (NIH)", title: "Memory, Forgetfulness, and Aging: What's Normal and What's Not?", url: "https://www.nia.nih.gov/health/memory-loss-and-forgetfulness", year: "2024" },
@@ -58,6 +59,7 @@ const LESSONS = {
   "spaced-repetition": {
     id: "spaced-repetition", title: "Spaced repetition — beat the forgetting curve", topic: "technique",
     blurb: "Spreading your reviews across days tends to build far more durable memory than cramming, though it asks for steady effort over time.",
+    takeaways: [ "Spreading reviews across days beats cramming for lasting memory.", "Same effort, better staying power — that is the spacing effect.", "Try an expanding schedule: review after a day, then three, then a week.", "It only works if you keep coming back; that mild effort is the point." ],
     yearLabel: "2006",
     sources: [
       { org: "Cepeda, Pashler, Vul, Wixted & Rohrer (Psychological Bulletin), via York University", title: "Distributed practice in verbal recall tasks: A review and quantitative synthesis", url: "https://www.yorku.ca/ncepeda/publications/CPVWR2006.html", year: "2006" },
@@ -80,6 +82,7 @@ const LESSONS = {
   "retrieval-practice": {
     id: "retrieval-practice", title: "Retrieval practice — testing yourself works", topic: "technique",
     blurb: "Closing the book and recalling what you can tends to build memory more durably than re-reading, though it feels harder in the moment and is not a fix for medical memory concerns.",
+    takeaways: [ "Recalling what you know builds memory more than rereading.", "Close the book and write or say the main points from memory.", "It feels harder, and that desirable difficulty is what helps.", "Even a wrong answer, then the right one, strengthens recall." ],
     yearLabel: "2006",
     sources: [
       { org: "Roediger & Karpicke, Psychological Science", title: "Test-Enhanced Learning: Taking Memory Tests Improves Long-Term Retention", url: "https://journals.sagepub.com/doi/10.1111/j.1467-9280.2006.01693.x", year: "2006" },
@@ -101,6 +104,7 @@ const LESSONS = {
   "memory-techniques": {
     id: "memory-techniques", title: "Mnemonics & the memory palace", topic: "technique",
     blurb: "Encoding techniques like the method of loci can sharply improve how much you recall in studies, though they are learnable skills that take practice, not a shortcut to general intelligence.",
+    takeaways: [ "Often we forget because information was never encoded well.", "Chunk small items into larger, meaningful groups to hold more.", "Connect new ideas to what you know, and pair words with images.", "Try a memory palace: place vivid images along a familiar route." ],
     yearLabel: "2017",
     sources: [
       { org: "National Library of Medicine (PubMed) / Neuron", title: "Mnemonic Training Reshapes Brain Networks to Support Superior Memory (Dresler et al., 2017)", url: "https://pubmed.ncbi.nlm.nih.gov/28279356/", year: "2017" },
@@ -123,6 +127,7 @@ const LESSONS = {
   "lifestyle-and-memory": {
     id: "lifestyle-and-memory", title: "Sleep, movement & memory", topic: "lifestyle",
     blurb: "Sleep, movement, and calm attention all help your memory work at its best — these are gentle, well-supported supports, not a cure for any condition.",
+    takeaways: [ "Sleep helps file new experiences into lasting memory.", "Most adults do best with about seven to nine hours.", "Movement supports thinking, eases stress, and improves sleep.", "Give one thing your attention at a time so it sticks." ],
     yearLabel: "2014–2025",
     sources: [
       { org: "National Institute on Aging (NIH)", title: "Cognitive Health and Older Adults", url: "https://www.nia.nih.gov/health/brain-health/cognitive-health-and-older-adults", year: "2025" },
@@ -144,6 +149,7 @@ const LESSONS = {
   "brain-games-truth": {
     id: "brain-games-truth", title: "Do brain games really work?", topic: "evidence",
     blurb: "Brain-training games reliably make you better at the game itself, but the evidence that they sharpen everyday memory or general thinking is weak and contested.",
+    takeaways: [ "You get better at the game itself — that is near transfer.", "Evidence that games sharpen everyday thinking is weak and contested.", "In 2014, Stanford and Max Planck scientists urged caution.", "In 2016, the FTC acted against Lumosity for overstated claims." ],
     yearLabel: "2014–2016",
     sources: [
       { org: "U.S. Federal Trade Commission", title: "Lumosity to Pay $2 Million to Settle FTC Deceptive Advertising Charges for Its \"Brain Training\" Program", url: "https://www.ftc.gov/news-events/news/press-releases/2016/01/lumosity-pay-2-million-settle-ftc-deceptive-advertising-charges-its-brain-training-program", year: "2016" },
