@@ -453,3 +453,115 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 /* finance: surface the existing on-device natural voice (best free quality) */
 .fin-voice p { margin: 0 0 10px; }
 .fin-voice-on { text-align: center; color: var(--green-600); font-weight: 700; font-size: 0.9rem; }
+
+/* ====================================================================
+   Mind / Body / Soul — the three pillars (ADDITIVE). The home screen's
+   primary navigation; each pillar owns its own duration/option step and
+   all grow the same shared garden. Body = green, Mind = the learning
+   periwinkle (shared with Money), Soul = a calm amethyst.
+   ==================================================================== */
+:root {
+  --soul-accent: #8B6FC7;   /* calm amethyst — the Soul signature */
+  --soul-tint: #F0EBFA;     /* lavender wash for cards/banners */
+  --soul-border: #DDD2F1;
+  --soul-ink: #4A3A6B;      /* readable text on lavender tints */
+}
+
+.pillars { margin-top: 4px; }
+.pillar-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.pillar-card {
+  display: flex; align-items: center; gap: 14px; text-align: left;
+  padding: 16px 18px; border-radius: var(--radius);
+  border: 2px solid #CDE9D3; background: var(--card);
+  box-shadow: var(--shadow-soft); cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.1s ease, background 0.15s ease;
+}
+.pillar-card:hover { transform: translateY(-1px); }
+.pillar-card:active { transform: translateY(0); }
+.pillar-ic { font-size: 1.9rem; line-height: 1; flex: 0 0 auto; width: 52px; height: 52px;
+  display: grid; place-items: center; border-radius: 50%; }
+.pillar-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pillar-txt strong { font-family: var(--font-display); font-size: 1.3rem; }
+.pillar-txt small { color: var(--ink-soft); font-size: 0.86rem; }
+
+.pillar-card.body { border-color: #BFE3C7; }
+.pillar-card.body:hover { border-color: var(--green-500); background: #F2FAF3; }
+.pillar-card.body .pillar-ic { background: #EAF6EC; }
+.pillar-card.mind { border-color: var(--finance-border); }
+.pillar-card.mind:hover { border-color: var(--finance-accent); background: var(--finance-tint); }
+.pillar-card.mind .pillar-ic { background: var(--finance-tint); }
+.pillar-card.soul { border-color: var(--soul-border); }
+.pillar-card.soul:hover { border-color: var(--soul-accent); background: var(--soul-tint); }
+.pillar-card.soul .pillar-ic { background: var(--soul-tint); }
+
+@media (min-width: 560px) {
+  .pillar-grid { grid-template-columns: repeat(3, 1fr); }
+  .pillar-card { flex-direction: column; text-align: center; gap: 8px; }
+  .pillar-txt { align-items: center; }
+}
+
+/* Soul page accents + reserved "coming soon" practices (crystal/dream) */
+.soul-screen .page-title { color: var(--soul-ink); }
+.soul-soon { display: flex; align-items: center; gap: 12px; padding: 12px 14px; opacity: 0.78;
+  border: 2px dashed var(--soul-border); border-radius: var(--radius-sm); margin-top: 8px; background: var(--soul-tint); }
+.soul-soon .pillar-ic { width: 40px; height: 40px; font-size: 1.4rem; background: #fff; }
+.soon-tag { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--soul-ink); background: var(--soul-tint); border: 1px solid var(--soul-border);
+  border-radius: 999px; padding: 2px 8px; margin-left: auto; white-space: nowrap; }
+/* Mind subjects reuse .fin-lib-btn; the not-yet-live ones read as disabled */
+.mind-subject.locked { opacity: 0.72; cursor: default; }
+.mind-subject.locked:hover { border-color: var(--finance-border); background: var(--card); }
+.mind-subject.locked .soon-tag { color: var(--finance-ink); background: var(--finance-tint); border-color: var(--finance-border); }
+
+/* ====================================================================
+   Per-subject Mind themes (ADDITIVE). The shared hub/completion UI uses
+   the --finance-* token family throughout; each subject re-skins those
+   tokens within its own data-track scope, so money stays periwinkle while
+   parenting reads warm-coral and communication reads calm-teal — with NO
+   change to the shared .fin-* rules. Plus the generic instructor "prop".
+   ==================================================================== */
+[data-track="parenting"] {
+  --finance-accent: #E07856;
+  --finance-accent-soft: #F08A66;
+  --finance-tint: #FBEEE8;
+  --finance-border: #F3D3C6;
+  --finance-ink: #8A3D26;
+  --finance-gold-deep: #8A3D26;
+}
+[data-track="communication"] {
+  --finance-accent: #2F9E8F;
+  --finance-accent-soft: #54C2B2;
+  --finance-tint: #E4F4F1;
+  --finance-border: #BFE6DF;
+  --finance-ink: #1F6E63;
+  --finance-gold-deep: #1F6E63;
+}
+
+/* distinct badge treatments per learning subject (cf. .badge-cell.finance) */
+.badge-cell.parenting { background: #FFF8F5; box-shadow: inset 0 0 0 2px #F3D3C6, var(--shadow-soft); }
+.badge-cell.parenting strong { color: #8A3D26; }
+.badge-cell.parenting .badge-date { color: #8A3D26; }  /* AA on #FFF8F5 (7.2:1) */
+.badge-cell.communication { background: #F4FBF9; box-shadow: inset 0 0 0 2px #BFE6DF, var(--shadow-soft); }
+.badge-cell.communication strong { color: #1F6E63; }
+.badge-cell.communication .badge-date { color: #1F6E63; }  /* AA on #F4FBF9 (5.8:1) */
+
+/* The coral/teal accents pass AA for borders/fills/large headings but NOT for the
+   small accent TEXT (.fin-mins ~14px, source links ~14px) on white cards. Within the
+   two new subjects' scope, paint that small text in the darker, AA-passing ink. Money
+   (#5B6BD0, 4.7:1) is unaffected. */
+[data-track="parenting"] .fin-mins, [data-track="parenting"] .fin-sources a,
+[data-track="communication"] .fin-mins, [data-track="communication"] .fin-sources a {
+  color: var(--finance-ink);
+}
+
+/* the coach's instructor "prop" for the new subjects — a 2D emblem that rises
+   onto the stage a beat after arriving (parenting = storybook, communication =
+   speech bubbles), mirroring the finance reading-glasses cue. */
+.stage .lesson-prop {
+  position: absolute; top: 7%; right: 6%; width: 64px; max-width: 22%; height: auto;
+  opacity: 0; transform: translateY(-10px) scale(0.85) rotate(-6deg);
+  transition: opacity 0.45s ease, transform 0.55s cubic-bezier(0.2, 0.85, 0.3, 1.15);
+  z-index: 3; pointer-events: none; filter: drop-shadow(0 3px 4px rgba(31, 77, 46, 0.22));
+}
+.stage .lesson-prop svg { width: 100%; height: auto; display: block; }
+.stage.lesson-prop-on .lesson-prop { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }

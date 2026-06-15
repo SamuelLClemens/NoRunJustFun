@@ -66,9 +66,8 @@ ok("'ygt-v3.0.0'" not in sw, "sw.js CACHE_VERSION not bumped")
 for f in ['movements-ext', 'tiers', 'meditation', 'profiles', 'programs']:
     ok(f"js/data/{f}.js" in sw, f"sw.js PRECACHE missing js/data/{f}.js")
 
-# 7) store bumped to v2 with an additive v1->v2 branch
+# 7) store has the additive v1->v2 backfill (version itself is asserted in #12)
 st = read('js/state.js')
-ok('CURRENT_VERSION = 2' in st, "state.js CURRENT_VERSION not 2")
 ok('kind: ' in st or "kind'" in st or 'kind:' in st, "state.js v1->v2 backfill missing kind")
 
 # 8) garden growth still count-based + intensity-neutral (anti-compulsion anchor)
@@ -80,76 +79,133 @@ med = read('js/data/meditation.js')
 for d in DURATIONS:
     ok(f'"med-core-{d}"' in med or f'med-core-{d}' in med, f"meditation core missing duration {d}")
 
-# ---- Finance module (Money Garden) — additive foundations ----------------
+# ---- Learning engine (Mind pillar) — money + future subjects -------------
 def strip_js_comments(s):
     s = re.sub(r'/\*.*?\*/', '', s, flags=re.S)   # block comments
     s = re.sub(r'//[^\n]*', '', s)                # line comments
     return s
 
-# 10) finance badges are a distinct, 'fin-' namespaced set that cannot collide
-#     with the fitness badges in the shared progress.badges{} ledger
-fb = read('js/data/badges.finance.js')
-fin_badge_ids = re.findall(r'"id":\s*"([^"]+)"', fb)
-fit_badge_ids = re.findall(r'"id":\s*"([^"]+)"', read('js/data/badges.js'))
-ok(len(fin_badge_ids) >= 1, "badges.finance.js defines no FINANCE_BADGES")
-ok(all(i.startswith('fin-') for i in fin_badge_ids), "a finance badge id is not 'fin-' namespaced")
-ok(not (set(fin_badge_ids) & set(fit_badge_ids)), "a finance badge id collides with a fitness badge id")
-ok(len(re.findall(r'"category":\s*"finance"', fb)) >= len(fin_badge_ids),
-   "a finance badge is missing category:'finance'")
-for key in ['"name"', '"desc"', '"icon"']:
-    ok(fb.count(key) >= len(fin_badge_ids), f"a finance badge is missing {key}")
+def exists(p):
+    return os.path.exists(os.path.join(ROOT, p))
 
-# 11) finance domain module exists and is isolated: it must NOT inflate the
-#     minutes-based levels or the fitness duration badges (no recordSession /
-#     totalMins / durationsTried writes — checked against comment-stripped code)
-fin_code = strip_js_comments(read('js/finance.js'))
-for fn in ['finishFinance', 'checkFinanceBadges', 'recordLessonComplete']:
-    ok(f'export function {fn}' in fin_code, f"finance.js missing export {fn}")
-ok('recordSession(' not in fin_code, "finance.js must not call recordSession (would inflate levels/durations)")
-ok('totalMins' not in fin_code, "finance.js must not write totalMins (no level inflation)")
-ok('durationsTried' not in fin_code, "finance.js must not write durationsTried (protects 'all-durations')")
+# Per-subject expectations the validator enforces. New subjects are only checked
+# once their content lands (gated on file existence), so the suite stays green
+# between slices; money is always fully checked. (Mirrors js/data/tracks.js, which
+# this standalone Python cannot import.)
+LEARN_SUBJECTS = {
+    'money': {
+        'badges': 'js/data/badges.finance.js', 'prefix': 'fin-', 'category': 'finance',
+        'lessons': 'js/data/lessons.js',
+        'curriculum': ['budgeting', 'compound-growth', 'risk-diversification', 'retirement-accounts', 'property-basics'],
+        'auth_domains': ['irs.gov', 'investor.gov', 'consumerfinance.gov', 'fdic.gov', 'federalreserve.gov'],
+        'auth_min': 4,
+        'disclaimer_markers': ['not financial advice'],
+        'banned': ['guaranteed return', 'guaranteed returns', 'guaranteed profit', 'risk-free return',
+                   'risk free return', 'get rich', 'cannot lose money', "can't lose", 'double your money'],
+    },
+    'parenting': {
+        'badges': 'js/data/badges.parenting.js', 'prefix': 'par-', 'category': 'parenting',
+        'lessons': 'js/data/lessons.parenting.js',
+        'curriculum': [],
+        'auth_domains': ['healthychildren.org', 'aap.org', 'cdc.gov', 'harvard.edu', 'zerotothree.org', 'who.int', 'unicef.org'],
+        'auth_min': 3,
+        'disclaimer_markers': ['not medical advice', 'not a substitute'],
+        'banned': ['guaranteed', 'always works', 'never fails', 'perfect child', 'perfect parent'],
+    },
+    'communication': {
+        'badges': 'js/data/badges.communication.js', 'prefix': 'com-', 'category': 'communication',
+        'lessons': 'js/data/lessons.communication.js',
+        'curriculum': [],
+        'auth_domains': ['cnvc.org', 'nonviolentcommunication.com', 'gottman.com', 'apa.org', '.edu'],
+        'auth_min': 2,
+        'disclaimer_markers': ['not therapy', 'not a substitute'],
+        'banned': ['guaranteed', 'always works', 'never fails', 'fix anyone'],
+    },
+}
 
-# 12) finance state is additive — sub-object present, version NOT bumped past 2
-ok('finance:' in st, "state.js defaults() missing the finance sub-object")
-ok('CURRENT_VERSION = 3' not in st,
-   "state.js version bumped — finance must be additive via the migrate spread, not a version bump")
+# 10) learning badges are distinct, prefix-namespaced sets that cannot collide
+#     with the fitness badges nor with each other in the shared progress.badges{}
+fit_badge_ids = set(re.findall(r'"id":\s*"([^"]+)"', read('js/data/badges.js')))
+learn_badge_sets = {}
+for sid, cfg in LEARN_SUBJECTS.items():
+    if not exists(cfg['badges']):
+        continue
+    fb = read(cfg['badges'])
+    ids = re.findall(r'"id":\s*"([^"]+)"', fb)
+    learn_badge_sets[sid] = set(ids)
+    ok(len(ids) >= 1, f"{cfg['badges']} defines no badges")
+    ok(all(i.startswith(cfg['prefix']) for i in ids), f"a {sid} badge id is not '{cfg['prefix']}' namespaced")
+    ok(not (set(ids) & fit_badge_ids), f"a {sid} badge id collides with a fitness badge id")
+    ok(len(re.findall(r'"category":\s*"' + cfg['category'] + r'"', fb)) >= len(ids),
+       f"a {sid} badge is missing category:'{cfg['category']}'")
+    for key in ['"name"', '"desc"', '"icon"']:
+        ok(fb.count(key) >= len(ids), f"a {sid} badge is missing {key}")
+ok('money' in learn_badge_sets, "money (finance) badge set missing")
+subj_ids = list(learn_badge_sets)
+for i in range(len(subj_ids)):
+    for j in range(i + 1, len(subj_ids)):
+        a, b = subj_ids[i], subj_ids[j]
+        ok(not (learn_badge_sets[a] & learn_badge_sets[b]), f"{a} and {b} badge ids overlap")
 
-# 13) the player records a plan-level kind so finance lessons are not mislabelled
-ok('this.plan.kind' in read('js/player.js'), "player.js does not honour plan.kind (finance would record as 'movement')")
+# 11) the generic learning domain module exists and is isolated: it must NOT
+#     inflate the minutes-based levels or the fitness duration badges (no
+#     recordSession / totalMins / durationsTried writes -- comment-stripped)
+learn_code = strip_js_comments(read('js/learning.js'))
+for fn in ['finishLearning', 'checkTrackBadges', 'recordLessonComplete']:
+    ok(f'export function {fn}' in learn_code, f"learning.js missing export {fn}")
+ok('recordSession(' not in learn_code, "learning.js must not call recordSession (would inflate levels/durations)")
+ok('totalMins' not in learn_code, "learning.js must not write totalMins (no level inflation)")
+ok('durationsTried' not in learn_code, "learning.js must not write durationsTried (protects 'all-durations')")
 
-# 14) finance lessons — accuracy protocol: disclaimer present, fact-heavy topics
-#     are sourced from authoritative US sources, and no promised-return claims
-lessons = read('js/data/lessons.js')
-ok('not financial advice' in lessons, "lessons.js missing the 'not financial advice' disclaimer")
-ok(('not guaranteed' in lessons) or ('guaranteed or risk-free' in lessons) or ('never guaranteed' in lessons),
-   "lessons.js disclaimer does not state returns are not guaranteed")
-ok('SPOKEN_DISCLAIMER' in lessons and 'DISCLAIMER_SEG' in lessons, "lessons.js missing the spoken-disclaimer segment")
-# every fact-heavy curriculum lesson must be present and carry a sources list
-for lid in ['budgeting', 'compound-growth', 'risk-diversification', 'retirement-accounts', 'property-basics']:
-    ok(f"id: '{lid}'" in lessons, f"lessons.js missing curriculum lesson '{lid}'")
-# authoritative source domains (need a strong majority of the official five)
-auth_domains = ['irs.gov', 'investor.gov', 'consumerfinance.gov', 'fdic.gov', 'federalreserve.gov']
-present = [d for d in auth_domains if d in lessons]
-ok(len(present) >= 4, f"lessons.js cites too few authoritative sources ({present})")
-# year-labelled updatable figures (the 2026 IRS limits must be year-stamped)
-ok('2026' in lessons and ('Notice 2025-67' in lessons or 'irs.gov' in lessons), "lessons.js 2026 figures are not year-labelled/sourced")
-# no promised-return language (educational, not advice). These exact promo phrases
-# must never appear; the lessons discuss guarantees only in negated/cautionary form.
-low = lessons.lower()
-for bad in ['guaranteed return', 'guaranteed returns', 'guaranteed profit', 'risk-free return',
-            'risk free return', 'get rich', 'cannot lose money', "can't lose", 'double your money']:
-    ok(bad not in low, f"lessons.js contains a promised-return phrase: '{bad}'")
+# 12) learning state migration — additive & lossless: v3 with a v2->v3 branch that
+#     moves the legacy progress.finance blob into learning.money
+ok('CURRENT_VERSION = 3' in st, "state.js CURRENT_VERSION must be 3 (learning unification)")
+ok('learning:' in st, "state.js defaults() missing the learning sub-object")
+ok('data.progress.finance' in st, "state.js v2->v3 branch does not migrate the legacy progress.finance blob")
+ok('(data.version || 1) < 3' in st, "state.js missing the v2->v3 migration branch guard")
 
-# 15) finance topic badges award off completed lesson ids
-fin = strip_js_comments(read('js/finance.js'))
-ok("done.has('budgeting')" in fin or 'done.has' in fin, "finance.js topic badges do not key off completed lesson ids")
+# 13) the player records a plan-level kind so learning lessons are not mislabelled
+ok('this.plan.kind' in read('js/player.js'), "player.js does not honour plan.kind (learning would record as 'movement')")
 
-# 16) service worker precaches the new finance files + bumped past v3.2.0 so
+# 14) learning lessons — accuracy protocol per subject: disclaimer present, fact-
+#     heavy topics sourced from authoritative domains, no over-promising phrasing.
+#     New subjects are checked once their lessons module lands (gated on existence).
+for sid, cfg in LEARN_SUBJECTS.items():
+    if not exists(cfg['lessons']):
+        continue
+    L = read(cfg['lessons'])
+    low = L.lower()
+    ok(any(m in low for m in cfg['disclaimer_markers']),
+       f"{sid} lessons missing a disclaimer marker ({cfg['disclaimer_markers']})")
+    ok('SPOKEN_DISCLAIMER' in L and 'DISCLAIMER_SEG' in L, f"{sid} lessons missing the spoken-disclaimer segment")
+    for lid in cfg['curriculum']:
+        ok(f"id: '{lid}'" in L, f"{sid} lessons missing curriculum lesson '{lid}'")
+    present = [d for d in cfg['auth_domains'] if d in low]
+    ok(len(present) >= cfg['auth_min'], f"{sid} lessons cite too few authoritative sources ({present})")
+    for bad in cfg['banned']:
+        ok(bad not in low, f"{sid} lessons contains a banned/over-promising phrase: '{bad}'")
+# money-specific extras retained verbatim (guarantee-negation + year-stamped 2026)
+money_lessons = read(LEARN_SUBJECTS['money']['lessons'])
+ok(('not guaranteed' in money_lessons) or ('guaranteed or risk-free' in money_lessons) or ('never guaranteed' in money_lessons),
+   "money lessons disclaimer does not state returns are not guaranteed")
+ok('2026' in money_lessons and ('Notice 2025-67' in money_lessons or 'irs.gov' in money_lessons),
+   "money lessons 2026 figures are not year-labelled/sourced")
+
+# 15) topic badges award off completed lesson ids (generic engine)
+ok('done.has' in learn_code, "learning.js topic badges do not key off completed lesson ids")
+
+# 16) service worker precaches the learning engine files + bumped past v3.3.0 so
 #     installed PWAs pick them up (addAll is atomic — every path must resolve)
 sw = read('sw.js')
-for f in ['js/finance.js', 'js/finance-screen.js', 'js/data/lessons.js', 'js/data/badges.finance.js']:
+core_learn_files = ['js/learning.js', 'js/learning-screen.js', 'js/data/tracks.js',
+                    'js/finance.js', 'js/finance-screen.js', 'js/data/lessons.js', 'js/data/badges.finance.js']
+for f in core_learn_files:
     ok(f"'{f}'" in sw, f"sw.js PRECACHE missing {f}")
-ok("'ygt-v3.2.0'" not in sw, "sw.js CACHE_VERSION must be bumped past v3.2.0 so installed apps pick up finance")
+for sid, cfg in LEARN_SUBJECTS.items():
+    for f in [cfg['badges'], cfg['lessons']]:
+        if exists(f):
+            ok(f"'{f}'" in sw, f"sw.js PRECACHE missing {f} (file exists but is not precached)")
+ok("'ygt-v3.3.0'" not in sw, "sw.js CACHE_VERSION must be bumped past v3.3.0 so installed apps pick up the learning engine")
 
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:

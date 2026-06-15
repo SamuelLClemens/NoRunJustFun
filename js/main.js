@@ -22,9 +22,8 @@ import { buildMeditation, buildMeditationById, MEDITATION_LIBRARY } from './data
 import { availableTiers, gateMessage, routeTrack, filterPool, evaluateScreening,
   PARQ_GENERAL, PARQ_POSTPARTUM, LIFE_STAGES, SEX_OPTIONS, AGE_BANDS, INJURY_FLAGS, SPACE_OPTIONS } from './data/profiles.js';
 import { PROGRAMS, getProgram, programSuggestion, advanceProgram } from './data/programs.js';
-import { buildLessonById, buildLessonSession } from './data/lessons.js';
-import { FINANCE_BADGES } from './data/badges.finance.js';
-import { moneyGardenScreen, financeDone } from './finance-screen.js';
+import { getTrack, TRACK_LIST } from './data/tracks.js';
+import { trackHubScreen, learningDone } from './learning-screen.js';
 
 const app = document.getElementById('app');
 let avatar = null;        // lazy three.js instance, one at a time
@@ -88,7 +87,6 @@ function homeScreen() {
     <header class="topbar">
       <div class="brand">${logoSVG()}</div>
       <nav class="topnav">
-        <a href="#money">Money</a>
         <a href="#badges">Badges</a>
         <a href="#settings" aria-label="Settings">Settings</a>
       </nav>
@@ -115,6 +113,45 @@ function homeScreen() {
       </section>
 
       ${programCardHTML()}
+      ${pillarsHTML()}
+
+      <footer class="privacy-note">
+        <p>🌱 <strong>Private by design.</strong> Your progress lives only on this device. No account, no tracking, no data ever leaves your phone. <a href="#safety">Safety notice</a></p>
+      </footer>
+    </main>`;
+
+  app.querySelectorAll('.pillar-card').forEach((b) =>
+    b.addEventListener('click', () => { sound.unlock(); go(b.dataset.go); }));
+  const progStart = document.getElementById('prog-start');
+  if (progStart) progStart.addEventListener('click', () => { sound.unlock(); go(progStart.dataset.go); });
+
+  if (!store.profile.seenSafety) showSafetyOverlay();
+}
+
+// The three pillars (Mind/Body/Soul) — the app's top-level navigation. Each pillar
+// owns its own duration/option step; all of them grow the same shared garden.
+function pillarsHTML() {
+  const pillars = [
+    { go: '#body', cls: 'body', ic: '🤸', title: 'Body', blurb: 'Move — gentle to vigorous, no equipment' },
+    { go: '#mind', cls: 'mind', ic: '📚', title: 'Mind', blurb: 'Learn — money, parenting, communication' },
+    { go: '#soul', cls: 'soul', ic: '🧘', title: 'Soul', blurb: 'Be still — meditation and calm' },
+  ];
+  return `<section class="pillars" aria-label="Choose how to grow today">
+      <div class="pillar-grid">
+        ${pillars.map((p) => `<button class="pillar-card ${p.cls}" data-go="${p.go}">
+          <span class="pillar-ic" aria-hidden="true">${p.ic}</span>
+          <span class="pillar-txt"><strong>${p.title}</strong><small>${esc(p.blurb)}</small></span>
+        </button>`).join('')}
+      </div>
+      <p class="start-note">Whatever you pick, your garden grows the same — consistency, never intensity.</p>
+    </section>`;
+}
+
+// ---------------------------------------------------------------- Body pillar (workouts)
+function bodyScreen() {
+  app.innerHTML = `
+    <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Body · Move</h1></header>
+    <main class="narrow body-screen">
       <section class="start-card">
         <h2>How long do you have?</h2>
         ${Object.values(MODES).map((m) => `
@@ -130,24 +167,81 @@ function homeScreen() {
           <label class="inline-toggle"><input type="checkbox" id="home-chair" ${store.profile.chairMode ? 'checked' : ''}> Chair mode</label>
         </p>
       </section>
-
-      <footer class="privacy-note">
-        <p>🌱 <strong>Private by design.</strong> Your progress lives only on this device. No account, no tracking, no data ever leaves your phone. <a href="#safety">Safety notice</a></p>
-      </footer>
     </main>`;
-
-  app.querySelectorAll('.duration-btn').forEach((b) => {
-    b.addEventListener('click', () => {
-      sound.unlock();
-      go('#tier-' + b.dataset.mins);
-    });
-  });
+  app.querySelectorAll('.duration-btn').forEach((b) =>
+    b.addEventListener('click', () => { sound.unlock(); go('#tier-' + b.dataset.mins); }));
   const chair = document.getElementById('home-chair');
   if (chair) chair.addEventListener('change', (e) => { store.profile.chairMode = e.target.checked; save(); });
-  const progStart = document.getElementById('prog-start');
-  if (progStart) progStart.addEventListener('click', () => { sound.unlock(); go(progStart.dataset.go); });
+}
 
-  if (!store.profile.seenSafety) showSafetyOverlay();
+// ---------------------------------------------------------------- Soul pillar (meditation +)
+function soulScreen() {
+  const durationBtns = DURATIONS.map((m) =>
+    `<button class="duration-btn" data-mins="${m}"><span class="d-num">${m}</span><span class="d-label">min</span></button>`).join('');
+  const libHTML = MEDITATION_LIBRARY.map((m) =>
+    `<button class="med-lib-btn" data-med="${m.id}"><span>${esc(m.theme)}</span><small>${m.minutes} min</small></button>`).join('');
+  const soon = (ic, title, blurb) => `<div class="soul-soon">
+        <span class="pillar-ic" aria-hidden="true">${ic}</span>
+        <span class="pillar-txt"><strong>${esc(title)}</strong><small>${esc(blurb)}</small></span>
+        <span class="soon-tag">Coming soon</span>
+      </div>`;
+  app.innerHTML = `
+    <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Soul · Be still</h1></header>
+    <main class="narrow soul-screen">
+      <section class="card">
+        <h2>Meditate</h2>
+        <p class="hint">Pick how long you have — the core practice scales to fit. A meditation grows your garden exactly like a workout.</p>
+        <div class="duration-grid" id="soul-durations">${durationBtns}</div>
+      </section>
+      <section class="card">
+        <strong>Or browse a theme</strong>
+        <div class="med-lib" id="soul-library">${libHTML}</div>
+      </section>
+      <section class="card soul-future">
+        <h2>More for the soul</h2>
+        <p class="hint">New reflective practices are growing here.</p>
+        ${soon('🔮', 'Crystal energy', 'A calm, exploratory practice')}
+        ${soon('🌙', 'Dream interpretation', 'Reflect gently on your dreams')}
+      </section>
+    </main>`;
+  document.querySelectorAll('#soul-durations .duration-btn').forEach((b) =>
+    b.addEventListener('click', () => { sound.unlock(); go('#play-' + b.dataset.mins + '-meditation'); }));
+  document.querySelectorAll('#soul-library .med-lib-btn').forEach((b) =>
+    b.addEventListener('click', () => { sound.unlock(); go('#play-lib-' + b.dataset.med); }));
+}
+
+// ---------------------------------------------------------------- Mind pillar (learning)
+function mindScreen() {
+  // The learning subjects. A subject is live once it is registered in tracks.js;
+  // the rest show as coming-soon until their content lands (slices 3-4), then
+  // auto-enable here.
+  const subjects = [
+    { id: 'money', ic: '🪙', title: 'Money', blurb: 'Budgeting, compound growth, risk, retirement, property' },
+    { id: 'parenting', ic: '🧸', title: 'Parenting', blurb: 'Child development, positive discipline, connection' },
+    { id: 'communication', ic: '💬', title: 'Communication', blurb: 'Nonviolent Communication — needs, requests, empathy' },
+  ];
+  const cards = subjects.map((s) => {
+    const live = !!getTrack(s.id);
+    const inner = `<span class="fin-lib-ic" aria-hidden="true">${s.ic}</span>
+        <span class="fin-lib-txt"><strong>${esc(s.title)}</strong><small>${esc(s.blurb)}</small></span>`;
+    return live
+      ? `<button class="fin-lib-btn mind-subject" data-track="${esc(s.id)}">${inner}
+        <span class="fin-lib-meta"><span class="fin-mins">Learn →</span></span></button>`
+      : `<button class="fin-lib-btn mind-subject locked" disabled>${inner}
+        <span class="fin-lib-meta"><span class="soon-tag">Coming soon</span></span></button>`;
+  }).join('');
+  app.innerHTML = `
+    <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Mind · Learn</h1></header>
+    <main class="narrow finance-section">
+      <div class="fin-banner"><span class="fin-info" aria-hidden="true">🌱</span><span>Bite-size, sourced lessons. Educational only — not professional advice.</span></div>
+      <section class="card">
+        <h2>Pick a subject</h2>
+        <p class="hint">Your coach teaches you, scaled to the time you have. Each subject grows the same garden.</p>
+        <div class="fin-lib" id="mind-subjects">${cards}</div>
+      </section>
+    </main>`;
+  document.querySelectorAll('#mind-subjects .mind-subject[data-track]').forEach((b) =>
+    b.addEventListener('click', () => { location.hash = '#learn-' + b.dataset.track; }));
 }
 
 // Optional guided-program card: today's suggestion if enrolled, else a soft invite.
@@ -191,23 +285,14 @@ function tierScreen(mins) {
     </button>`;
   };
 
-  const libHTML = MEDITATION_LIBRARY.map((m) =>
-    `<button class="med-lib-btn" data-med="${m.id}"><span>${esc(m.theme)}</span><small>${m.minutes} min</small></button>`).join('');
-
   app.innerHTML = `
-    <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">${mins} min · ${esc(mode.label)}</h1></header>
+    <header class="topbar"><a class="back" href="#body">← Back</a><h1 class="page-title">${mins} min · ${esc(mode.label)}</h1></header>
     <main class="narrow tier-screen">
       <section class="card">
         <h2>How do you want it to feel?</h2>
         <div class="tier-grid">
           ${workoutTiers.map(tierCard).join('')}
-          ${tierCard('meditation')}
         </div>
-      </section>
-      <section class="card">
-        <strong>Browse a meditation</strong>
-        <p class="hint">Or pick the core practice above. A meditation grows your garden exactly like a workout.</p>
-        <div class="med-lib">${libHTML}</div>
       </section>
     </main>`;
 
@@ -220,10 +305,6 @@ function tierScreen(mins) {
     }
     sound.unlock();
     go(`#play-${mins}-${t}`);
-  }));
-  app.querySelectorAll('.med-lib-btn').forEach((b) => b.addEventListener('click', () => {
-    sound.unlock();
-    go(`#play-lib-${b.dataset.med}`);
   }));
 }
 
@@ -614,19 +695,27 @@ function badgesScreen() {
   const earned = store.progress.badges;
   const cell = (b) => {
     const got = earned[b.id];
-    return `<div class="badge-cell ${b.category === 'finance' ? 'finance ' : ''}${got ? 'earned' : 'locked'}">
+    return `<div class="badge-cell ${b.category ? esc(b.category) + ' ' : ''}${got ? 'earned' : 'locked'}">
       <div class="badge-icon">${b.icon}</div>
       <strong>${esc(b.name)}</strong>
       <small>${esc(b.desc)}</small>
       ${got ? `<span class="badge-date">${new Date(got).toLocaleDateString()}</span>` : '<span class="badge-lock" aria-label="Locked">🔒</span>'}
     </div>`;
   };
+  // Each learning track gets its own partitioned, labelled section after the
+  // fitness badges — distinct accent per category (driven by the badge-cell class).
+  const trackSections = TRACK_LIST.map((tid) => {
+    const t = getTrack(tid);
+    if (!t || !t.badges.length) return '';
+    const emoji = (t.theme && t.theme.badgeEmoji) || '🌸';
+    return `<div class="badge-section-label">${emoji} ${esc(t.homeLabel)} badges</div>${t.badges.map(cell).join('')}`;
+  }).join('');
   app.innerHTML = `
     <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Badges</h1></header>
     <main class="narrow">
       <div class="badge-grid">
         ${BADGES.map(cell).join('')}
-        ${FINANCE_BADGES.length ? `<div class="badge-section-label">🌸 Money badges</div>${FINANCE_BADGES.map(cell).join('')}` : ''}
+        ${trackSections}
       </div>
     </main>`;
 }
@@ -858,34 +947,29 @@ async function ensureRealisticClass() {
   }
 }
 
-// Finance lessons reuse the session player. On completion we tear down the
-// avatar/Player (as finishSession does) then hand off to the Money Garden
-// completion screen, which records the result and celebrates. An early exit
-// records nothing and just returns to the hub.
-const GLASSES_SVG = `<div class="fin-glasses" aria-hidden="true"><svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
-  <g fill="rgba(123,143,232,0.20)" stroke="#2E3A8C" stroke-width="6" stroke-linecap="round">
-    <rect x="10" y="20" width="74" height="48" rx="22"/>
-    <rect x="116" y="20" width="74" height="48" rx="22"/>
-    <path d="M84 36 q16 -9 32 0" fill="none"/>
-    <path d="M10 30 L1 21" fill="none"/>
-    <path d="M190 30 L199 21" fill="none"/>
-  </g></svg></div>`;
-
-function startFinanceLesson(plan) {
+// Learning lessons reuse the session player. On completion we tear down the
+// avatar/Player (as finishSession does) then hand off to the track's completion
+// screen, which records the result and celebrates. An early exit records nothing
+// and just returns to the subject hub. The coach's instructor "prop" (finance =
+// reading glasses; other subjects get their own) is injected from the registry a
+// beat after arriving, to mark the shift into a lesson (criterion 3). Additive:
+// only the learning path runs this.
+function startLessonFor(trackId, plan) {
+  const track = getTrack(trackId);
+  const hub = '#learn-' + trackId;
   plan.onDone = (stats) => {
     if (avatar) { avatar.dispose(); avatar = null; }
     player = null;
-    history.replaceState(null, '', location.pathname + location.search + '#money');
-    if (stats && stats.early) { go('#money'); return; }
-    financeDone(plan);
+    history.replaceState(null, '', location.pathname + location.search + hub);
+    if (stats && stats.early) { go(hub); return; }
+    learningDone(trackId, plan);
   };
   sessionScreen(plan);
-  // the coach puts on reading glasses, a beat after arriving, to mark the shift
-  // into a finance lesson (criterion 3). Additive: only the finance path runs this.
+  const prop = track && track.prop;
   const stage = document.querySelector('.session .stage');
-  if (stage && !stage.querySelector('.fin-glasses')) {
-    stage.insertAdjacentHTML('beforeend', GLASSES_SVG);
-    setTimeout(() => stage.classList.add('glasses-on'), 450);
+  if (stage && prop && prop.svg && !stage.querySelector('.' + prop.className)) {
+    stage.insertAdjacentHTML('beforeend', prop.svg);
+    if (prop.onClass) setTimeout(() => stage.classList.add(prop.onClass), prop.delayMs || 450);
   }
 }
 
@@ -942,32 +1026,45 @@ async function render() {
     }
   }
 
-  // finance — the Money Garden hub
-  if (h === '#money') return moneyGardenScreen();
+  // ----- learning tracks (Mind): money + future subjects --------------------
+  // Back-compat redirects for the original finance hashes (installed PWAs,
+  // bookmarks, the completion screen's hash write). #fin-lib- before #fin-.
+  if (h === '#money') { go('#learn-money'); return; }
+  if (h.startsWith('#fin-lib-')) { go('#learn-money-lib-' + h.slice('#fin-lib-'.length)); return; }
+  if (h.startsWith('#fin-')) { go('#learn-money-' + h.slice('#fin-'.length)); return; }
 
-  // a specific catalog lesson: #fin-lib-<id>  (checked before #fin- prefix)
-  if (h.startsWith('#fin-lib-')) {
-    const id = h.slice('#fin-lib-'.length);
-    const plan = buildLessonById(id);
-    if (!plan) { moneyGardenScreen(); return; }
+  // Generic learning routes — parsed by token-split so there is no #lib- vs
+  // duration ordering hazard:
+  //   #learn-<track>              -> the subject hub
+  //   #learn-<track>-lib-<id>     -> one catalog lesson at its natural length
+  //   #learn-<track>-<mins>       -> a duration-scaled study session
+  if (h.startsWith('#learn-')) {
+    const rest = h.slice('#learn-'.length);
+    const dash = rest.indexOf('-');
+    const trackId = dash === -1 ? rest : rest.slice(0, dash);
+    const track = getTrack(trackId);
+    if (!track) { homeScreen(); return; }
+    const tail = dash === -1 ? '' : rest.slice(dash + 1);
+    if (tail === '') return trackHubScreen(trackId);
+
+    let plan = null;
+    if (tail.startsWith('lib-')) {
+      plan = track.lessons.buildLessonById(tail.slice('lib-'.length));
+    } else {
+      const mins = parseInt(tail, 10);
+      if (DURATIONS.includes(mins)) plan = track.lessons.buildLessonSession(mins);
+    }
+    if (!plan || !plan.items || !plan.items.length) { trackHubScreen(trackId); return; }
     await ensureAvatarClass();
     if (store.profile.fullInstructorOn) await ensureRealisticClass();
     if (seq !== renderSeq) return;
-    return startFinanceLesson(plan);
+    return startLessonFor(trackId, plan);
   }
 
-  // a duration-scaled study session: #fin-<mins>
-  if (h.startsWith('#fin-')) {
-    const mins = parseInt(h.slice('#fin-'.length), 10);
-    if (DURATIONS.includes(mins)) {
-      const plan = buildLessonSession(mins);
-      if (!plan || !plan.items.length) { moneyGardenScreen(); return; }
-      await ensureAvatarClass();
-      if (store.profile.fullInstructorOn) await ensureRealisticClass();
-      if (seq !== renderSeq) return;
-      return startFinanceLesson(plan);
-    }
-  }
+  // the three pillars
+  if (h === '#mind') return mindScreen();
+  if (h === '#body') return bodyScreen();
+  if (h === '#soul') return soulScreen();
 
   if (h === '#intake') return intakeScreen();
   if (h === '#programs') return programsScreen();
