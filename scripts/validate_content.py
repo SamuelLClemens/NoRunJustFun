@@ -290,6 +290,17 @@ for sid in ['money', 'parenting', 'communication', 'memory']:
     ok(f'LEARN_EXTRAS.{sid}.topTakeaways' in tracks_src, f'tracks.js: {sid} topTakeaways not wired')
     ok(f'LEARN_EXTRAS.{sid}.arcade' in tracks_src, f'tracks.js: {sid} arcade game not wired into games')
 
+# 19) the You dashboard — stats + per-subject completion + on-device weight & birthday,
+#     with a personal birthday party. Personal data must NEVER be transmitted: the app
+#     has no network layer, and this asserts main.js keeps it that way.
+ok('function youScreen' in main_src, 'main.js missing youScreen (dashboard)')
+ok("'#you'" in main_src, 'main.js missing the #you route/nav entry')
+ok('function maybeBirthdayParty' in main_src, 'main.js missing the birthday party')
+ok('progress.weights' in main_src, 'main.js does not record weight entries on the dashboard')
+ok('ageFromBirthday' in main_src, 'main.js does not derive age from birthday')
+for needle in ['fetch(', 'sendBeacon', 'XMLHttpRequest']:
+    ok(needle not in main_src, f"main.js must not transmit data ('{needle}') — weight/birthday stay on-device")
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")

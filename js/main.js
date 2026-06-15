@@ -87,6 +87,7 @@ function homeScreen() {
     <header class="topbar">
       <div class="brand">${logoSVG()}</div>
       <nav class="topnav">
+        <a href="#you">You</a>
         <a href="#badges">Badges</a>
         <a href="#settings" aria-label="Settings">Settings</a>
       </nav>
@@ -692,6 +693,211 @@ function finishSession(stats) {
   document.getElementById('btn-home').addEventListener('click', () => go('#'));
 }
 
+// ---------------------------------------------------------------- you (dashboard)
+
+// All dashboard personal data (weight, birthday) lives ONLY in localStorage and is
+// never transmitted, consistent with the app's "private by design" promise.
+const AFFIRMATIONS = [
+  'You show up for yourself, and that quiet effort matters more than you know.',
+  'You are growing — in your garden and far beyond it.',
+  'The people in your life are lucky to have you in it.',
+  'Be as gentle with yourself today as you are with everyone else.',
+  'However this year went, you kept going. That is something to celebrate.',
+];
+
+function fmtDateL(iso) { try { return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); } catch { return ''; } }
+
+function ageFromBirthday(iso) {
+  if (!iso || typeof iso !== 'string') return null;
+  const [y, m, d] = iso.split('-').map(Number);
+  if (!y || !m || !d) return null;
+  const now = new Date();
+  let age = now.getFullYear() - y;
+  const hadIt = (now.getMonth() + 1 > m) || (now.getMonth() + 1 === m && now.getDate() >= d);
+  if (!hadIt) age -= 1;
+  return (age >= 0 && age < 140) ? age : null;
+}
+
+function daysToBirthday(iso) {
+  if (!iso || typeof iso !== 'string') return null;
+  const [, m, d] = iso.split('-').map(Number);
+  if (!m || !d) return null;
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  let next = new Date(now.getFullYear(), m - 1, d);
+  if (next < today) next = new Date(now.getFullYear() + 1, m - 1, d);
+  return Math.round((next - today) / 86400000);
+}
+
+// A tiny inline sparkline of recent weight entries — trend only, no axes, no goal.
+function weightSpark(weights) {
+  const pts = weights.slice(-24).map((w) => Number(w.value)).filter((v) => !isNaN(v));
+  if (pts.length < 2) return '';
+  const min = Math.min(...pts), max = Math.max(...pts), range = (max - min) || 1;
+  const W = 300, H = 64, pad = 6, step = (W - pad * 2) / (pts.length - 1);
+  const coords = pts.map((v, i) => `${(pad + i * step).toFixed(1)},${(pad + (H - pad * 2) * (1 - (v - min) / range)).toFixed(1)}`).join(' ');
+  return `<svg class="you-spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${coords}" fill="none" stroke="var(--green-600)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
+}
+
+// On the user's birthday (and once per year), throw a gentle, affirming party.
+function maybeBirthdayParty() {
+  const b = store.profile.birthday;
+  if (!b || typeof b !== 'string') return;
+  const [, bm, bd] = b.split('-').map(Number);
+  if (!bm || !bd) return;
+  const now = new Date();
+  const yr = String(now.getFullYear());
+  if (now.getMonth() + 1 !== bm || now.getDate() !== bd) return;
+  if (store.profile.lastBirthdayParty === yr) return;
+  if (document.querySelector('.overlay.birthday')) return;
+  store.profile.lastBirthdayParty = yr; save();
+
+  const name = store.profile.name;
+  const age = ageFromBirthday(b);
+  const ov = document.createElement('div');
+  ov.className = 'overlay birthday';
+  ov.setAttribute('role', 'dialog');
+  ov.setAttribute('aria-modal', 'true');
+  ov.setAttribute('aria-label', 'Birthday celebration');
+  ov.innerHTML = `<div class="overlay-card birthday-card center">
+    <div class="bday-emoji" aria-hidden="true">🎂🎉</div>
+    <h2>Happy birthday${name ? ', ' + esc(name) : ''}!</h2>
+    ${age != null ? `<p class="bday-age">${age} years of you — and the world is better for it.</p>` : '<p class="bday-age">Today is all about you.</p>'}
+    <ul class="bday-affirm">${AFFIRMATIONS.map((a) => `<li>${esc(a)}</li>`).join('')}</ul>
+    <button class="btn btn-primary" id="bday-ok">Thank you 💛</button>
+  </div>`;
+  document.body.appendChild(ov);
+  const btn = ov.querySelector('#bday-ok');
+  btn.focus();
+  ov.addEventListener('keydown', (e) => { if (e.key === 'Tab') { e.preventDefault(); btn.focus(); } });
+  btn.addEventListener('click', () => ov.remove());
+  // a big, layered confetti party
+  celebrate(3600);
+  setTimeout(() => celebrate(2800), 500);
+  setTimeout(() => celebrate(2200), 1100);
+  try { sound.sparkle(); } catch { /* sfx optional */ }
+}
+
+function youScreen() {
+  const p = store.progress;
+  const prof = store.profile;
+  const streak = streakInfo(p.sessions);
+  const lvl = levelInfo(p.totalMins);
+  const stage = gardenStage(p.sessions.length, GARDEN_STAGE_SESSIONS);
+  const name = prof.name;
+  const age = ageFromBirthday(prof.birthday);
+  const weights = Array.isArray(p.weights) ? p.weights : [];
+  const lastW = weights[weights.length - 1];
+  const unit = prof.weightUnit === 'kg' ? 'kg' : 'lb';
+
+  const subjectCards = TRACK_LIST.map((id) => {
+    const tk = getTrack(id);
+    if (!tk) return '';
+    const t = p.learning[id] || {};
+    const total = tk.lessons.LESSON_LIBRARY.length;
+    const done = new Set((t.lessons || []).filter((l) => l && !l.game && !l.quiz).map((l) => l.id)).size;
+    return `<button class="you-subject" data-go="#learn-${id}">
+      <span class="you-subj-ic" aria-hidden="true">${tk.theme.lessonIcon}</span>
+      <span class="you-subj-body">
+        <span class="you-subj-head"><strong>${esc(tk.homeLabel)}</strong>${t.completedAt ? `<span class="fin-done-tag">✓ ${esc(fmtDateL(t.completedAt))}</span>` : ''}</span>
+        <span class="you-subj-stats">${done}/${total} lessons · ${t.gamesWon || 0} game win${(t.gamesWon || 0) === 1 ? '' : 's'} · quiz ${t.quizBest || 0}%</span>
+      </span>
+    </button>`;
+  }).join('');
+
+  const entries = [];
+  TRACK_LIST.forEach((id) => {
+    const tk = getTrack(id);
+    if (!tk) return;
+    const t = p.learning[id] || {};
+    (t.lessons || []).forEach((l) => {
+      let what = 'Lesson';
+      if (l.quiz) what = 'Quiz · ' + (l.score != null ? l.score + '%' : 'done');
+      else if (l.game) what = l.won ? 'Game win' : 'Game';
+      entries.push({ date: l.date || '', label: tk.homeLabel, what });
+    });
+  });
+  entries.sort((a, b) => (a.date < b.date ? 1 : (a.date > b.date ? -1 : 0)));
+  const recent = entries.slice(0, 10);
+  const logHTML = recent.length
+    ? `<ul class="you-log">${recent.map((e) => `<li><span class="you-log-what">${esc(e.label)} — ${esc(e.what)}</span><span class="you-log-date">${esc(e.date)}</span></li>`).join('')}</ul>`
+    : '<p class="hint">Finish a lesson, game, or quiz and it will show up here.</p>';
+
+  const recentWeights = weights.slice(-6).reverse();
+
+  app.innerHTML = `
+    <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">You</h1></header>
+    <main class="narrow you-screen">
+      <section class="card center">
+        <div class="garden-svg small">${gardenSVG(stage)}</div>
+        <p class="you-hello">${name ? 'Hi, ' + esc(name) + '!' : 'Your progress'}${age != null ? ` · <strong>${age}</strong>` : ''}</p>
+        <div class="you-stats">
+          <div><strong>${p.sessions.length}</strong><span>sessions grown</span></div>
+          <div><strong>${streak.count}</strong><span>day streak</span></div>
+          <div><strong>Lv ${lvl.level}</strong><span>${p.totalMins} min moved</span></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Your subjects</h2>
+        <div class="you-subjects">${subjectCards}</div>
+      </section>
+
+      <section class="card">
+        <h2>Weight tracker</h2>
+        <p class="hint">Private to this device. No goal here — just your own trend over time, if you want it.</p>
+        ${lastW ? `<p class="you-weight-now">Latest: <strong>${esc(String(lastW.value))} ${unit}</strong> <span class="you-log-date">${esc(lastW.date)}</span></p>` : ''}
+        ${weightSpark(weights)}
+        <div class="you-weight-form">
+          <input type="number" inputmode="decimal" id="you-weight-input" placeholder="Today's weight" step="0.1" min="0" max="2000" aria-label="Today's weight">
+          <select id="you-weight-unit" aria-label="Weight unit"><option value="lb"${unit === 'lb' ? ' selected' : ''}>lb</option><option value="kg"${unit === 'kg' ? ' selected' : ''}>kg</option></select>
+          <button class="btn btn-primary" id="you-weight-save">Log</button>
+        </div>
+        ${recentWeights.length ? `<ul class="you-wlist">${recentWeights.map((w) => `<li><span>${esc(w.date)}</span><span>${esc(String(w.value))} ${unit}</span></li>`).join('')}</ul>` : ''}
+      </section>
+
+      <section class="card">
+        <h2>Birthday</h2>
+        <p class="hint">Set it and we will throw you a little party on the day. It stays on this device.</p>
+        <div class="you-bday-form">
+          <input type="date" id="you-bday-input" value="${esc(prof.birthday || '')}" aria-label="Your birthday">
+          <button class="btn" id="you-bday-save">Save</button>
+        </div>
+        ${prof.birthday ? `<p class="hint">${daysToBirthday(prof.birthday) === 0 ? '🎉 It is your birthday today!' : 'Next birthday in <strong>' + daysToBirthday(prof.birthday) + '</strong> day' + (daysToBirthday(prof.birthday) === 1 ? '' : 's') + '.'}</p>` : ''}
+      </section>
+
+      <section class="card">
+        <h2>Recent activity</h2>
+        ${logHTML}
+      </section>
+
+      <footer class="privacy-note"><p>🌱 <strong>Private by design.</strong> Everything here — including your weight and birthday — lives only on this device and never leaves it.</p></footer>
+    </main>`;
+
+  app.querySelectorAll('.you-subject').forEach((b) => b.addEventListener('click', () => go(b.dataset.go)));
+  const wsave = document.getElementById('you-weight-save');
+  if (wsave) wsave.addEventListener('click', () => {
+    const v = parseFloat(document.getElementById('you-weight-input').value);
+    const u = document.getElementById('you-weight-unit').value;
+    store.profile.weightUnit = (u === 'kg' ? 'kg' : 'lb');
+    if (!isNaN(v) && v > 0 && v < 2000) {
+      const today = todayKey();
+      const existing = store.progress.weights.find((w) => w.date === today);
+      if (existing) existing.value = v; else store.progress.weights.push({ date: today, value: v });
+    }
+    save();
+    youScreen();
+  });
+  const bsave = document.getElementById('you-bday-save');
+  if (bsave) bsave.addEventListener('click', () => {
+    const val = document.getElementById('you-bday-input').value;
+    store.profile.birthday = (typeof val === 'string') ? val : '';
+    save();
+    youScreen();
+    maybeBirthdayParty();
+  });
+}
+
 // ---------------------------------------------------------------- badges
 
 function badgesScreen() {
@@ -991,6 +1197,7 @@ async function render() {
   applyMotionPref();
   window.scrollTo(0, 0);
   const h = location.hash || '#';
+  maybeBirthdayParty();   // once per year, on the day — self-guards against re-showing
 
   // tier chooser for a chosen duration
   if (h.startsWith('#tier-')) {
@@ -1073,6 +1280,7 @@ async function render() {
 
   if (h === '#intake') return intakeScreen();
   if (h === '#programs') return programsScreen();
+  if (h === '#you') return youScreen();
   if (h === '#badges') return badgesScreen();
   if (h === '#settings') return settingsScreen();
   if (h === '#safety') return safetyScreen();
