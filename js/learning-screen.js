@@ -98,7 +98,7 @@ export function trackHubScreen(trackId) {
 
       ${gamesHTML ? `<section class="card">
         <h2>Play a game</h2>
-        <p class="hint">A quick, playful warm-up — fun practice, not a magic brain boost (the lessons explain the evidence).</p>
+        <p class="hint">${esc(track.gamesBlurb || 'Quick, playful practice — a fun way to lock in what the lessons teach.')}</p>
         <div class="fin-lib" id="fin-games">${gamesHTML}</div>
       </section>` : ''}
 
@@ -148,6 +148,19 @@ export function learningDone(trackId, plan) {
     return b ? `<div class="badge-pop">${b.icon}<div><strong>${esc(b.name)}</strong><br><small>${esc(b.desc)}</small></div></div>` : '';
   }).join('');
 
+  const takeawayGroups = (plan.takeawayGroups || []).filter((g) => g && g.points && g.points.length);
+  const multi = takeawayGroups.length > 1;
+  const takeawaysHTML = takeawayGroups.length ? `
+    <section class="card fin-takeaways">
+      <h3>✦ Major takeaways</h3>
+      <p class="hint">The key points to carry with you from ${multi ? 'these lessons' : 'this lesson'}.</p>
+      ${takeawayGroups.map((g) => `
+        <div class="takeaway-group">
+          ${multi ? `<h4>${esc(g.title)}</h4>` : ''}
+          <ul class="takeaway-list">${g.points.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>
+        </div>`).join('')}
+    </section>` : '';
+
   const sources = (plan.sources || []);
   const sourcesHTML = sources.length ? `
     <section class="card fin-sources">
@@ -177,6 +190,7 @@ export function learningDone(trackId, plan) {
         ${badgeCards ? `<div class="badge-pops"><h3>New badge${result.earned.length > 1 ? 's' : ''}!</h3>${badgeCards}</div>` : ''}
         <button class="btn btn-primary" id="btn-learn-home">Back to ${label} lessons</button>
       </section>
+      ${takeawaysHTML}
       ${sourcesHTML}
       ${transcriptHTML}
       ${disclaimer ? `<div class="fin-banner"><span class="fin-info" aria-hidden="true">🌱</span><span>${esc(disclaimer)}</span></div>` : ''}
@@ -227,11 +241,13 @@ function gameDone(trackId, game, result) {
     return b ? `<div class="badge-pop">${b.icon}<div><strong>${esc(b.name)}</strong><br><small>${esc(b.desc)}</small></div></div>` : '';
   }).join('');
 
+  const emoji = (track && track.theme && track.theme.badgeEmoji) || '🌱';
+  const heading = result.won ? (game.win || ('Nicely done! ' + emoji)) : 'Good effort! 🌱';
   app.innerHTML = `
     <main class="narrow done-screen" data-track="${esc(trackId)}">
       <section class="card center">
         <div class="garden-svg small">${gardenSVG(r.stageAfter)}</div>
-        <h2>${result.won ? 'Nice memory work! 🧠' : 'Good effort! 🌱'}</h2>
+        <h2>${esc(heading)}</h2>
         <p class="done-stats"><strong>${esc(game.name)}</strong>${result.label ? ' · ' + esc(result.label) : ''}</p>
         ${r.grew ? '<p class="grew">Your garden just grew. Go look at it.</p>' : ''}
         ${badgeCards ? `<div class="badge-pops"><h3>New badge${r.earned.length > 1 ? 's' : ''}!</h3>${badgeCards}</div>` : ''}

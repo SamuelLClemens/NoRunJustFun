@@ -221,6 +221,47 @@ for sid, cfg in LEARN_SUBJECTS.items():
             ok(f"'{f}'" in sw, f"sw.js PRECACHE missing {f} (file exists but is not precached)")
 ok("'ygt-v3.3.0'" not in sw, "sw.js CACHE_VERSION must be bumped past v3.3.0 so installed apps pick up the learning engine")
 
+# 17) concept games + major-takeaways feature. Games are data-driven, built by the
+#     shared engine and mapped through makeGame(); each subject ships game-win badges
+#     (namespaced + registry-wired), and every lessons module carries takeaways the
+#     completion screen surfaces. The shared engine must inject no HTML strings.
+games_shared = read('js/data/games.shared.js') if exists('js/data/games.shared.js') else ''
+ok('export function makeGame' in games_shared, 'games.shared.js missing makeGame()')
+for t in ['buildQuiz', 'buildSort', 'buildOrder']:
+    ok(t in games_shared, f'games.shared.js missing the {t} builder')
+ok('.innerHTML = `' not in games_shared and 'innerHTML +=' not in games_shared,
+   'games.shared.js must not inject HTML strings — use textContent (XSS-safe)')
+
+GAME_FILES = {
+    'money': ('js/data/games.money.js', 'MONEY_GAMES', ['fin-gamer', 'fin-sharp']),
+    'parenting': ('js/data/games.parenting.js', 'PARENTING_GAMES', ['par-gamer', 'par-sharp']),
+    'communication': ('js/data/games.communication.js', 'COMMUNICATION_GAMES', ['com-gamer', 'com-sharp']),
+    'memory': ('js/data/games.memory.concept.js', 'MEMORY_CONCEPT_GAMES', ['mem-gamer', 'mem-sharp']),
+}
+tracks_src = read('js/data/tracks.js')
+for sid, (gfile, gexport, gbadges) in GAME_FILES.items():
+    ok(exists(gfile), f'{sid}: missing games file {gfile}')
+    if exists(gfile):
+        g = read(gfile)
+        ok(f'export const {gexport}' in g, f'{gfile} missing export {gexport}')
+        ok('.map(makeGame)' in g, f'{gfile} games are not built via the shared makeGame()')
+        ok(f"'{gfile}'" in sw, f'sw.js PRECACHE missing {gfile}')
+    bsrc = read(LEARN_SUBJECTS[sid]['badges']) if exists(LEARN_SUBJECTS[sid]['badges']) else ''
+    for bid in gbadges:
+        ok(f'"{bid}"' in bsrc, f"{sid} badge file missing game-win badge {bid}")
+        ok(f"'{bid}'" in tracks_src, f"tracks.js gameBadges not wired for {bid}")
+
+for sid, cfg in LEARN_SUBJECTS.items():
+    if not exists(cfg['lessons']):
+        continue
+    n_take = read(cfg['lessons']).count('takeaways:')
+    ok(n_take >= 5, f"{sid} lessons carry too few takeaways arrays ({n_take})")
+screen = read('js/learning-screen.js')
+ok('takeawayGroups' in screen and 'Major takeaways' in screen,
+   'learning-screen.js does not render the Major takeaways section')
+ok('takeawayGroups' in read('js/data/lessons.shared.js'),
+   'lessons.shared.js does not thread takeawayGroups through its plan builders')
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")

@@ -43,6 +43,10 @@ import {
   MEMORY_DISCLAIMER_SHORT,
 } from './lessons.memory.js';
 import { MEMORY_GAMES } from './games.memory.js';
+import { MEMORY_CONCEPT_GAMES } from './games.memory.concept.js';
+import { MONEY_GAMES } from './games.money.js';
+import { PARENTING_GAMES } from './games.parenting.js';
+import { COMMUNICATION_GAMES } from './games.communication.js';
 
 // ---- per-track SVG assets (kept byte-identical to the shipped finance visuals) ----
 
@@ -137,6 +141,8 @@ export const TRACKS = {
       'fin-compounder': ['compound-growth'],
       'fin-landlord': ['property-basics'],
     },
+    games: MONEY_GAMES,
+    gameBadges: { firstWin: 'fin-gamer', fiveWins: 'fin-sharp' },
   },
 
   parenting: {
@@ -163,6 +169,8 @@ export const TRACKS = {
       'par-positive': ['positive-discipline'],
       'par-coach': ['emotion-coaching'],
     },
+    games: PARENTING_GAMES,
+    gameBadges: { firstWin: 'par-gamer', fiveWins: 'par-sharp' },
   },
 
   communication: {
@@ -189,6 +197,8 @@ export const TRACKS = {
       'com-feeler': ['nvc-feelings'],
       'com-empath': ['nvc-empathy-safety'],
     },
+    games: COMMUNICATION_GAMES,
+    gameBadges: { firstWin: 'com-gamer', fiveWins: 'com-sharp' },
   },
 
   memory: {
@@ -206,7 +216,8 @@ export const TRACKS = {
       buildLessonSession: memoryBuildSession,
     },
     // the first track with interactive games — practice, not a cure (the lessons say so)
-    games: MEMORY_GAMES,
+    games: [...MEMORY_GAMES, ...MEMORY_CONCEPT_GAMES],
+    gamesBlurb: 'A quick, playful warm-up — fun practice, not a magic brain boost (the lessons explain the evidence).',
     prop: { className: 'lesson-prop', svg: lightbulbProp, onClass: 'lesson-prop-on', delayMs: 450 },
     coachCue: 'switches on a little lightbulb',
     theme: { token: 'memory', flowerSVG: memoryBloom, lessonIcon: memoryIcon, badgeEmoji: '🧠' },

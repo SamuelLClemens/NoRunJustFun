@@ -86,6 +86,7 @@ const WELCOME = {
 const BUDGETING = {
   id: 'budgeting', title: 'Budgeting & your safety net', topic: 'budgeting',
   blurb: 'A simple split for your money, an emergency cushion, and why high-interest debt comes first.',
+  takeaways: [ "Give every dollar a job before the month spends it.", "Pay yourself first by making savings automatic each payday.", "Build a small cushion; even a few hundred dollars beats none.", "High-interest debt is urgent — clearing it is a guaranteed saving." ],
   yearLabel: 'FDIC limit in effect 2026; card APR per Federal Reserve G.19, Q4 2025',
   sources: [SRC.fdicInsurance, SRC.secRainyDay, SRC.cfpbEmergency, SRC.secPayoffDebt, SRC.fedG19],
   segments: [
@@ -102,6 +103,7 @@ const BUDGETING = {
 const COMPOUND = {
   id: 'compound-growth', title: 'Compound growth', topic: 'investing',
   blurb: 'Interest on interest, the Rule of 72, and the quiet drag of fees and inflation.',
+  takeaways: [ "Compounding is interest earning more interest over time.", "Rule of 72: divide 72 by the rate to estimate doubling time.", "Fees and inflation quietly leak away part of your growth.", "Compounding cuts both ways — debt grows against you too." ],
   sources: [SRC.secCompound, SRC.cfpbCompound, SRC.secRisk, SRC.secFees, SRC.neRule72],
   segments: [
     { id: 'c-what', name: 'Interest on interest', secs: 15, core: true, say: "Compound growth is interest earning more interest. You earn a return on your original money, and then you earn a return on those returns too. Over time, that little snowball can get surprisingly large." },
@@ -117,6 +119,7 @@ const COMPOUND = {
 const RISK = {
   id: 'risk-diversification', title: 'Risk, reward & not betting the farm', topic: 'investing',
   blurb: "Why higher reward means higher risk, and how spreading out helps (but isn't magic).",
+  takeaways: [ "Higher possible reward always rides with higher risk.", "No investment is risk-free, and growth is never promised.", "Diversification reduces risk but cannot erase it.", "Past performance does not predict the future; the right mix is yours." ],
   sources: [SRC.secRiskReturn, SRC.secDiversify, SRC.secAsset, SRC.secPastPerf],
   segments: [
     { id: 'r-linked', name: 'Risk and reward are linked', secs: 20, core: true, say: "In investing, risk and reward are tied together. Taking more risk only gives you the potential for a greater return, never a promise of one. As the Securities and Exchange Commission puts it, there is no such thing as a risk-free investment, and in general, the higher the possible return, the higher the chance of losing money." },
@@ -132,6 +135,7 @@ const RISK = {
 const RETIREMENT = {
   id: 'retirement-accounts', title: 'Retirement accounts', topic: 'retirement',
   blurb: '401(k)s and IRAs, traditional versus Roth, the 2026 limits, and the magic of an employer match.',
+  takeaways: [ "An employer match is the closest thing to free money.", "Traditional versus Roth is mainly a bet on future taxes.", "Contribution limits change most years, so check the current figure.", "This money holds investments and is parked for the long haul." ],
   yearLabel: '2026 limits, per IRS Notice 2025-67 (announced November 2025)',
   sources: [SRC.irs2026, SRC.irsRothTrad, SRC.irsVesting, SRC.irsCola],
   segments: [
@@ -149,6 +153,7 @@ const RETIREMENT = {
 const PROPERTY = {
   id: 'property-basics', title: 'Property & real estate basics', topic: 'property',
   blurb: 'Mortgages, PMI, cap rate, leverage, depreciation, and REITs — the concepts and the risks.',
+  takeaways: [ "PMI protects the lender, not you, and adds to your payment.", "Leverage magnifies both gains and losses on your stake.", "Cap rate is one yearly snapshot, never the whole picture.", "No real estate is guaranteed; values and rents can fall." ],
   yearLabel: 'Tax concepts per IRS Publication 527 (2025)',
   sources: [SRC.cfpbPmi, SRC.cfpbPmiRemove, SRC.secLeverage, SRC.jpmCapRate, SRC.irsPub527, SRC.irsTopic409, SRC.secReit],
   segments: [
@@ -205,6 +210,7 @@ function planFromSegments(segs, meta) {
     kind: 'finance',
     lessonIds: meta.lessonIds,
     lessonTitles: meta.lessonTitles,
+    takeawayGroups: meta.takeawayGroups || [],
     sources: meta.sources,
     title: meta.title,
   };
@@ -224,6 +230,7 @@ export function buildLessonById(id) {
     durationKey: Math.max(1, Math.round(lessonSecs(segs) / 60)),
     lessonIds: [id],
     lessonTitles: [L.title],
+    takeawayGroups: (L.takeaways && L.takeaways.length) ? [{ title: L.title, points: L.takeaways }] : [],
     sources: dedupeSources(L.sources || []),
     title: L.title,
   });
@@ -241,6 +248,7 @@ export function buildLessonSession(durationMins) {
   const segs = [];
   const lessonIds = [];
   const lessonTitles = [];
+  const takeawayGroups = [];
   let sources = [];
   let used = 0;
 
@@ -248,9 +256,11 @@ export function buildLessonSession(durationMins) {
     segs.push(...chosen);
     used += chosen.reduce((t, s) => t + segDur(s), 0);
     if (id !== 'welcome-money') {
+      const L = LESSONS[id];
       lessonIds.push(id);
-      lessonTitles.push(LESSONS[id].title);
-      sources = sources.concat(LESSONS[id].sources || []);
+      lessonTitles.push(L.title);
+      sources = sources.concat(L.sources || []);
+      if (L.takeaways && L.takeaways.length) takeawayGroups.push({ title: L.title, points: L.takeaways });
     }
   };
 
@@ -271,6 +281,7 @@ export function buildLessonSession(durationMins) {
     durationKey: durationMins,
     lessonIds,
     lessonTitles,
+    takeawayGroups,
     sources: dedupeSources(sources),
     title: 'Money basics',
   });

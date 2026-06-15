@@ -37,6 +37,7 @@ const LESSONS = {
   "child-development": {
     id: "child-development", title: "How children grow — realistic expectations", topic: "development",
     blurb: "A gentle, evidence-based look at how young children develop, why responsive caregiving matters, and how much \"misbehavior\" is simply normal growth.",
+    takeaways: [ "A child's brain is built over time, from the bottom up.", "Serve and return: notice their bid, respond warmly.", "Most misbehavior is normal growth, not defiance.", "Guide and show what to do instead; repetition teaches." ],
     yearLabel: "2024",
     sources: [
       { org: "Center on the Developing Child at Harvard University", title: "Brain Architecture", url: "https://developingchild.harvard.edu/key-concept/brain-architecture/", year: "" },
@@ -59,6 +60,7 @@ const LESSONS = {
   "positive-discipline": {
     id: "positive-discipline", title: "Positive discipline & warm limits", topic: "discipline",
     blurb: "Discipline means teaching, not punishing — how warmth paired with firm, consistent limits helps children learn.",
+    takeaways: [ "Discipline means teaching, not making a child suffer.", "Pair warmth with clear, firm limits held with care.", "Skip spanking, yelling, and shaming; gentler tools teach more.", "Catch them being good and follow through calmly, every time." ],
     yearLabel: "2018–2024",
     sources: [
       { org: "American Academy of Pediatrics (Pediatrics)", title: "Effective Discipline to Raise Healthy Children", url: "https://publications.aap.org/pediatrics/article/142/6/e20183112/37452/Effective-Discipline-to-Raise-Healthy-Children", year: "2018" },
@@ -82,6 +84,7 @@ const LESSONS = {
   "emotion-coaching": {
     id: "emotion-coaching", title: "Big feelings — emotion coaching & co-regulation", topic: "emotions",
     blurb: "How to name and validate a child's big feelings while still holding your limits — and why a calm grown-up is what helps a young child settle.",
+    takeaways: [ "Big feelings are overwhelm, not misbehavior.", "Your child borrows your calm until they grow their own.", "Name the feeling to help it become smaller.", "Welcome the feeling and still hold the limit kindly." ],
     yearLabel: "2024–2026",
     sources: [
       { org: "The Gottman Institute", title: "An Introduction to Emotion Coaching", url: "https://www.gottman.com/blog/an-introduction-to-emotion-coaching/", year: "" },
@@ -104,6 +107,7 @@ const LESSONS = {
   "connection-communication": {
     id: "connection-communication", title: "Connection & really listening", topic: "communication",
     blurb: "Practical, judgement-free ways to connect with your child first, listen so they feel heard, and invite cooperation without threats or bribes.",
+    takeaways: [ "Connect first, then guide; closeness makes cooperation easier.", "Listen fully and reflect back what you hear.", "Use I-messages: describe the behavior, not your child's character.", "Offer real choices instead of threats or bribes." ],
     yearLabel: "2024",
     sources: [
       { org: "Centers for Disease Control and Prevention", title: "Tips for Active Listening — Essentials for Parenting Toddlers", url: "https://www.cdc.gov/parenting-toddlers/communication/active-listening.html", year: "2024" },
@@ -126,6 +130,7 @@ const LESSONS = {
   "praise-motivation": {
     id: "praise-motivation", title: "Praise, effort & motivation", topic: "motivation",
     blurb: "How praising effort and strategy, rather than being smart, can support a child's motivation — and where the research has limits.",
+    takeaways: [ "Praise the effort and strategy, not being smart.", "Specific, labeled praise lands deeper than a vague good job.", "Keep praise honest, not constant or inflated.", "If a strategy stalls, help them try a new one." ],
     yearLabel: "2026",
     sources: [
       { org: "American Psychological Association", title: "Using praise to enhance student resilience and learning outcomes", url: "https://www.apa.org/education-career/k12/using-praise", year: "" },
@@ -148,6 +153,7 @@ const LESSONS = {
   "routines-sleep-screens": {
     id: "routines-sleep-screens", title: "Routines, sleep & screens", topic: "daily-life",
     blurb: "Why predictable routines, enough sleep, and a thoughtful family media plan help young children feel safe and thrive.",
+    takeaways: [ "Predictable rhythms help young children feel safe.", "Aim for sleep ranges and the overall pattern, not one night.", "Build a media plan around quality over a stopwatch.", "Keep screens out of meals and the hour before bed." ],
     yearLabel: "2016–2025",
     sources: [
       { org: "American Academy of Pediatrics (HealthyChildren.org)", title: "Healthy Sleep Habits: How Many Hours Does Your Child Need?", url: "https://www.healthychildren.org/English/healthy-living/sleep/Pages/healthy-sleep-habits-how-many-hours-does-your-child-need.aspx", year: "2022" },

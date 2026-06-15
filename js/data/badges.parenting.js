@@ -52,5 +52,19 @@ export const PARENTING_BADGES = [
     "name": "Feelings Coach",
     "desc": "You learned to meet big feelings with calm — naming the feeling while still holding the limit. Co-regulation in action.",
     "icon": "<svg viewBox='0 0 48 48'><circle cx='24' cy='24' r='15' fill='#FFD45C' stroke='#E07856' stroke-width='2.5'/><circle cx='18' cy='21' r='2.2' fill='#8A3D26'/><circle cx='30' cy='21' r='2.2' fill='#8A3D26'/><path d='M17 29c2.5 3 11.5 3 14 0' fill='none' stroke='#8A3D26' stroke-width='2.5' stroke-linecap='round'/><path d='M33 31c-2.5-1.8-3.6-3.4-2.2-4.8 .9-.9 2.4-.5 2.2 .7 .5-1.1 2-1.1 2.4 .1 .6 1.8-1 3.2-2.4 4z' fill='#F08A66'/></svg>"
+  },
+  {
+    "id": "par-gamer",
+    "category": "parenting",
+    "name": "Playful Practice",
+    "desc": "You won your first parenting game. Rehearsing calm, warm-and-firm responses makes them easier in the moment.",
+    "icon": "<svg viewBox='0 0 48 48'><rect x='8' y='16' width='32' height='20' rx='9' fill='#F08A66' stroke='#E07856' stroke-width='2'/><path d='M14 26h6M17 23v6' stroke='#fff' stroke-width='2' stroke-linecap='round'/><circle cx='31' cy='23' r='2.3' fill='#FFD45C'/><circle cx='35' cy='29' r='2.3' fill='#8A3D26'/></svg>"
+  },
+  {
+    "id": "par-sharp",
+    "category": "parenting",
+    "name": "Steady Hand",
+    "desc": "Five parenting games won. Connecting first, then guiding, is becoming a steady habit.",
+    "icon": "<svg viewBox='0 0 48 48'><circle cx='24' cy='24' r='15' fill='none' stroke='#E07856' stroke-width='2.5'/><path d='M24 32c-7-4.5-10-8.5-6.6-12.2 2.2-2.4 6-1.4 6.6 1.6 .6-3 4.4-4 6.6-1.6C34 23.5 31 27.5 24 32z' fill='#F08A66'/></svg>"
   }
 ];

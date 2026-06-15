@@ -46,6 +46,7 @@ function planFromSegments(segs, meta, kind) {
     kind,
     lessonIds: meta.lessonIds,
     lessonTitles: meta.lessonTitles,
+    takeawayGroups: meta.takeawayGroups || [],
     sources: meta.sources,
     title: meta.title,
   };
@@ -74,6 +75,7 @@ export function makeLessonModule({ LESSONS, CURRICULUM, welcomeId, disclaimerSeg
       durationKey: Math.max(1, Math.round(lessonSecs(segs) / 60)),
       lessonIds: [id],
       lessonTitles: [L.title],
+      takeawayGroups: (L.takeaways && L.takeaways.length) ? [{ title: L.title, points: L.takeaways }] : [],
       sources: dedupeSources(L.sources || []),
       title: L.title,
     }, kind);
@@ -90,6 +92,7 @@ export function makeLessonModule({ LESSONS, CURRICULUM, welcomeId, disclaimerSeg
     const segs = [];
     const lessonIds = [];
     const lessonTitles = [];
+    const takeawayGroups = [];
     let sources = [];
     let used = 0;
 
@@ -97,9 +100,11 @@ export function makeLessonModule({ LESSONS, CURRICULUM, welcomeId, disclaimerSeg
       segs.push(...chosen);
       used += chosen.reduce((t, s) => t + segDur(s), 0);
       if (id !== welcomeId) {
+        const L = LESSONS[id];
         lessonIds.push(id);
-        lessonTitles.push(LESSONS[id].title);
-        sources = sources.concat(LESSONS[id].sources || []);
+        lessonTitles.push(L.title);
+        sources = sources.concat(L.sources || []);
+        if (L.takeaways && L.takeaways.length) takeawayGroups.push({ title: L.title, points: L.takeaways });
       }
     };
 
@@ -118,6 +123,7 @@ export function makeLessonModule({ LESSONS, CURRICULUM, welcomeId, disclaimerSeg
       durationKey: durationMins,
       lessonIds,
       lessonTitles,
+      takeawayGroups,
       sources: dedupeSources(sources),
       title: sessionTitle,
     }, kind);
