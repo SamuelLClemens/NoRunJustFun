@@ -107,7 +107,9 @@ export function finishFinance(store, { lessonIds = [], durationKey = null, sourc
     date: todayKey(),
     mins: 0,
     durationKey,
-    startHour: new Date().getHours(),
+    // startHour is deliberately omitted: checkBadges reads last.startHour for the
+    // movement-themed early-bird/night-owl badges, and undefined < 8 / >= 21 are
+    // both false — so a finance lesson never earns those fitness time-of-day badges.
     breathClose: false,
     completed: [],
     skipped: [],

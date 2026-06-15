@@ -138,6 +138,7 @@ const RETIREMENT = {
     { id: 'rt-what', name: 'Accounts built for later', secs: 16, core: true, say: "Retirement accounts like a four oh one k and an I R A are special because of how they are taxed. The government gives you a break to encourage saving for later. A four oh one k is usually offered through work; an I R A you can open on your own." },
     { id: 'rt-tax', name: 'Traditional versus Roth', secs: 24, core: true, say: "The big choice is when you pay tax. With a traditional account, your contributions may lower your taxes now, and you pay tax later when you withdraw in retirement. With a Roth, you pay tax now, and qualified withdrawals later, including the growth, come out tax-free. Roth earnings are tax-free only if you are at least fifty-nine and a half and have had the account five years. Neither is automatically better; it is really a bet on your future tax rate." },
     { id: 'rt-limits', name: 'The twenty twenty-six limits', secs: 24, core: true, say: "Here are the twenty twenty-six limits from the I R S. You can put up to twenty-four thousand five hundred dollars of your own pay into a four oh one k. Across your I R As, up to seven thousand five hundred dollars in total. If you are fifty or older, you can add catch-up contributions: eight thousand more in a four oh one k, and eleven hundred more in an I R A. These numbers change most years, so always check the current figure." },
+    { id: 'rt-supercatch', name: 'A boost for ages sixty to sixty-three', secs: 16, core: false, say: "One more twenty twenty-six rule worth knowing. If you are between sixty and sixty-three, a special super catch-up lets you add eleven thousand two hundred fifty dollars to your four oh one k, instead of the usual eight thousand. It is a short window, so it is worth using if you can." },
     { id: 'rt-match', name: 'Free money: the match', secs: 20, core: true, say: "If your employer offers a four oh one k match, that is about the closest thing to free money in personal finance. They add to your account when you contribute. To get the full match, you generally have to put in enough of your own pay to earn it. Whether a match exists, and how big it is, is set by your specific plan, so check yours." },
     { id: 'rt-vesting', name: 'The catch: vesting and lock-up', secs: 24, core: false, say: "Two honest catches. First, vesting. Your own contributions are always one hundred percent yours, but the employer's match may take a few years on the job to fully own. By law, up to a three-year cliff, or a six-year graded schedule. Leave early and you can forfeit the unvested match. Second, this money is meant for retirement. Pulling it out of a traditional account before fifty-nine and a half can mean a ten percent penalty plus regular income tax." },
     { id: 'rt-marketrisk', name: 'Not a savings account', secs: 16, core: false, say: "And remember, these accounts hold investments like stock and bond funds, which rise and fall. The return is never guaranteed; the balance can go down as well as up. The account is just the wrapper. What is inside still carries market risk." },
@@ -174,11 +175,11 @@ const LESSONS = {
 const CURRICULUM = ['budgeting', 'compound-growth', 'risk-diversification', 'retirement-accounts', 'property-basics'];
 
 // Catalog cards for the hub, ordered welcome-first then curriculum.
-export const LESSON_LIBRARY = ['welcome-money', ...CURRICULUM]
+export const LESSON_LIBRARY = CURRICULUM
   .filter((id) => LESSONS[id])
   .map((id) => {
     const L = LESSONS[id];
-    const segs = id === 'welcome-money' ? L.segments : [DISCLAIMER_SEG, ...L.segments];
+    const segs = [DISCLAIMER_SEG, ...L.segments];
     return { id, title: L.title, blurb: L.blurb, minutes: Math.max(1, Math.round(lessonSecs(segs) / 60)), sourceCount: (L.sources || []).length };
   });
 
@@ -214,13 +215,15 @@ function planFromSegments(segs, meta) {
 // carries its own).
 export function buildLessonById(id) {
   const L = LESSONS[id];
-  if (!L) return null;
-  const isWelcome = id === 'welcome-money';
-  const segs = isWelcome ? L.segments : [DISCLAIMER_SEG, ...L.segments];
+  // welcome is the intro used only inside buildLessonSession; it is not a
+  // standalone, completable lesson (no content/sources to "complete"), so
+  // #fin-lib-welcome-money resolves to null and the route falls back to the hub.
+  if (!L || id === 'welcome-money') return null;
+  const segs = [DISCLAIMER_SEG, ...L.segments];
   return planFromSegments(segs, {
     durationKey: Math.max(1, Math.round(lessonSecs(segs) / 60)),
-    lessonIds: isWelcome ? [] : [id],
-    lessonTitles: isWelcome ? [] : [L.title],
+    lessonIds: [id],
+    lessonTitles: [L.title],
     sources: dedupeSources(L.sources || []),
     title: L.title,
   });

@@ -20,11 +20,14 @@ import { sound } from './audio.js';
 const app = document.getElementById('app');
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+// Defense in depth: only ever emit http(s) hrefs. Today every source URL is a
+// hardcoded constant, but this guards against any future dynamic source.
+const safeUrl = (u) => (/^https?:\/\//i.test(String(u)) ? String(u) : '#');
 const ALL_BADGES = [...BADGES, ...FINANCE_BADGES];
 
-// The veronica — the brand flower, reused as the finance signature mark.
+// The veronica — the brand flower, decorative (the heading text carries the name).
 function veronicaSVG(cls = 'veronica') {
-  return `<svg class="${cls}" viewBox="-16 -16 32 32" role="img" aria-label="veronica flower">
+  return `<svg class="${cls}" viewBox="-16 -16 32 32" aria-hidden="true" focusable="false">
     <g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g>
     <g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g>
     <circle r="3.8" fill="#FFD45C"/></svg>`;
@@ -138,7 +141,7 @@ export function financeDone(plan) {
     <section class="card fin-sources">
       <h3>Where this comes from</h3>
       <p class="hint">Educational sources, not advice. Figures are labelled with the year they apply to.</p>
-      <ul>${sources.map((s) => `<li>${esc(s.org)} — <a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.title)}</a>${s.year ? ` <span class="fin-year">(${esc(s.year)})</span>` : ''}</li>`).join('')}</ul>
+      <ul>${sources.map((s) => `<li>${esc(s.org)} — <a href="${esc(safeUrl(s.url))}" target="_blank" rel="noopener noreferrer">${esc(s.title)}</a>${s.year ? ` <span class="fin-year">(${esc(s.year)})</span>` : ''}</li>`).join('')}</ul>
     </section>` : '';
 
   const transcriptHTML = (plan.items && plan.items.length) ? `

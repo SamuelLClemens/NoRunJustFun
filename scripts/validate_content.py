@@ -144,6 +144,13 @@ for bad in ['guaranteed return', 'guaranteed returns', 'guaranteed profit', 'ris
 fin = strip_js_comments(read('js/finance.js'))
 ok("done.has('budgeting')" in fin or 'done.has' in fin, "finance.js topic badges do not key off completed lesson ids")
 
+# 16) service worker precaches the new finance files + bumped past v3.2.0 so
+#     installed PWAs pick them up (addAll is atomic — every path must resolve)
+sw = read('sw.js')
+for f in ['js/finance.js', 'js/finance-screen.js', 'js/data/lessons.js', 'js/data/badges.finance.js']:
+    ok(f"'{f}'" in sw, f"sw.js PRECACHE missing {f}")
+ok("'ygt-v3.2.0'" not in sw, "sw.js CACHE_VERSION must be bumped past v3.2.0 so installed apps pick up finance")
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")
