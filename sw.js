@@ -1,7 +1,7 @@
 // Offline support: precache the whole app on install, serve cache-first.
 // Bump CACHE_VERSION with every release so updates roll out cleanly.
 
-const CACHE_VERSION = 'ygt-v3.3.0';
+const CACHE_VERSION = 'ygt-v3.4.0';
 
 const PRECACHE = [
   './',
@@ -26,6 +26,9 @@ const PRECACHE = [
   'js/dev.js',
   'js/finance.js',
   'js/finance-screen.js',
+  'js/learning.js',
+  'js/learning-screen.js',
+  'js/data/tracks.js',
   'js/data/exercises.js',
   'js/data/phrases.js',
   'js/data/badges.js',

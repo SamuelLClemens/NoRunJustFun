@@ -2,7 +2,7 @@
 // ever leaves it. Schema migrations keep future updates from wiping progress.
 
 const KEY = 'nrjf.store';
-const CURRENT_VERSION = 2;
+const CURRENT_VERSION = 3;
 
 function defaults() {
   return {
@@ -39,13 +39,18 @@ function defaults() {
       tiersTried: [],           // ['no_sweat',...] for future tier badges
       meditationCount: 0,       // meditations completed (garden still +1 each, like movement)
       program: null,            // { id, startedAt, weekIdx, dayIdx } | null — NEVER read by garden/streak/level/badge
-      // --- finance module additions (additive; auto-backfilled for existing users
-      // by migrate()'s spread, so NO version bump). Source of truth for finance
-      // lessons/games + finance badges. On completion, finance ALSO pushes ONE
-      // kind:'finance' record into sessions[] so the shared garden + streak reflect
-      // combined activity — but it never touches totalMins/durationsTried/tiersTried/
-      // moveCounts, so minutes-based levels and fitness duration/move badges are safe.
-      finance: { lessons: [], lessonsCompleted: 0, gamesWon: 0 }, // lessons: { id, date, sources, game?, won? }
+      // --- learning module (Mind pillar). Source of truth for every learning
+      // subject's lessons/games, keyed by trackId (see js/data/tracks.js). On
+      // completion, a track ALSO pushes ONE kind:<trackId> record into sessions[]
+      // so the shared garden + streak reflect combined activity — but it never
+      // touches totalMins/durationsTried/tiersTried/moveCounts, so minutes-based
+      // levels and fitness duration/move badges are safe. The pre-finance
+      // progress.finance blob is migrated into learning.money (v2 -> v3 below).
+      learning: {
+        money:         { lessons: [], lessonsCompleted: 0, gamesWon: 0 }, // lessons: { id, date, sources, game?, won? }
+        parenting:     { lessons: [], lessonsCompleted: 0, gamesWon: 0 },
+        communication: { lessons: [], lessonsCompleted: 0, gamesWon: 0 },
+      },
     },
   };
 }
@@ -68,6 +73,28 @@ function migrate(data) {
     if (!Array.isArray(out.progress.tiersTried)) out.progress.tiersTried = [];
     if (typeof out.progress.meditationCount !== 'number') out.progress.meditationCount = 0;
     if (out.progress.program === undefined) out.progress.program = null;
+  }
+  // v2 -> v3: the finance module's progress.finance blob becomes learning.money,
+  // losslessly. The additive spread above already carried any legacy field forward,
+  // so read it here, then drop it. sessions[] (incl. old kind:'finance' records),
+  // badges{}, totalMins, durationsTried, etc. all carry forward verbatim.
+  if ((data.version || 1) < 3) {
+    if (!out.progress.learning || typeof out.progress.learning !== 'object') {
+      out.progress.learning = {
+        money:         { lessons: [], lessonsCompleted: 0, gamesWon: 0 },
+        parenting:     { lessons: [], lessonsCompleted: 0, gamesWon: 0 },
+        communication: { lessons: [], lessonsCompleted: 0, gamesWon: 0 },
+      };
+    }
+    const f = data.progress && data.progress.finance;
+    if (f && typeof f === 'object') {
+      out.progress.learning.money = {
+        lessons: Array.isArray(f.lessons) ? f.lessons : [],
+        lessonsCompleted: typeof f.lessonsCompleted === 'number' ? f.lessonsCompleted : 0,
+        gamesWon: typeof f.gamesWon === 'number' ? f.gamesWon : 0,
+      };
+    }
+    delete out.progress.finance;
   }
   // Retired-roster remap: the original four coach ids were replaced by the
   // name-driven cast. Map any stored old id to its nearest new coach so the
