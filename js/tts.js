@@ -39,11 +39,36 @@ export const coach = {
   enabled: true,
   naturalOn: false,          // user opt-in; engages only once the model is ready
   onCaption: null,           // (text) => void — captions always render, even muted
+  voice: null,               // the active coach's voice config (see characters.js)
   _sgen: 0,                  // bumped by cancel() so in-flight speech stops cleanly
 
   listVoices() {
     refreshVoices();
     return voices.map((v) => ({ uri: v.voiceURI, name: v.name, lang: v.lang, default: v.default }));
+  },
+
+  // Give the coach a personality voice. Called when a session/lesson starts and on
+  // coach change, so each of the four coaches sounds like a distinct person — on the
+  // natural (Kokoro) path via a distinct embedding, and on the system path via a
+  // preferred voice + per-coach pitch/rate. Pass a character from characters.js.
+  setCharacterVoice(char) {
+    this.voice = (char && char.voice) || null;
+  },
+
+  // Choose the system (Web Speech) voice for the current coach. An explicit user pick
+  // in Settings wins (voiceURI); otherwise match the coach's preferred voice names,
+  // best-effort across platforms; else the first available English voice.
+  _pickSystemVoice() {
+    if (this.voiceURI) {
+      const exact = voices.find((v) => v.voiceURI === this.voiceURI);
+      if (exact) return exact;
+    }
+    const prefs = ((this.voice && this.voice.system) || []).map((s) => s.toLowerCase());
+    for (const frag of prefs) {
+      const v = voices.find((vc) => (vc.name || '').toLowerCase().includes(frag));
+      if (v) return v;
+    }
+    return voices[0] || null;
   },
 
   supported: !!synth,
@@ -55,18 +80,17 @@ export const coach = {
     clearInterval(resumeTimer);
   },
 
-  // Speak text (string or array of strings). Captions fire regardless of
-  // whether audio is enabled. Resolves when finished or cancelled.
+  // Speak text (string or array of strings). Captions render even when audio is
+  // off (accessibility). When audio plays, the caption advances sentence-by-sentence
+  // in sync with playback. Resolves when finished or cancelled.
   speak(text, { interrupt = false } = {}) {
     const parts = (Array.isArray(text) ? text : [text]).filter(Boolean);
     if (!parts.length) return Promise.resolve();
-    const caption = parts.join(' ');
-    if (this.onCaption) this.onCaption(caption);
-    if (!this.enabled) return Promise.resolve();
-    if (interrupt) this.cancel();
+    const fullCaption = parts.join(' ');
 
-    // Chunk by sentence: iOS Safari can truncate long utterances, and the
-    // natural voice keeps latency low by generating one sentence at a time.
+    // Chunk by sentence: iOS Safari can truncate long utterances, the natural voice
+    // keeps latency low by generating one sentence at a time, and captions advance
+    // one sentence at a time in sync with the audio.
     const chunks = [];
     for (const p of parts) {
       const sentences = p.match(/[^.!?]+[.!?]*/g) || [p];
@@ -76,33 +100,53 @@ export const coach = {
       }
     }
 
+    // Audio off: show the whole line at once so muted/Deaf users still read it, then stop.
+    if (!this.enabled) {
+      if (this.onCaption) this.onCaption(fullCaption);
+      return Promise.resolve();
+    }
+    if (interrupt) this.cancel();
+
+    // Caption tracks the spoken sentence. Show the first immediately (audio onset
+    // follows within a beat), then advance per chunk as each sentence begins.
+    const onChunk = (t) => { if (this.onCaption) this.onCaption(t); };
+    if (this.onCaption) this.onCaption(chunks[0] || fullCaption);
+
     // Two cancellation counters on purpose: naturalVoice._gen stops queued
     // and playing audio inside the voice module; coach._sgen stops THIS
     // method's fallback from speaking a line the user already cancelled.
     if (this.naturalOn && naturalVoice.available) {
       const gen = this._sgen;
-      return naturalVoice.speak(chunks).catch(() => {
+      const cv = this.voice || {};
+      return naturalVoice.speak(chunks, { voice: cv.natural, speed: cv.naturalSpeed, onChunk }).catch(() => {
         // generation broke — retire the natural voice for this visit and
         // let the system voice repeat the line and handle all future ones
         naturalVoice.retire();
-        if (gen === this._sgen) return this._webSpeak(chunks);
+        if (gen === this._sgen) return this._webSpeak(chunks, onChunk);
       });
     }
 
-    return this._webSpeak(chunks);
+    return this._webSpeak(chunks, onChunk);
   },
 
-  _webSpeak(chunks) {
+  _webSpeak(chunks, onChunk = null) {
     if (!synth || !chunks.length) return Promise.resolve();
-    const voice = voices.find((v) => v.voiceURI === this.voiceURI) || null;
+    const voice = this._pickSystemVoice();
+    const cv = this.voice || {};
+    // per-coach prosody: combine the global rate with the coach's relative rate, and
+    // use the coach's pitch so the four sound distinct even on one shared system voice.
+    const rate = this.rate * (cv.rate || 1);
+    const pitch = cv.pitch || 1.05;
     return new Promise((resolve) => {
       let i = 0;
       const next = () => {
         if (i >= chunks.length) { clearInterval(resumeTimer); resolve(); return; }
-        const u = new SpeechSynthesisUtterance(chunks[i++]);
+        const line = chunks[i++];
+        const u = new SpeechSynthesisUtterance(line);
         if (voice) u.voice = voice;
-        u.rate = this.rate;
-        u.pitch = 1.05;
+        u.rate = rate;
+        u.pitch = pitch;
+        u.onstart = () => { if (onChunk) onChunk(line); };
         u.onend = next;
         u.onerror = next;
         synth.speak(u);

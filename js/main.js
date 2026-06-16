@@ -598,6 +598,7 @@ function sessionScreen(plan) {
   // avatar (graceful fallback if WebGL is unavailable)
   const canvas = document.getElementById('avatar-canvas');
   const char = getCharacter(profile.character);
+  coach.setCharacterVoice(char); // each coach gets its own distinct voice + pacing
   const wantReal = profile.fullInstructorOn && RealisticAvatar &&
     realisticHelpers && realisticHelpers.realisticInstructorSupported();
   try {
@@ -1110,6 +1111,7 @@ function settingsScreen() {
     coach.enabled = true;
     coach.voiceURI = p.voiceURI;
     coach.naturalOn = p.naturalOn;
+    coach.setCharacterVoice(getCharacter(p.character)); // preview in the selected coach's own voice
     coach.speak(personalize(pick(PHRASES.styles[p.style].welcome), p.name), { interrupt: true });
     coach.enabled = p.voiceOn;
   });

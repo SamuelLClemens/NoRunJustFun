@@ -466,6 +466,27 @@ ok('SOUL_TRACK_LIST' in main_src, 'main.js does not import/use SOUL_TRACK_LIST')
 ok('soul-reflectives' in main_src and "go('#learn-' + b.dataset.track)" in main_src,
    'main.js soulScreen does not wire the crystals/dreams cards to #learn-<track>')
 
+# 23) Per-coach voices + caption sync (the audio pass). Each coach must have a
+#     DISTINCT voice; both the natural (Kokoro) and system paths must be wired, and
+#     captions must advance per sentence in sync with playback.
+chars = read('js/characters.js')
+tts = read('js/tts.js')
+nv = read('js/natural-voice.js')
+coach_ids = set(re.findall(r"id:\s*'([a-z]+)'", chars))
+ok({'jasmine', 'nokeke', 'abednego', 'aguibou'}.issubset(coach_ids), 'characters.js missing one of the four coaches')
+nat_voices = re.findall(r"natural:\s*'([a-z_]+)'", chars)
+ok(len(nat_voices) >= 4, f'expected >=4 per-coach natural voices, found {len(nat_voices)}')
+ok(len(set(nat_voices)) == len(nat_voices), f'coach natural voices must be distinct, got {nat_voices}')
+ok(chars.count('voice:') >= 4, 'each coach needs its own voice config')
+ok('pitch:' in chars and 'rate:' in chars and 'system:' in chars, 'coach voice config missing system/pitch/rate')
+ok('generate(text, { voice, speed })' in nv, 'natural-voice.js does not pass per-coach voice+speed to generate')
+ok('onChunk' in nv, 'natural-voice.js missing the per-sentence caption hook')
+ok('setCharacterVoice' in tts, 'tts.js missing setCharacterVoice')
+ok('_pickSystemVoice' in tts, 'tts.js missing per-coach system voice selection')
+ok('naturalVoice.speak(chunks, {' in tts, 'tts.js does not pass the per-coach voice to the natural path')
+ok('onstart' in tts, 'tts.js system path missing per-sentence caption (onstart)')
+ok(main_src.count('setCharacterVoice') >= 2, 'main.js must set the coach voice at session start AND in settings preview')
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")
