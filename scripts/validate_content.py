@@ -171,14 +171,16 @@ ok('recordSession(' not in learn_code, "learning.js must not call recordSession 
 ok('totalMins' not in learn_code, "learning.js must not write totalMins (no level inflation)")
 ok('durationsTried' not in learn_code, "learning.js must not write durationsTried (protects 'all-durations')")
 
-# 12) learning state migration — additive & lossless: v4, retaining the v2->v3 branch
-#     that moved the legacy progress.finance blob into learning.money, plus a v3->v4
-#     branch adding the dashboard fields (on-device only).
-ok('CURRENT_VERSION = 4' in st, "state.js CURRENT_VERSION must be 4 (dashboard additions)")
+# 12) learning state migration — additive & lossless: v5, retaining the v2->v3 branch
+#     that moved the legacy progress.finance blob into learning.money, the v3->v4 branch
+#     adding the dashboard fields, and the v4->v5 branch adding the You-page ledgers
+#     (journal/meals/cycle). All on-device only.
+ok('CURRENT_VERSION = 5' in st, "state.js CURRENT_VERSION must be 5 (You-page ledgers)")
 ok('learning:' in st, "state.js defaults() missing the learning sub-object")
 ok('data.progress.finance' in st, "state.js v2->v3 branch does not migrate the legacy progress.finance blob")
 ok('(data.version || 1) < 3' in st, "state.js missing the v2->v3 migration branch guard")
 ok('(data.version || 1) < 4' in st, "state.js missing the v3->v4 migration branch guard")
+ok('(data.version || 1) < 5' in st, "state.js missing the v4->v5 migration branch guard")
 for f in ['birthday', 'weightUnit', 'weights', 'quizBest', 'completedAt']:
     ok(f in st, f"state.js v4 missing the '{f}' field")
 
@@ -510,6 +512,44 @@ ok(main_src.count('maybeAutoEnableNaturalVoice') >= 2, 'maybeAutoEnableNaturalVo
 ok("p.voicePref === 'off'" in main_src, 'auto-enable must respect an explicit voicePref off')
 ok('saveData' in main_src, 'auto-enable must honor Data Saver (navigator.connection.saveData)')
 ok("p.voicePref = e.target.checked ? 'on' : 'off'" in main_src, 'settings toggle must record an explicit voicePref')
+
+# 26) State v5 + You-page personal ledgers (journal/meals/cycle). New on-device ledgers
+#     must exist and default safely; cycle is opt-in (default OFF); the additive v<5
+#     migration branch must backfill them losslessly (shallow-spread nested-object trap).
+ok('CURRENT_VERSION = 5' in st, 'state.js CURRENT_VERSION must be 5')
+ok('journal: []' in st, 'state.js defaults missing progress.journal[]')
+ok('meals: []' in st, 'state.js defaults missing progress.meals[]')
+ok(re.search(r"cycle:\s*\{\s*enabled:\s*false", st) is not None,
+   'state.js defaults missing opt-in (default-OFF) progress.cycle')
+ok('< 5' in st, 'state.js missing the v4->v5 migration branch')
+
+# 27) Privacy guard (ALWAYS ON): no off-device speech recognition anywhere in js/.
+#     Browser SpeechRecognition streams microphone audio to the vendor (Google on
+#     Chrome) and is absent on iOS Safari — journal transcription must be on-device only.
+def _all_js_src():
+    out = []
+    for base, _dirs, files in os.walk(os.path.join(ROOT, 'js')):
+        for f in files:
+            if f.endswith('.js'):
+                out.append(open(os.path.join(base, f), encoding='utf-8').read())
+    return out
+_js_all = _all_js_src()
+ok(not any(('SpeechRecognition' in s or 'webkitSpeechRecognition' in s) for s in _js_all),
+   'off-device SpeechRecognition found in js/ — journal transcription must stay on-device only')
+
+# 28) Isolation guard (feature-gated): the You-page ledger modules, once they exist,
+#     must NEVER write a sessions[] record — that would silently grow the count-based
+#     garden and fabricate a streak day (gamify.js streakInfo/gardenStage). They are
+#     their own ledgers, like weights[]. Gates on file existence so the suite stays
+#     green before the modules land.
+def _read_opt(p):
+    fp = os.path.join(ROOT, p)
+    return open(fp, encoding='utf-8').read() if os.path.exists(fp) else ''
+for _ledger in ['js/journal.js', 'js/journal-screen.js', 'js/meals.js', 'js/cycle.js']:
+    _src = _read_opt(_ledger)
+    if _src:
+        ok('sessions.push' not in _src and 'recordSession' not in _src,
+           f'{_ledger} must not write to sessions[] (breaks garden/streak isolation)')
 
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:

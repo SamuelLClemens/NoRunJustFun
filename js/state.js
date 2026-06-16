@@ -2,7 +2,7 @@
 // ever leaves it. Schema migrations keep future updates from wiping progress.
 
 const KEY = 'nrjf.store';
-const CURRENT_VERSION = 4;
+const CURRENT_VERSION = 5;
 
 function defaults() {
   return {
@@ -17,7 +17,6 @@ function defaults() {
       voicePref: 'auto',        // 'auto' | 'on' | 'off' — 'auto' lets capable devices
                                 // load the lifelike voice in the background (system voice
                                 // covers slow devices); 'on'/'off' are explicit user choices
-      fullInstructorOn: false,  // optional photoreal instructor (beta)
       fullInstructorOn: false,  // optional photoreal instructor (beta)
       sfxOn: true,
       musicOn: false,           // default OFF per iOS autoplay + brief
@@ -62,6 +61,14 @@ function defaults() {
         communication: { lessons: [], lessonsCompleted: 0, gamesWon: 0, quizBest: 0, completedAt: null },
         memory:        { lessons: [], lessonsCompleted: 0, gamesWon: 0, quizBest: 0, completedAt: null },
       },
+      // --- v5 additions (You-page personal ledgers; all on-device only, never
+      // transmitted). Each is its OWN ledger, deliberately OUTSIDE sessions[]: the
+      // garden (gardenStage on sessions.length) and streak (streakInfo on the set of
+      // sessions[].date) must never grow from journaling, meals, or cycle logging.
+      // This mirrors weights[] above — a personal log that never feeds garden/streak.
+      journal: [],              // { id, ts(ISO datetime), kind:'text'|'voice', text, audioKey?, durationSec?, prompt? } — audio blobs live in IndexedDB (js/idb.js), keyed by audioKey
+      meals: [],                // { id, ts(ISO datetime), note } — gentle timestamped notes; no calories/macros/targets/streak
+      cycle: { enabled: false, periods: [], symptoms: [], avgCycleLen: null }, // opt-in (default OFF) menstrual log; descriptive only, never a medical/fertility prediction
     },
   };
 }
@@ -124,6 +131,24 @@ function migrate(data) {
         if (typeof t.quizBest !== 'number') t.quizBest = 0;
         if (!('completedAt' in t)) t.completedAt = null;
       }
+    }
+  }
+  // v4 -> v5: You-page personal ledgers. progress.journal[]/meals[] are new arrays
+  // that self-default via the spread; progress.cycle is a NESTED object, so backfill
+  // it (and its fields) explicitly — the shallow progress spread takes a stored parent
+  // wholesale, so a new nested field would otherwise be missing (same caveat as the
+  // learning backfill above). None of these ever touch sessions[]/garden/streak.
+  if ((data.version || 1) < 5) {
+    if (!Array.isArray(out.progress.journal)) out.progress.journal = [];
+    if (!Array.isArray(out.progress.meals)) out.progress.meals = [];
+    const c = out.progress.cycle;
+    if (!c || typeof c !== 'object' || Array.isArray(c)) {
+      out.progress.cycle = { enabled: false, periods: [], symptoms: [], avgCycleLen: null };
+    } else {
+      if (typeof c.enabled !== 'boolean') c.enabled = false;
+      if (!Array.isArray(c.periods)) c.periods = [];
+      if (!Array.isArray(c.symptoms)) c.symptoms = [];
+      if (!('avgCycleLen' in c)) c.avgCycleLen = null;
     }
   }
   // Retired-roster remap: the original four coach ids were replaced by the
