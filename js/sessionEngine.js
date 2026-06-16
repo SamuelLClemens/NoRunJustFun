@@ -64,7 +64,7 @@ function alternate(strength, soft) {
 // otherwise check the tierEligibility map (absent => all tiers, preserving v1).
 function tierAllows(e, tier, elig) {
   if (e.blocks.includes('close') || (e.tags && e.tags.includes('breath'))) return true;
-  if (!tier || tier === 'stretch' || tier === 'yoga') return true; // these gate by category, not intensity
+  if (!tier || tier === 'stretch' || tier === 'yoga' || tier === 'face' || tier === 'baby') return true; // these gate by category, not intensity
   if (!elig) return true;
   const te = elig[e.id];
   if (!te || !te.length) return true;
@@ -77,6 +77,8 @@ const CATEGORY_POOLS = {
   stretch: ['stretch'],
   yoga: ['yoga'],
   exercise: ['exercise', 'stretch'],
+  face: ['face'],
+  baby: ['baby'],
 };
 function categoryAllows(e, category, catMap) {
   if (!category) return true; // legacy / unscoped
@@ -99,8 +101,13 @@ export function buildSession(durationMins, exercises, opts = {}) {
   const pool = exercises.filter((e) => tierAllows(e, tier, tierEligibility) && categoryAllows(e, category, workoutCategory));
 
   // 1) the close — always last, always breath (picked first so the
-  //    arrival never duplicates it)
-  const closePool = pool.filter((e) => e.blocks.includes('close'));
+  //    arrival never duplicates it). Guard: if the tier+category filter ever
+  //    leaves no close move, fall back to the unfiltered set; if there is still
+  //    none, return null so planFor()'s existing !plan path sends the user to the
+  //    chooser rather than dereferencing undefined and throwing mid-build.
+  let closePool = pool.filter((e) => e.blocks.includes('close'));
+  if (!closePool.length) closePool = exercises.filter((e) => e.blocks.includes('close'));
+  if (!closePool.length) return null;
   let closeChoices = closePool.filter((e) => e.id !== lastCloseId);
   if (!closeChoices.length) closeChoices = closePool;
   const close = shuffle(closeChoices)[0];
@@ -108,8 +115,11 @@ export function buildSession(durationMins, exercises, opts = {}) {
   const reserved = new Set([close.id]); // the close may never appear mid-session
 
   // 2) the arrival — every practice begins seated, with breath. Postpartum
-  //    prefers pelvic-breath (no holds); fall back to any arrival breath.
-  const arrivalPool = pool.filter((e) => ARRIVAL_IDS.includes(e.id) && e.id !== close.id);
+  //    prefers pelvic-breath (no holds); fall back to any arrival breath. Same
+  //    guard as the close: unfiltered fallback, then null rather than a crash.
+  let arrivalPool = pool.filter((e) => ARRIVAL_IDS.includes(e.id) && e.id !== close.id);
+  if (!arrivalPool.length) arrivalPool = exercises.filter((e) => ARRIVAL_IDS.includes(e.id) && e.id !== close.id);
+  if (!arrivalPool.length) return null;
   const arrival = (arrivalPool.find((e) => e.id === 'pelvic-breath') || shuffle(arrivalPool)[0]);
   used.add(arrival.id);
   reserved.add(arrival.id);

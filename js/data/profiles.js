@@ -11,9 +11,10 @@
 
 import { SPACE_FLAGS } from './movements-ext.js';
 import { EXTRA_SPACE_FLAGS } from './movements-ext2.js';
+import { EXTRA_SPACE_FLAGS2 } from './movements-ext3.js';
 
-// Chair/floor accessibility flags for every move (original + the new batch).
-const ALL_SPACE_FLAGS = { ...SPACE_FLAGS, ...EXTRA_SPACE_FLAGS };
+// Chair/floor accessibility flags for every move (original + the new batches).
+const ALL_SPACE_FLAGS = { ...SPACE_FLAGS, ...EXTRA_SPACE_FLAGS, ...EXTRA_SPACE_FLAGS2 };
 
 // ---- Intake field option lists (drive the optional, editable intake UI) ----
 export const SEX_OPTIONS = ['female', 'male', 'intersex', 'prefer_not'];

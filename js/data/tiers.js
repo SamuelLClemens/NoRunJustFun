@@ -21,11 +21,13 @@ export const TIER_META = {
   // CATEGORY rather than intensity, so they are always available (no screening gate).
   stretch:         { id: 'stretch',         label: 'Stretching',      blurb: 'gentle lengthening · mobility · calm' },
   yoga:            { id: 'yoga',            label: 'Yoga',            blurb: 'mindful poses · breath-linked flow' },
+  face:            { id: 'face',            label: 'Face Yoga',       blurb: 'gentle facial release · relaxation' },
+  baby:            { id: 'baby',            label: 'With Your Baby',  blurb: 'move and bond together · gentle' },
 };
 
 // Workout categories — the three Body paths. Stretching + Yoga gate the pool to
 // their category; Exercises uses the strength/cardio category with intensity tiers.
-export const WORKOUT_PATHS = ['stretch', 'yoga', 'exercise'];
+export const WORKOUT_PATHS = ['stretch', 'yoga', 'exercise', 'face', 'baby'];
 
 // Per-tier knobs the assembler/player read. holdMult is clamped so timed poses
 // stay inside the 40-90s schema envelope. restAdd stacks on TRANSITION_SECS (6).
@@ -37,6 +39,10 @@ export const TIER_PROFILES = {
   stretch:         { strengthDensity: 0.00, rpe: '1-2, fully at ease',       holdMult: 1.10, restAdd: 8, repeatsFromMins: 20, requiresGate: false },
   // Yoga: a light strength thread through a breath-linked pose flow.
   yoga:            { strengthDensity: 0.30, rpe: '2-4, steady breath',       holdMult: 1.05, restAdd: 6, repeatsFromMins: 25, requiresGate: false },
+  // Face Yoga: no body strength; gentle facial holds with generous rest.
+  face:            { strengthDensity: 0.00, rpe: '1-2, fully at ease',       holdMult: 1.00, restAdd: 8, repeatsFromMins: 20, requiresGate: false },
+  // With Your Baby: gentle full-body movement holding baby; a light strength thread.
+  baby:            { strengthDensity: 0.30, rpe: '2-4, can chat to baby',    holdMult: 1.00, restAdd: 6, repeatsFromMins: 25, requiresGate: false },
 };
 
 // The vigorous tier never adds impact. This is the safe ceiling, in data.

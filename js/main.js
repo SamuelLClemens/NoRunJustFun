@@ -8,7 +8,7 @@ import { coach, personalize, pick } from './tts.js';
 import { naturalVoice } from './natural-voice.js';
 import { sound, music } from './audio.js';
 import { buildSession, TRANSITION_SECS } from './sessionEngine.js';
-import { streakInfo, levelInfo, gardenStage, checkBadges, recordSession, LEVELS } from './gamify.js';
+import { streakInfo, levelInfo, gardenStage, checkBadges, recordSession } from './gamify.js';
 import { Player } from './player.js';
 import { celebrate } from './confetti.js';
 import { EXERCISES } from './data/exercises.js';
@@ -18,22 +18,29 @@ import { gardenSVG, GARDEN_STAGE_SESSIONS } from './data/garden.js';
 import { POSES } from './data/poses.js';
 import { NEW_EXERCISES, TIER_ELIGIBILITY } from './data/movements-ext.js';
 import { EXTRA_EXERCISES, EXTRA_TIER_ELIGIBILITY, WORKOUT_CATEGORY } from './data/movements-ext2.js';
+import { EXTRA_EXERCISES2, EXTRA_TIER_ELIGIBILITY2, WORKOUT_CATEGORY2 } from './data/movements-ext3.js';
 import { MODES, TIER_META, DURATIONS } from './data/tiers.js';
 import { buildMeditation, buildMeditationById, MEDITATION_LIBRARY } from './data/meditation.js';
 import { availableTiers, gateMessage, routeTrack, filterPool, evaluateScreening,
   PARQ_GENERAL, PARQ_POSTPARTUM, LIFE_STAGES, SEX_OPTIONS, AGE_BANDS, INJURY_FLAGS, SPACE_OPTIONS } from './data/profiles.js';
 import { PROGRAMS, getProgram, programSuggestion, advanceProgram } from './data/programs.js';
-import { getTrack, TRACK_LIST } from './data/tracks.js';
+import { getTrack, TRACK_LIST, SOUL_TRACK_LIST } from './data/tracks.js';
 import { trackHubScreen, learningDone, gameScreen, quizScreen } from './learning-screen.js';
 
 const app = document.getElementById('app');
 let avatar = null;        // lazy three.js instance, one at a time
 let player = null;
 
+// Local-only QA handle is exposed on window ONLY in dev (?dev=…), never in
+// production, so a disposed Player/avatar and the mutable store are not pinned to
+// a global. It is also cleared on teardown — see teardownSession().
+const DEV_QA = new URLSearchParams(location.search).has('dev');
+
 // The full movement pool = frozen 29 + appended new movements. exercises.js stays
 // byte-stable; tier metadata and new moves live in movements-ext.js.
-const ALL_EXERCISES = [...EXERCISES, ...NEW_EXERCISES, ...EXTRA_EXERCISES];
-const ALL_TIER_ELIGIBILITY = { ...TIER_ELIGIBILITY, ...EXTRA_TIER_ELIGIBILITY };
+const ALL_EXERCISES = [...EXERCISES, ...NEW_EXERCISES, ...EXTRA_EXERCISES, ...EXTRA_EXERCISES2];
+const ALL_TIER_ELIGIBILITY = { ...TIER_ELIGIBILITY, ...EXTRA_TIER_ELIGIBILITY, ...EXTRA_TIER_ELIGIBILITY2 };
+const ALL_WORKOUT_CATEGORY = { ...WORKOUT_CATEGORY, ...WORKOUT_CATEGORY2 };
 
 // Honor the reduced-motion preference override (auto | on | off) on every render.
 function applyMotionPref() {
@@ -161,6 +168,8 @@ function bodyScreen() {
     { go: '#move-stretch', ic: '🙆', title: 'Stretching', blurb: 'Gentle lengthening and mobility — feel loose and calm' },
     { go: '#move-yoga', ic: '🧘', title: 'Yoga', blurb: 'Mindful, breath-linked poses and simple flows' },
     { go: '#move-exercise', ic: '💪', title: 'Exercises', blurb: 'Build strength and gentle cardio — choose your intensity' },
+    { go: '#move-face', ic: '😌', title: 'Face yoga', blurb: 'Gentle facial release and relaxation — sit anywhere' },
+    { go: '#move-baby', ic: '🍼', title: 'With your baby', blurb: 'Gentle movement you can do holding your little one' },
   ];
   app.innerHTML = `
     <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Body · Move</h1></header>
@@ -184,6 +193,9 @@ const MOVE_META = {
   stretch: { label: 'Stretching', note: 'gentle lengthening and mobility' },
   yoga: { label: 'Yoga', note: 'breath-linked poses and flow' },
   exercise: { label: 'Exercises', note: 'strength and gentle cardio' },
+  face: { label: 'Face yoga', note: 'gentle facial release and relaxation' },
+  baby: { label: 'With your baby', note: 'gentle movement holding your baby',
+    safety: 'Always support the head and neck, hold your baby securely, and never bounce. Begin only once your doctor has cleared you after birth, and stop if your baby is unsettled.' },
 };
 
 function moveScreen(category) {
@@ -202,6 +214,7 @@ function moveScreen(category) {
             </div>
           </div>`).join('')}
         <p class="start-note">${esc(meta.note)} · no equipment${category === 'exercise' ? ', then choose how it feels' : ''}, coached by ${esc(getCharacter(store.profile.character).name)}</p>
+        ${meta.safety ? `<p class="start-note safety-note">⚠️ ${esc(meta.safety)}</p>` : ''}
         <p class="start-note start-links">
           ${category === 'exercise' ? '<a href="#intake">Personalize your sessions</a>' : ''}
           <label class="inline-toggle"><input type="checkbox" id="home-chair" ${store.profile.chairMode ? 'checked' : ''}> Chair mode</label>
@@ -224,11 +237,18 @@ function soulScreen() {
     `<button class="duration-btn" data-mins="${m}"><span class="d-num">${m}</span><span class="d-label">min</span></button>`).join('');
   const libHTML = MEDITATION_LIBRARY.map((m) =>
     `<button class="med-lib-btn" data-med="${m.id}"><span>${esc(m.theme)}</span><small>${m.minutes} min</small></button>`).join('');
-  const soon = (ic, title, blurb) => `<div class="soul-soon">
-        <span class="pillar-ic" aria-hidden="true">${ic}</span>
-        <span class="pillar-txt"><strong>${esc(title)}</strong><small>${esc(blurb)}</small></span>
-        <span class="soon-tag">Coming soon</span>
-      </div>`;
+  // Reflective Soul sections (belief-flagged, lessons-only) — driven by the registry
+  // (SOUL_TRACK_LIST) so they stay in sync with tracks.js. Each opens the shared
+  // learning hub at #learn-<track>; its "Back" link returns here via track.hubBack.
+  const reflectiveHTML = SOUL_TRACK_LIST.map((id) => {
+    const t = getTrack(id);
+    if (!t) return '';
+    return `<button class="soul-reflective" data-track="${esc(id)}">
+        <span class="pillar-ic" aria-hidden="true">${(t.theme && t.theme.badgeEmoji) || '🌙'}</span>
+        <span class="pillar-txt"><strong>${esc(t.name)}</strong><small>${esc(t.blurb)}</small></span>
+        <span class="soul-go" aria-hidden="true">→</span>
+      </button>`;
+  }).join('');
   app.innerHTML = `
     <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Soul · Be still</h1></header>
     <main class="narrow soul-screen">
@@ -243,15 +263,16 @@ function soulScreen() {
       </section>
       <section class="card soul-future">
         <h2>More for the soul</h2>
-        <p class="hint">New reflective practices are growing here.</p>
-        ${soon('🔮', 'Crystal energy', 'A calm, exploratory practice')}
-        ${soon('🌙', 'Dream interpretation', 'Reflect gently on your dreams')}
+        <p class="hint">Calm, honest, well-sourced reflections — belief and evidence held side by side.</p>
+        <div class="soul-reflectives" id="soul-reflectives">${reflectiveHTML}</div>
       </section>
     </main>`;
   document.querySelectorAll('#soul-durations .duration-btn').forEach((b) =>
     b.addEventListener('click', () => { sound.unlock(); go('#play-' + b.dataset.mins + '-meditation'); }));
   document.querySelectorAll('#soul-library .med-lib-btn').forEach((b) =>
     b.addEventListener('click', () => { sound.unlock(); go('#play-lib-' + b.dataset.med); }));
+  document.querySelectorAll('#soul-reflectives .soul-reflective').forEach((b) =>
+    b.addEventListener('click', () => { go('#learn-' + b.dataset.track); }));
 }
 
 // ---------------------------------------------------------------- Mind pillar (learning)
@@ -567,6 +588,7 @@ function sessionScreen(plan) {
 
   const captionEl = document.getElementById('caption');
   coach.onCaption = (t) => { captionEl.textContent = t; };
+  coach.resetTranscript();   // fresh "Read what your coach said" log for this session
   coach.enabled = profile.voiceOn;
   coach.voiceURI = profile.voiceURI;
   coach.naturalOn = profile.naturalOn;
@@ -577,6 +599,7 @@ function sessionScreen(plan) {
   // avatar (graceful fallback if WebGL is unavailable)
   const canvas = document.getElementById('avatar-canvas');
   const char = getCharacter(profile.character);
+  coach.setCharacterVoice(char); // each coach gets its own distinct voice + pacing
   const wantReal = profile.fullInstructorOn && RealisticAvatar &&
     realisticHelpers && realisticHelpers.realisticInstructorSupported();
   try {
@@ -638,7 +661,7 @@ function sessionScreen(plan) {
     },
   });
 
-  window.__nrjf = { player, store, avatar };   // QA handle (local-only, harmless)
+  if (DEV_QA) window.__nrjf = { player, store, avatar };   // dev-only QA handle (?dev=…)
 
   document.getElementById('btn-pause').addEventListener('click', () => {
     if (player.phase === 'paused') player.resume();
@@ -661,7 +684,7 @@ function swapToLeanAvatar(oldCanvas, char) {
   try {
     avatar = new Avatar(fresh, char);
     avatar.start();
-    if (window.__nrjf) window.__nrjf.avatar = avatar;
+    if (DEV_QA && window.__nrjf) window.__nrjf.avatar = avatar;
     const it = player && player.plan && player.plan.items[player.idx];
     if (it) avatar.setPose(POSES[it.ex.id] || null);
   } catch (e) {
@@ -678,6 +701,7 @@ function teardownSession() {
   naturalVoice.onProgress = null;
   music.stop();
   if (avatar) { avatar.dispose(); avatar = null; }
+  if (window.__nrjf) window.__nrjf = null;   // drop the dev QA handle's stale refs
 }
 
 function finishSession(stats) {
@@ -719,6 +743,18 @@ function finishSession(stats) {
     return b ? `<div class="badge-pop">${b.icon}<div><strong>${esc(b.name)}</strong><br><small>${esc(b.desc)}</small></div></div>` : '';
   }).join('');
 
+  // Durable transcript of everything the coach narrated this session. The live caption
+  // is transient, so this gives a Deaf/HoH user a permanent record of a workout (or
+  // meditation) — parallels the learning screen's transcript, which only covers lessons.
+  const spoken = (coach.transcript || []).slice();
+  const transcriptHTML = spoken.length ? `
+      <section class="card fin-transcript">
+        <details>
+          <summary>Read what your coach said</summary>
+          ${spoken.map((line) => `<p>${esc(line)}</p>`).join('')}
+        </details>
+      </section>` : '';
+
   app.innerHTML = `
     <main class="narrow done-screen">
       <section class="card center">
@@ -730,6 +766,7 @@ function finishSession(stats) {
         ${badgeCards ? `<div class="badge-pops"><h3>New badge${newBadges.length > 1 ? 's' : ''}!</h3>${badgeCards}</div>` : ''}
         <button class="btn btn-primary" id="btn-home">Back to my garden</button>
       </section>
+      ${transcriptHTML}
     </main>`;
   document.getElementById('btn-home').addEventListener('click', () => go('#'));
 }
@@ -954,7 +991,8 @@ function badgesScreen() {
   };
   // Each learning track gets its own partitioned, labelled section after the
   // fitness badges — distinct accent per category (driven by the badge-cell class).
-  const trackSections = TRACK_LIST.map((tid) => {
+  // Mind subjects first, then the Soul sections (crystals/dreams).
+  const trackSections = [...TRACK_LIST, ...SOUL_TRACK_LIST].map((tid) => {
     const t = getTrack(tid);
     if (!t || !t.badges.length) return '';
     const emoji = (t.theme && t.theme.badgeEmoji) || '🌸';
@@ -1017,9 +1055,9 @@ function settingsScreen() {
       </section>
 
       <section class="card">
-        <strong>Natural voice <span class="beta-chip">beta</span></strong>
-        <p class="hint">A warmer, more human voice that runs entirely on this device. Turning it on downloads a public voice model once (about 90 MB) — nothing about you is sent anywhere, ever. If it cannot load, the regular voice takes over automatically. Works best on computers and recent phones.</p>
-        <label class="toggle"><input type="checkbox" id="set-natural" ${p.naturalOn ? 'checked' : ''}> Use natural voice</label>
+        <strong>Lifelike voice <span class="beta-chip">beta</span></strong>
+        <p class="hint">Each coach gets their own warm, human-sounding voice that runs entirely on this device. On capable devices it turns on by itself — a one-time download of about 90 MB, in the background — and nothing about you is ever sent anywhere. On slower devices, or if you switch it off here, the regular voice takes over automatically.</p>
+        <label class="toggle"><input type="checkbox" id="set-natural" ${p.naturalOn ? 'checked' : ''}> Use the lifelike voice</label>
         <div class="nv-progress" id="nv-progress" hidden>
           <div class="nv-track"><div class="nv-bar" id="nv-bar"></div></div>
           <small id="nv-status" role="status"></small>
@@ -1087,6 +1125,10 @@ function settingsScreen() {
     coach.enabled = true;
     coach.voiceURI = p.voiceURI;
     coach.naturalOn = p.naturalOn;
+    coach.setCharacterVoice(getCharacter(p.character)); // preview in the selected coach's own voice
+    // if the natural voice was retired earlier this visit, give it another chance so the
+    // preview can actually demo it rather than silently falling back to the system voice
+    if (p.naturalOn && naturalVoice.state !== 'ready' && naturalVoice.state !== 'loading') naturalVoice.enable();
     coach.speak(personalize(pick(PHRASES.styles[p.style].welcome), p.name), { interrupt: true });
     coach.enabled = p.voiceOn;
   });
@@ -1125,6 +1167,7 @@ function settingsScreen() {
   if (p.naturalOn || naturalVoice.state !== 'off') nvShow(naturalVoice.state, naturalVoice.progress);
   nvToggle.addEventListener('change', (e) => {
     p.naturalOn = e.target.checked;
+    p.voicePref = e.target.checked ? 'on' : 'off'; // explicit choice — auto-enable won't override it
     coach.naturalOn = p.naturalOn;
     save();
     if (p.naturalOn) naturalVoice.enable({ reprobe: true }); // explicit ask re-measures the device
@@ -1228,12 +1271,12 @@ function planFor(mins, tier) {
   if (tier === 'meditation') return buildMeditation(mins);
   // The Body paths: Stretching / Yoga scope the pool by category (always available);
   // Exercises uses the intensity tiers, which the screening can gate.
-  const category = (tier === 'stretch' || tier === 'yoga') ? tier : 'exercise';
+  const category = ['stretch', 'yoga', 'face', 'baby'].includes(tier) ? tier : 'exercise';
   if (category === 'exercise' && !availableTiers(store.profile).includes(tier)) return null;
   const pool = filterPool(ALL_EXERCISES, store.profile);
   return buildSession(mins, pool, {
     lastCloseId: store.progress.lastCloseId, tier,
-    tierEligibility: ALL_TIER_ELIGIBILITY, category, workoutCategory: WORKOUT_CATEGORY,
+    tierEligibility: ALL_TIER_ELIGIBILITY, category, workoutCategory: ALL_WORKOUT_CATEGORY,
   });
 }
 
@@ -1242,9 +1285,27 @@ async function render() {
   teardownSession();
   applyMotionPref();
   window.scrollTo(0, 0);
-  const h = location.hash || '#';
   maybeBirthdayParty();   // once per year, on the day — self-guards against re-showing
+  await routeTo(location.hash || '#', seq);
+  // Move focus to the new screen's primary heading so keyboard and screen-reader
+  // users land on the fresh content instead of being silently dropped to <body>
+  // on every route change (WCAG 2.4.3). Skip if a newer render superseded us.
+  if (seq === renderSeq) focusScreenHeading();
+}
 
+// Centralized focus move for route changes (see render()). The primary heading is
+// given tabindex="-1" so it is programmatically focusable without joining the tab
+// order; we fall back to <main> for screens with no heading (e.g. home). An open
+// modal (safety/birthday) manages its own focus, so leave it alone.
+function focusScreenHeading() {
+  if (document.querySelector('.overlay')) return;
+  const target = app.querySelector('h1, h2') || app.querySelector('main') || app;
+  if (!target) return;
+  target.setAttribute('tabindex', '-1');
+  target.focus({ preventScroll: true });
+}
+
+async function routeTo(h, seq) {
   // tier chooser for a chosen duration
   if (h.startsWith('#tier-')) {
     const mins = parseInt(h.slice(6), 10);
@@ -1259,7 +1320,6 @@ async function render() {
     await ensureAvatarClass();
     if (store.profile.fullInstructorOn) await ensureRealisticClass();
     if (seq !== renderSeq) return;
-    store.profile.defaultTier = 'meditation'; save();
     sessionScreen(plan);
     return;
   }
@@ -1276,7 +1336,6 @@ async function render() {
       await ensureAvatarClass();
       if (store.profile.fullInstructorOn) await ensureRealisticClass();
       if (seq !== renderSeq) return; // superseded while modules loaded
-      store.profile.defaultTier = tier; save();
       sessionScreen(plan);
       return;
     }
@@ -1339,12 +1398,35 @@ async function render() {
 
 window.addEventListener('hashchange', render);
 
+// Lifelike voice, automatic: give every user the most human voice their DEVICE can
+// handle, without ever hurting smoothness. On 'auto' (the default) we warm the natural
+// voice in the BACKGROUND — first paint and the system voice are never blocked, the
+// in-engine speed probe keeps weak devices on the lighter system voice, and it upgrades
+// the live coach the moment the model is ready. The ~90 MB model is cached by the
+// browser, so it downloads at most once per device. Honors an explicit on/off choice and
+// Data Saver / very slow links. Nothing about the user is ever transmitted.
+function maybeAutoEnableNaturalVoice() {
+  const p = store.profile;
+  if (p.voicePref === 'off') return;                       // user opted out — respect it
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
+  const conn = (typeof navigator !== 'undefined' && navigator.connection) || {};
+  if (conn.saveData) return;                               // honor Data Saver
+  if (/2g$/.test(conn.effectiveType || '')) return;        // skip 2g / slow-2g links
+  const explicit = p.voicePref === 'on' || p.naturalOn;    // user already chose it
+  naturalVoice.enable().then((ready) => {
+    if (!ready) return;                                    // slow device / failed -> system voice
+    coach.naturalOn = true;                                // upgrade the live coach now
+    if (!explicit) { p.naturalOn = true; save(); }         // remember for auto users
+  }).catch(() => { /* system voice already covers it */ });
+}
+
 // dev visual QA: ?dev=poses or ?dev=garden
 const devMode = new URLSearchParams(location.search).get('dev');
 if (devMode) {
   import('./dev.js').then((m) => m.runDev(devMode));
 } else {
   render();
+  maybeAutoEnableNaturalVoice(); // background warm-up; never blocks first paint
 }
 
 // PWA service worker (registered late so first paint wins)

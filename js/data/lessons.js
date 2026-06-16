@@ -506,7 +506,6 @@ function planFromSegments(segs, meta) {
     // reuse the Player's quiet, segment-by-segment narration (same as meditation);
     // kind:'finance' is what the Player records, so finance is never a meditation.
     isMeditation: true,
-    isLesson: true,
     kind: 'finance',
     lessonIds: meta.lessonIds,
     lessonTitles: meta.lessonTitles,

@@ -108,7 +108,7 @@ export function trackHubScreen(trackId) {
 
   app.innerHTML = `
     <header class="topbar">
-      <a class="back" href="#mind">← Back</a>
+      <a class="back" href="${esc(track.hubBack || '#mind')}">← Back</a>
       <h1 class="page-title finance-hero">${track.theme.flowerSVG()} ${esc(track.name)}</h1>
     </header>
     <main class="narrow finance-section" data-track="${esc(trackId)}">

@@ -1,7 +1,7 @@
 // Offline support: precache the whole app on install, serve cache-first.
 // Bump CACHE_VERSION with every release so updates roll out cleanly.
 
-const CACHE_VERSION = 'ygt-v4.0.0';
+const CACHE_VERSION = 'ygt-v4.5.0';
 
 const PRECACHE = [
   './',
@@ -11,6 +11,10 @@ const PRECACHE = [
   'lib/three.module.min.js',
   'lib/fonts/fredoka-latin-var.woff2',
   'lib/fonts/nunito-latin-var.woff2',
+  // Photoreal-coach (opt-in beta) loaders — small, so they ride in the atomic
+  // addAll(); the ~1.9 MB model itself is warmed best-effort in install below.
+  'lib/jsm/loaders/GLTFLoader.js',
+  'lib/jsm/utils/BufferGeometryUtils.js',
   'js/main.js',
   'js/state.js',
   'js/characters.js',
@@ -24,8 +28,6 @@ const PRECACHE = [
   'js/realistic-avatar.js',
   'js/confetti.js',
   'js/dev.js',
-  'js/finance.js',
-  'js/finance-screen.js',
   'js/learning.js',
   'js/learning-screen.js',
   'js/data/tracks.js',
@@ -50,12 +52,18 @@ const PRECACHE = [
   'js/data/poses.js',
   'js/data/movements-ext.js',
   'js/data/movements-ext2.js',
+  'js/data/movements-ext3.js',
   'js/data/tiers.js',
   'js/data/meditation.js',
   'js/data/profiles.js',
   'js/data/programs.js',
   'js/data/badges.finance.js',
   'js/data/lessons.js',
+  // Soul sections (belief-flagged learning tracks)
+  'js/data/lessons.crystals.js',
+  'js/data/lessons.dreams.js',
+  'js/data/badges.crystals.js',
+  'js/data/badges.dreams.js',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/apple-touch-icon.png',
@@ -67,7 +75,15 @@ const PRECACHE = [
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
-    caches.open(CACHE_VERSION).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting()),
+    caches.open(CACHE_VERSION).then((c) =>
+      // Atomic: every PRECACHE path must resolve or the whole install fails.
+      c.addAll(PRECACHE).then(() =>
+        // Warm the large photoreal-coach model separately, as a best-effort add,
+        // so the opt-in coach works offline — its failure must never reject the
+        // atomic addAll() above (a missing/oversize GLB should not break install).
+        c.add('models/vera.glb').catch(() => {}),
+      ),
+    ).then(() => self.skipWaiting()),
   );
 });
 

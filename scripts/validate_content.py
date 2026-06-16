@@ -252,9 +252,19 @@ ok('streak7' in learn_code, "learning.js missing the per-track 7-day streak cond
 #     installed PWAs pick them up (addAll is atomic — every path must resolve)
 sw = read('sw.js')
 core_learn_files = ['js/learning.js', 'js/learning-screen.js', 'js/data/tracks.js',
-                    'js/finance.js', 'js/finance-screen.js', 'js/data/lessons.js', 'js/data/badges.finance.js']
+                    'js/data/lessons.js', 'js/data/badges.finance.js']
 for f in core_learn_files:
     ok(f"'{f}'" in sw, f"sw.js PRECACHE missing {f}")
+# The orphaned finance.* modules (referenced only in comments; the live engine is
+# learning.js + learning-screen.js + tracks.js) are no longer precached — they were
+# dead code and a single point of failure for the atomic addAll().
+for orphan in ['js/finance.js', 'js/finance-screen.js']:
+    ok(f"'{orphan}'" not in sw, f"sw.js should no longer precache the orphaned {orphan}")
+# The realistic-avatar dependency chain is precached so the opt-in photoreal coach
+# works offline; the ~1.9 MB GLB is warmed best-effort in install (cannot reject addAll).
+for dep in ['lib/jsm/loaders/GLTFLoader.js', 'lib/jsm/utils/BufferGeometryUtils.js']:
+    ok(f"'{dep}'" in sw, f"sw.js PRECACHE missing avatar dependency {dep}")
+ok('models/vera.glb' in sw, "sw.js install does not warm the photoreal model models/vera.glb")
 for sid, cfg in LEARN_SUBJECTS.items():
     for f in [cfg['badges'], cfg['lessons']]:
         if exists(f):
@@ -365,6 +375,141 @@ libcount = med.split('export const MEDITATION_LIBRARY')[1].split('];')[0].count(
 ok(libcount >= 30, f'expected >=30 library meditations, found {libcount}')
 for mid in ['med-lib-morning-gentle-7', 'med-lib-box-breath-5', 'med-lib-loving-kindness-15', 'med-lib-reset-5']:
     ok(f'"{mid}"' in med, f'meditation library missing {mid}')
+
+# 21) Face Yoga + With-Your-Baby — two more category-gated Body session types, each
+#     with its own moves (movements-ext3.js). Captions-led, no equipment; baby moves
+#     carry safety framing (in the content + the moveScreen note).
+ext3 = read('js/data/movements-ext3.js') if exists('js/data/movements-ext3.js') else ''
+for sym in ['EXTRA_EXERCISES2', 'EXTRA_TIER_ELIGIBILITY2', 'EXTRA_SPACE_FLAGS2', 'WORKOUT_CATEGORY2']:
+    ok(f'export const {sym}' in ext3, f'movements-ext3.js missing {sym}')
+ok('js/data/movements-ext3.js' in sw, 'sw.js PRECACHE missing js/data/movements-ext3.js')
+ext3_block = ext3.split('export const EXTRA_EXERCISES2')[1].split('export const EXTRA_TIER_ELIGIBILITY2')[0] if 'EXTRA_EXERCISES2' in ext3 else ''
+ext3_ids = re.findall(r'"id":\s*"([^"]+)"', ext3_block)
+ok(len(ext3_ids) >= 20, f'expected >=20 face/baby moves, found {len(ext3_ids)}')
+ok(all(re.fullmatch(r'[a-z0-9-]+', i) for i in ext3_ids), 'a face/baby move id is not kebab-case')
+ok(not (set(ext3_ids) & set(FROZEN)) and not (set(ext3_ids) & set(new_ids)) and not (set(ext3_ids) & set(extra_ids)),
+   'a face/baby move id collides with an existing id')
+for i in ext3_ids:
+    for b in BANNED:
+        ok(b not in i.lower(), f"banned pattern '{b}' in face/baby move '{i}'")
+cat3 = dict(re.findall(r'"([a-z0-9-]+)":\s*"(face|baby|stretch)"', ext3.split('export const WORKOUT_CATEGORY2')[-1]))
+for i in ext3_ids:
+    ok(cat3.get(i) in ('face', 'baby'), f"face/baby move '{i}' has no face/baby category")
+ok(sum(1 for v in cat3.values() if v == 'face') >= 8, 'expected >=8 face-yoga moves')
+ok(sum(1 for v in cat3.values() if v == 'baby') >= 8, 'expected >=8 with-baby moves')
+ok("'face'" in tiers and "'baby'" in tiers and 'WORKOUT_PATHS' in tiers, 'tiers.js missing the face/baby session types')
+ok("face: ['face']" in seng and 'baby:' in seng, 'sessionEngine.js CATEGORY_POOLS missing face/baby')
+for go in ['#move-face', '#move-baby']:
+    ok(go in main_src, f'main.js missing the {go} path')
+ok('safety' in main_src, 'main.js MOVE_META missing the baby safety note')
+
+# 22) Soul sections — Crystal energy + Dream interpretation. Belief-flagged,
+#     lessons-only learning tracks: every lesson cites >=5 sources, over-claim phrases
+#     are absent, honest disclaimers are present, and they register under the Soul
+#     pillar (SOUL_TRACK_LIST) — NOT the Mind TRACK_LIST.
+SOUL_SECTIONS = [
+    ('js/data/lessons.crystals.js', 'js/data/badges.crystals.js', 'CRYSTALS', 'cry-',
+     ['crystals-overview', 'what-crystals-really-are', 'history-of-crystal-lore',
+      'the-energy-and-chakra-belief', 'what-science-says-crystals', 'the-placebo-and-ritual-effect',
+      'popular-stones-and-their-lore', 'crystals-as-a-mindfulness-anchor', 'staying-safe-and-skeptical',
+      'choosing-and-caring-for-stones'],
+     ['will cure', 'cures cancer', 'miracle cure', 'proven to heal', 'medical cure']),
+    ('js/data/lessons.dreams.js', 'js/data/badges.dreams.js', 'DREAMS', 'drm-',
+     ['dreams-overview', 'the-science-of-sleep-and-dreams', 'why-we-dream-theories',
+      'common-dreams-and-their-claims', 'history-of-dream-interpretation', 'what-science-says-about-meaning',
+      'nightmares-and-when-to-seek-help', 'dream-journaling-for-reflection', 'lucid-dreaming-evidence',
+      'dreams-sleep-and-wellbeing'],
+     ['tells the future', 'reveals your destiny', 'definitely means']),
+]
+for mod_path, badge_path, prefix, badge_prefix, lesson_ids, banned_soul in SOUL_SECTIONS:
+    ok(exists(mod_path), f'{mod_path} missing (run gen_soul.py)')
+    src = read(mod_path) if exists(mod_path) else ''
+    for sym in ['LESSON_LIBRARY', 'buildLessonById', 'buildLessonSession', f'{prefix}_DISCLAIMER', f'{prefix}_DISCLAIMER_SHORT']:
+        ok(f'export const {sym}' in src, f'{mod_path} missing export {sym}')
+    ok('makeLessonModule' in src, f'{mod_path} not built via the shared makeLessonModule factory')
+    ok('not a substitute for professional care' in src, f'{mod_path} missing the honest disclaimer')
+    # every lesson present + carries >= 5 cited sources (one "url:" per source row)
+    for lid in lesson_ids:
+        marker = f'id: "{lid}"'
+        ok(marker in src, f'{mod_path} missing lesson {lid}')
+        start = src.find(marker)
+        if start < 0:
+            continue
+        nxt = len(src)
+        for other in lesson_ids:
+            if other == lid:
+                continue
+            j = src.find(f'id: "{other}"', start + len(marker))
+            if 0 <= j < nxt:
+                nxt = j
+        ucount = src[start:nxt].count('url:')
+        ok(ucount >= 5, f'{mod_path} lesson {lid} cites {ucount} sources (>=5 required)')
+    for b in banned_soul:
+        ok(b.lower() not in src.lower(), f"over-claim phrase '{b}' present in {mod_path}")
+    # badges: namespaced + scholar present + precached
+    ok(exists(badge_path), f'{badge_path} missing')
+    bsrc = read(badge_path) if exists(badge_path) else ''
+    bids = re.findall(r'"id":\s*"([^"]+)"', bsrc)
+    ok(len(bids) >= 6, f'{badge_path} has only {len(bids)} badges')
+    ok(all(i.startswith(badge_prefix) for i in bids), f'a badge id in {badge_path} is not {badge_prefix}* namespaced')
+    ok(f'{badge_prefix}scholar' in bids, f'{badge_path} missing {badge_prefix}scholar')
+    ok(mod_path in sw, f'sw.js PRECACHE missing {mod_path}')
+    ok(badge_path in sw, f'sw.js PRECACHE missing {badge_path}')
+# registered under the Soul pillar, NOT Mind
+ok("export const SOUL_TRACK_LIST = ['crystals', 'dreams']" in tracks_src, 'tracks.js missing SOUL_TRACK_LIST = [crystals, dreams]')
+ok("export const TRACK_LIST = ['money', 'parenting', 'communication', 'memory']" in tracks_src,
+   'tracks.js TRACK_LIST must stay Mind-only (no crystals/dreams)')
+for tid in ['crystals', 'dreams']:
+    ok(f'{tid}: {{' in tracks_src, f'tracks.js missing the {tid} track descriptor')
+# soulScreen surfaces them as live #learn-<track> cards
+ok('SOUL_TRACK_LIST' in main_src, 'main.js does not import/use SOUL_TRACK_LIST')
+ok('soul-reflectives' in main_src and "go('#learn-' + b.dataset.track)" in main_src,
+   'main.js soulScreen does not wire the crystals/dreams cards to #learn-<track>')
+
+# 23) Per-coach voices + caption sync (the audio pass). Each coach must have a
+#     DISTINCT voice; both the natural (Kokoro) and system paths must be wired, and
+#     captions must advance per sentence in sync with playback.
+chars = read('js/characters.js')
+tts = read('js/tts.js')
+nv = read('js/natural-voice.js')
+coach_ids = set(re.findall(r"id:\s*'([a-z]+)'", chars))
+ok({'jasmine', 'nokeke', 'abednego', 'aguibou'}.issubset(coach_ids), 'characters.js missing one of the four coaches')
+nat_voices = re.findall(r"natural:\s*'([a-z_]+)'", chars)
+ok(len(nat_voices) >= 4, f'expected >=4 per-coach natural voices, found {len(nat_voices)}')
+ok(len(set(nat_voices)) == len(nat_voices), f'coach natural voices must be distinct, got {nat_voices}')
+ok(chars.count('voice:') >= 4, 'each coach needs its own voice config')
+ok('pitch:' in chars and 'rate:' in chars and 'system:' in chars, 'coach voice config missing system/pitch/rate')
+ok('generate(text, { voice, speed })' in nv, 'natural-voice.js does not pass per-coach voice+speed to generate')
+ok('onChunk' in nv, 'natural-voice.js missing the per-sentence caption hook')
+ok('setCharacterVoice' in tts, 'tts.js missing setCharacterVoice')
+ok('_pickSystemVoice' in tts, 'tts.js missing per-coach system voice selection')
+ok('naturalVoice.speak(chunks, {' in tts, 'tts.js does not pass the per-coach voice to the natural path')
+ok('onstart' in tts, 'tts.js system path missing per-sentence caption (onstart)')
+ok(main_src.count('setCharacterVoice') >= 2, 'main.js must set the coach voice at session start AND in settings preview')
+
+# 24) Durable workout transcript (accessibility). The coach records every narrated line
+#     (fullCaption) into a session-scoped log, reset at session start; the workout/
+#     meditation done screen renders it as an accessible <details> "Read what your coach
+#     said". The learning transcript (learning-screen.js) must remain — no regression.
+ok('transcript: []' in tts and 'resetTranscript' in tts, 'tts.js missing the session transcript log/reset')
+ok('this.transcript.push(fullCaption)' in tts, 'tts.js speak() does not append the spoken line to the transcript')
+ok('coach.resetTranscript()' in main_src, 'main.js does not reset the coach transcript at session start')
+ok('coach.transcript' in main_src, 'main.js done screen does not read the coach transcript')
+ok('Read what your coach said' in main_src and 'fin-transcript' in main_src,
+   'main.js workout done screen missing the accessible "Read what your coach said" transcript')
+# no-regression: the learning transcript still renders its lesson lines via plan.items
+learn_screen_src = read('js/learning-screen.js')
+ok('Read what your coach said' in learn_screen_src and 'it.ex.why' in learn_screen_src,
+   'learning-screen.js transcript regressed (lesson transcript must stay intact)')
+
+# 25) Lifelike voice, automatic: capable devices load the natural voice in the
+#     background (system voice covers slow ones), honoring an explicit choice + Data Saver.
+ok("voicePref: 'auto'" in st, "state.js profile missing the voicePref:'auto' default")
+ok('maybeAutoEnableNaturalVoice' in main_src, 'main.js missing the lifelike-voice auto-enable')
+ok(main_src.count('maybeAutoEnableNaturalVoice') >= 2, 'maybeAutoEnableNaturalVoice is defined but never called at boot')
+ok("p.voicePref === 'off'" in main_src, 'auto-enable must respect an explicit voicePref off')
+ok('saveData' in main_src, 'auto-enable must honor Data Saver (navigator.connection.saveData)')
+ok("p.voicePref = e.target.checked ? 'on' : 'off'" in main_src, 'settings toggle must record an explicit voicePref')
 
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:

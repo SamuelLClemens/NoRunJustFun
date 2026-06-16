@@ -117,20 +117,24 @@ export const naturalVoice = {
   // another (the system-voice path queues utterances; this preserves that
   // contract, so the coach never talks over herself). Resolves when done or
   // cancelled; rejects if generation/playback breaks so the caller can fall
-  // back to the system voice.
-  speak(chunks) {
+  // back to the system voice. opts: { voice, speed, onChunk } — voice is the
+  // per-coach Kokoro embedding, speed its pacing, onChunk(text) fires as each
+  // sentence's audio BEGINS (so captions track the spoken line).
+  speak(chunks, opts = {}) {
     const gen = this._gen;
-    const job = this._queue.then(() => this._playChunks(chunks, gen));
+    const job = this._queue.then(() => this._playChunks(chunks, gen, opts));
     // keep the queue alive even when a job rejects (the caller handles it)
     this._queue = job.catch(() => {});
     return job;
   },
 
-  async _playChunks(chunks, gen) {
+  async _playChunks(chunks, gen, opts = {}) {
+    const voice = opts.voice || VOICE;
+    const speed = opts.speed || 1;
     for (const text of chunks) {
       if (gen !== this._gen) return;
       if (!this._tts) throw new Error('natural voice not ready');
-      const out = await this._tts.generate(text, { voice: VOICE });
+      const out = await this._tts.generate(text, { voice, speed });
       if (gen !== this._gen) return;
       const ctx = sharedAudioContext();
       if (!ctx) throw new Error('no audio context');
@@ -153,6 +157,8 @@ export const naturalVoice = {
         // belt and braces: never let a swallowed onended hang the session
         setTimeout(done, buf.duration * 1000 + 1500);
         this._src = src;
+        // caption fires as THIS sentence's audio starts — tight transcript sync
+        if (opts.onChunk) { try { opts.onChunk(text); } catch { /* caption is best-effort */ } }
         src.start();
       });
     }

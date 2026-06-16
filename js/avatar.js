@@ -3,6 +3,7 @@
 // Budget: tiny scene, no shadows, clamped pixel ratio — 60fps on mid iPhones.
 
 import * as THREE from '../lib/three.module.min.js';
+import { prefersReducedMotion } from './state.js';
 
 export const JOINT_NAMES = [
   'spine', 'chest', 'neck', 'head',
@@ -394,7 +395,8 @@ export class Avatar {
     this.speed = 1;
 
     // subtle always-on breathing layer; decorative, so it honors reduced motion
-    this._breathe = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    // (in-app setting authoritative, OS query as fallback — see prefersReducedMotion)
+    this._breathe = !prefersReducedMotion();
 
     this.setCharacter(character);
 
