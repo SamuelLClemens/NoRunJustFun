@@ -593,6 +593,22 @@ ok("getElementById('btn-simpler')" in main_src and "getElementById('btn-deeper')
 ok('speakVariant' in main_src, 'session screen does not invoke speakVariant')
 ok('simpler:' in read('js/data/lessons.js'), 'money lesson plan items do not carry difficulty variants')
 
+# 33) S5a: the journal — typed entries + the readable/listenable book. Its own ledger
+#     (never sessions[]); audio goes to IndexedDB; the screen loads on demand (off the
+#     boot path); and "Reset everything" also clears the IndexedDB media store.
+journal_src = _read_opt('js/journal.js')
+if journal_src:
+    ok('sessions.push' not in journal_src and 'recordSession' not in journal_src,
+       'journal.js must not write to sessions[] (breaks garden/streak isolation)')
+    ok('progress.journal' in journal_src, 'journal.js does not use the progress.journal ledger')
+    idb_src = _read_opt('js/idb.js')
+    ok(bool(idb_src) and 'indexedDB' in idb_src, 'idb.js missing the IndexedDB wrapper for audio blobs')
+    ok("import('./journal-screen.js')" in main_src, 'router must load the journal screen on demand (dynamic import)')
+    ok("from './journal-screen.js'" not in main_src, 'journal-screen.js must NOT be statically imported (keep it off the boot path)')
+    ok('clearAllAudio' in main_src, 'Reset everything must also clear the journal IndexedDB store')
+    for _f in ['js/idb.js', 'js/journal.js', 'js/journal-screen.js']:
+        ok(f"'{_f}'" in read('sw.js'), f'sw.js does not precache {_f}')
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")

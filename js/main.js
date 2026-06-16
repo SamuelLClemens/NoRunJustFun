@@ -984,6 +984,12 @@ function youScreen() {
       </section>
 
       <section class="card">
+        <h2>Your journal</h2>
+        <p class="hint">A private place to write or speak your thoughts — kept as a book you can read, or hear read back in your coach's voice.</p>
+        <a class="btn btn-primary you-journal-open" href="#journal">Open your journal</a>
+      </section>
+
+      <section class="card">
         <h2>Your subjects</h2>
         <div class="you-subjects">${subjectCards}</div>
       </section>
@@ -1290,6 +1296,8 @@ function settingsScreen() {
   document.getElementById('btn-reset').addEventListener('click', () => {
     if (confirm('Reset everything? Your garden, streak, badges and settings will start over. This cannot be undone.')) {
       resetAll();
+      // resetAll clears localStorage; also wipe the journal audio in IndexedDB (loaded on demand).
+      import('./idb.js').then((m) => m.clearAllAudio()).catch(() => {});
       go('#');
     }
   });
@@ -1469,6 +1477,8 @@ async function routeTo(h, seq) {
   if (h === '#intake') return intakeScreen();
   if (h === '#programs') return programsScreen();
   if (h === '#you') return youScreen();
+  // Journal: loaded on demand so its IndexedDB/recorder code never touches the boot path.
+  if (h === '#journal') { import('./journal-screen.js').then((m) => m.journalScreen()).catch((e) => console.warn('journal load failed', e)); return; }
   if (h === '#badges') return badgesScreen();
   if (h === '#settings') return settingsScreen();
   if (h === '#safety') return safetyScreen();

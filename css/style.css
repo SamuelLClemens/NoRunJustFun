@@ -741,6 +741,20 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 /* In-lesson difficulty controls (S4): "Explain it simpler" / "Go deeper". */
 .lesson-levels { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 4px 0 10px; }
 .btn-level { font-size: 0.92rem; padding: 9px 16px; }
+/* Journal (S5): private composer + the "book". */
+.you-journal-open { display: inline-block; margin-top: 8px; text-decoration: none; }
+.journal-compose { width: 100%; padding: 11px 12px; border: 2px solid var(--line, #E3E0D8); border-radius: var(--radius-sm); font: inherit; background: #fff; resize: vertical; min-height: 90px; }
+.journal-compose-actions { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+.journal-book-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.journal-book-controls { display: flex; gap: 8px; flex-wrap: wrap; }
+.journal-now { color: var(--green-700); font-style: italic; min-height: 0; margin: 6px 0 0; }
+.journal-now:empty { display: none; }
+.journal-book { margin-top: 10px; display: flex; flex-direction: column; gap: 10px; }
+.journal-entry { border: 1px solid var(--line, #EFECE4); border-radius: var(--radius-sm); padding: 10px 12px; background: #fff; }
+.journal-entry-head { display: flex; justify-content: space-between; gap: 8px; font-size: 0.78rem; color: var(--ink-soft); }
+.journal-text { margin: 6px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.journal-entry-actions { margin-top: 6px; text-align: right; }
+.journal-rec-dot { color: #c0392b; }
 .you-wlist, .you-log { list-style: none; margin: 10px 0 0; padding: 0; }
 .you-wlist li, .you-log li { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-top: 1px solid var(--line, #EFECE4); }
 .you-log-date { color: var(--ink-soft); font-size: 0.82rem; flex: 0 0 auto; }
