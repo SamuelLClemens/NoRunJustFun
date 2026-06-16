@@ -252,9 +252,19 @@ ok('streak7' in learn_code, "learning.js missing the per-track 7-day streak cond
 #     installed PWAs pick them up (addAll is atomic — every path must resolve)
 sw = read('sw.js')
 core_learn_files = ['js/learning.js', 'js/learning-screen.js', 'js/data/tracks.js',
-                    'js/finance.js', 'js/finance-screen.js', 'js/data/lessons.js', 'js/data/badges.finance.js']
+                    'js/data/lessons.js', 'js/data/badges.finance.js']
 for f in core_learn_files:
     ok(f"'{f}'" in sw, f"sw.js PRECACHE missing {f}")
+# The orphaned finance.* modules (referenced only in comments; the live engine is
+# learning.js + learning-screen.js + tracks.js) are no longer precached — they were
+# dead code and a single point of failure for the atomic addAll().
+for orphan in ['js/finance.js', 'js/finance-screen.js']:
+    ok(f"'{orphan}'" not in sw, f"sw.js should no longer precache the orphaned {orphan}")
+# The realistic-avatar dependency chain is precached so the opt-in photoreal coach
+# works offline; the ~1.9 MB GLB is warmed best-effort in install (cannot reject addAll).
+for dep in ['lib/jsm/loaders/GLTFLoader.js', 'lib/jsm/utils/BufferGeometryUtils.js']:
+    ok(f"'{dep}'" in sw, f"sw.js PRECACHE missing avatar dependency {dep}")
+ok('models/vera.glb' in sw, "sw.js install does not warm the photoreal model models/vera.glb")
 for sid, cfg in LEARN_SUBJECTS.items():
     for f in [cfg['badges'], cfg['lessons']]:
         if exists(f):

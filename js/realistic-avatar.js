@@ -12,6 +12,7 @@
 
 import * as THREE from '../lib/three.module.min.js';
 import { GLTFLoader } from '../lib/jsm/loaders/GLTFLoader.js';
+import { prefersReducedMotion } from './state.js';
 
 const D2R = Math.PI / 180;
 const MODEL_URL = new URL('../models/vera.glb', import.meta.url).href;
@@ -110,7 +111,8 @@ export class RealisticAvatar {
     this._running = false;
     this._pendingStart = false;
     this.speed = 1;
-    this._breathe = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    // decorative breathing — honor reduced motion (in-app setting wins; OS fallback)
+    this._breathe = !prefersReducedMotion();
 
     this._onVis = () => {
       if (document.hidden) this._pause();

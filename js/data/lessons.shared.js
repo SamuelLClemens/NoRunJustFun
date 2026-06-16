@@ -42,7 +42,6 @@ function planFromSegments(segs, meta, kind) {
     // reuse the Player's quiet, segment-by-segment narration (same as meditation);
     // kind:<trackId> is what the engine records, so a lesson is never a meditation.
     isMeditation: true,
-    isLesson: true,
     kind,
     lessonIds: meta.lessonIds,
     lessonTitles: meta.lessonTitles,

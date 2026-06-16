@@ -23,7 +23,6 @@ function defaults() {
       intake: null,             // see js/data/profiles.js; null => default-safe profile
       guidelineAccepted: false, // user has seen the "exercise guidance, not medical advice" gate
       consultClinicianAck: false,
-      defaultTier: 'no_sweat',  // last tier chosen, for sane re-entry
       chairMode: false,         // accessibility: seated/standing-by-chair substitution
       reducedMotion: 'auto',    // auto | on | off (overrides the media query)
       // --- v4 additions (dashboard; all on-device only, never transmitted) ---
@@ -156,6 +155,19 @@ export function resetAll() {
   store.profile = fresh.profile;
   store.progress = fresh.progress;
   save();
+}
+
+// Authoritative reduced-motion check for JS-driven animation (confetti, avatar
+// breathing) that CSS media queries cannot reach. The in-app setting wins when it
+// is 'on' or 'off'; 'auto' (the default) defers to the OS prefers-reduced-motion
+// query — so a user who picks "Reduce motion" in Settings is honored even with no
+// OS preference set. Keep this in sync with applyMotionPref()/CSS in main.js.
+export function prefersReducedMotion() {
+  const pref = store.profile && store.profile.reducedMotion;
+  if (pref === 'on') return true;
+  if (pref === 'off') return false;
+  return !!(typeof window !== 'undefined' && window.matchMedia
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 }
 
 export function todayKey(d = new Date()) {

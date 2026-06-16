@@ -8,7 +8,7 @@ import { coach, personalize, pick } from './tts.js';
 import { naturalVoice } from './natural-voice.js';
 import { sound, music } from './audio.js';
 import { buildSession, TRANSITION_SECS } from './sessionEngine.js';
-import { streakInfo, levelInfo, gardenStage, checkBadges, recordSession, LEVELS } from './gamify.js';
+import { streakInfo, levelInfo, gardenStage, checkBadges, recordSession } from './gamify.js';
 import { Player } from './player.js';
 import { celebrate } from './confetti.js';
 import { EXERCISES } from './data/exercises.js';
@@ -29,6 +29,11 @@ import { trackHubScreen, learningDone, gameScreen, quizScreen } from './learning
 const app = document.getElementById('app');
 let avatar = null;        // lazy three.js instance, one at a time
 let player = null;
+
+// Local-only QA handle is exposed on window ONLY in dev (?dev=…), never in
+// production, so a disposed Player/avatar and the mutable store are not pinned to
+// a global. It is also cleared on teardown — see teardownSession().
+const DEV_QA = new URLSearchParams(location.search).has('dev');
 
 // The full movement pool = frozen 29 + appended new movements. exercises.js stays
 // byte-stable; tier metadata and new moves live in movements-ext.js.
@@ -638,7 +643,7 @@ function sessionScreen(plan) {
     },
   });
 
-  window.__nrjf = { player, store, avatar };   // QA handle (local-only, harmless)
+  if (DEV_QA) window.__nrjf = { player, store, avatar };   // dev-only QA handle (?dev=…)
 
   document.getElementById('btn-pause').addEventListener('click', () => {
     if (player.phase === 'paused') player.resume();
@@ -661,7 +666,7 @@ function swapToLeanAvatar(oldCanvas, char) {
   try {
     avatar = new Avatar(fresh, char);
     avatar.start();
-    if (window.__nrjf) window.__nrjf.avatar = avatar;
+    if (DEV_QA && window.__nrjf) window.__nrjf.avatar = avatar;
     const it = player && player.plan && player.plan.items[player.idx];
     if (it) avatar.setPose(POSES[it.ex.id] || null);
   } catch (e) {
@@ -678,6 +683,7 @@ function teardownSession() {
   naturalVoice.onProgress = null;
   music.stop();
   if (avatar) { avatar.dispose(); avatar = null; }
+  if (window.__nrjf) window.__nrjf = null;   // drop the dev QA handle's stale refs
 }
 
 function finishSession(stats) {
@@ -1242,9 +1248,27 @@ async function render() {
   teardownSession();
   applyMotionPref();
   window.scrollTo(0, 0);
-  const h = location.hash || '#';
   maybeBirthdayParty();   // once per year, on the day — self-guards against re-showing
+  await routeTo(location.hash || '#', seq);
+  // Move focus to the new screen's primary heading so keyboard and screen-reader
+  // users land on the fresh content instead of being silently dropped to <body>
+  // on every route change (WCAG 2.4.3). Skip if a newer render superseded us.
+  if (seq === renderSeq) focusScreenHeading();
+}
 
+// Centralized focus move for route changes (see render()). The primary heading is
+// given tabindex="-1" so it is programmatically focusable without joining the tab
+// order; we fall back to <main> for screens with no heading (e.g. home). An open
+// modal (safety/birthday) manages its own focus, so leave it alone.
+function focusScreenHeading() {
+  if (document.querySelector('.overlay')) return;
+  const target = app.querySelector('h1, h2') || app.querySelector('main') || app;
+  if (!target) return;
+  target.setAttribute('tabindex', '-1');
+  target.focus({ preventScroll: true });
+}
+
+async function routeTo(h, seq) {
   // tier chooser for a chosen duration
   if (h.startsWith('#tier-')) {
     const mins = parseInt(h.slice(6), 10);
@@ -1259,7 +1283,6 @@ async function render() {
     await ensureAvatarClass();
     if (store.profile.fullInstructorOn) await ensureRealisticClass();
     if (seq !== renderSeq) return;
-    store.profile.defaultTier = 'meditation'; save();
     sessionScreen(plan);
     return;
   }
@@ -1276,7 +1299,6 @@ async function render() {
       await ensureAvatarClass();
       if (store.profile.fullInstructorOn) await ensureRealisticClass();
       if (seq !== renderSeq) return; // superseded while modules loaded
-      store.profile.defaultTier = tier; save();
       sessionScreen(plan);
       return;
     }

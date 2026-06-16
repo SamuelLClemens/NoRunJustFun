@@ -5361,6 +5361,1092 @@ const SCRIPTS = {
   "disclaimers": [
     "A gentle reminder: this is a calming practice, not medical or psychological treatment. If you feel distressed, please pause and reach out to someone you trust or a professional."
   ]
+},
+  "med-lib-compassionate-body-10": {
+  "id": "med-lib-compassionate-body-10",
+  "minutes": 10,
+  "theme": "kind attention to a tired body",
+  "kind": "library",
+  "intent": "Ten minutes of warm, unhurried attention for a body that has been working hard. The invitation is to meet the body with kindness rather than judgement or repair — noticing, softening, and offering a little gratitude, with a clear breath-or-sound alternative for anyone who does not want to turn toward the body today.",
+  "items": [
+    {
+      "id": "med-lib-compassionate-body-10-s0",
+      "name": "Arrive, no agenda",
+      "secs": 30,
+      "say": "Welcome. Let yourself land here, however you arrive. Find a position that feels kind for your body — sitting, leaning, or lying down, fully supported. There is nothing to get right in the next ten minutes."
+    },
+    {
+      "id": "med-lib-compassionate-body-10-s1",
+      "name": "Choice of gaze",
+      "secs": 28,
+      "say": "If it feels right, you might let your eyes close. If you would rather keep them open, simply soften your gaze toward the floor. Either is welcome."
+    },
+    {
+      "id": "med-lib-compassionate-body-10-s2",
+      "name": "Settle the weight",
+      "secs": 42,
+      "say": "Let the surface beneath you take your weight. You do not have to hold yourself up for these few minutes. You might let one slow breath out, and let your shoulders drop a little with it."
+    },
+    {
+      "id": "med-lib-compassionate-body-10-s3",
+      "name": "Quiet pause",
+      "secs": 38,
+      "say": ""
+    },
+    {
+      "id": "med-lib-compassionate-body-10-s4",
+      "name": "Name the kindness",
+      "secs": 45,
+      "say": "This practice is a chance to meet your body with warmth, rather than judgement. We are not here to fix anything or change anything. We are only here to say a gentle hello."
+    },
+    {
+      "id": "med-lib-compassionate-body-10-s5",
+      "name": "Trauma-aware opt-out",
+      "secs": 42,
+      "say": "If turning attention toward the body feels welcome today, you are invited to rest your awareness softly wherever I mention. If it does not feel good, you might instead stay with the sound of your breath, or with the sounds in the room. That choice is just as complete."
+    },
+    {
+      "id": "med-lib-compassionate-body-10-s6",
+      "name": "Hands, gently",
+      "secs": 50,
+      "say": "If you are with the body, you might bring a soft attention to your hands. Hands that have held and carried and done so much. You do not need them to do anything now. You might just let them be open, and heavy, and at rest."
+    },
+    {
+      "id": "med-lib-compassionate-body-10-s7",
+      "name": "Pause with the hands",
+      "secs": 32,
+      "say": ""
+    },
+    {
+      "id": "med-lib-compassionate-body-10-s8",
+      "name": "Shoulders and neck",
+      "secs": 48,
+      "say": "You might let your awareness drift to the shoulders and the neck, places that often carry a quiet load. There is nothing to brace against here. If it feels good, you could let them soften, just a little. Only if it feels good."
+    },
+    {
+      "id": "med-lib-compassionate-body-10-s9",
+      "name": "Belly and back",
+      "secs": 48,
+      "say": "If it feels okay, you might notice the belly and the lower back, rising and falling with the breath all on their own. This part of you has worked hard. You might meet it with the same patience you would offer someone you love."
+    },
+    {
+      "id": "med-lib-compassionate-body-10-s10",
+      "name": "Whole body, warmth",
+      "secs": 45,
+      "say": "And now, if you like, let go of any one part. You might sense the whole body at once, resting and breathing, held by the quiet. Or simply rest with the breath. However you spent that time, it was exactly right."
+    },
+    {
+      "id": "med-lib-compassionate-body-10-s11",
+      "name": "Quiet rest",
+      "secs": 40,
+      "say": ""
+    },
+    {
+      "id": "med-lib-compassionate-body-10-s12",
+      "name": "A small thank you",
+      "secs": 38,
+      "say": "If it feels welcome, you might offer your body a quiet thank you. For carrying you here. For breathing without being asked. No words are needed — only a little warmth, if it comes."
+    },
+    {
+      "id": "med-lib-compassionate-body-10-s13",
+      "name": "Begin to return",
+      "secs": 37,
+      "say": "We will begin to come back now, slowly, in your own time. You might let your breath grow a touch fuller, and let a small movement return — your fingers, your toes."
+    },
+    {
+      "id": "med-lib-compassionate-body-10-s14",
+      "name": "Close with kindness",
+      "secs": 37,
+      "say": "When you are ready, and only then, let your eyes open or lift your gaze. You met yourself with kindness today, and that matters. Carry a little of this warmth with you. Take care."
+    }
+  ],
+  "disclaimers": [
+    "A gentle reminder: this is a calming practice, not medical or psychological treatment. If you feel distressed, please pause and reach out to someone you trust or a professional."
+  ]
+},
+  "med-lib-anchor-in-sound-10": {
+  "id": "med-lib-anchor-in-sound-10",
+  "minutes": 10,
+  "theme": "sound as anchor",
+  "kind": "library",
+  "intent": "Ten minutes of resting attention on the sounds around you, using hearing as a gentle, low-pressure anchor. Sound is offered as an alternative to the breath and body for anyone who finds those harder today — there is nothing to produce, only to receive whatever arrives. Invitational throughout, with quiet pauses for simple listening.",
+  "items": [
+    {
+      "id": "med-lib-anchor-in-sound-10-s0",
+      "name": "Arrive",
+      "secs": 32,
+      "say": "Welcome. Settle into a position that feels easy to keep for a while. There is nothing to get right here, and nothing you need to make happen. We are simply going to rest in listening."
+    },
+    {
+      "id": "med-lib-anchor-in-sound-10-s1",
+      "name": "Choice of gaze",
+      "secs": 28,
+      "say": "If it feels right, you might let your eyes close, which can make sound a little easier to notice. If you would rather keep them open, soften your gaze downward. Either is welcome."
+    },
+    {
+      "id": "med-lib-anchor-in-sound-10-s2",
+      "name": "Settle",
+      "secs": 38,
+      "say": "Let the surface beneath you hold your weight. You might let one slow breath out, and let yourself arrive in the room exactly as it is, with all its ordinary sounds. And know that you are in charge here — you can pause, open your eyes, or stop at any moment that feels right for you."
+    },
+    {
+      "id": "med-lib-anchor-in-sound-10-s3",
+      "name": "Quiet pause",
+      "secs": 33,
+      "say": ""
+    },
+    {
+      "id": "med-lib-anchor-in-sound-10-s4",
+      "name": "Sound needs nothing from you",
+      "secs": 48,
+      "say": "Listening is a gentle anchor, because sound asks nothing of you. You do not have to reach for it or hold onto it. The sounds simply arrive, and you simply receive them. If breath or body feel hard today, sound can be a kind place to rest."
+    },
+    {
+      "id": "med-lib-anchor-in-sound-10-s5",
+      "name": "The nearest sounds",
+      "secs": 48,
+      "say": "You might begin with whatever is closest. The quiet of your own breath, perhaps, or a small sound in the room. There is no need to name anything or work anything out. You are only letting sound be heard."
+    },
+    {
+      "id": "med-lib-anchor-in-sound-10-s6",
+      "name": "Listen, simply",
+      "secs": 40,
+      "say": ""
+    },
+    {
+      "id": "med-lib-anchor-in-sound-10-s7",
+      "name": "Widen outward",
+      "secs": 48,
+      "say": "If it feels right, you might let your listening widen, out past the room. Sounds further away — a distant hum, traffic, wind, a voice. You do not need to chase them. You might just let them come to you, like the way a still pond receives the rain."
+    },
+    {
+      "id": "med-lib-anchor-in-sound-10-s8",
+      "name": "No good or bad sound",
+      "secs": 45,
+      "say": "There are no right or wrong sounds here. A sound you might usually call annoying is just as welcome as a pleasant one. You are not judging them. You are simply noticing that they arise, and that they pass."
+    },
+    {
+      "id": "med-lib-anchor-in-sound-10-s9",
+      "name": "Rest in the whole field",
+      "secs": 45,
+      "say": "You might let go of listening to any one thing, and instead rest in the whole field of sound at once. Sounds appearing and dissolving, near and far, with silence underneath them all. Nothing to do but be here, hearing."
+    },
+    {
+      "id": "med-lib-anchor-in-sound-10-s10",
+      "name": "Quiet listening",
+      "secs": 40,
+      "say": ""
+    },
+    {
+      "id": "med-lib-anchor-in-sound-10-s11",
+      "name": "When the mind wanders",
+      "secs": 40,
+      "say": "If you notice your mind has wandered off into thinking, that is completely fine. That is what minds do. Whenever you notice, you might gently return to the next sound that arrives. Kindly, with no scolding."
+    },
+    {
+      "id": "med-lib-anchor-in-sound-10-s12",
+      "name": "A moment more",
+      "secs": 35,
+      "say": "Let yourself rest here a little longer, simply listening, held by the sounds of your world going about its day. There is nowhere else you need to be."
+    },
+    {
+      "id": "med-lib-anchor-in-sound-10-s13",
+      "name": "Begin to return",
+      "secs": 35,
+      "say": "We will begin to come back now, slowly. You might let your breath grow a touch fuller, and let a small movement return, in your own time. No hurry at all."
+    },
+    {
+      "id": "med-lib-anchor-in-sound-10-s14",
+      "name": "Close",
+      "secs": 45,
+      "say": "When you are ready, let your eyes open or lift your gaze. You can carry this kind of listening with you into your day — sound is always here whenever you would like an anchor. Thank you for being here. Take care."
+    }
+  ],
+  "disclaimers": [
+    "A gentle reminder: this is a calming practice, not medical or psychological treatment. If you feel distressed, please pause and reach out to someone you trust or a professional."
+  ]
+},
+  "med-lib-mountain-stability-12": {
+  "id": "med-lib-mountain-stability-12",
+  "minutes": 12,
+  "theme": "mountain stability",
+  "kind": "library",
+  "intent": "Twelve minutes borrowing the steadiness of a mountain. The listener is invited to imagine a mountain that stays grounded and dignified through every kind of passing weather, and to sense a little of that same steadiness in themselves — while thoughts, feelings, and the day move across the sky like weather. Image-led and invitational, with a breath alternative for anyone who does not connect with imagery today.",
+  "items": [
+    {
+      "id": "med-lib-mountain-stability-12-s0",
+      "name": "Arrive",
+      "secs": 35,
+      "say": "Welcome. Find a position that feels settled and supported — seated is lovely for this one, if it is comfortable, but lying down is welcome too. There is nothing to get right here."
+    },
+    {
+      "id": "med-lib-mountain-stability-12-s1",
+      "name": "Choice of gaze",
+      "secs": 30,
+      "say": "If it feels right, you might let your eyes close. If you would rather keep them open, soften your gaze toward the floor. Either is welcome."
+    },
+    {
+      "id": "med-lib-mountain-stability-12-s2",
+      "name": "Settle the base",
+      "secs": 45,
+      "say": "Let the surface beneath you take your weight, and notice where your body meets it. You might let one slow breath out, and let yourself feel a little heavier, a little more grounded, with no effort at all. You can open your eyes or stop whenever you wish — you stay in charge throughout."
+    },
+    {
+      "id": "med-lib-mountain-stability-12-s3",
+      "name": "Quiet pause",
+      "secs": 40,
+      "say": ""
+    },
+    {
+      "id": "med-lib-mountain-stability-12-s4",
+      "name": "Offer the image gently",
+      "secs": 50,
+      "say": "In a moment I will offer the image of a mountain. If picturing things comes easily, you are welcome to follow along. If imagery does not feel natural today, you might simply rest with the steady weight of your own body instead. Both are the practice."
+    },
+    {
+      "id": "med-lib-mountain-stability-12-s5",
+      "name": "Picture the mountain",
+      "secs": 60,
+      "say": "You might bring to mind a mountain. Any mountain — one you have seen, or one you simply imagine. Notice its broad, grounded base, rooted deep into the earth. Its solid sides. Its peak, quiet and dignified against the sky. Take a moment to let it become clear."
+    },
+    {
+      "id": "med-lib-mountain-stability-12-s6",
+      "name": "Sit with the mountain",
+      "secs": 40,
+      "say": ""
+    },
+    {
+      "id": "med-lib-mountain-stability-12-s7",
+      "name": "Become the mountain",
+      "secs": 60,
+      "say": "If it feels right, you might let yourself become the mountain. Your seat, its broad base. Your spine, its rising slopes. Your head, the still peak. Grounded, steady, at ease. You do not have to hold yourself rigid — a mountain is simply heavy, and settled, and unhurried."
+    },
+    {
+      "id": "med-lib-mountain-stability-12-s8",
+      "name": "Weather arrives",
+      "secs": 60,
+      "say": "Now imagine the weather moving across the mountain. Clouds drifting past. Wind, sun, rain, even storms. The weather comes and the weather goes — and through all of it, the mountain stays. It does not need to chase the clouds away. It simply remains."
+    },
+    {
+      "id": "med-lib-mountain-stability-12-s9",
+      "name": "Thoughts as weather",
+      "secs": 60,
+      "say": "In the same way, your thoughts and feelings are weather moving across you. Worry, restlessness, sadness, ease — all of it passing. You do not have to fix the weather or hold onto it. Underneath, you might sense a steadiness that stays, like the mountain, no matter what passes through."
+    },
+    {
+      "id": "med-lib-mountain-stability-12-s10",
+      "name": "Rest in steadiness",
+      "secs": 50,
+      "say": ""
+    },
+    {
+      "id": "med-lib-mountain-stability-12-s11",
+      "name": "Borrow the steadiness",
+      "secs": 55,
+      "say": "You might let yourself borrow a little of the mountain's steadiness now. Nothing forced. Just a quiet sense that, whatever the day brings, some part of you can stay grounded and still beneath it. You are allowed to be this steady."
+    },
+    {
+      "id": "med-lib-mountain-stability-12-s12",
+      "name": "A moment more",
+      "secs": 50,
+      "say": "Stay here a little longer, as the mountain, or simply as yourself, breathing. Solid. Supported. There is nowhere you need to go, and nothing you need to become. You are already here."
+    },
+    {
+      "id": "med-lib-mountain-stability-12-s13",
+      "name": "Begin to return",
+      "secs": 40,
+      "say": "We will begin to come back now, slowly, in your own time. You might let the image of the mountain soften, and let your breath grow a touch fuller, and let a small movement return."
+    },
+    {
+      "id": "med-lib-mountain-stability-12-s14",
+      "name": "Close",
+      "secs": 45,
+      "say": "When you are ready, and only then, let your eyes open or lift your gaze. The mountain's steadiness is yours to remember whenever the weather feels loud. You showed up for yourself today, and that counts. Take care."
+    }
+  ],
+  "disclaimers": [
+    "A gentle reminder: this is a calming practice, not medical or psychological treatment. If you feel distressed, please pause and reach out to someone you trust or a professional."
+  ]
+},
+  "med-lib-lake-stillness-12": {
+  "id": "med-lib-lake-stillness-12",
+  "minutes": 12,
+  "theme": "lake stillness",
+  "kind": "library",
+  "intent": "Twelve minutes letting the surface settle and grow still, using the image of a lake. The listener watches the ripples of a busy mind gradually calm, until the surface grows clear and reflective — without forcing stillness, simply allowing it. Image-led and invitational, with a permission-first breath alternative for anyone who does not connect with imagery today.",
+  "items": [
+    {
+      "id": "med-lib-lake-stillness-12-s0",
+      "name": "Arrive",
+      "secs": 35,
+      "say": "Welcome. Find a position that feels restful and supported, sitting or lying down. There is nothing to get right here, and nothing you need to make still by force. We will simply let things settle."
+    },
+    {
+      "id": "med-lib-lake-stillness-12-s1",
+      "name": "Choice of gaze",
+      "secs": 30,
+      "say": "If it feels right, you might let your eyes close. If you would rather keep them open, soften your gaze toward the floor. Either is welcome."
+    },
+    {
+      "id": "med-lib-lake-stillness-12-s2",
+      "name": "Settle",
+      "secs": 42,
+      "say": "Let the surface beneath you hold your weight. You might let one slow breath out, longer than the breath in, and let a little of the day settle downward with it. You stay in charge here — you can pause, open your eyes, or stop at any time that feels right."
+    },
+    {
+      "id": "med-lib-lake-stillness-12-s3",
+      "name": "Quiet pause",
+      "secs": 38,
+      "say": ""
+    },
+    {
+      "id": "med-lib-lake-stillness-12-s4",
+      "name": "Offer the image gently",
+      "secs": 50,
+      "say": "In a moment I will offer the image of a lake. If picturing things comes easily, you are welcome to follow along. If imagery does not feel natural today, you might simply rest with the slow rhythm of your breath instead. Both are completely fine."
+    },
+    {
+      "id": "med-lib-lake-stillness-12-s5",
+      "name": "Picture the lake",
+      "secs": 55,
+      "say": "You might bring to mind a lake. Any lake — one you have seen, or one you imagine. Picture it held in the earth, surrounded by quiet. Notice its water, and the wide sky resting above it. Take a moment to let the scene become clear."
+    },
+    {
+      "id": "med-lib-lake-stillness-12-s6",
+      "name": "Sit with the lake",
+      "secs": 40,
+      "say": ""
+    },
+    {
+      "id": "med-lib-lake-stillness-12-s7",
+      "name": "The busy surface",
+      "secs": 55,
+      "say": "At first, the surface may be busy. Ripples, small waves, the wind stirring things up. This is how a mind often is — and there is nothing wrong with it. You do not need to flatten the water by force. You might just watch the movement, without adding to it."
+    },
+    {
+      "id": "med-lib-lake-stillness-12-s8",
+      "name": "Letting it settle",
+      "secs": 60,
+      "say": "As the wind eases, the surface begins to settle, all on its own. Ripple by ripple, the water grows calmer. You do not have to make this happen. Stillness is simply what a lake returns to when it is left alone. You might let yourself be left alone in the same way now."
+    },
+    {
+      "id": "med-lib-lake-stillness-12-s9",
+      "name": "The still surface",
+      "secs": 50,
+      "say": ""
+    },
+    {
+      "id": "med-lib-lake-stillness-12-s10",
+      "name": "Clear and reflective",
+      "secs": 55,
+      "say": "As the surface grows still, it becomes clear, and able to reflect the sky above it. In the same way, when your mind settles, it can rest and see clearly, without straining. You might sense that quality of calm, reflective stillness in yourself now, without reaching for it."
+    },
+    {
+      "id": "med-lib-lake-stillness-12-s11",
+      "name": "Depths below",
+      "secs": 55,
+      "say": "And remember the lake is not only its surface. Far below, the deep water stays calm even when the surface is stirred. You might sense that same quiet depth in yourself — a stillness that is always there underneath, whatever moves across the top."
+    },
+    {
+      "id": "med-lib-lake-stillness-12-s12",
+      "name": "Rest in stillness",
+      "secs": 45,
+      "say": ""
+    },
+    {
+      "id": "med-lib-lake-stillness-12-s13",
+      "name": "A moment more",
+      "secs": 40,
+      "say": "Stay here a little longer, as the still lake, or simply as yourself, breathing slowly. Nothing to stir up, nothing to fix. Just the quiet surface, and the calm depths, and you, resting between them."
+    },
+    {
+      "id": "med-lib-lake-stillness-12-s14",
+      "name": "Begin to return",
+      "secs": 30,
+      "say": "We will begin to come back now, slowly, in your own time. You might let the image of the lake soften, let your breath grow a touch fuller, and let a small movement return."
+    },
+    {
+      "id": "med-lib-lake-stillness-12-s15",
+      "name": "Close",
+      "secs": 40,
+      "say": "When you are ready, let your eyes open or lift your gaze. The lake's stillness is yours to return to whenever things feel stirred up. You gave yourself this time, and it counts. Take care."
+    }
+  ],
+  "disclaimers": [
+    "A gentle reminder: this is a calming practice, not medical or psychological treatment. If you feel distressed, please pause and reach out to someone you trust or a professional."
+  ]
+},
+  "med-lib-release-worry-15": {
+  "id": "med-lib-release-worry-15",
+  "minutes": 15,
+  "theme": "releasing worry",
+  "kind": "library",
+  "intent": "Fifteen minutes for gently setting down a circling worry. Rather than solving or arguing with the worry, the listener is invited to notice it with kindness, loosen their grip, and let it rest somewhere safe for a while — knowing they can pick it back up later if they choose. Trauma-aware and invitational, with frequent permission to stay only as close to the worry as feels safe, plus quiet pauses for settling.",
+  "items": [
+    {
+      "id": "med-lib-release-worry-15-s0",
+      "name": "Arrive",
+      "secs": 40,
+      "say": "Welcome. Find a position that feels kind and supported, sitting or lying down. There is nothing to fix or solve in the next fifteen minutes. This is simply a little time to set something heavy down for a while."
+    },
+    {
+      "id": "med-lib-release-worry-15-s1",
+      "name": "Choice of gaze",
+      "secs": 28,
+      "say": "If it feels right, you might let your eyes close. If you would rather keep them open, soften your gaze toward the floor. Either is welcome."
+    },
+    {
+      "id": "med-lib-release-worry-15-s2",
+      "name": "Settle first",
+      "secs": 48,
+      "say": "Before we go anywhere near the worry, let us settle. Let the surface beneath you take your weight. You might let one slow breath out, and feel the support underneath you holding you completely."
+    },
+    {
+      "id": "med-lib-release-worry-15-s3",
+      "name": "Quiet pause",
+      "secs": 42,
+      "say": ""
+    },
+    {
+      "id": "med-lib-release-worry-15-s4",
+      "name": "Steady the ground",
+      "secs": 48,
+      "say": "Notice a few places where your body meets something solid — your seat, your feet, your back. These points of contact are steady and here, no matter what your mind is doing. You can return to them any time the worry feels too close."
+    },
+    {
+      "id": "med-lib-release-worry-15-s5",
+      "name": "Name the intention gently",
+      "secs": 52,
+      "say": "In a moment we will turn, very gently, toward a worry that has been circling. We are not going to argue with it or solve it today. We are only going to loosen our grip on it a little, and let it rest. You stay in charge the whole time."
+    },
+    {
+      "id": "med-lib-release-worry-15-s6",
+      "name": "Choose how close",
+      "secs": 52,
+      "say": "You might let one worry come to mind — likely you already know which one. Here is the important part: you decide how close to stand. You can look at it directly, or notice it from across the room, or keep it as just a word, at arm's length. Stay only as near as feels safe."
+    },
+    {
+      "id": "med-lib-release-worry-15-s7",
+      "name": "Quiet pause",
+      "secs": 38,
+      "say": ""
+    },
+    {
+      "id": "med-lib-release-worry-15-s8",
+      "name": "Notice without solving",
+      "secs": 58,
+      "say": "Rather than diving into the worry, you might simply notice that it is here. You could even name it softly to yourself — there is worrying, there is planning, there is fear. Naming it gently can create a small space between you and it, so you are the one watching the worry, not the one trapped inside it."
+    },
+    {
+      "id": "med-lib-release-worry-15-s9",
+      "name": "Loosen the grip",
+      "secs": 58,
+      "say": "Notice how the body holds a worry — perhaps a tightness in the chest, the jaw, the belly. You do not have to force anything to release. But with each slow breath out, you might let your grip loosen by the smallest amount. Worry often feels like clutching. You are allowed to slowly open the hand."
+    },
+    {
+      "id": "med-lib-release-worry-15-s10",
+      "name": "Quiet pause",
+      "secs": 42,
+      "say": ""
+    },
+    {
+      "id": "med-lib-release-worry-15-s11",
+      "name": "A safe place to set it",
+      "secs": 60,
+      "say": "If it feels right, you might imagine setting the worry down somewhere safe for now. A shelf, a box, a basket by the door — wherever feels okay. You are not throwing it away, and you are not pretending it does not matter. You are simply letting it wait there, so you do not have to carry it for these few minutes."
+    },
+    {
+      "id": "med-lib-release-worry-15-s12",
+      "name": "You can return for it",
+      "secs": 52,
+      "say": "It helps to know the worry will still be there if you genuinely need it. You can pick it back up later, when you have more rest behind you and you can meet it from steadier ground. For now, you are allowed to put it down. Setting it down is not the same as giving up."
+    },
+    {
+      "id": "med-lib-release-worry-15-s13",
+      "name": "Rest in the space",
+      "secs": 48,
+      "say": ""
+    },
+    {
+      "id": "med-lib-release-worry-15-s14",
+      "name": "Breath after release",
+      "secs": 52,
+      "say": "With the worry resting nearby rather than gripped tight, you might notice a little more room to breathe. Let the breath move slowly and easily, the exhale long and soft. There is nothing to hold onto right now. You can simply rest in this small clearing you have made."
+    },
+    {
+      "id": "med-lib-release-worry-15-s15",
+      "name": "Kindness toward the worrier",
+      "secs": 52,
+      "say": "And you might offer a little kindness toward the part of you that worries. It is usually trying to keep you safe, in its own anxious way. You do not have to thank it or fight it. You might just let it know, gently, that it is allowed to rest too, for now."
+    },
+    {
+      "id": "med-lib-release-worry-15-s16",
+      "name": "Quiet rest",
+      "secs": 42,
+      "say": ""
+    },
+    {
+      "id": "med-lib-release-worry-15-s17",
+      "name": "Begin to return",
+      "secs": 42,
+      "say": "We will begin to come back now, slowly, in your own time. You might let your breath grow a touch fuller, and let a small movement return — your fingers, your toes, a gentle stretch if your body would like one."
+    },
+    {
+      "id": "med-lib-release-worry-15-s18",
+      "name": "Close",
+      "secs": 46,
+      "say": "When you are ready, and only then, let your eyes open or lift your gaze. Whatever you chose to do with the worry, you met it with more steadiness than fear today, and that is real. Carry a little of this quiet with you. Take care."
+    }
+  ],
+  "disclaimers": [
+    "A gentle reminder: this is a calming practice, not medical or psychological treatment. If you feel distressed, please pause and reach out to someone you trust or a professional."
+  ]
+},
+  "med-lib-patience-10": {
+  "id": "med-lib-patience-10",
+  "minutes": 10,
+  "theme": "cultivating patience",
+  "kind": "library",
+  "intent": "A ten-minute practice for the days when everything feels urgent and you keep wanting to be further along than you are. It gently softens the inner push to rush — not by forcing calm, but by letting the breath and the body discover that, in this moment, there is nowhere you have to arrive. Patience is offered as something you already carry, not a virtue to achieve. Trauma-aware and permission-first throughout.",
+  "items": [
+    {
+      "id": "med-lib-patience-10-s0",
+      "name": "Arrive without hurry",
+      "secs": 28,
+      "say": "Welcome. You might begin by letting yourself land, however you are. Sitting, leaning, lying down — whatever feels kind right now. There is nothing here you need to get to."
+    },
+    {
+      "id": "med-lib-patience-10-s1",
+      "name": "Offer the eyes a choice",
+      "secs": 22,
+      "say": "If it feels right, you can let your eyes close. If you would rather keep them open, simply soften your gaze toward the floor. Either is welcome."
+    },
+    {
+      "id": "med-lib-patience-10-s2",
+      "name": "Name the urge gently",
+      "secs": 34,
+      "say": "Maybe you arrived feeling a little rushed, as if you are always one step behind. If that is here, you do not have to push it away. We are just going to make a little room around it."
+    },
+    {
+      "id": "med-lib-patience-10-s3",
+      "name": "First slow breath",
+      "secs": 28,
+      "say": "When you are ready, you might take one slow breath in through the nose, and let it go with a long, easy breath out. No need to force it."
+    },
+    {
+      "id": "med-lib-patience-10-s4",
+      "name": "Lengthen the exhale",
+      "secs": 38,
+      "say": "If it feels good, let the breath out be a touch longer than the breath in. The slow exhale is the part that quietly tells the body there is no emergency here."
+    },
+    {
+      "id": "med-lib-patience-10-s5",
+      "name": "Quiet pause",
+      "secs": 45,
+      "say": ""
+    },
+    {
+      "id": "med-lib-patience-10-s6",
+      "name": "Soften the push",
+      "secs": 40,
+      "say": "Notice if there is any leaning-forward in you, any wanting to hurry this along. If you can, let your weight settle back, just a little. You are allowed to take the time this takes."
+    },
+    {
+      "id": "med-lib-patience-10-s7",
+      "name": "One breath at a time",
+      "secs": 36,
+      "say": "There is only ever this one breath to be with. Not the next ten, not the rest of the day. Just this one, arriving in its own time."
+    },
+    {
+      "id": "med-lib-patience-10-s8",
+      "name": "Rest in the unhurried breath",
+      "secs": 55,
+      "say": ""
+    },
+    {
+      "id": "med-lib-patience-10-s9",
+      "name": "Patience is already here",
+      "secs": 40,
+      "say": "You might remember a moment you waited with someone you love — a child learning to walk, perhaps. You did not rush them. That same patience lives in you. You can turn a little of it toward yourself now."
+    },
+    {
+      "id": "med-lib-patience-10-s10",
+      "name": "Let things unfold",
+      "secs": 36,
+      "say": "Whatever you are waiting for in your life, it will unfold at its own pace, with or without your hurrying. For these few minutes, you can set the rushing down."
+    },
+    {
+      "id": "med-lib-patience-10-s11",
+      "name": "Longer quiet",
+      "secs": 55,
+      "say": ""
+    },
+    {
+      "id": "med-lib-patience-10-s12",
+      "name": "Soft re-anchor",
+      "secs": 28,
+      "say": "If the mind has sped off ahead, that is completely natural. With no scolding at all, you can come back to one slow breath."
+    },
+    {
+      "id": "med-lib-patience-10-s13",
+      "name": "Stay a while",
+      "secs": 45,
+      "say": ""
+    },
+    {
+      "id": "med-lib-patience-10-s14",
+      "name": "Begin to return",
+      "secs": 28,
+      "say": "We will begin to come back now, slowly. There is no rush in this either. Let one breath grow a little fuller, if that feels right."
+    },
+    {
+      "id": "med-lib-patience-10-s15",
+      "name": "Gentle movement",
+      "secs": 22,
+      "say": "You might let a small movement return — your fingers, your toes, a slow easing of the shoulders. However your body would like to wake."
+    },
+    {
+      "id": "med-lib-patience-10-s16",
+      "name": "Close with kindness",
+      "secs": 20,
+      "say": "When you are ready, and only then, let your eyes open or lift your gaze. You can carry this slower pace with you. There is time. You are exactly where you need to be."
+    }
+  ],
+  "disclaimers": [
+    "A gentle reminder: this is a calming practice, not medical or psychological treatment. If you feel distressed, please pause and reach out to someone you trust or a professional."
+  ]
+},
+  "med-lib-morning-intention-7": {
+  "id": "med-lib-morning-intention-7",
+  "minutes": 7,
+  "theme": "a morning intention",
+  "kind": "library",
+  "intent": "A short morning practice that helps you begin the day by choosing one small, kind intention to carry — a single word or wish, gently held rather than gripped. It is not a to-do list or a productivity ritual; it is a soft way of setting a tone of warmth toward yourself before the day asks anything of you. Invitational and trauma-aware, with a way to opt out of any step.",
+  "items": [
+    {
+      "id": "med-lib-morning-intention-7-s0",
+      "name": "Greet the morning",
+      "secs": 28,
+      "say": "Good morning. Wherever you are, you might let yourself settle for a moment before the day begins. Sitting up, or still resting — whatever feels right for you."
+    },
+    {
+      "id": "med-lib-morning-intention-7-s1",
+      "name": "Soften the start",
+      "secs": 26,
+      "say": "You can let your eyes close, or keep them softly open. There is no need to be fully awake or alert. We are only taking a gentle minute or two for you."
+    },
+    {
+      "id": "med-lib-morning-intention-7-s2",
+      "name": "First waking breath",
+      "secs": 30,
+      "say": "When you are ready, take one slow breath in, and a long breath out. Letting the night fall away, and letting this new day arrive in its own time."
+    },
+    {
+      "id": "med-lib-morning-intention-7-s3",
+      "name": "Quiet pause",
+      "secs": 40,
+      "say": ""
+    },
+    {
+      "id": "med-lib-morning-intention-7-s4",
+      "name": "Notice how you arrive",
+      "secs": 36,
+      "say": "Without trying to change anything, you might simply notice how you feel as this day begins. Tired, hopeful, heavy, unsure — whatever is here is allowed to be here."
+    },
+    {
+      "id": "med-lib-morning-intention-7-s5",
+      "name": "Introduce the intention",
+      "secs": 36,
+      "say": "In a moment, you might choose one small, kind intention for today. Not a task or a goal — just a gentle wish for how you would like to meet yourself. This part is optional."
+    },
+    {
+      "id": "med-lib-morning-intention-7-s6",
+      "name": "Let a word come",
+      "secs": 42,
+      "say": "If it feels welcome, let a single word arrive on its own. Perhaps patience. Perhaps softness. Perhaps simply, enough. You do not have to search hard. Let it surface, or let this step pass by."
+    },
+    {
+      "id": "med-lib-morning-intention-7-s7",
+      "name": "Hold it lightly",
+      "secs": 44,
+      "say": ""
+    },
+    {
+      "id": "med-lib-morning-intention-7-s8",
+      "name": "Carry it gently",
+      "secs": 38,
+      "say": "Whatever word came, you might hold it the way you would hold something fragile and warm — lightly, with open hands. You are not promising to be perfect at it. You are only pointing yourself, gently, in a kind direction."
+    },
+    {
+      "id": "med-lib-morning-intention-7-s9",
+      "name": "Breathe with the intention",
+      "secs": 36,
+      "say": "You can let one easy breath carry that intention a little deeper. There is nothing to do with it but let it be there, quietly, as you go."
+    },
+    {
+      "id": "med-lib-morning-intention-7-s10",
+      "name": "Soft quiet",
+      "secs": 30,
+      "say": ""
+    },
+    {
+      "id": "med-lib-morning-intention-7-s11",
+      "name": "Close into the day",
+      "secs": 34,
+      "say": "When you are ready, let your eyes open, and let a little movement return. You can carry your intention with you, and set it down whenever you need to. However this day unfolds, you are allowed to begin again, kindly, anytime."
+    }
+  ],
+  "disclaimers": [
+    "A gentle reminder: this is a calming practice, not medical or psychological treatment. If you feel distressed, please pause and reach out to someone you trust or a professional."
+  ]
+},
+  "med-lib-soothing-self-touch-8": {
+  "id": "med-lib-soothing-self-touch-8",
+  "minutes": 8,
+  "theme": "self-soothing",
+  "kind": "library",
+  "intent": "An eight-minute self-soothing practice built around a single warm, optional gesture — a hand resting on the heart or the belly — as a way to offer yourself comfort and safety from the inside. It draws on the simple, familiar warmth of a kind hand without any clinical or therapeutic claims. Every instruction offers a choice, and the gesture itself is always optional, with a breath-only alternative for anyone for whom touch does not feel right today.",
+  "items": [
+    {
+      "id": "med-lib-soothing-self-touch-8-s0",
+      "name": "Arrive softly",
+      "secs": 28,
+      "say": "Welcome. You might find a position that feels kind and supported — sitting or lying down. Let the surface beneath you take a little of your weight."
+    },
+    {
+      "id": "med-lib-soothing-self-touch-8-s1",
+      "name": "Choice for the eyes",
+      "secs": 24,
+      "say": "If it feels right, let your eyes close. If you would rather keep them open, soften your gaze somewhere still. Whatever helps you feel safe."
+    },
+    {
+      "id": "med-lib-soothing-self-touch-8-s2",
+      "name": "A few settling breaths",
+      "secs": 34,
+      "say": "Take a slow breath in, and a long breath out. And another, letting your shoulders drop a little on each breath out. Nothing forced."
+    },
+    {
+      "id": "med-lib-soothing-self-touch-8-s3",
+      "name": "Offer the gesture as a choice",
+      "secs": 42,
+      "say": "In a moment, if it feels welcome, you might rest one hand somewhere comforting — over your heart, or on your belly. If touch does not feel good today, you are very welcome to simply rest your hands where they are and stay with the breath instead."
+    },
+    {
+      "id": "med-lib-soothing-self-touch-8-s4",
+      "name": "Place the hand",
+      "secs": 36,
+      "say": "If you have chosen to, let a hand come to rest gently — no pressure, just the warmth of your own palm. You might feel the rise and fall of the breath beneath it, slow and steady."
+    },
+    {
+      "id": "med-lib-soothing-self-touch-8-s5",
+      "name": "Quiet pause",
+      "secs": 45,
+      "say": ""
+    },
+    {
+      "id": "med-lib-soothing-self-touch-8-s6",
+      "name": "Notice the warmth",
+      "secs": 40,
+      "say": "There is something simple and old in this — the warmth of a kind hand. You might let yourself receive it, the way you would offer it to someone you care for. You are allowed to comfort yourself."
+    },
+    {
+      "id": "med-lib-soothing-self-touch-8-s7",
+      "name": "Breathe into the touch",
+      "secs": 38,
+      "say": "Each breath in, the hand rises a little. Each breath out, it settles. You can let this gentle rhythm be all there is for a while."
+    },
+    {
+      "id": "med-lib-soothing-self-touch-8-s8",
+      "name": "Soft quiet",
+      "secs": 48,
+      "say": ""
+    },
+    {
+      "id": "med-lib-soothing-self-touch-8-s9",
+      "name": "A few kind words",
+      "secs": 44,
+      "say": "If it feels right, you might silently offer yourself something gentle, as you would to a friend. Perhaps, I am here. Perhaps, this is hard, and I am still with you. Or you might simply stay with the warmth and the breath, with no words at all."
+    },
+    {
+      "id": "med-lib-soothing-self-touch-8-s10",
+      "name": "Rest in being held",
+      "secs": 25,
+      "say": ""
+    },
+    {
+      "id": "med-lib-soothing-self-touch-8-s11",
+      "name": "Soft re-anchor",
+      "secs": 26,
+      "say": "If your mind wandered, that is completely fine. You can come back, with no scolding, to the warmth of your hand and the slow breath beneath it."
+    },
+    {
+      "id": "med-lib-soothing-self-touch-8-s12",
+      "name": "Begin to return",
+      "secs": 28,
+      "say": "We will begin to come back now, slowly. Let one breath grow a little fuller, if that feels right. There is no hurry at all."
+    },
+    {
+      "id": "med-lib-soothing-self-touch-8-s13",
+      "name": "Close gently",
+      "secs": 22,
+      "say": "When you are ready, you can let your hand rest back down, and let your eyes open. This comfort is yours, and your own hand can offer it to you anytime you need it. Take care."
+    }
+  ],
+  "disclaimers": [
+    "A gentle reminder: this is a calming practice, not medical or psychological treatment. If you feel distressed, please pause and reach out to someone you trust or a professional."
+  ]
+},
+  "med-lib-countdown-to-sleep-20": {
+  "id": "med-lib-countdown-to-sleep-20",
+  "minutes": 20,
+  "theme": "drifting toward sleep",
+  "kind": "library",
+  "intent": "A twenty-minute bedtime practice that uses a slow, descending countdown as a soft staircase down into rest. Each gentle number is a step further from the day and closer to sleep, with long quiet stretches and a calming hand-and-breath anchor. There is no goal of falling asleep by any particular moment, and no problem if sleep does not come — the practice is the rest itself. Trauma-aware, permission-first, and free of any medical claims about sleep.",
+  "items": [
+    {
+      "id": "med-lib-countdown-to-sleep-20-s0",
+      "name": "Settle into bed",
+      "secs": 55,
+      "say": "Welcome. This is a slow wind-down toward sleep. Let yourself get as comfortable as you can — settle the pillow, soften the blankets, let your body sink into the support beneath you."
+    },
+    {
+      "id": "med-lib-countdown-to-sleep-20-s1",
+      "name": "Let the eyes close",
+      "secs": 55,
+      "say": "If it feels right, let your eyes close. There is nothing more to see tonight, and nowhere you need to be. If you would rather rest them open in the dark for now, that is fine too."
+    },
+    {
+      "id": "med-lib-countdown-to-sleep-20-s2",
+      "name": "Put down the day",
+      "secs": 55,
+      "say": "You can let the day be finished now. Whatever was left undone will still be there tomorrow, and it can wait. For now, there is only rest."
+    },
+    {
+      "id": "med-lib-countdown-to-sleep-20-s3",
+      "name": "First slow breaths",
+      "secs": 55,
+      "say": "Take a slow breath in, and let it go with a long, soft sigh. And again, breathing out a little of the day each time. Let the breaths grow slower and quieter on their own."
+    },
+    {
+      "id": "med-lib-countdown-to-sleep-20-s4",
+      "name": "Quiet settling",
+      "secs": 68,
+      "say": ""
+    },
+    {
+      "id": "med-lib-countdown-to-sleep-20-s5",
+      "name": "Introduce the countdown",
+      "secs": 55,
+      "say": "In a moment we will count slowly downward, from ten toward one. Each number is a soft step down into rest. You do not have to do anything with them but let them carry you lower. If sleep comes before we finish, simply let it."
+    },
+    {
+      "id": "med-lib-countdown-to-sleep-20-s6",
+      "name": "Ten and nine",
+      "secs": 55,
+      "say": "Ten. Letting the head and the face grow heavy and still. And nine. Letting the shoulders melt down into the bed."
+    },
+    {
+      "id": "med-lib-countdown-to-sleep-20-s7",
+      "name": "Quiet after nine",
+      "secs": 68,
+      "say": ""
+    },
+    {
+      "id": "med-lib-countdown-to-sleep-20-s8",
+      "name": "Eight and seven",
+      "secs": 55,
+      "say": "Eight. The arms growing heavy, the hands soft and open. And seven. The chest and the back settling, the breath moving on its own."
+    },
+    {
+      "id": "med-lib-countdown-to-sleep-20-s9",
+      "name": "Quiet after seven",
+      "secs": 68,
+      "say": ""
+    },
+    {
+      "id": "med-lib-countdown-to-sleep-20-s10",
+      "name": "Six and five",
+      "secs": 55,
+      "say": "Six. The belly soft, rising and falling without any effort. And five. Halfway down now, the whole middle of you at rest."
+    },
+    {
+      "id": "med-lib-countdown-to-sleep-20-s11",
+      "name": "Quiet after five",
+      "secs": 68,
+      "say": ""
+    },
+    {
+      "id": "med-lib-countdown-to-sleep-20-s12",
+      "name": "Four and three",
+      "secs": 54,
+      "say": "Four. The hips and the legs growing heavy, sinking into the mattress. And three. The knees, the ankles, all letting go."
+    },
+    {
+      "id": "med-lib-countdown-to-sleep-20-s13",
+      "name": "Quiet after three",
+      "secs": 68,
+      "say": ""
+    },
+    {
+      "id": "med-lib-countdown-to-sleep-20-s14",
+      "name": "Two and one",
+      "secs": 54,
+      "say": "Two. The feet heavy and far away. And one. The whole body resting now, held completely, nothing left to hold up."
+    },
+    {
+      "id": "med-lib-countdown-to-sleep-20-s15",
+      "name": "Deep quiet rest",
+      "secs": 68,
+      "say": ""
+    },
+    {
+      "id": "med-lib-countdown-to-sleep-20-s16",
+      "name": "Soft reassurance",
+      "secs": 54,
+      "say": "If sleep has not come yet, there is no problem at all. Resting quietly in the dark gives your body almost everything that sleep does. You can simply keep drifting."
+    },
+    {
+      "id": "med-lib-countdown-to-sleep-20-s17",
+      "name": "Long quiet drift",
+      "secs": 68,
+      "say": ""
+    },
+    {
+      "id": "med-lib-countdown-to-sleep-20-s18",
+      "name": "A gentle anchor",
+      "secs": 54,
+      "say": "If your mind has grown busy, you might let one hand rest on your belly, and feel it rise and fall, slow and warm. There is nothing left to do now — let the breath carry you the rest of the way down into sleep, whenever it comes. Rest well."
+    },
+    {
+      "id": "med-lib-countdown-to-sleep-20-s19",
+      "name": "Silence into sleep",
+      "secs": 68,
+      "say": ""
+    }
+  ],
+  "disclaimers": [
+    "A gentle reminder: this is a calming practice, not medical or psychological treatment. If you feel distressed, please pause and reach out to someone you trust or a professional."
+  ]
+},
+  "med-lib-spacious-heart-15": {
+  "id": "med-lib-spacious-heart-15",
+  "minutes": 15,
+  "theme": "a spacious heart",
+  "kind": "library",
+  "intent": "A fifteen-minute practice for the days when feelings are big or tangled. Rather than fixing or analyzing what you feel, it invites you to imagine the heart as a wide, open space — large enough to hold whatever is here without being overwhelmed by it. Emotions are welcomed as guests, not problems. The work is making room, gently, with the breath. Trauma-aware: nothing has to be named, examined, or relived, and there is always a way to stay with the breath alone.",
+  "items": [
+    {
+      "id": "med-lib-spacious-heart-15-s0",
+      "name": "Arrive as you are",
+      "secs": 44,
+      "say": "Welcome, exactly as you are today. You might settle into a position that feels supported, and let the surface beneath you hold your weight. There is nothing here you need to fix."
+    },
+    {
+      "id": "med-lib-spacious-heart-15-s1",
+      "name": "Choice for the eyes",
+      "secs": 43,
+      "say": "If it feels right, let your eyes close. If not, soften your gaze toward the floor. Whatever helps you feel a little safer right now."
+    },
+    {
+      "id": "med-lib-spacious-heart-15-s2",
+      "name": "First settling breaths",
+      "secs": 43,
+      "say": "Take a slow breath in, and a long breath out. And another, letting the body soften just a little on each breath out. No need to force anything."
+    },
+    {
+      "id": "med-lib-spacious-heart-15-s3",
+      "name": "Quiet pause",
+      "secs": 68,
+      "say": ""
+    },
+    {
+      "id": "med-lib-spacious-heart-15-s4",
+      "name": "Notice without naming",
+      "secs": 43,
+      "say": "Without going looking, you might simply notice that something is here today — some feeling, or a few of them, perhaps tangled together. You do not need to name it, explain it, or relive it. We are only going to make a little room."
+    },
+    {
+      "id": "med-lib-spacious-heart-15-s5",
+      "name": "Imagine the heart as space",
+      "secs": 43,
+      "say": "If it feels welcome, you might imagine the space around your heart growing wider, like a room with the windows opened. Or, if picturing is not for you, simply let the breath move a little more freely through the chest. Either is a way of making space."
+    },
+    {
+      "id": "med-lib-spacious-heart-15-s6",
+      "name": "Quiet",
+      "secs": 68,
+      "say": ""
+    },
+    {
+      "id": "med-lib-spacious-heart-15-s7",
+      "name": "Welcome what is here",
+      "secs": 43,
+      "say": "Whatever feeling is present, you might let it be here, the way a large room can hold a guest without being changed by them. You are the space, not the weather moving through it. The feeling can be here, and you can still be okay."
+    },
+    {
+      "id": "med-lib-spacious-heart-15-s8",
+      "name": "Make room with the breath",
+      "secs": 43,
+      "say": "Each breath in, the space grows a little wider. Each breath out, a little softer. There is room for the heaviness, and room for you, both at once. Nothing has to leave."
+    },
+    {
+      "id": "med-lib-spacious-heart-15-s9",
+      "name": "Rest in spaciousness",
+      "secs": 68,
+      "say": ""
+    },
+    {
+      "id": "med-lib-spacious-heart-15-s10",
+      "name": "Nothing to resolve",
+      "secs": 43,
+      "say": "You do not have to solve anything in here. Feelings, like weather, move and change on their own when there is room for them. For now, you can simply let them be held in the wide, quiet space of you."
+    },
+    {
+      "id": "med-lib-spacious-heart-15-s11",
+      "name": "A hand if it helps",
+      "secs": 43,
+      "say": "If it feels comforting, you might rest a hand over your heart, and feel the warmth and the slow rise of the breath beneath it. Or keep your hands where they are and stay with the breath. Whatever feels kind."
+    },
+    {
+      "id": "med-lib-spacious-heart-15-s12",
+      "name": "Longer quiet",
+      "secs": 68,
+      "say": ""
+    },
+    {
+      "id": "med-lib-spacious-heart-15-s13",
+      "name": "Soft re-anchor",
+      "secs": 43,
+      "say": "If the mind has wandered or the feelings have surged, that is completely natural. With no scolding, you can come back to one slow breath, and to the sense of space around your heart."
+    },
+    {
+      "id": "med-lib-spacious-heart-15-s14",
+      "name": "Stay a while",
+      "secs": 68,
+      "say": ""
+    },
+    {
+      "id": "med-lib-spacious-heart-15-s15",
+      "name": "Begin to return",
+      "secs": 43,
+      "say": "We will begin to return now, slowly. Let one breath grow a little fuller, if that feels right. The spaciousness can stay with you. There is no hurry."
+    },
+    {
+      "id": "med-lib-spacious-heart-15-s16",
+      "name": "Gentle movement",
+      "secs": 43,
+      "say": "You might let a small movement return — your fingers, your toes, a slow easing of the shoulders. However your body would like to come back."
+    },
+    {
+      "id": "med-lib-spacious-heart-15-s17",
+      "name": "Close with warmth",
+      "secs": 43,
+      "say": "When you are ready, let your eyes open or lift your gaze. Whatever you are carrying today, you have made a little more room for it, and for yourself. That is enough. You are exactly where you need to be."
+    }
+  ],
+  "disclaimers": [
+    "A gentle reminder: this is a calming practice, not medical or psychological treatment. If you feel distressed, please pause and reach out to someone you trust or a professional."
+  ]
 }
 };
 
@@ -5411,7 +6497,17 @@ export const MEDITATION_LIBRARY = [
   {"id": "med-lib-acceptance-12", "minutes": 12, "theme": "acceptance"},
   {"id": "med-lib-energy-vitality-8", "minutes": 8, "theme": "energy and vitality"},
   {"id": "med-lib-mindful-eating-7", "minutes": 7, "theme": "mindful eating"},
-  {"id": "med-lib-open-awareness-20", "minutes": 20, "theme": "open awareness"}
+  {"id": "med-lib-open-awareness-20", "minutes": 20, "theme": "open awareness"},
+  {"id": "med-lib-compassionate-body-10", "minutes": 10, "theme": "kind attention to a tired body"},
+  {"id": "med-lib-anchor-in-sound-10", "minutes": 10, "theme": "sound as anchor"},
+  {"id": "med-lib-mountain-stability-12", "minutes": 12, "theme": "mountain stability"},
+  {"id": "med-lib-lake-stillness-12", "minutes": 12, "theme": "lake stillness"},
+  {"id": "med-lib-release-worry-15", "minutes": 15, "theme": "releasing worry"},
+  {"id": "med-lib-patience-10", "minutes": 10, "theme": "cultivating patience"},
+  {"id": "med-lib-morning-intention-7", "minutes": 7, "theme": "a morning intention"},
+  {"id": "med-lib-soothing-self-touch-8", "minutes": 8, "theme": "self-soothing"},
+  {"id": "med-lib-countdown-to-sleep-20", "minutes": 20, "theme": "drifting toward sleep"},
+  {"id": "med-lib-spacious-heart-15", "minutes": 15, "theme": "a spacious heart"}
 ];
 
 export const MEDITATIONS = SCRIPTS;

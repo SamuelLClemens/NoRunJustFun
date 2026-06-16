@@ -1,10 +1,13 @@
 // Reward moment: petals + circles burst on a canvas overlay.
-// Respects prefers-reduced-motion (renders a gentle static bloom instead).
+// Respects reduced motion — the in-app Settings toggle (authoritative) or the OS
+// preference — by rendering a gentle static bloom instead of motion.
+
+import { prefersReducedMotion } from './state.js';
 
 const COLORS = ['#5BA869', '#FFD45C', '#7EC4E8', '#F58F7C', '#A9D8B2', '#F4A300'];
 
 export function celebrate(duration = 1800) {
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduced = prefersReducedMotion();
   const canvas = document.createElement('canvas');
   canvas.className = 'confetti-canvas';
   canvas.setAttribute('aria-hidden', 'true');
