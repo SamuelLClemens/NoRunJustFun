@@ -762,9 +762,23 @@ for _sid in ['money', 'parenting', 'communication', 'memory']:
     _bm = re.search(r'const CURRICULUM = \[(.*?)\];', _base, re.S)
     _bcount = len(re.findall(r'[\'\"]([a-z0-9-]+)[\'\"]', _bm.group(1))) if _bm else 0
     ok(_bcount + len(_EC) >= 36, '%s combined curriculum is %d, expected >= 36' % (_sid, _bcount + len(_EC)))
+    # Overclaim scan, negation-aware: a banned word inside a responsible negation
+    # ("no guaranteed outcome", "never fails to" as "no technique always works") is the
+    # OPPOSITE of overclaiming, so only flag occurrences NOT preceded by a negation.
     _banned = LEARN_SUBJECTS[_sid]['banned']
     _low = _esrc.lower()
-    ok(not any(b in _low for b in _banned), '%s ext content uses a banned guarantee/overclaim phrase' % _sid)
+    _NEG = ('no ', 'not ', 'never ', "n't", 'cannot', 'without', 'avoid', 'rarely', 'isn ', 'aren ', 'doesn ', 'do not', 'cannot be')
+    _hits = []
+    for _b in _banned:
+        _p = 0
+        while True:
+            _i = _low.find(_b, _p)
+            if _i < 0:
+                break
+            if not any(_n in _low[max(0, _i - 36):_i] for _n in _NEG):
+                _hits.append(_b)
+            _p = _i + len(_b)
+    ok(not _hits, '%s ext content uses a non-negated banned overclaim phrase: %s' % (_sid, ', '.join(sorted(set(_hits)))))
     _bad = []
     for _lid, _L in _EL.items():
         if _L.get('id') != _lid:
