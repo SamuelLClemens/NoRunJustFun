@@ -59,8 +59,10 @@ export async function addVoiceEntry(blob, durationSec, transcript) {
   return entry;
 }
 
-// Attach/replace a transcript on an existing entry (used by the on-device STT pass).
-export function setTranscript(id, text) {
+// Set/replace an entry's text — used both by a manual edit (the book is the user's to
+// edit) and by the on-device transcription pass. Empty text is allowed (a voice entry
+// may be cleared back to audio-only).
+export function setEntryText(id, text) {
   const e = ledger().find((x) => x.id === id);
   if (!e) return;
   e.text = (text || '').trim();

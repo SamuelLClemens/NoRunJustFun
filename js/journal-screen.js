@@ -7,7 +7,8 @@
 import { store } from './state.js';
 import { coach } from './tts.js';
 import { getCharacter } from './characters.js';
-import { listEntries, bookOrder, addTextEntry, addVoiceEntry, getEntryAudio, removeEntry } from './journal.js';
+import { listEntries, bookOrder, addTextEntry, addVoiceEntry, getEntryAudio, removeEntry, setEntryText } from './journal.js';
+import { speechToText } from './stt.js';
 
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => (
@@ -27,6 +28,25 @@ let _stopOnLeave = null;
 // getUserMedia/MediaRecorder are created ONLY on the record tap — never at import/boot.
 let _rec = null;        // { mr, stream, startMs, tick }
 let _playUrl = null;    // object URL of the recording currently playing (revoked on stop)
+let _editingId = null;  // id of the entry currently open in the inline editor
+const _transcribing = new Set(); // ids whose voice note is being transcribed in the background
+
+// Transcribe a voice entry on-device (gated; off the main thread). On any failure it
+// quietly leaves the recording as-is — the user can always type/edit the text instead.
+async function transcribeEntry(id) {
+  const entry = listEntries().find((e) => e.id === id);
+  if (!entry || !entry.audioKey || entry.text || _transcribing.has(id)) return;
+  _transcribing.add(id);
+  if (location.hash === '#journal') journalScreen();
+  let text = '';
+  try {
+    const blob = await getEntryAudio(entry);
+    if (blob) text = await speechToText.transcribe(blob);
+  } catch { /* keep as audio-only */ }
+  if (text) setEntryText(id, text);
+  _transcribing.delete(id);
+  if (location.hash === '#journal') journalScreen();
+}
 
 function fmtMMSS(sec) {
   const s = Math.max(0, Math.floor(sec));
@@ -49,21 +69,32 @@ export function journalScreen() {
   const coachName = (getCharacter(prof.character) || {}).name || 'your coach';
   const entries = listEntries();
 
+  const head = (e) => `<header class="journal-entry-head"><span class="journal-stamp">${esc(fmtStamp(e.ts))}</span><span class="journal-kind">${e.kind === 'voice' ? '\u{1F399} voice' : '✍ written'}</span></header>`;
+  const entryHTML = (e) => {
+    if (e.id === _editingId) {
+      return `<article class="journal-entry" data-id="${esc(e.id)}">${head(e)}
+        <textarea class="journal-compose journal-edit" id="journal-edit-${esc(e.id)}" rows="4" maxlength="4000" aria-label="Edit entry">${esc(e.text)}</textarea>
+        <div class="journal-entry-actions">
+          <button class="btn btn-primary journal-edit-save" data-id="${esc(e.id)}">Save</button>
+          <button class="linkish journal-edit-cancel">Cancel</button>
+        </div></article>`;
+    }
+    const busy = _transcribing.has(e.id);
+    const body = e.text
+      ? `<p class="journal-text">${esc(e.text)}</p>`
+      : (busy ? '<p class="journal-text hint">Transcribing…</p>'
+        : (e.audioKey ? `<p class="journal-text hint">Voice note${e.durationSec ? ' · ' + fmtMMSS(e.durationSec) : ''}</p>` : '<p class="journal-text hint">(empty)</p>'));
+    return `<article class="journal-entry" data-id="${esc(e.id)}">${head(e)}
+      ${body}
+      <div class="journal-entry-actions">
+        ${e.audioKey ? `<button class="linkish journal-play" data-id="${esc(e.id)}">▶ Play recording</button>` : ''}
+        ${(e.audioKey && !e.text && !busy) ? `<button class="linkish journal-transcribe" data-id="${esc(e.id)}">Transcribe</button>` : ''}
+        <button class="linkish journal-edit-btn" data-id="${esc(e.id)}">Edit</button>
+        <button class="linkish journal-del" data-id="${esc(e.id)}">Delete</button>
+      </div></article>`;
+  };
   const bookHTML = entries.length
-    ? entries.map((e) => `
-        <article class="journal-entry" data-id="${esc(e.id)}">
-          <header class="journal-entry-head">
-            <span class="journal-stamp">${esc(fmtStamp(e.ts))}</span>
-            <span class="journal-kind">${e.kind === 'voice' ? '\u{1F399} voice' : '✍ written'}</span>
-          </header>
-          ${e.text
-            ? `<p class="journal-text">${esc(e.text)}</p>`
-            : (e.audioKey ? `<p class="journal-text hint">Voice note${e.durationSec ? ' · ' + fmtMMSS(e.durationSec) : ''}</p>` : '<p class="journal-text hint">(empty)</p>')}
-          <div class="journal-entry-actions">
-            ${e.audioKey ? `<button class="linkish journal-play" data-id="${esc(e.id)}">▶ Play recording</button>` : ''}
-            <button class="linkish journal-del" data-id="${esc(e.id)}">Delete</button>
-          </div>
-        </article>`).join('')
+    ? entries.map(entryHTML).join('')
     : '<p class="hint">Your book is empty for now. Write your first entry above — it stays only on this device.</p>';
 
   app.innerHTML = `
@@ -165,7 +196,13 @@ export function journalScreen() {
       const dur = (Date.now() - startMs) / 1000;
       if (recState) recState.hidden = true;
       recBtn.textContent = '\u{1F399} Record a voice note';
-      if (blob.size > 0) { await addVoiceEntry(blob, dur, ''); journalScreen(); }
+      if (blob.size > 0) {
+        const entry = await addVoiceEntry(blob, dur, '');
+        journalScreen();
+        // Auto-transcribe in the background (gated/on-device); if it cannot run, the
+        // recording stays and the user can type or edit the text themselves.
+        if (entry) transcribeEntry(entry.id);
+      }
     };
     _rec = { mr, stream, startMs, tick: setInterval(() => { if (recTime) recTime.textContent = fmtMMSS((Date.now() - startMs) / 1000); }, 500) };
     mr.start();
@@ -183,6 +220,21 @@ export function journalScreen() {
     const audio = new Audio(_playUrl);
     audio.play().catch(() => {});
   }));
+
+  // Edit the book — it is the user's to revise.
+  app.querySelectorAll('.journal-edit-btn').forEach((b) => b.addEventListener('click', () => { _editingId = b.dataset.id; journalScreen(); }));
+  const cancelBtn = document.querySelector('.journal-edit-cancel');
+  if (cancelBtn) cancelBtn.addEventListener('click', () => { _editingId = null; journalScreen(); });
+  const editSave = document.querySelector('.journal-edit-save');
+  if (editSave) editSave.addEventListener('click', () => {
+    const ta = document.getElementById('journal-edit-' + editSave.dataset.id);
+    setEntryText(editSave.dataset.id, ta ? ta.value : '');
+    _editingId = null;
+    journalScreen();
+  });
+
+  // Transcribe a voice note to text on demand (gated, on-device).
+  app.querySelectorAll('.journal-transcribe').forEach((b) => b.addEventListener('click', () => { transcribeEntry(b.dataset.id); }));
 
   app.querySelectorAll('.journal-del').forEach((b) => b.addEventListener('click', async () => {
     if (!confirm('Delete this entry? This cannot be undone.')) return;

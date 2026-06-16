@@ -650,6 +650,23 @@ if cycle_src:
     ok('data-cycle' in main_src and 'cycleCardHTML' in main_src, 'You page does not render the cycle card')
     ok("'js/cycle.js'" in read('sw.js'), 'sw.js does not precache js/cycle.js')
 
+# 37) S5c: the book is editable, and voice notes transcribe ON-DEVICE in a Web Worker,
+#     gated like the lifelike voice (Data Saver / persisted speed verdict) — never the
+#     off-device Web Speech API. Editing is the always-works path (the book is theirs).
+stt_src = _read_opt('js/stt.js')
+if stt_src:
+    js_screen2 = _read_opt('js/journal-screen.js')
+    worker_src = _read_opt('js/stt-worker.js')
+    ok('new Worker' in stt_src, 'STT inference must run in a Web Worker (off the main thread)')
+    ok('saveData' in stt_src, 'STT must honor Data Saver (gated like the lifelike voice)')
+    ok('SpeechRecognition' not in stt_src and 'SpeechRecognition' not in worker_src,
+       'STT must be on-device, never the off-device Web Speech API')
+    ok('automatic-speech-recognition' in worker_src, 'stt-worker.js missing the on-device ASR pipeline')
+    ok('setEntryText' in js_screen2, 'journal must let the user edit entry text (the editable book)')
+    ok('journal-edit-btn' in js_screen2 and 'transcribeEntry' in js_screen2, 'journal missing edit + transcribe controls')
+    for _f in ['js/stt.js', 'js/stt-worker.js']:
+        ok(f"'{_f}'" in read('sw.js'), f'sw.js does not precache {_f}')
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")
