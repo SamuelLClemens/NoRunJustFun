@@ -11,6 +11,7 @@
 
 import { makeDisclaimerSeg, makeLessonModule } from './lessons.shared.js';
 import { LESSON_VARIANTS } from './lesson-variants.js';
+import { EXTRA_LESSONS_COMMUNICATION, EXTRA_CURRICULUM_COMMUNICATION } from './lessons.communication.ext.js';
 
 export const COMMUNICATION_DISCLAIMER = "This teaches the Nonviolent Communication framework developed by Marshall Rosenberg and the Center for Nonviolent Communication — one influential approach among several. It is educational only: not therapy, not crisis support, and not a substitute for professional mental-health care. Nonviolent Communication is not a tool for situations involving abuse, coercion, or danger; if you are unsafe, your safety comes first — please reach out for professional help. In the United States, call or text 988 (Suicide & Crisis Lifeline) or the National Domestic Violence Hotline at 1-800-799-7233.";
 
@@ -482,6 +483,10 @@ const LESSONS = {
 
 // Curriculum order for the duration-scaled study session (welcome is the intro).
 const CURRICULUM = ["nvc-overview", "nvc-observations", "nvc-feelings", "nvc-needs", "nvc-requests", "nvc-empathy-safety", "anger-and-nvc", "saying-no", "hearing-no", "appreciation-nvc", "apologies-and-repair", "conflict-de-escalation", "requests-vs-demands", "the-four-ears", "self-empathy-deep", "feelings-vocabulary", "needs-vs-strategies", "nvc-at-work", "nvc-with-children", "protective-use-of-force"];
+
+// Merge the S8b extension lessons in place so the vetted base map stays byte-stable.
+Object.assign(LESSONS, EXTRA_LESSONS_COMMUNICATION);
+CURRICULUM.push(...EXTRA_CURRICULUM_COMMUNICATION);
 
 const mod = makeLessonModule({
   LESSONS, CURRICULUM,
