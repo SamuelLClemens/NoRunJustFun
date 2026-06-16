@@ -12,6 +12,19 @@
 export const segDur = (s) => Math.max(5, Math.round(s.secs || 10));
 export const lessonSecs = (segs) => segs.reduce((t, s) => t + segDur(s), 0);
 
+// On-demand reading level for a segment. A lesson stays a single lesson; the player
+// shows the standard `say`, and the "Explain it simpler" / "Go deeper" buttons swap in
+// the segment's `simpler` (plain-language) or `deeper` (university-level) text when the
+// author has provided them. Falls back to `say` so lessons without variants are
+// unchanged. Used by planFromSegments below (i.e. both buildLessonById and
+// buildLessonSession), and re-exported for tests.
+export function pickLevel(seg, level) {
+  if (!seg) return '';
+  if (level === 'simpler' && seg.simpler) return seg.simpler;
+  if (level === 'deeper' && seg.deeper) return seg.deeper;
+  return seg.say;
+}
+
 export function dedupeSources(list) {
   const seen = new Set();
   const out = [];
@@ -31,7 +44,13 @@ export function makeDisclaimerSeg(idPrefix, say) {
 
 function planFromSegments(segs, meta, kind) {
   const items = segs.map((s) => ({
-    ex: { id: s.id, name: s.name, why: s.say, cues: [], sided: false, secs: segDur(s) },
+    ex: {
+      id: s.id, name: s.name,
+      why: pickLevel(s, 'standard'),
+      simpler: s.simpler ? pickLevel(s, 'simpler') : '',
+      deeper: s.deeper ? pickLevel(s, 'deeper') : '',
+      cues: [], sided: false, secs: segDur(s),
+    },
     secs: segDur(s), block: 'lesson',
   }));
   const totalSecs = items.reduce((t, i) => t + i.secs, 0);

@@ -579,6 +579,20 @@ if checkin_src:
        'check-in must not pressure the user about their streak (anti-compulsion)')
     ok("'js/checkin.js'" in read('sw.js'), 'sw.js does not precache js/checkin.js')
 
+# 32) S4: on-demand difficulty — one lesson with "Explain it simpler" / "Go deeper"
+#     buttons that re-narrate the current segment at another reading level. Additive
+#     (lessons without variants are unchanged) and never touches sessions[]. pickLevel
+#     is the shared accessor used by both lesson plan builders.
+shared_src = read('js/data/lessons.shared.js')
+ok('pickLevel' in shared_src, 'lessons.shared.js missing pickLevel')
+ok("pickLevel(s, 'simpler')" in shared_src, 'planFromSegments does not carry the simpler variant')
+ok("pickLevel(s, 'deeper')" in shared_src, 'planFromSegments does not carry the deeper variant')
+ok('speakVariant' in read('js/player.js'), 'player.js missing speakVariant for the difficulty buttons')
+ok("getElementById('btn-simpler')" in main_src and "getElementById('btn-deeper')" in main_src,
+   'session screen missing the simpler/deeper controls')
+ok('speakVariant' in main_src, 'session screen does not invoke speakVariant')
+ok('simpler:' in read('js/data/lessons.js'), 'money lesson plan items do not carry difficulty variants')
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")

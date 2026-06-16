@@ -580,6 +580,10 @@ function sessionScreen(plan) {
           </div>
         </div>
         <div class="progress-dots" id="dots" role="img" aria-label="Session progress"></div>
+        <div class="lesson-levels" id="lesson-levels" hidden role="group" aria-label="Adjust this explanation">
+          <button class="btn btn-level" id="btn-simpler" hidden>Explain it simpler</button>
+          <button class="btn btn-level" id="btn-deeper" hidden>Go deeper</button>
+        </div>
         <div class="controls">
           <button class="btn" id="btn-pause">Pause</button>
           <button class="btn btn-skip" id="btn-skip">Skip this move</button>
@@ -662,6 +666,16 @@ function sessionScreen(plan) {
           d.classList.toggle('now', i === idx);
         });
         if (avatar) avatar.setPose(POSES[item.ex.id] || null);
+        // Lesson difficulty controls: show "Explain it simpler" / "Go deeper" only on
+        // lesson segments that actually provide that variant (graceful when absent).
+        const levels = document.getElementById('lesson-levels');
+        if (levels) {
+          const hasS = item.block === 'lesson' && !!item.ex.simpler;
+          const hasD = item.block === 'lesson' && !!item.ex.deeper;
+          levels.hidden = !(hasS || hasD);
+          const bs = document.getElementById('btn-simpler'); if (bs) bs.hidden = !hasS;
+          const bd = document.getElementById('btn-deeper'); if (bd) bd.hidden = !hasD;
+        }
       },
       mirror(m) { if (avatar) avatar.setMirrored(m); },
       render(pl) {
@@ -683,6 +697,16 @@ function sessionScreen(plan) {
     else player.pause();
   });
   document.getElementById('btn-skip').addEventListener('click', () => player.skip());
+  const btnSimpler = document.getElementById('btn-simpler');
+  if (btnSimpler) btnSimpler.addEventListener('click', () => {
+    const it = player.plan.items[player.idx];
+    if (it && it.ex.simpler) player.speakVariant(it.ex.simpler);
+  });
+  const btnDeeper = document.getElementById('btn-deeper');
+  if (btnDeeper) btnDeeper.addEventListener('click', () => {
+    const it = player.plan.items[player.idx];
+    if (it && it.ex.deeper) player.speakVariant(it.ex.deeper);
+  });
   document.getElementById('btn-end').addEventListener('click', () => {
     if (confirm('End this session?')) player.endEarly();
   });

@@ -127,6 +127,21 @@ export class Player {
     if (frac >= 0.8) fire('cue2', () => coach.speak(item.ex.cues[1] || item.ex.cues[0]));
   }
 
+  // Re-narrate the CURRENT lesson segment at a different reading level ("Explain it
+  // simpler" / "Go deeper"). Resets the segment's remaining time to fit the new text so
+  // it is not cut off, then the quiet segment-by-segment flow continues as normal. Only
+  // meaningful on the lesson/meditation path; ignored when idle/paused/done.
+  speakVariant(text) {
+    if (!text || this.phase === 'done' || this.phase === 'idle' || this.idx < 0) return;
+    const words = (String(text).match(/\S+/g) || []).length;
+    const secs = Math.max(8, Math.round(words / 2.6)); // ~rough natural speaking time
+    this.phase = 'move';
+    this.remaining = secs;
+    this._fired = {};
+    coach.speak(text, { interrupt: true });
+    this.hooks.render(this);
+  }
+
   pause() {
     if (this.phase !== 'move' && this.phase !== 'ready') return;
     this._prevPhase = this.phase;

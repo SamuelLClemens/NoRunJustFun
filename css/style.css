@@ -738,6 +738,9 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 .usage-bars { width: 100%; max-width: 280px; height: auto; display: block; }
 .usage-bar { fill: var(--green-600); }
 .usage-bars-base { stroke: var(--line, #E3E0D8); stroke-width: 1; }
+/* In-lesson difficulty controls (S4): "Explain it simpler" / "Go deeper". */
+.lesson-levels { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 4px 0 10px; }
+.btn-level { font-size: 0.92rem; padding: 9px 16px; }
 .you-wlist, .you-log { list-style: none; margin: 10px 0 0; padding: 0; }
 .you-wlist li, .you-log li { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-top: 1px solid var(--line, #EFECE4); }
 .you-log-date { color: var(--ink-soft); font-size: 0.82rem; flex: 0 0 auto; }

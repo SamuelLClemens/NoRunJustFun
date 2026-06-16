@@ -495,7 +495,7 @@ export { LESSONS };
 
 function planFromSegments(segs, meta) {
   const items = segs.map((s) => ({
-    ex: { id: s.id, name: s.name, why: s.say, cues: [], sided: false, secs: segDur(s) },
+    ex: { id: s.id, name: s.name, why: s.say, simpler: s.simpler || '', deeper: s.deeper || '', cues: [], sided: false, secs: segDur(s) },
     secs: segDur(s), block: 'lesson',
   }));
   const totalSecs = items.reduce((t, i) => t + i.secs, 0);
