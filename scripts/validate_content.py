@@ -403,6 +403,69 @@ for go in ['#move-face', '#move-baby']:
     ok(go in main_src, f'main.js missing the {go} path')
 ok('safety' in main_src, 'main.js MOVE_META missing the baby safety note')
 
+# 22) Soul sections — Crystal energy + Dream interpretation. Belief-flagged,
+#     lessons-only learning tracks: every lesson cites >=5 sources, over-claim phrases
+#     are absent, honest disclaimers are present, and they register under the Soul
+#     pillar (SOUL_TRACK_LIST) — NOT the Mind TRACK_LIST.
+SOUL_SECTIONS = [
+    ('js/data/lessons.crystals.js', 'js/data/badges.crystals.js', 'CRYSTALS', 'cry-',
+     ['crystals-overview', 'what-crystals-really-are', 'history-of-crystal-lore',
+      'the-energy-and-chakra-belief', 'what-science-says-crystals', 'the-placebo-and-ritual-effect',
+      'popular-stones-and-their-lore', 'crystals-as-a-mindfulness-anchor', 'staying-safe-and-skeptical',
+      'choosing-and-caring-for-stones'],
+     ['will cure', 'cures cancer', 'miracle cure', 'proven to heal', 'medical cure']),
+    ('js/data/lessons.dreams.js', 'js/data/badges.dreams.js', 'DREAMS', 'drm-',
+     ['dreams-overview', 'the-science-of-sleep-and-dreams', 'why-we-dream-theories',
+      'common-dreams-and-their-claims', 'history-of-dream-interpretation', 'what-science-says-about-meaning',
+      'nightmares-and-when-to-seek-help', 'dream-journaling-for-reflection', 'lucid-dreaming-evidence',
+      'dreams-sleep-and-wellbeing'],
+     ['tells the future', 'reveals your destiny', 'definitely means']),
+]
+for mod_path, badge_path, prefix, badge_prefix, lesson_ids, banned_soul in SOUL_SECTIONS:
+    ok(exists(mod_path), f'{mod_path} missing (run gen_soul.py)')
+    src = read(mod_path) if exists(mod_path) else ''
+    for sym in ['LESSON_LIBRARY', 'buildLessonById', 'buildLessonSession', f'{prefix}_DISCLAIMER', f'{prefix}_DISCLAIMER_SHORT']:
+        ok(f'export const {sym}' in src, f'{mod_path} missing export {sym}')
+    ok('makeLessonModule' in src, f'{mod_path} not built via the shared makeLessonModule factory')
+    ok('not a substitute for professional care' in src, f'{mod_path} missing the honest disclaimer')
+    # every lesson present + carries >= 5 cited sources (one "url:" per source row)
+    for lid in lesson_ids:
+        marker = f'id: "{lid}"'
+        ok(marker in src, f'{mod_path} missing lesson {lid}')
+        start = src.find(marker)
+        if start < 0:
+            continue
+        nxt = len(src)
+        for other in lesson_ids:
+            if other == lid:
+                continue
+            j = src.find(f'id: "{other}"', start + len(marker))
+            if 0 <= j < nxt:
+                nxt = j
+        ucount = src[start:nxt].count('url:')
+        ok(ucount >= 5, f'{mod_path} lesson {lid} cites {ucount} sources (>=5 required)')
+    for b in banned_soul:
+        ok(b.lower() not in src.lower(), f"over-claim phrase '{b}' present in {mod_path}")
+    # badges: namespaced + scholar present + precached
+    ok(exists(badge_path), f'{badge_path} missing')
+    bsrc = read(badge_path) if exists(badge_path) else ''
+    bids = re.findall(r'"id":\s*"([^"]+)"', bsrc)
+    ok(len(bids) >= 6, f'{badge_path} has only {len(bids)} badges')
+    ok(all(i.startswith(badge_prefix) for i in bids), f'a badge id in {badge_path} is not {badge_prefix}* namespaced')
+    ok(f'{badge_prefix}scholar' in bids, f'{badge_path} missing {badge_prefix}scholar')
+    ok(mod_path in sw, f'sw.js PRECACHE missing {mod_path}')
+    ok(badge_path in sw, f'sw.js PRECACHE missing {badge_path}')
+# registered under the Soul pillar, NOT Mind
+ok("export const SOUL_TRACK_LIST = ['crystals', 'dreams']" in tracks_src, 'tracks.js missing SOUL_TRACK_LIST = [crystals, dreams]')
+ok("export const TRACK_LIST = ['money', 'parenting', 'communication', 'memory']" in tracks_src,
+   'tracks.js TRACK_LIST must stay Mind-only (no crystals/dreams)')
+for tid in ['crystals', 'dreams']:
+    ok(f'{tid}: {{' in tracks_src, f'tracks.js missing the {tid} track descriptor')
+# soulScreen surfaces them as live #learn-<track> cards
+ok('SOUL_TRACK_LIST' in main_src, 'main.js does not import/use SOUL_TRACK_LIST')
+ok('soul-reflectives' in main_src and "go('#learn-' + b.dataset.track)" in main_src,
+   'main.js soulScreen does not wire the crystals/dreams cards to #learn-<track>')
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")

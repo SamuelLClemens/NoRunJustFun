@@ -1,7 +1,7 @@
 // Offline support: precache the whole app on install, serve cache-first.
 // Bump CACHE_VERSION with every release so updates roll out cleanly.
 
-const CACHE_VERSION = 'ygt-v4.2.0';
+const CACHE_VERSION = 'ygt-v4.3.0';
 
 const PRECACHE = [
   './',
@@ -59,6 +59,11 @@ const PRECACHE = [
   'js/data/programs.js',
   'js/data/badges.finance.js',
   'js/data/lessons.js',
+  // Soul sections (belief-flagged learning tracks)
+  'js/data/lessons.crystals.js',
+  'js/data/lessons.dreams.js',
+  'js/data/badges.crystals.js',
+  'js/data/badges.dreams.js',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/apple-touch-icon.png',

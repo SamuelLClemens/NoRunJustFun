@@ -48,6 +48,25 @@ import { MONEY_GAMES } from './games.money.js';
 import { PARENTING_GAMES } from './games.parenting.js';
 import { COMMUNICATION_GAMES } from './games.communication.js';
 import { LEARN_EXTRAS } from './learn-extras.js';
+// Soul sections (NOT Mind subjects): belief-flagged, lessons-only learning tracks.
+// They register in TRACKS so the shared engine + #learn-<track> route serve them,
+// but live under SOUL_TRACK_LIST (the Soul pillar), never the Mind TRACK_LIST.
+import { CRYSTALS_BADGES } from './badges.crystals.js';
+import {
+  LESSON_LIBRARY as CRYSTALS_LIBRARY,
+  buildLessonById as crystalsBuildById,
+  buildLessonSession as crystalsBuildSession,
+  CRYSTALS_DISCLAIMER,
+  CRYSTALS_DISCLAIMER_SHORT,
+} from './lessons.crystals.js';
+import { DREAMS_BADGES } from './badges.dreams.js';
+import {
+  LESSON_LIBRARY as DREAMS_LIBRARY,
+  buildLessonById as dreamsBuildById,
+  buildLessonSession as dreamsBuildSession,
+  DREAMS_DISCLAIMER,
+  DREAMS_DISCLAIMER_SHORT,
+} from './lessons.dreams.js';
 
 // ---- per-track SVG assets (kept byte-identical to the shipped finance visuals) ----
 
@@ -108,6 +127,33 @@ const lightbulbProp = `<div class="lesson-prop" aria-hidden="true"><svg viewBox=
   <path d="M40 10a16 16 0 0 0-9 29c2 1.4 3.1 3.1 3.3 5.2h11.4c.2-2.1 1.3-3.8 3.3-5.2A16 16 0 0 0 40 10z" fill="#FBE9A0" stroke="#B5478B" stroke-width="3" stroke-linejoin="round"/>
   <rect x="33" y="47" width="14" height="6" rx="2" fill="#B5478B"/>
   <path d="M35 53h10" stroke="#7A2E5E" stroke-width="2.5" stroke-linecap="round"/></svg></div>`;
+
+// Crystals (Soul) — an amethyst bloom, a faceted gem icon, and a crystal point the
+// coach holds up to the light a beat after arriving.
+function crystalBloom(cls = 'veronica') {
+  return `<svg class="${cls}" viewBox="-16 -16 32 32" aria-hidden="true" focusable="false">
+    <g fill="#8E6FD6"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g>
+    <g fill="#B79CE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g>
+    <circle r="3.6" fill="#FFD45C"/></svg>`;
+}
+const crystalIcon = `<svg viewBox="0 0 40 40" width="26" height="26" aria-hidden="true"><path d="M20 7l9 8-9 18-9-18z" fill="#B79CE8" stroke="#7A57C2" stroke-width="2" stroke-linejoin="round"/><path d="M20 7l9 8-9 5-9-5z" fill="#D7C6F2"/></svg>`;
+const crystalProp = `<div class="lesson-prop" aria-hidden="true"><svg viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg">
+  <path d="M40 6l16 16-16 36-16-36z" fill="#B79CE8" stroke="#7A57C2" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M40 6l16 16-16 10-16-10z" fill="#E4DAF6"/>
+  <path d="M40 32v26" stroke="#7A57C2" stroke-width="2"/>
+  <g stroke="#FFD45C" stroke-width="2.5" stroke-linecap="round"><path d="M58 10l5-4"/><path d="M62 20l6 0"/></g></svg></div>`;
+
+// Dreams (Soul) — an indigo moon-bloom, a crescent-moon icon, and a quiet night sky
+// (crescent + stars) the coach gazes up at.
+function dreamBloom(cls = 'veronica') {
+  return `<svg class="${cls}" viewBox="-16 -16 32 32" aria-hidden="true" focusable="false">
+    <g fill="#7A6FD0"><ellipse cy="-8" rx="5" ry="8"/><ellipse cy="-8" rx="5" ry="8" transform="rotate(72)"/><ellipse cy="-8" rx="5" ry="8" transform="rotate(144)"/><ellipse cy="-8" rx="5" ry="8" transform="rotate(216)"/><ellipse cy="-8" rx="5" ry="8" transform="rotate(288)"/></g>
+    <circle r="4" fill="#FFE9A8"/></svg>`;
+}
+const dreamIcon = `<svg viewBox="0 0 40 40" width="26" height="26" aria-hidden="true"><path d="M26 8a13 13 0 1 0 7 23A10 10 0 0 1 26 8z" fill="#8B7FE8" stroke="#4B3FB0" stroke-width="2" stroke-linejoin="round"/><circle cx="14" cy="12" r="1.6" fill="#FFE9A8"/></svg>`;
+const dreamProp = `<div class="lesson-prop" aria-hidden="true"><svg viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg">
+  <path d="M52 8a22 22 0 1 0 12 40A17 17 0 0 1 52 8z" fill="#8B7FE8" stroke="#4B3FB0" stroke-width="3" stroke-linejoin="round"/>
+  <g fill="#FFE9A8"><circle cx="20" cy="14" r="2.5"/><circle cx="12" cy="28" r="2"/><circle cx="24" cy="34" r="1.6"/></g></svg></div>`;
 
 // ---- the registry ---------------------------------------------------------
 
@@ -256,16 +302,86 @@ export const TRACKS = {
     expertTips: LEARN_EXTRAS.memory.expertTips,
     topTakeaways: LEARN_EXTRAS.memory.topTakeaways,
   },
+
+  // ---- Soul sections (belief-flagged, lessons-only) ----
+  // Registered here so the shared engine + #learn-<track> route serve them, but they
+  // live under the Soul pillar (SOUL_TRACK_LIST), NOT the Mind TRACK_LIST. No games,
+  // no quiz, no mastery badge (which requires a game win) — these are reflective
+  // reading sections. hubBack sends the hub's "Back" link to #soul, not #mind.
+  crystals: {
+    id: 'crystals',
+    name: 'Crystal energy',
+    homeLabel: 'Crystals',
+    blurb: 'A respectful, honest look at crystals: the minerals, the traditions, and what the evidence shows.',
+    hubBack: '#soul',
+    badgePrefix: 'cry-',
+    badges: CRYSTALS_BADGES,
+    disclaimer: CRYSTALS_DISCLAIMER,
+    disclaimerShort: CRYSTALS_DISCLAIMER_SHORT,
+    lessons: {
+      LESSON_LIBRARY: CRYSTALS_LIBRARY,
+      buildLessonById: crystalsBuildById,
+      buildLessonSession: crystalsBuildSession,
+    },
+    prop: { className: 'lesson-prop', svg: crystalProp, onClass: 'lesson-prop-on', delayMs: 450 },
+    coachCue: 'holds a crystal up to the light',
+    theme: { token: 'crystals', flowerSVG: crystalBloom, lessonIcon: crystalIcon, badgeEmoji: '🔮' },
+    doneHeading: 'A calm, clear-eyed pause. 🔮',
+    countBadges: { first: 'cry-first-lesson', three: 'cry-three', seven: 'cry-seven', streak3: 'cry-streak-3', streak7: 'cry-streak-7' },
+    scholarBadge: 'cry-scholar',
+    topicBadges: {
+      'cry-geologist': ['what-crystals-really-are'],
+      'cry-historian': ['history-of-crystal-lore'],
+      'cry-skeptic': ['what-science-says-crystals'],
+      'cry-grounded': ['crystals-as-a-mindfulness-anchor'],
+    },
+  },
+
+  dreams: {
+    id: 'dreams',
+    name: 'Dream interpretation',
+    homeLabel: 'Dreams',
+    blurb: 'The science of sleep and dreaming alongside the history of dream interpretation — honestly framed.',
+    hubBack: '#soul',
+    badgePrefix: 'drm-',
+    badges: DREAMS_BADGES,
+    disclaimer: DREAMS_DISCLAIMER,
+    disclaimerShort: DREAMS_DISCLAIMER_SHORT,
+    lessons: {
+      LESSON_LIBRARY: DREAMS_LIBRARY,
+      buildLessonById: dreamsBuildById,
+      buildLessonSession: dreamsBuildSession,
+    },
+    prop: { className: 'lesson-prop', svg: dreamProp, onClass: 'lesson-prop-on', delayMs: 450 },
+    coachCue: 'gazes up at a quiet night sky',
+    theme: { token: 'dreams', flowerSVG: dreamBloom, lessonIcon: dreamIcon, badgeEmoji: '🌙' },
+    doneHeading: 'Rest well — and dream curiously. 🌙',
+    countBadges: { first: 'drm-first-lesson', three: 'drm-three', seven: 'drm-seven', streak3: 'drm-streak-3', streak7: 'drm-streak-7' },
+    scholarBadge: 'drm-scholar',
+    topicBadges: {
+      'drm-scientist': ['the-science-of-sleep-and-dreams'],
+      'drm-theorist': ['why-we-dream-theories'],
+      'drm-skeptic': ['what-science-says-about-meaning'],
+      'drm-journaler': ['dream-journaling-for-reflection'],
+    },
+  },
 };
 
-// Ordered for display (hub list, badges screen). All four Mind subjects are live.
+// Ordered for display (Mind hub, "You" dashboard, badges screen). All four Mind
+// subjects are live. crystals/dreams are deliberately NOT here — they are Soul
+// sections, surfaced by soulScreen via SOUL_TRACK_LIST, so they never appear under
+// Mind or in the Mind-scoped progress views.
 export const TRACK_LIST = ['money', 'parenting', 'communication', 'memory'];
+// Soul pillar reflective sections (belief-flagged). Registered tracks, but a separate
+// list so they stay out of Mind.
+export const SOUL_TRACK_LIST = ['crystals', 'dreams'];
 export const DEFAULT_TRACK = 'money';
 
 export function getTrack(id) { return TRACKS[id] || null; }
 
 // Every registered track's badges, flattened — for the completion screen's badge
-// lookup and the badges-screen partitions.
+// lookup and the badges-screen partitions. Includes the Soul sections so their
+// badges resolve and display alongside the Mind tracks.
 export function allTrackBadges() {
-  return TRACK_LIST.flatMap((id) => (TRACKS[id] ? TRACKS[id].badges : []));
+  return [...TRACK_LIST, ...SOUL_TRACK_LIST].flatMap((id) => (TRACKS[id] ? TRACKS[id].badges : []));
 }

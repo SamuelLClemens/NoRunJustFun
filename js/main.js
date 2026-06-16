@@ -24,7 +24,7 @@ import { buildMeditation, buildMeditationById, MEDITATION_LIBRARY } from './data
 import { availableTiers, gateMessage, routeTrack, filterPool, evaluateScreening,
   PARQ_GENERAL, PARQ_POSTPARTUM, LIFE_STAGES, SEX_OPTIONS, AGE_BANDS, INJURY_FLAGS, SPACE_OPTIONS } from './data/profiles.js';
 import { PROGRAMS, getProgram, programSuggestion, advanceProgram } from './data/programs.js';
-import { getTrack, TRACK_LIST } from './data/tracks.js';
+import { getTrack, TRACK_LIST, SOUL_TRACK_LIST } from './data/tracks.js';
 import { trackHubScreen, learningDone, gameScreen, quizScreen } from './learning-screen.js';
 
 const app = document.getElementById('app');
@@ -237,11 +237,18 @@ function soulScreen() {
     `<button class="duration-btn" data-mins="${m}"><span class="d-num">${m}</span><span class="d-label">min</span></button>`).join('');
   const libHTML = MEDITATION_LIBRARY.map((m) =>
     `<button class="med-lib-btn" data-med="${m.id}"><span>${esc(m.theme)}</span><small>${m.minutes} min</small></button>`).join('');
-  const soon = (ic, title, blurb) => `<div class="soul-soon">
-        <span class="pillar-ic" aria-hidden="true">${ic}</span>
-        <span class="pillar-txt"><strong>${esc(title)}</strong><small>${esc(blurb)}</small></span>
-        <span class="soon-tag">Coming soon</span>
-      </div>`;
+  // Reflective Soul sections (belief-flagged, lessons-only) — driven by the registry
+  // (SOUL_TRACK_LIST) so they stay in sync with tracks.js. Each opens the shared
+  // learning hub at #learn-<track>; its "Back" link returns here via track.hubBack.
+  const reflectiveHTML = SOUL_TRACK_LIST.map((id) => {
+    const t = getTrack(id);
+    if (!t) return '';
+    return `<button class="soul-reflective" data-track="${esc(id)}">
+        <span class="pillar-ic" aria-hidden="true">${(t.theme && t.theme.badgeEmoji) || '🌙'}</span>
+        <span class="pillar-txt"><strong>${esc(t.name)}</strong><small>${esc(t.blurb)}</small></span>
+        <span class="soul-go" aria-hidden="true">→</span>
+      </button>`;
+  }).join('');
   app.innerHTML = `
     <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Soul · Be still</h1></header>
     <main class="narrow soul-screen">
@@ -256,15 +263,16 @@ function soulScreen() {
       </section>
       <section class="card soul-future">
         <h2>More for the soul</h2>
-        <p class="hint">New reflective practices are growing here.</p>
-        ${soon('🔮', 'Crystal energy', 'A calm, exploratory practice')}
-        ${soon('🌙', 'Dream interpretation', 'Reflect gently on your dreams')}
+        <p class="hint">Calm, honest, well-sourced reflections — belief and evidence held side by side.</p>
+        <div class="soul-reflectives" id="soul-reflectives">${reflectiveHTML}</div>
       </section>
     </main>`;
   document.querySelectorAll('#soul-durations .duration-btn').forEach((b) =>
     b.addEventListener('click', () => { sound.unlock(); go('#play-' + b.dataset.mins + '-meditation'); }));
   document.querySelectorAll('#soul-library .med-lib-btn').forEach((b) =>
     b.addEventListener('click', () => { sound.unlock(); go('#play-lib-' + b.dataset.med); }));
+  document.querySelectorAll('#soul-reflectives .soul-reflective').forEach((b) =>
+    b.addEventListener('click', () => { go('#learn-' + b.dataset.track); }));
 }
 
 // ---------------------------------------------------------------- Mind pillar (learning)
@@ -968,7 +976,8 @@ function badgesScreen() {
   };
   // Each learning track gets its own partitioned, labelled section after the
   // fitness badges — distinct accent per category (driven by the badge-cell class).
-  const trackSections = TRACK_LIST.map((tid) => {
+  // Mind subjects first, then the Soul sections (crystals/dreams).
+  const trackSections = [...TRACK_LIST, ...SOUL_TRACK_LIST].map((tid) => {
     const t = getTrack(tid);
     if (!t || !t.badges.length) return '';
     const emoji = (t.theme && t.theme.badgeEmoji) || '🌸';

@@ -581,6 +581,55 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 .badge-cell.memory strong { color: #7A2E5E; }
 .badge-cell.memory .badge-date { color: #7A2E5E; }
 
+/* ====================================================================
+   Soul sections (ADDITIVE) — crystal-amethyst + dream-indigo. They reuse the
+   shared learning hub, so they re-skin the --finance-* token family within their
+   own data-track scope (like the Mind subjects), with NO change to shared .fin-*
+   rules. Plus the live reflective cards that replaced the soul "coming soon" stubs.
+   ==================================================================== */
+[data-track="crystals"] {
+  --finance-accent: #7A57C2;
+  --finance-accent-soft: #B79CE8;
+  --finance-tint: #F0EBFA;
+  --finance-border: #DDD2F1;
+  --finance-ink: #5E3FA6;
+  --finance-gold-deep: #5E3FA6;
+}
+[data-track="dreams"] {
+  --finance-accent: #4B3FB0;
+  --finance-accent-soft: #8B7FE8;
+  --finance-tint: #ECEAFA;
+  --finance-border: #D3CDF1;
+  --finance-ink: #3C3196;
+  --finance-gold-deep: #3C3196;
+}
+/* small accent text (.fin-mins ~14px, source links) on white cards needs the darker
+   AA-passing ink within each section's scope (cf. the parenting/communication rule). */
+[data-track="crystals"] .fin-mins, [data-track="crystals"] .fin-sources a,
+[data-track="dreams"] .fin-mins, [data-track="dreams"] .fin-sources a {
+  color: var(--finance-ink);
+}
+.badge-cell.crystals { background: #F8F5FD; box-shadow: inset 0 0 0 2px #DDD2F1, var(--shadow-soft); }
+.badge-cell.crystals strong { color: #5E3FA6; }
+.badge-cell.crystals .badge-date { color: #5E3FA6; }
+.badge-cell.dreams { background: #F5F4FD; box-shadow: inset 0 0 0 2px #D3CDF1, var(--shadow-soft); }
+.badge-cell.dreams strong { color: #3C3196; }
+.badge-cell.dreams .badge-date { color: #3C3196; }
+
+/* live reflective cards on the Soul screen (replaced the old .soul-soon stubs) */
+.soul-reflectives { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.soul-reflective { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  padding: 12px 14px; border: 2px solid var(--soul-border); border-radius: var(--radius-sm);
+  background: var(--soul-tint); color: var(--soul-ink); cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.08s ease, background 0.15s ease; }
+.soul-reflective:hover { border-color: var(--soul-accent); transform: translateY(-1px); }
+.soul-reflective .pillar-ic { width: 40px; height: 40px; font-size: 1.4rem; background: #fff;
+  border-radius: var(--radius-sm); display: grid; place-items: center; flex: 0 0 auto; }
+.soul-reflective .pillar-txt { display: flex; flex-direction: column; gap: 2px; flex: 1 1 auto; }
+.soul-reflective .pillar-txt strong { color: var(--soul-ink); }
+.soul-reflective .pillar-txt small { color: var(--soul-ink); opacity: 0.82; }
+.soul-reflective .soul-go { font-size: 1.2rem; color: var(--soul-accent); flex: 0 0 auto; }
+
 /* games — quick, tap-based memory practice */
 .game { display: flex; flex-direction: column; align-items: center; gap: 12px; }
 .game-help { text-align: center; max-width: 34ch; }
