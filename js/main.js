@@ -1112,6 +1112,9 @@ function settingsScreen() {
     coach.voiceURI = p.voiceURI;
     coach.naturalOn = p.naturalOn;
     coach.setCharacterVoice(getCharacter(p.character)); // preview in the selected coach's own voice
+    // if the natural voice was retired earlier this visit, give it another chance so the
+    // preview can actually demo it rather than silently falling back to the system voice
+    if (p.naturalOn && naturalVoice.state !== 'ready' && naturalVoice.state !== 'loading') naturalVoice.enable();
     coach.speak(personalize(pick(PHRASES.styles[p.style].welcome), p.name), { interrupt: true });
     coach.enabled = p.voiceOn;
   });

@@ -107,10 +107,16 @@ export const coach = {
     }
     if (interrupt) this.cancel();
 
-    // Caption tracks the spoken sentence. Show the first immediately (audio onset
-    // follows within a beat), then advance per chunk as each sentence begins.
-    const onChunk = (t) => { if (this.onCaption) this.onCaption(t); };
-    if (this.onCaption) this.onCaption(chunks[0] || fullCaption);
+    // Caption tracks the spoken sentence: onChunk fires as each sentence's audio
+    // begins (web path via u.onstart, natural path just before playback). Paint the
+    // first line eagerly ONLY for an interrupting call, whose audio starts now — a
+    // QUEUED call (e.g. the timed mid-move cues, which do not interrupt) must wait for
+    // onChunk, or its caption would run ahead of the audio still playing. `played`
+    // counts sentences whose audio actually began, so a natural-voice failure resumes
+    // on the system voice from the unspoken tail instead of repeating spoken lines.
+    let played = 0;
+    const onChunk = (t) => { played += 1; if (this.onCaption) this.onCaption(t); };
+    if (interrupt && this.onCaption) this.onCaption(chunks[0] || fullCaption);
 
     // Two cancellation counters on purpose: naturalVoice._gen stops queued
     // and playing audio inside the voice module; coach._sgen stops THIS
@@ -119,10 +125,10 @@ export const coach = {
       const gen = this._sgen;
       const cv = this.voice || {};
       return naturalVoice.speak(chunks, { voice: cv.natural, speed: cv.naturalSpeed, onChunk }).catch(() => {
-        // generation broke — retire the natural voice for this visit and
-        // let the system voice repeat the line and handle all future ones
+        // generation broke — retire the natural voice for this visit and let the
+        // system voice handle the REST of the line (skip sentences already spoken)
         naturalVoice.retire();
-        if (gen === this._sgen) return this._webSpeak(chunks, onChunk);
+        if (gen === this._sgen) return this._webSpeak(chunks.slice(played), onChunk);
       });
     }
 
