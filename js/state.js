@@ -13,7 +13,11 @@ function defaults() {
       voiceURI: '',
       style: 'gentle',          // gentle | cheerleader | funny
       voiceOn: true,
-      naturalOn: false,         // optional in-browser natural voice (beta)
+      naturalOn: false,         // is the in-browser natural (lifelike) voice currently active
+      voicePref: 'auto',        // 'auto' | 'on' | 'off' — 'auto' lets capable devices
+                                // load the lifelike voice in the background (system voice
+                                // covers slow devices); 'on'/'off' are explicit user choices
+      fullInstructorOn: false,  // optional photoreal instructor (beta)
       fullInstructorOn: false,  // optional photoreal instructor (beta)
       sfxOn: true,
       musicOn: false,           // default OFF per iOS autoplay + brief

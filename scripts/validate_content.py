@@ -487,6 +487,30 @@ ok('naturalVoice.speak(chunks, {' in tts, 'tts.js does not pass the per-coach vo
 ok('onstart' in tts, 'tts.js system path missing per-sentence caption (onstart)')
 ok(main_src.count('setCharacterVoice') >= 2, 'main.js must set the coach voice at session start AND in settings preview')
 
+# 24) Durable workout transcript (accessibility). The coach records every narrated line
+#     (fullCaption) into a session-scoped log, reset at session start; the workout/
+#     meditation done screen renders it as an accessible <details> "Read what your coach
+#     said". The learning transcript (learning-screen.js) must remain — no regression.
+ok('transcript: []' in tts and 'resetTranscript' in tts, 'tts.js missing the session transcript log/reset')
+ok('this.transcript.push(fullCaption)' in tts, 'tts.js speak() does not append the spoken line to the transcript')
+ok('coach.resetTranscript()' in main_src, 'main.js does not reset the coach transcript at session start')
+ok('coach.transcript' in main_src, 'main.js done screen does not read the coach transcript')
+ok('Read what your coach said' in main_src and 'fin-transcript' in main_src,
+   'main.js workout done screen missing the accessible "Read what your coach said" transcript')
+# no-regression: the learning transcript still renders its lesson lines via plan.items
+learn_screen_src = read('js/learning-screen.js')
+ok('Read what your coach said' in learn_screen_src and 'it.ex.why' in learn_screen_src,
+   'learning-screen.js transcript regressed (lesson transcript must stay intact)')
+
+# 25) Lifelike voice, automatic: capable devices load the natural voice in the
+#     background (system voice covers slow ones), honoring an explicit choice + Data Saver.
+ok("voicePref: 'auto'" in st, "state.js profile missing the voicePref:'auto' default")
+ok('maybeAutoEnableNaturalVoice' in main_src, 'main.js missing the lifelike-voice auto-enable')
+ok(main_src.count('maybeAutoEnableNaturalVoice') >= 2, 'maybeAutoEnableNaturalVoice is defined but never called at boot')
+ok("p.voicePref === 'off'" in main_src, 'auto-enable must respect an explicit voicePref off')
+ok('saveData' in main_src, 'auto-enable must honor Data Saver (navigator.connection.saveData)')
+ok("p.voicePref = e.target.checked ? 'on' : 'off'" in main_src, 'settings toggle must record an explicit voicePref')
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")

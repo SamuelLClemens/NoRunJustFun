@@ -588,6 +588,7 @@ function sessionScreen(plan) {
 
   const captionEl = document.getElementById('caption');
   coach.onCaption = (t) => { captionEl.textContent = t; };
+  coach.resetTranscript();   // fresh "Read what your coach said" log for this session
   coach.enabled = profile.voiceOn;
   coach.voiceURI = profile.voiceURI;
   coach.naturalOn = profile.naturalOn;
@@ -742,6 +743,18 @@ function finishSession(stats) {
     return b ? `<div class="badge-pop">${b.icon}<div><strong>${esc(b.name)}</strong><br><small>${esc(b.desc)}</small></div></div>` : '';
   }).join('');
 
+  // Durable transcript of everything the coach narrated this session. The live caption
+  // is transient, so this gives a Deaf/HoH user a permanent record of a workout (or
+  // meditation) — parallels the learning screen's transcript, which only covers lessons.
+  const spoken = (coach.transcript || []).slice();
+  const transcriptHTML = spoken.length ? `
+      <section class="card fin-transcript">
+        <details>
+          <summary>Read what your coach said</summary>
+          ${spoken.map((line) => `<p>${esc(line)}</p>`).join('')}
+        </details>
+      </section>` : '';
+
   app.innerHTML = `
     <main class="narrow done-screen">
       <section class="card center">
@@ -753,6 +766,7 @@ function finishSession(stats) {
         ${badgeCards ? `<div class="badge-pops"><h3>New badge${newBadges.length > 1 ? 's' : ''}!</h3>${badgeCards}</div>` : ''}
         <button class="btn btn-primary" id="btn-home">Back to my garden</button>
       </section>
+      ${transcriptHTML}
     </main>`;
   document.getElementById('btn-home').addEventListener('click', () => go('#'));
 }
@@ -1041,9 +1055,9 @@ function settingsScreen() {
       </section>
 
       <section class="card">
-        <strong>Natural voice <span class="beta-chip">beta</span></strong>
-        <p class="hint">A warmer, more human voice that runs entirely on this device. Turning it on downloads a public voice model once (about 90 MB) — nothing about you is sent anywhere, ever. If it cannot load, the regular voice takes over automatically. Works best on computers and recent phones.</p>
-        <label class="toggle"><input type="checkbox" id="set-natural" ${p.naturalOn ? 'checked' : ''}> Use natural voice</label>
+        <strong>Lifelike voice <span class="beta-chip">beta</span></strong>
+        <p class="hint">Each coach gets their own warm, human-sounding voice that runs entirely on this device. On capable devices it turns on by itself — a one-time download of about 90 MB, in the background — and nothing about you is ever sent anywhere. On slower devices, or if you switch it off here, the regular voice takes over automatically.</p>
+        <label class="toggle"><input type="checkbox" id="set-natural" ${p.naturalOn ? 'checked' : ''}> Use the lifelike voice</label>
         <div class="nv-progress" id="nv-progress" hidden>
           <div class="nv-track"><div class="nv-bar" id="nv-bar"></div></div>
           <small id="nv-status" role="status"></small>
@@ -1153,6 +1167,7 @@ function settingsScreen() {
   if (p.naturalOn || naturalVoice.state !== 'off') nvShow(naturalVoice.state, naturalVoice.progress);
   nvToggle.addEventListener('change', (e) => {
     p.naturalOn = e.target.checked;
+    p.voicePref = e.target.checked ? 'on' : 'off'; // explicit choice — auto-enable won't override it
     coach.naturalOn = p.naturalOn;
     save();
     if (p.naturalOn) naturalVoice.enable({ reprobe: true }); // explicit ask re-measures the device
@@ -1383,12 +1398,35 @@ async function routeTo(h, seq) {
 
 window.addEventListener('hashchange', render);
 
+// Lifelike voice, automatic: give every user the most human voice their DEVICE can
+// handle, without ever hurting smoothness. On 'auto' (the default) we warm the natural
+// voice in the BACKGROUND — first paint and the system voice are never blocked, the
+// in-engine speed probe keeps weak devices on the lighter system voice, and it upgrades
+// the live coach the moment the model is ready. The ~90 MB model is cached by the
+// browser, so it downloads at most once per device. Honors an explicit on/off choice and
+// Data Saver / very slow links. Nothing about the user is ever transmitted.
+function maybeAutoEnableNaturalVoice() {
+  const p = store.profile;
+  if (p.voicePref === 'off') return;                       // user opted out — respect it
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
+  const conn = (typeof navigator !== 'undefined' && navigator.connection) || {};
+  if (conn.saveData) return;                               // honor Data Saver
+  if (/2g$/.test(conn.effectiveType || '')) return;        // skip 2g / slow-2g links
+  const explicit = p.voicePref === 'on' || p.naturalOn;    // user already chose it
+  naturalVoice.enable().then((ready) => {
+    if (!ready) return;                                    // slow device / failed -> system voice
+    coach.naturalOn = true;                                // upgrade the live coach now
+    if (!explicit) { p.naturalOn = true; save(); }         // remember for auto users
+  }).catch(() => { /* system voice already covers it */ });
+}
+
 // dev visual QA: ?dev=poses or ?dev=garden
 const devMode = new URLSearchParams(location.search).get('dev');
 if (devMode) {
   import('./dev.js').then((m) => m.runDev(devMode));
 } else {
   render();
+  maybeAutoEnableNaturalVoice(); // background warm-up; never blocks first paint
 }
 
 // PWA service worker (registered late so first paint wins)

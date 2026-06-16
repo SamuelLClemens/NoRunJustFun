@@ -41,6 +41,14 @@ export const coach = {
   onCaption: null,           // (text) => void — captions always render, even muted
   voice: null,               // the active coach's voice config (see characters.js)
   _sgen: 0,                  // bumped by cancel() so in-flight speech stops cleanly
+  transcript: [],            // durable per-session log of every narrated line. The live
+                             // #caption is transient, so this backs the workout done
+                             // screen's "Read what your coach said" — a permanent record
+                             // for Deaf/HoH users. Reset at session start (resetTranscript).
+
+  // Clear the session transcript. Called when a new session starts (see sessionScreen)
+  // so each session's "Read what your coach said" begins fresh.
+  resetTranscript() { this.transcript = []; },
 
   listVoices() {
     refreshVoices();
@@ -87,6 +95,11 @@ export const coach = {
     const parts = (Array.isArray(text) ? text : [text]).filter(Boolean);
     if (!parts.length) return Promise.resolve();
     const fullCaption = parts.join(' ');
+
+    // Durable transcript: record every narrated line here — before the audio-on/off
+    // split below — so muted sessions are captured too. One push per speak() call (the
+    // natural→system fallback is internal to this call, so it cannot double-record).
+    this.transcript.push(fullCaption);
 
     // Chunk by sentence: iOS Safari can truncate long utterances, the natural voice
     // keeps latency low by generating one sentence at a time, and captions advance
