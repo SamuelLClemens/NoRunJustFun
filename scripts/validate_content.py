@@ -621,6 +621,19 @@ if js_screen_src and 'journal-record' in js_screen_src:
     ok('journal-play' in js_screen_src and 'getEntryAudio' in js_screen_src,
        'journal-screen.js missing raw-recording playback from IndexedDB')
 
+# 35) S6: meal tracking — gentle timestamped notes only, never sessions[], and NONE of
+#     the disordered-eating triggers (no calories/macros/targets/streaks/scores).
+meals_src = _read_opt('js/meals.js')
+if meals_src:
+    ok('sessions.push' not in meals_src and 'recordSession' not in meals_src,
+       'meals.js must not write to sessions[] (breaks garden/streak isolation)')
+    ok('progress.meals' in meals_src, 'meals.js does not use the progress.meals ledger')
+    _ml = meals_src.lower()
+    ok(not any(w in _ml for w in ['calorie', 'macro', 'protein', 'carb', 'streak', 'goal', 'target']),
+       'meals must stay gentle notes — no calories/macros/targets/streaks (anti-compulsion)')
+    ok('addMeal' in main_src and 'you-meal-save' in main_src, 'You page does not render the meal notes')
+    ok("'js/meals.js'" in read('sw.js'), 'sw.js does not precache js/meals.js')
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")

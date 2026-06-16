@@ -28,6 +28,7 @@ import { getTrack, TRACK_LIST, SOUL_TRACK_LIST } from './data/tracks.js';
 import { trackHubScreen, learningDone, gameScreen, quizScreen } from './learning-screen.js';
 import { usageGraphsHTML } from './usage-graph.js';
 import { composeCheckin } from './checkin.js';
+import { listMeals, addMeal, removeMeal } from './meals.js';
 
 const app = document.getElementById('app');
 let avatar = null;        // lazy three.js instance, one at a time
@@ -955,6 +956,10 @@ function youScreen() {
     : '<p class="hint">Finish a lesson, game, or quiz and it will show up here.</p>';
 
   const recentWeights = weights.slice(-6).reverse();
+  const recentMeals = listMeals().slice(0, 8).map((m) => ({
+    id: m.id, note: m.note,
+    stamp: (() => { try { return new Date(m.ts).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); } catch { return m.ts; } })(),
+  }));
 
   app.innerHTML = `
     <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">You</h1></header>
@@ -1008,6 +1013,16 @@ function youScreen() {
       </section>
 
       <section class="card">
+        <h2>Meals</h2>
+        <p class="hint">A gentle place to note what you ate, if it helps you notice patterns. No calories, no targets, no scores — just your own notes, on this device.</p>
+        <div class="you-meal-form">
+          <input type="text" id="you-meal-input" maxlength="200" placeholder="e.g. oatmeal and berries" aria-label="Meal note">
+          <button class="btn btn-primary" id="you-meal-save">Add</button>
+        </div>
+        ${recentMeals.length ? `<ul class="you-log you-meal-list">${recentMeals.map((m) => `<li><span class="you-log-what">${esc(m.note)}</span><span class="you-log-date">${esc(m.stamp)}</span> <button class="linkish you-meal-del" data-id="${esc(m.id)}" aria-label="Delete meal note">✕</button></li>`).join('')}</ul>` : '<p class="hint">No notes yet.</p>'}
+      </section>
+
+      <section class="card">
         <h2>Birthday</h2>
         <p class="hint">Set it and we will throw you a little party on the day. It stays on this device.</p>
         <div class="you-bday-form">
@@ -1051,6 +1066,17 @@ function youScreen() {
     save();
     youScreen();
   });
+  const msave = document.getElementById('you-meal-save');
+  if (msave) {
+    const commitMeal = () => {
+      const inp = document.getElementById('you-meal-input');
+      if (addMeal(inp.value)) { inp.value = ''; youScreen(); }
+    };
+    msave.addEventListener('click', commitMeal);
+    const minput = document.getElementById('you-meal-input');
+    if (minput) minput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); commitMeal(); } });
+  }
+  app.querySelectorAll('.you-meal-del').forEach((b) => b.addEventListener('click', () => { removeMeal(b.dataset.id); youScreen(); }));
   const bsave = document.getElementById('you-bday-save');
   if (bsave) bsave.addEventListener('click', () => {
     const val = document.getElementById('you-bday-input').value;
