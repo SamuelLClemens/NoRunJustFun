@@ -25,6 +25,19 @@ export function pickLevel(seg, level) {
   return seg.say;
 }
 
+// Merge on-demand reading-level variants from a companion map onto a segment, WITHOUT
+// touching the vetted lesson source files. `lessonVariants` is a lesson's map of
+// segmentId -> { simpler?, deeper? } (see js/data/lesson-variants.js, authored
+// separately). A segment's own inline simpler/deeper still wins if present.
+export function withVariants(seg, lessonVariants) {
+  const v = lessonVariants && lessonVariants[seg.id];
+  if (!v) return seg;
+  const out = { ...seg };
+  if (!out.simpler && v.simpler) out.simpler = v.simpler;
+  if (!out.deeper && v.deeper) out.deeper = v.deeper;
+  return out;
+}
+
 export function dedupeSources(list) {
   const seen = new Set();
   const out = [];
@@ -73,7 +86,8 @@ function planFromSegments(segs, meta, kind) {
 // Build a track's catalog library + its two player-compatible plan builders from its
 // lessons map. config = { LESSONS, CURRICULUM, welcomeId, disclaimerSeg, sessionTitle,
 // kind }. Mirrors the money builders in js/data/lessons.js.
-export function makeLessonModule({ LESSONS, CURRICULUM, welcomeId, disclaimerSeg, sessionTitle, kind }) {
+export function makeLessonModule({ LESSONS, CURRICULUM, welcomeId, disclaimerSeg, sessionTitle, kind, variants }) {
+  const V = variants || {};   // { lessonId: { segId: { simpler?, deeper? } } } — additive, optional
   const LESSON_LIBRARY = CURRICULUM
     .filter((id) => LESSONS[id])
     .map((id) => {
@@ -88,7 +102,7 @@ export function makeLessonModule({ LESSONS, CURRICULUM, welcomeId, disclaimerSeg
   function buildLessonById(id) {
     const L = LESSONS[id];
     if (!L || id === welcomeId) return null;
-    const segs = [disclaimerSeg, ...L.segments];
+    const segs = [disclaimerSeg, ...L.segments].map((s) => withVariants(s, V[id]));
     return planFromSegments(segs, {
       durationKey: Math.max(1, Math.round(lessonSecs(segs) / 60)),
       lessonIds: [id],
@@ -115,7 +129,7 @@ export function makeLessonModule({ LESSONS, CURRICULUM, welcomeId, disclaimerSeg
     let used = 0;
 
     const add = (id, chosen) => {
-      segs.push(...chosen);
+      segs.push(...chosen.map((s) => withVariants(s, V[id])));
       used += chosen.reduce((t, s) => t + segDur(s), 0);
       if (id !== welcomeId) {
         const L = LESSONS[id];

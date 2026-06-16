@@ -10,6 +10,7 @@
 // (js/data/lessons.shared.js) so the duration-scaling logic lives in one place.
 
 import { makeDisclaimerSeg, makeLessonModule } from './lessons.shared.js';
+import { LESSON_VARIANTS } from './lesson-variants.js';
 
 export const COMMUNICATION_DISCLAIMER = "This teaches the Nonviolent Communication framework developed by Marshall Rosenberg and the Center for Nonviolent Communication — one influential approach among several. It is educational only: not therapy, not crisis support, and not a substitute for professional mental-health care. Nonviolent Communication is not a tool for situations involving abuse, coercion, or danger; if you are unsafe, your safety comes first — please reach out for professional help. In the United States, call or text 988 (Suicide & Crisis Lifeline) or the National Domestic Violence Hotline at 1-800-799-7233.";
 
@@ -488,6 +489,7 @@ const mod = makeLessonModule({
   disclaimerSeg: DISCLAIMER_SEG,
   sessionTitle: "Communication basics",
   kind: "communication",
+  variants: LESSON_VARIANTS.communication,
 });
 
 export const LESSON_LIBRARY = mod.LESSON_LIBRARY;

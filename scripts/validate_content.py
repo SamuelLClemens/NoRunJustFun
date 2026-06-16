@@ -592,6 +592,14 @@ ok("getElementById('btn-simpler')" in main_src and "getElementById('btn-deeper')
    'session screen missing the simpler/deeper controls')
 ok('speakVariant' in main_src, 'session screen does not invoke speakVariant')
 ok('simpler:' in read('js/data/lessons.js'), 'money lesson plan items do not carry difficulty variants')
+# S8 prep: variants merge from a companion file so the vetted lesson sources stay
+# untouched; the engine applies them via withVariants in both the shared + money builders.
+ok('withVariants' in shared_src, 'lessons.shared.js missing the withVariants merge')
+ok("from './lesson-variants.js'" in read('js/data/lessons.js') and 'withVariants' in read('js/data/lessons.js'),
+   'money builder does not merge variants from the companion file')
+_lv = _read_opt('js/data/lesson-variants.js')
+ok(bool(_lv) and 'LESSON_VARIANTS' in _lv, 'js/data/lesson-variants.js missing LESSON_VARIANTS')
+ok("'js/data/lesson-variants.js'" in read('sw.js'), 'sw.js does not precache lesson-variants.js')
 
 # 33) S5a: the journal — typed entries + the readable/listenable book. Its own ledger
 #     (never sessions[]); audio goes to IndexedDB; the screen loads on demand (off the
