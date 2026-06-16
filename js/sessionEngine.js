@@ -64,7 +64,7 @@ function alternate(strength, soft) {
 // otherwise check the tierEligibility map (absent => all tiers, preserving v1).
 function tierAllows(e, tier, elig) {
   if (e.blocks.includes('close') || (e.tags && e.tags.includes('breath'))) return true;
-  if (!tier || tier === 'stretch' || tier === 'yoga') return true; // these gate by category, not intensity
+  if (!tier || tier === 'stretch' || tier === 'yoga' || tier === 'face' || tier === 'baby') return true; // these gate by category, not intensity
   if (!elig) return true;
   const te = elig[e.id];
   if (!te || !te.length) return true;
@@ -77,6 +77,8 @@ const CATEGORY_POOLS = {
   stretch: ['stretch'],
   yoga: ['yoga'],
   exercise: ['exercise', 'stretch'],
+  face: ['face'],
+  baby: ['baby'],
 };
 function categoryAllows(e, category, catMap) {
   if (!category) return true; // legacy / unscoped

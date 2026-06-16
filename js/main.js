@@ -18,6 +18,7 @@ import { gardenSVG, GARDEN_STAGE_SESSIONS } from './data/garden.js';
 import { POSES } from './data/poses.js';
 import { NEW_EXERCISES, TIER_ELIGIBILITY } from './data/movements-ext.js';
 import { EXTRA_EXERCISES, EXTRA_TIER_ELIGIBILITY, WORKOUT_CATEGORY } from './data/movements-ext2.js';
+import { EXTRA_EXERCISES2, EXTRA_TIER_ELIGIBILITY2, WORKOUT_CATEGORY2 } from './data/movements-ext3.js';
 import { MODES, TIER_META, DURATIONS } from './data/tiers.js';
 import { buildMeditation, buildMeditationById, MEDITATION_LIBRARY } from './data/meditation.js';
 import { availableTiers, gateMessage, routeTrack, filterPool, evaluateScreening,
@@ -37,8 +38,9 @@ const DEV_QA = new URLSearchParams(location.search).has('dev');
 
 // The full movement pool = frozen 29 + appended new movements. exercises.js stays
 // byte-stable; tier metadata and new moves live in movements-ext.js.
-const ALL_EXERCISES = [...EXERCISES, ...NEW_EXERCISES, ...EXTRA_EXERCISES];
-const ALL_TIER_ELIGIBILITY = { ...TIER_ELIGIBILITY, ...EXTRA_TIER_ELIGIBILITY };
+const ALL_EXERCISES = [...EXERCISES, ...NEW_EXERCISES, ...EXTRA_EXERCISES, ...EXTRA_EXERCISES2];
+const ALL_TIER_ELIGIBILITY = { ...TIER_ELIGIBILITY, ...EXTRA_TIER_ELIGIBILITY, ...EXTRA_TIER_ELIGIBILITY2 };
+const ALL_WORKOUT_CATEGORY = { ...WORKOUT_CATEGORY, ...WORKOUT_CATEGORY2 };
 
 // Honor the reduced-motion preference override (auto | on | off) on every render.
 function applyMotionPref() {
@@ -166,6 +168,8 @@ function bodyScreen() {
     { go: '#move-stretch', ic: '🙆', title: 'Stretching', blurb: 'Gentle lengthening and mobility — feel loose and calm' },
     { go: '#move-yoga', ic: '🧘', title: 'Yoga', blurb: 'Mindful, breath-linked poses and simple flows' },
     { go: '#move-exercise', ic: '💪', title: 'Exercises', blurb: 'Build strength and gentle cardio — choose your intensity' },
+    { go: '#move-face', ic: '😌', title: 'Face yoga', blurb: 'Gentle facial release and relaxation — sit anywhere' },
+    { go: '#move-baby', ic: '🍼', title: 'With your baby', blurb: 'Gentle movement you can do holding your little one' },
   ];
   app.innerHTML = `
     <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Body · Move</h1></header>
@@ -189,6 +193,9 @@ const MOVE_META = {
   stretch: { label: 'Stretching', note: 'gentle lengthening and mobility' },
   yoga: { label: 'Yoga', note: 'breath-linked poses and flow' },
   exercise: { label: 'Exercises', note: 'strength and gentle cardio' },
+  face: { label: 'Face yoga', note: 'gentle facial release and relaxation' },
+  baby: { label: 'With your baby', note: 'gentle movement holding your baby',
+    safety: 'Always support the head and neck, hold your baby securely, and never bounce. Begin only once your doctor has cleared you after birth, and stop if your baby is unsettled.' },
 };
 
 function moveScreen(category) {
@@ -207,6 +214,7 @@ function moveScreen(category) {
             </div>
           </div>`).join('')}
         <p class="start-note">${esc(meta.note)} · no equipment${category === 'exercise' ? ', then choose how it feels' : ''}, coached by ${esc(getCharacter(store.profile.character).name)}</p>
+        ${meta.safety ? `<p class="start-note safety-note">⚠️ ${esc(meta.safety)}</p>` : ''}
         <p class="start-note start-links">
           ${category === 'exercise' ? '<a href="#intake">Personalize your sessions</a>' : ''}
           <label class="inline-toggle"><input type="checkbox" id="home-chair" ${store.profile.chairMode ? 'checked' : ''}> Chair mode</label>
@@ -1234,12 +1242,12 @@ function planFor(mins, tier) {
   if (tier === 'meditation') return buildMeditation(mins);
   // The Body paths: Stretching / Yoga scope the pool by category (always available);
   // Exercises uses the intensity tiers, which the screening can gate.
-  const category = (tier === 'stretch' || tier === 'yoga') ? tier : 'exercise';
+  const category = ['stretch', 'yoga', 'face', 'baby'].includes(tier) ? tier : 'exercise';
   if (category === 'exercise' && !availableTiers(store.profile).includes(tier)) return null;
   const pool = filterPool(ALL_EXERCISES, store.profile);
   return buildSession(mins, pool, {
     lastCloseId: store.progress.lastCloseId, tier,
-    tierEligibility: ALL_TIER_ELIGIBILITY, category, workoutCategory: WORKOUT_CATEGORY,
+    tierEligibility: ALL_TIER_ELIGIBILITY, category, workoutCategory: ALL_WORKOUT_CATEGORY,
   });
 }
 

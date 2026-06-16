@@ -376,6 +376,33 @@ ok(libcount >= 30, f'expected >=30 library meditations, found {libcount}')
 for mid in ['med-lib-morning-gentle-7', 'med-lib-box-breath-5', 'med-lib-loving-kindness-15', 'med-lib-reset-5']:
     ok(f'"{mid}"' in med, f'meditation library missing {mid}')
 
+# 21) Face Yoga + With-Your-Baby — two more category-gated Body session types, each
+#     with its own moves (movements-ext3.js). Captions-led, no equipment; baby moves
+#     carry safety framing (in the content + the moveScreen note).
+ext3 = read('js/data/movements-ext3.js') if exists('js/data/movements-ext3.js') else ''
+for sym in ['EXTRA_EXERCISES2', 'EXTRA_TIER_ELIGIBILITY2', 'EXTRA_SPACE_FLAGS2', 'WORKOUT_CATEGORY2']:
+    ok(f'export const {sym}' in ext3, f'movements-ext3.js missing {sym}')
+ok('js/data/movements-ext3.js' in sw, 'sw.js PRECACHE missing js/data/movements-ext3.js')
+ext3_block = ext3.split('export const EXTRA_EXERCISES2')[1].split('export const EXTRA_TIER_ELIGIBILITY2')[0] if 'EXTRA_EXERCISES2' in ext3 else ''
+ext3_ids = re.findall(r'"id":\s*"([^"]+)"', ext3_block)
+ok(len(ext3_ids) >= 20, f'expected >=20 face/baby moves, found {len(ext3_ids)}')
+ok(all(re.fullmatch(r'[a-z0-9-]+', i) for i in ext3_ids), 'a face/baby move id is not kebab-case')
+ok(not (set(ext3_ids) & set(FROZEN)) and not (set(ext3_ids) & set(new_ids)) and not (set(ext3_ids) & set(extra_ids)),
+   'a face/baby move id collides with an existing id')
+for i in ext3_ids:
+    for b in BANNED:
+        ok(b not in i.lower(), f"banned pattern '{b}' in face/baby move '{i}'")
+cat3 = dict(re.findall(r'"([a-z0-9-]+)":\s*"(face|baby|stretch)"', ext3.split('export const WORKOUT_CATEGORY2')[-1]))
+for i in ext3_ids:
+    ok(cat3.get(i) in ('face', 'baby'), f"face/baby move '{i}' has no face/baby category")
+ok(sum(1 for v in cat3.values() if v == 'face') >= 8, 'expected >=8 face-yoga moves')
+ok(sum(1 for v in cat3.values() if v == 'baby') >= 8, 'expected >=8 with-baby moves')
+ok("'face'" in tiers and "'baby'" in tiers and 'WORKOUT_PATHS' in tiers, 'tiers.js missing the face/baby session types')
+ok("face: ['face']" in seng and 'baby:' in seng, 'sessionEngine.js CATEGORY_POOLS missing face/baby')
+for go in ['#move-face', '#move-baby']:
+    ok(go in main_src, f'main.js missing the {go} path')
+ok('safety' in main_src, 'main.js MOVE_META missing the baby safety note')
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")
