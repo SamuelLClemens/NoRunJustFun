@@ -22,6 +22,7 @@
 
 import { withVariants } from './lessons.shared.js';
 import { LESSON_VARIANTS } from './lesson-variants.js';
+import { EXTRA_LESSONS_MONEY, EXTRA_CURRICULUM_MONEY } from './lessons.money.ext.js';
 const VAR_MONEY = LESSON_VARIANTS.money || {};
 
 export const FINANCE_DISCLAIMER = "This is educational information, not financial advice. It is not a substitute for a licensed financial professional, and nothing here is a recommendation to buy, sell, or hold anything. No investment is guaranteed or risk-free, and you can lose money. Dollar figures are labelled with the year they apply to and can change.";
@@ -482,6 +483,12 @@ const LESSONS = {
 
 // Curriculum order for the duration-scaled study session.
 const CURRICULUM = ['budgeting', 'compound-growth', 'risk-diversification', 'retirement-accounts', 'property-basics', "credit-score-basics", "paying-down-debt", "banking-and-apy", "emergency-fund-deeper", "credit-card-traps", "spotting-money-scams", "index-funds-and-etfs", "dollar-cost-averaging", "investment-fees", "stocks-and-bonds", "inflation-and-rates", "saving-for-goals", "roth-vs-traditional-deep", "hsa-and-fsa", "first-home-and-mortgage"];
+
+// S8b expansion: fold in the fact-checked extension lessons (authored separately in
+// lessons.money.ext.js; each segment carries its own simpler/deeper variants). Additive
+// and in-place so the vetted base map above stays byte-stable.
+Object.assign(LESSONS, EXTRA_LESSONS_MONEY);
+CURRICULUM.push(...EXTRA_CURRICULUM_MONEY);
 
 // Catalog cards for the hub, ordered welcome-first then curriculum.
 export const LESSON_LIBRARY = CURRICULUM

@@ -726,6 +726,59 @@ if help_src:
     ok(not any(any(t in s for s in _js_all) for t in _track_eps),
        'analytics/tracking endpoint found in js/ — the FAQ privacy claim would be false')
 
+# 42) S8b: the +16-per-subject Mind expansion ships as a separate, fact-checked
+#     extension file per track (lessons.<track>.ext.js), merged into the base module
+#     in place so the vetted base map stays byte-stable. Feature-gated on the ext file
+#     existing, so the suite stays green for tracks not yet expanded. Each ext lesson
+#     must carry >=2 sourced URLs and inline simpler/deeper on every segment, avoid the
+#     track's banned guarantee phrases, be wired into the base file, and be precached.
+import json as _json
+_sw = read('sw.js')
+for _sid in ['money', 'parenting', 'communication', 'memory']:
+    _ext = 'js/data/lessons.%s.ext.js' % _sid
+    _esrc = _read_opt(_ext)
+    if not _esrc:
+        continue
+    _CONST = _sid.upper()
+    _base = read(LEARN_SUBJECTS[_sid]['lessons'])
+    ok(("lessons.%s.ext.js" % _sid) in _base, '%s base does not import its extension file' % _sid)
+    ok(('EXTRA_LESSONS_%s' % _CONST) in _base and ('EXTRA_CURRICULUM_%s' % _CONST) in _base,
+       '%s base does not merge EXTRA_LESSONS_%s / EXTRA_CURRICULUM_%s' % (_sid, _CONST, _CONST))
+    ok(('Object.assign(LESSONS, EXTRA_LESSONS_%s)' % _CONST) in _base, '%s does not Object.assign the extension lessons' % _sid)
+    ok(("EXTRA_CURRICULUM_%s)" % _CONST) in _base, '%s does not push the extension curriculum' % _sid)
+    ok(("'%s'" % _ext) in _sw, 'sw.js does not precache %s' % _ext)
+    _lm = re.search(r'EXTRA_LESSONS_%s\s*=\s*(\{.*\})\s*;\s*export const EXTRA_CURRICULUM_%s' % (_CONST, _CONST), _esrc, re.S)
+    _cm = re.search(r'EXTRA_CURRICULUM_%s\s*=\s*(\[.*?\])\s*;' % _CONST, _esrc, re.S)
+    ok(bool(_lm) and bool(_cm), '%s ext file is not parseable (EXTRA_LESSONS/CURRICULUM blobs)' % _sid)
+    if not (_lm and _cm):
+        continue
+    try:
+        _EL = _json.loads(_lm.group(1)); _EC = _json.loads(_cm.group(1))
+    except Exception as _e:
+        ok(False, '%s ext JSON does not parse: %s' % (_sid, _e)); continue
+    ok(list(_EL.keys()) == _EC, '%s ext curriculum order does not match lesson keys' % _sid)
+    ok(len(_EL) >= 16, '%s ext has %d lessons, expected >= 16' % (_sid, len(_EL)))
+    # combined curriculum (base literal + ext) reaches the 36 thoroughness target
+    _bm = re.search(r'const CURRICULUM = \[(.*?)\];', _base, re.S)
+    _bcount = len(re.findall(r'[\'\"]([a-z0-9-]+)[\'\"]', _bm.group(1))) if _bm else 0
+    ok(_bcount + len(_EC) >= 36, '%s combined curriculum is %d, expected >= 36' % (_sid, _bcount + len(_EC)))
+    _banned = LEARN_SUBJECTS[_sid]['banned']
+    _low = _esrc.lower()
+    ok(not any(b in _low for b in _banned), '%s ext content uses a banned guarantee/overclaim phrase' % _sid)
+    _bad = []
+    for _lid, _L in _EL.items():
+        if _L.get('id') != _lid:
+            _bad.append('%s id mismatch' % _lid)
+        if len([s for s in _L.get('sources', []) if s.get('url')]) < 2:
+            _bad.append('%s <2 sourced urls' % _lid)
+        _segs = _L.get('segments', [])
+        if not (5 <= len(_segs) <= 12):
+            _bad.append('%s seg count %d' % (_lid, len(_segs)))
+        for _s in _segs:
+            if not (_s.get('say', '').strip() and _s.get('simpler', '').strip() and _s.get('deeper', '').strip()):
+                _bad.append('%s/%s missing say/simpler/deeper' % (_lid, _s.get('id')))
+    ok(not _bad, '%s ext lessons malformed: %s' % (_sid, '; '.join(_bad[:6])))
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")
