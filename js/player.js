@@ -6,13 +6,16 @@ import { sound, music } from './audio.js';
 import { TRANSITION_SECS } from './sessionEngine.js';
 
 export class Player {
-  constructor({ plan, phrases, name, style, musicOn, hooks }) {
+  constructor({ plan, phrases, name, style, musicOn, hooks, skipWelcome }) {
     this.plan = plan;
     this.phrases = phrases;
     this.name = name || '';
     this.style = phrases.styles[style] || phrases.styles.gentle;
     this.musicOn = musicOn;
     this.hooks = hooks; // { render, moveStart(item, idx), mirror(bool), done(stats) }
+    // When a personalized check-in has already greeted the user (longer sessions),
+    // skip the generic workout welcome so they are not greeted twice.
+    this.skipWelcome = !!skipWelcome;
 
     this.idx = -1;
     this.phase = 'idle';        // idle | ready | move | paused | done
@@ -43,7 +46,7 @@ export class Player {
     if (this.musicOn) music.start();
     this._requestWakeLock();
     document.addEventListener('visibilitychange', this._onVis);
-    if (!this.plan.isMeditation) {
+    if (!this.plan.isMeditation && !this.skipWelcome) {
       const welcome = personalize(pick(this.style.welcome), this.name);
       coach.speak(welcome, { interrupt: true });
     }

@@ -566,6 +566,19 @@ if usage_src:
     ok('usageGraphsHTML' in main_src, 'You page does not render the usage graphs (usageGraphsHTML)')
     ok("'js/usage-graph.js'" in read('sw.js'), 'sw.js does not precache js/usage-graph.js')
 
+# 31) S3: longer sessions open with a brief, personalized coach check-in (durationKey>=15),
+#     spoken before content; gentle and anti-compulsion (never pressures the streak).
+checkin_src = _read_opt('js/checkin.js')
+if checkin_src:
+    ok('composeCheckin' in checkin_src, 'checkin.js missing composeCheckin')
+    ok('durationKey' in checkin_src and '>= 15' in checkin_src, 'check-in must gate on durationKey >= 15')
+    ok('composeCheckin' in main_src, 'main.js does not invoke the session check-in')
+    ok('skipWelcome' in read('js/player.js'), 'player.js missing skipWelcome (would double-greet on long workouts)')
+    _low = checkin_src.lower()
+    ok(not any(s in _low for s in ["don't break", 'do not break', 'keep your streak', 'lose your streak', "don't lose"]),
+       'check-in must not pressure the user about their streak (anti-compulsion)')
+    ok("'js/checkin.js'" in read('sw.js'), 'sw.js does not precache js/checkin.js')
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")

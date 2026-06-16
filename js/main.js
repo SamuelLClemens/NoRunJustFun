@@ -27,6 +27,7 @@ import { PROGRAMS, getProgram, programSuggestion, advanceProgram } from './data/
 import { getTrack, TRACK_LIST, SOUL_TRACK_LIST } from './data/tracks.js';
 import { trackHubScreen, learningDone, gameScreen, quizScreen } from './learning-screen.js';
 import { usageGraphsHTML } from './usage-graph.js';
+import { composeCheckin } from './checkin.js';
 
 const app = document.getElementById('app');
 let avatar = null;        // lazy three.js instance, one at a time
@@ -631,12 +632,25 @@ function sessionScreen(plan) {
   const CIRC = 2 * Math.PI * 54;
   ringFg.style.strokeDasharray = String(CIRC);
 
+  // Longer sessions (>= 15 min, any pillar) open with a brief, personalized check-in.
+  const checkinText = composeCheckin({
+    name: profile.name,
+    streakCount: streakInfo(store.progress.sessions).count,
+    totalSessions: store.progress.sessions.length,
+    lastDate: (store.progress.sessions[store.progress.sessions.length - 1] || {}).date || '',
+    today: todayKey(),
+    hour: new Date().getHours(),
+    kind: plan.kind || (plan.isMeditation ? 'meditation' : 'movement'),
+    durationKey: plan.durationKey || 0,
+  });
+
   player = new Player({
     plan,
     phrases: PHRASES,
     name: profile.name,
     style: profile.style,
     musicOn: profile.musicOn,
+    skipWelcome: !!checkinText,
     hooks: {
       moveStart(item, idx) {
         document.getElementById('move-name').textContent = item.ex.name;
@@ -673,7 +687,21 @@ function sessionScreen(plan) {
     if (confirm('End this session?')) player.endEarly();
   });
 
-  player.start();
+  // Hold the session (and its timer) until the check-in finishes, then begin. A safety
+  // timeout guarantees a stuck or silent greeting can never strand the session; the
+  // `begun` guard + identity check make sure we only ever start THIS session once.
+  if (checkinText) {
+    const thisPlayer = player;
+    let begun = false;
+    const begin = () => {
+      if (begun) return; begun = true;
+      if (player === thisPlayer && thisPlayer.phase === 'idle') thisPlayer.start();
+    };
+    coach.speak(checkinText, { interrupt: true }).then(begin, begin);
+    setTimeout(begin, 12000);
+  } else {
+    player.start();
+  }
 }
 
 // Quietly replace the photoreal coach with the lean one mid-session. A fresh
