@@ -130,7 +130,8 @@ function homeScreen() {
       ${pillarsHTML()}
 
       <footer class="privacy-note">
-        <p>🌱 <strong>Private by design.</strong> Your progress lives only on this device. No account, no tracking, no data ever leaves your phone. <a href="#safety">Safety notice</a></p>
+        <p>🌱 <strong>Private by design.</strong> Your progress lives only on this device. No account, no tracking, no data ever leaves your phone.</p>
+        <p class="home-help-links"><a href="#tutorial">How to use the app</a> · <a href="#faq">FAQ &amp; privacy</a> · <a href="#safety">Safety notice</a></p>
       </footer>
     </main>`;
 
@@ -139,7 +140,7 @@ function homeScreen() {
   const progStart = document.getElementById('prog-start');
   if (progStart) progStart.addEventListener('click', () => { sound.unlock(); go(progStart.dataset.go); });
 
-  if (!store.profile.seenSafety) showSafetyOverlay();
+  maybeShowSafety();
 }
 
 // The three pillars (Mind/Body/Soul) — the app's top-level navigation. Each pillar
@@ -528,14 +529,24 @@ function safetyHTML() {
     <p>All moves here are low-impact and chosen to be kind to postpartum bodies: no crunches, no sit-ups, no full planks.</p>`;
 }
 
+// The launch disclaimer. The card is a flex column: the notice text scrolls, while the
+// dismiss button stays PINNED and visible at the bottom on every viewport — including
+// short / landscape phones, where the old centered card pushed the button below the
+// fold. So no matter how the site loads, the user can always see the button to leave it.
+// Dismissing persists seenSafety, so it never reappears once acknowledged.
 function showSafetyOverlay() {
+  if (document.querySelector('.overlay.safety')) return;   // never double-insert
   const ov = document.createElement('div');
-  ov.className = 'overlay';
+  ov.className = 'overlay safety';
   ov.setAttribute('role', 'dialog');
   ov.setAttribute('aria-modal', 'true');
   ov.setAttribute('aria-label', 'Safety notice');
-  ov.innerHTML = `<div class="overlay-card">${safetyHTML()}
-    <button class="btn btn-primary" id="safety-ok">I understand — let's go</button></div>`;
+  ov.innerHTML = `<div class="overlay-card overlay-card--gated">
+    <div class="overlay-scroll">${safetyHTML()}</div>
+    <div class="overlay-actions">
+      <button class="btn btn-primary" id="safety-ok">I understand — let's go</button>
+      <p class="overlay-once">You will only see this once.</p>
+    </div></div>`;
   document.body.appendChild(ov);
   const btn = ov.querySelector('#safety-ok');
   btn.focus();
@@ -548,6 +559,13 @@ function showSafetyOverlay() {
     save();
     ov.remove();
   });
+}
+
+// Show the launch disclaimer once, at boot, no matter which route the app loads into.
+// It is appended to <body>, so it sits above whatever screen rendered (home or a deep
+// link). Gated on seenSafety so a returning, acknowledged user is never interrupted.
+function maybeShowSafety() {
+  if (!store.profile.seenSafety) showSafetyOverlay();
 }
 
 function safetyScreen() {
@@ -1219,7 +1237,8 @@ function settingsScreen() {
       </section>
 
       <section class="card">
-        <p><a href="#safety">Read the safety notice</a></p>
+        <strong>Help</strong>
+        <p class="set-help-links"><a href="#tutorial">How to use the app</a> · <a href="#faq">FAQ &amp; privacy</a> · <a href="#safety">Safety notice</a></p>
         <p class="privacy-inline">🌱 Everything you see in this app is stored only on this device. Nothing is ever uploaded, because there is nowhere to upload it to.</p>
         <button class="btn btn-danger" id="btn-reset">Reset my data</button>
       </section>
@@ -1522,6 +1541,9 @@ async function routeTo(h, seq) {
   if (h === '#you') return youScreen();
   // Journal: loaded on demand so its IndexedDB/recorder code never touches the boot path.
   if (h === '#journal') { import('./journal-screen.js').then((m) => m.journalScreen()).catch((e) => console.warn('journal load failed', e)); return; }
+  // Help screens: loaded on demand — static copy that never needs to ride the boot path.
+  if (h === '#tutorial') { import('./help-screens.js').then((m) => m.tutorialScreen()).catch((e) => console.warn('tutorial load failed', e)); return; }
+  if (h === '#faq') { import('./help-screens.js').then((m) => m.faqScreen()).catch((e) => console.warn('faq load failed', e)); return; }
   if (h === '#badges') return badgesScreen();
   if (h === '#settings') return settingsScreen();
   if (h === '#safety') return safetyScreen();
@@ -1558,6 +1580,7 @@ if (devMode) {
   import('./dev.js').then((m) => m.runDev(devMode));
 } else {
   render();
+  maybeShowSafety();             // launch disclaimer — shown once, regardless of entry route
   maybeAutoEnableNaturalVoice(); // background warm-up; never blocks first paint
 }
 

@@ -267,6 +267,45 @@ input[type='range'] { accent-color: var(--green-500); }
 .overlay-card li { margin-bottom: 8px; }
 .overlay-card .btn { width: 100%; margin-top: 10px; }
 
+/* Gated launch disclaimer: the notice scrolls, the dismiss button stays pinned and
+   visible at the bottom on every viewport (short / landscape phones included), so the
+   user can always reach the button to leave. min-height:0 lets the scroll area shrink
+   inside the flex column instead of pushing the actions off-screen. */
+.overlay-card--gated { display: flex; flex-direction: column; max-height: 88vh; padding: 0; overflow: hidden; }
+.overlay-card--gated .overlay-scroll { overflow-y: auto; padding: 22px 22px 14px; min-height: 0; }
+.overlay-card--gated .overlay-actions { flex: none; padding: 12px 22px 18px; border-top: 1px solid var(--line, #E3E0D8); background: var(--card); }
+.overlay-card--gated .overlay-actions .btn { width: 100%; margin-top: 0; }
+.overlay-once { text-align: center; color: var(--ink-soft); font-size: 0.8rem; margin: 8px 0 0; }
+
+/* ---- tutorial + FAQ (help screens) ---- */
+.help-intro { margin: 2px 2px 4px; }
+.help-step-head { display: flex; align-items: center; gap: 10px; }
+.help-num { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--green-500, #5BA869); color: #fff; font-weight: 700; font-size: 0.85rem; }
+.help-step-title { font-size: 1.05rem; margin: 0; }
+.help-ic { margin-right: 2px; }
+.help-step p { margin: 8px 0 0; }
+.help-step a, .privacy-list a, .faq-answer a { color: var(--green-700, #2E6B3D); }
+.help-cta { text-align: center; }
+.help-links { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 8px; }
+.help-links .btn { width: auto; flex: 1 1 auto; min-width: 130px; }
+.home-help-links, .set-help-links { font-size: 0.85rem; }
+.home-help-links { margin-top: 4px; }
+.home-help-links a { color: var(--green-700, #2E6B3D); }
+
+.privacy-hero { border: 2px solid var(--green-500, #5BA869); background: var(--card); }
+.privacy-hero h2 { margin: 0 0 2px; font-size: 1.15rem; }
+.privacy-list { margin: 6px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+.privacy-list li { line-height: 1.45; }
+.help-faq-heading { margin: 6px 2px 0; font-size: 1.1rem; }
+.faq-item { padding: 0; }
+.faq-item summary { padding: 14px 16px; cursor: pointer; font-weight: 600; list-style: none; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: '+'; float: right; color: var(--ink-soft); font-weight: 400; }
+.faq-item[open] summary::after { content: '–'; }
+.faq-answer { padding: 0 16px 14px; }
+.faq-answer p { margin: 0; line-height: 1.5; }
+
 /* ---- confetti / dev ---- */
 .confetti-canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 99; }
 .dev-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; padding: 10px; }

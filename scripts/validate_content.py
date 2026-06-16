@@ -687,6 +687,45 @@ if hdrs:
     ok('X-Content-Type-Options: nosniff' in hdrs, '_headers missing X-Content-Type-Options: nosniff')
     ok('frame-ancestors' in hdrs or 'X-Frame-Options' in hdrs, '_headers missing clickjacking protection')
 
+# 39) S10: the launch disclaimer must be shown ONCE yet ALWAYS reachable. The dismiss
+#     button is pinned and visible regardless of viewport (gated overlay markup + CSS);
+#     it is shown at boot regardless of which route loads (maybeShowSafety fires at boot
+#     AND on home); dismissing persists seenSafety so it never reappears; and a dedup
+#     guard prevents a second overlay being stacked.
+ok('function maybeShowSafety' in main_src, 'main.js missing maybeShowSafety() launch-disclaimer hook')
+ok(main_src.count('maybeShowSafety()') >= 2,
+   'launch disclaimer must fire at boot AND on home so it shows regardless of entry route')
+ok('seenSafety = true' in main_src, 'dismissing the disclaimer must persist seenSafety (shown only once)')
+ok(".overlay.safety'" in main_src or ".overlay.safety\"" in main_src, 'safety overlay missing the dedup guard')
+ok('overlay-card--gated' in main_src, 'safety overlay must use the gated (pinned-button) card structure')
+_css = read('css/style.css')
+ok('.overlay-card--gated' in _css and 'overlay-scroll' in _css and 'overlay-actions' in _css,
+   'css missing the gated overlay (scroll body + pinned actions) that keeps the dismiss button visible')
+
+# 40) S11/S12: a tutorial (#tutorial) and FAQ (#faq) exist, are routed, lazy-loaded
+#     (off the boot path), precached for offline, and discoverable from home + settings.
+help_src = _read_opt('js/help-screens.js')
+if help_src:
+    ok('export function tutorialScreen' in help_src, 'help-screens.js missing tutorialScreen()')
+    ok('export function faqScreen' in help_src, 'help-screens.js missing faqScreen()')
+    ok("'#tutorial'" in main_src and "'#faq'" in main_src, 'main.js does not route #tutorial / #faq')
+    ok("import('./help-screens.js')" in main_src, 'help screens must be lazy-loaded (kept off the boot path)')
+    ok('help-screens.js' not in main_src.split('async function render')[0],
+       'help screens must not be statically imported on the boot path')
+    ok("'js/help-screens.js'" in read('sw.js'), 'sw.js does not precache js/help-screens.js')
+    ok(main_src.count('href="#tutorial"') >= 2 and main_src.count('href="#faq"') >= 2,
+       'tutorial + FAQ must be linked from both home and settings')
+
+    # 41) S12: the FAQ privacy claims must stay TRUE of the build — data on-device, no
+    #     account, and no analytics/tracking anywhere in shipped JS (so the copy is honest).
+    _hl = help_src.lower()
+    ok('on-device' in _hl or 'on this device' in _hl, 'FAQ must state data stays on-device')
+    ok('no account' in _hl or 'no accounts' in _hl, 'FAQ must state there is no account')
+    ok('analytics' in _hl and 'tracker' in _hl, 'FAQ privacy section must address analytics/trackers')
+    _track_eps = ['google-analytics', 'gtag(', 'googletagmanager', 'mixpanel', 'segment.com', 'sentry.io', 'amplitude.com']
+    ok(not any(any(t in s for s in _js_all) for t in _track_eps),
+       'analytics/tracking endpoint found in js/ — the FAQ privacy claim would be false')
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")
