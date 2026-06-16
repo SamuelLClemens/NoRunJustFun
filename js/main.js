@@ -26,6 +26,7 @@ import { availableTiers, gateMessage, routeTrack, filterPool, evaluateScreening,
 import { PROGRAMS, getProgram, programSuggestion, advanceProgram } from './data/programs.js';
 import { getTrack, TRACK_LIST, SOUL_TRACK_LIST } from './data/tracks.js';
 import { trackHubScreen, learningDone, gameScreen, quizScreen } from './learning-screen.js';
+import { usageGraphsHTML } from './usage-graph.js';
 
 const app = document.getElementById('app');
 let avatar = null;        // lazy three.js instance, one at a time
@@ -923,6 +924,11 @@ function youScreen() {
           <div><strong>${streak.count}</strong><span>day streak</span></div>
           <div><strong>Lv ${lvl.level}</strong><span>${p.totalMins} min moved</span></div>
         </div>
+      </section>
+
+      <section class="card">
+        <h2>Your rhythm</h2>
+        ${usageGraphsHTML(p)}
       </section>
 
       <section class="card">

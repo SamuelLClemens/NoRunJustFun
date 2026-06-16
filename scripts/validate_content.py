@@ -557,6 +557,15 @@ ok('you-name-input' in main_src and 'you-name-save' in main_src,
    'You page missing the inline name prompt (you-name-input / you-name-save)')
 ok('store.profile.name = val' in main_src, 'You page name prompt does not persist to profile.name')
 
+# 30) S2: usage/engagement graphs are READ-ONLY reflection — derived at render time
+#     from the ledgers, never writing back or feeding the streak/garden, and precached.
+usage_src = _read_opt('js/usage-graph.js')
+if usage_src:
+    ok('sessions.push' not in usage_src and 'recordSession' not in usage_src and 'save(' not in usage_src,
+       'usage-graph.js must be read-only (no sessions.push/recordSession/save)')
+    ok('usageGraphsHTML' in main_src, 'You page does not render the usage graphs (usageGraphsHTML)')
+    ok("'js/usage-graph.js'" in read('sw.js'), 'sw.js does not precache js/usage-graph.js')
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")
