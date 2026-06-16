@@ -136,11 +136,14 @@ export const TRACKS = {
     // badge award rules as DATA (generalized from the old checkFinanceBadges JS).
     // countBadges fire on lessons-completed thresholds + a per-track streak;
     // topicBadges fire when every listed lesson id has been completed.
-    countBadges: { first: 'fin-first-lesson', three: 'fin-three', seven: 'fin-seven', streak3: 'fin-streak-3' },
+    countBadges: { first: 'fin-first-lesson', three: 'fin-three', seven: 'fin-seven', streak3: 'fin-streak-3', streak7: 'fin-streak-7' },
+    scholarBadge: 'fin-scholar',
+    masteryBadge: 'fin-master',
     topicBadges: {
       'fin-budgeter': ['budgeting'],
       'fin-compounder': ['compound-growth'],
       'fin-landlord': ['property-basics'],
+      'fin-credit-savvy': ['credit-score-basics'],
     },
     games: [...MONEY_GAMES, LEARN_EXTRAS.money.arcade],
     gameBadges: { firstWin: 'fin-gamer', fiveWins: 'fin-sharp' },
@@ -167,11 +170,14 @@ export const TRACKS = {
     coachCue: 'opens a storybook',
     theme: { token: 'parenting', flowerSVG: parentingBloom, lessonIcon: parentingIcon, badgeEmoji: '🧡' },
     doneHeading: 'Parenting wisdom: planted. 🌼',
-    countBadges: { first: 'par-first-lesson', three: 'par-three', seven: 'par-seven', streak3: 'par-streak-3' },
+    countBadges: { first: 'par-first-lesson', three: 'par-three', seven: 'par-seven', streak3: 'par-streak-3', streak7: 'par-streak-7' },
+    scholarBadge: 'par-scholar',
+    masteryBadge: 'par-master',
     topicBadges: {
       'par-grower': ['child-development'],
       'par-positive': ['positive-discipline'],
       'par-coach': ['emotion-coaching'],
+      'par-sleep-guide': ['toddler-sleep'],
     },
     games: [...PARENTING_GAMES, LEARN_EXTRAS.parenting.arcade],
     gameBadges: { firstWin: 'par-gamer', fiveWins: 'par-sharp' },
@@ -198,11 +204,14 @@ export const TRACKS = {
     coachCue: 'leans in to really listen',
     theme: { token: 'communication', flowerSVG: commBubble, lessonIcon: commIcon, badgeEmoji: '💬' },
     doneHeading: 'Connection: practiced. 🌿',
-    countBadges: { first: 'com-first-lesson', three: 'com-three', seven: 'com-seven', streak3: 'com-streak-3' },
+    countBadges: { first: 'com-first-lesson', three: 'com-three', seven: 'com-seven', streak3: 'com-streak-3', streak7: 'com-streak-7' },
+    scholarBadge: 'com-scholar',
+    masteryBadge: 'com-master',
     topicBadges: {
       'com-observer': ['nvc-observations'],
       'com-feeler': ['nvc-feelings'],
       'com-empath': ['nvc-empathy-safety'],
+      'com-peacemaker': ['conflict-de-escalation'],
     },
     games: [...COMMUNICATION_GAMES, LEARN_EXTRAS.communication.arcade],
     gameBadges: { firstWin: 'com-gamer', fiveWins: 'com-sharp' },
@@ -232,11 +241,14 @@ export const TRACKS = {
     coachCue: 'switches on a little lightbulb',
     theme: { token: 'memory', flowerSVG: memoryBloom, lessonIcon: memoryIcon, badgeEmoji: '🧠' },
     doneHeading: 'Memory, strengthened. 🌼',
-    countBadges: { first: 'mem-first-lesson', three: 'mem-three', seven: 'mem-seven', streak3: 'mem-streak-3' },
+    countBadges: { first: 'mem-first-lesson', three: 'mem-three', seven: 'mem-seven', streak3: 'mem-streak-3', streak7: 'mem-streak-7' },
+    scholarBadge: 'mem-scholar',
+    masteryBadge: 'mem-master',
     topicBadges: {
       'mem-foundations': ['how-memory-works'],
       'mem-retrieval': ['retrieval-practice'],
       'mem-palace': ['memory-techniques'],
+      'mem-mnemonist': ['the-major-system'],
     },
     // game-win badges, driven by this track's gamesWon counter (see js/learning.js)
     gameBadges: { firstWin: 'mem-gamer', fiveWins: 'mem-sharp' },

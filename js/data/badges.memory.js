@@ -66,5 +66,33 @@ export const MEMORY_BADGES = [
     "name": "Quick Recall",
     "desc": "Five memory games won. Your recognition and working memory are getting a steady, playful workout.",
     "icon": "<svg viewBox='0 0 48 48'><circle cx='24' cy='24' r='15' fill='none' stroke='#B5478B' stroke-width='2.5'/><path d='M26 10l-9 16h6l-2 12 11-17h-7z' fill='#FFD45C' stroke='#B5478B' stroke-width='1.5' stroke-linejoin='round'/></svg>"
+  },
+  {
+    "id": "mem-streak-7",
+    "category": "memory",
+    "name": "A Week of Reps",
+    "desc": "Seven days of memory practice, in a row. Spaced, repeated effort is exactly what the science rewards.",
+    "icon": "<svg viewBox='0 0 48 48'><circle cx='24' cy='24' r='10' fill='#D77FB6' stroke='#B5478B' stroke-width='2'/><text x='24' y='28' text-anchor='middle' font-family='Fredoka, system-ui' font-weight='700' font-size='11' fill='#fff'>7</text><g stroke='#B5478B' stroke-width='2.5' stroke-linecap='round'><path d='M24 8v4'/><path d='M24 36v4'/><path d='M8 24h4'/><path d='M36 24h4'/></g></svg>"
+  },
+  {
+    "id": "mem-mnemonist",
+    "category": "memory",
+    "name": "Mnemonist",
+    "desc": "You learned the major system — a code that turns slippery numbers into pictures you can actually hold onto.",
+    "icon": "<svg viewBox='0 0 48 48'><rect x='9' y='14' width='30' height='20' rx='3' fill='#F7E9F2' stroke='#B5478B' stroke-width='2'/><g fill='#B5478B'><circle cx='17' cy='24' r='3'/><circle cx='24' cy='24' r='3'/><circle cx='31' cy='24' r='3'/></g><path d='M14 30h20' stroke='#D77FB6' stroke-width='2' stroke-linecap='round'/></svg>"
+  },
+  {
+    "id": "mem-scholar",
+    "category": "memory",
+    "name": "Memory Scholar",
+    "desc": "Every memory lesson, finished. How memory works, what helps, and what the science cannot promise — you know it all now.",
+    "icon": "<svg viewBox='0 0 48 48'><rect x='9' y='14' width='9' height='26' rx='2' fill='#D77FB6' stroke='#B5478B' stroke-width='2'/><rect x='20' y='11' width='9' height='29' rx='2' fill='#F7E9F2' stroke='#B5478B' stroke-width='2'/><rect x='31' y='16' width='9' height='24' rx='2' fill='#D77FB6' stroke='#B5478B' stroke-width='2'/><path d='M22 18h5M22 22h5' stroke='#B5478B' stroke-width='1.6' stroke-linecap='round'/></svg>"
+  },
+  {
+    "id": "mem-master",
+    "category": "memory",
+    "name": "Memory Master",
+    "desc": "All lessons done, a perfect quiz, and a game won. You have a genuine, evidence-based toolkit — and the practice to match.",
+    "icon": "<svg viewBox='0 0 48 48'><path d='M14 10h20v6a10 10 0 0 1-20 0z' fill='#D77FB6' stroke='#B5478B' stroke-width='2'/><path d='M14 12H9a5 5 0 0 0 5 6M34 12h5a5 5 0 0 1-5 6' fill='none' stroke='#B5478B' stroke-width='2'/><rect x='21' y='26' width='6' height='7' fill='#B5478B'/><rect x='15' y='33' width='18' height='5' rx='2' fill='#B5478B'/><path d='M20 13a4 4 0 0 1 8 0c0 1.6-1 2.2-1.6 2.8h-4.8C21 15.2 20 14.6 20 13z' fill='#FBE9A0'/></svg>"
   }
 ];

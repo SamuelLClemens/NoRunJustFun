@@ -66,5 +66,33 @@ export const PARENTING_BADGES = [
     "name": "Steady Hand",
     "desc": "Five parenting games won. Connecting first, then guiding, is becoming a steady habit.",
     "icon": "<svg viewBox='0 0 48 48'><circle cx='24' cy='24' r='15' fill='none' stroke='#E07856' stroke-width='2.5'/><path d='M24 32c-7-4.5-10-8.5-6.6-12.2 2.2-2.4 6-1.4 6.6 1.6 .6-3 4.4-4 6.6-1.6C34 23.5 31 27.5 24 32z' fill='#F08A66'/></svg>"
+  },
+  {
+    "id": "par-streak-7",
+    "category": "parenting",
+    "name": "A Full Week",
+    "desc": "Seven days of learning about your child, in a row. Showing up, again and again, is the heart of it.",
+    "icon": "<svg viewBox='0 0 48 48'><circle cx='24' cy='24' r='10' fill='#FFD45C' stroke='#E07856' stroke-width='2'/><text x='24' y='28' text-anchor='middle' font-family='Fredoka, system-ui' font-weight='700' font-size='11' fill='#8A3D26'>7</text><g stroke='#E07856' stroke-width='2.5' stroke-linecap='round'><path d='M24 8v4'/><path d='M24 36v4'/><path d='M8 24h4'/><path d='M36 24h4'/></g></svg>"
+  },
+  {
+    "id": "par-sleep-guide",
+    "category": "parenting",
+    "name": "Sleep Guide",
+    "desc": "You learned how much sleep your child really needs and how routines help. Calmer nights start with understanding.",
+    "icon": "<svg viewBox='0 0 48 48'><path d='M33 11a15 15 0 1 0 7 26 12 12 0 0 1-7-26z' fill='#F08A66'/><circle cx='16' cy='14' r='2' fill='#E07856'/><circle cx='12' cy='23' r='1.6' fill='#E07856'/><circle cx='20' cy='9' r='1.4' fill='#E07856'/></svg>"
+  },
+  {
+    "id": "par-scholar",
+    "category": "parenting",
+    "name": "Parenting Scholar",
+    "desc": "Every parenting lesson, finished. From development to defiance, you have walked the whole path with care.",
+    "icon": "<svg viewBox='0 0 48 48'><rect x='9' y='14' width='9' height='26' rx='2' fill='#F08A66' stroke='#E07856' stroke-width='2'/><rect x='20' y='11' width='9' height='29' rx='2' fill='#FBEEE8' stroke='#E07856' stroke-width='2'/><rect x='31' y='16' width='9' height='24' rx='2' fill='#F08A66' stroke='#E07856' stroke-width='2'/><path d='M22 18h5M22 22h5' stroke='#E07856' stroke-width='1.6' stroke-linecap='round'/></svg>"
+  },
+  {
+    "id": "par-master",
+    "category": "parenting",
+    "name": "Parenting Path Master",
+    "desc": "All lessons done, a perfect quiz, and a game won. You have made this wisdom your own — warmly and firmly.",
+    "icon": "<svg viewBox='0 0 48 48'><path d='M14 10h20v6a10 10 0 0 1-20 0z' fill='#F08A66' stroke='#E07856' stroke-width='2'/><path d='M14 12H9a5 5 0 0 0 5 6M34 12h5a5 5 0 0 1-5 6' fill='none' stroke='#E07856' stroke-width='2'/><rect x='21' y='26' width='6' height='7' fill='#E07856'/><rect x='15' y='33' width='18' height='5' rx='2' fill='#E07856'/><path d='M24 30c-4-2.6-6-5-4-7.2 1.3-1.4 3.6-.8 4 1 .4-1.8 2.7-2.4 4-1 2 2.2 0 4.6-4 7.2z' fill='#fff'/></svg>"
   }
 ];

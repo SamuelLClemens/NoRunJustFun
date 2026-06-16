@@ -1,4 +1,7 @@
-// Generated badge definitions (14).
+// Fitness + shared badge definitions (27): 16 original, plus 11 additive milestones
+// (garden stages, longer streaks, deeper meditation counts, session milestones, and
+// cross-pillar Mind/Body/Soul balance). All consistent with the count-based,
+// grace-day, "consistency not intensity" design — no new compulsion curves.
 export const BADGES = [
   {
     "id": "first-session",
@@ -95,5 +98,71 @@ export const BADGES = [
     "name": "Ten Times Calmer",
     "desc": "Ten meditations done — a quiet practice you keep returning to, on the good days and the hard ones.",
     "icon": "<svg viewBox='0 0 48 48'><circle cx='24' cy='24' r='5' fill='#7EC4E8'/><circle cx='24' cy='24' r='11' fill='none' stroke='#5BA869' stroke-width='3' opacity='0.75'/><circle cx='24' cy='24' r='17' fill='none' stroke='#F58F7C' stroke-width='3' opacity='0.5'/></svg>"
+  },
+  {
+    "id": "garden-stage-4",
+    "name": "Bud to Bloom",
+    "desc": "Your garden opened its first flower — stage four. Look what a little steadiness grew.",
+    "icon": "<svg viewBox='0 0 48 48'><path d='M24 42 V22' stroke='#5BA869' stroke-width='4' stroke-linecap='round'/><ellipse cx='16' cy='30' rx='7' ry='3.6' fill='#5BA869' transform='rotate(-25 16 30)'/><circle cx='24' cy='14' r='5' fill='#F58F7C'/><circle cx='18' cy='17' r='5' fill='#F58F7C'/><circle cx='30' cy='17' r='5' fill='#F58F7C'/><circle cx='20.5' cy='10' r='5' fill='#F58F7C'/><circle cx='27.5' cy='10' r='5' fill='#F58F7C'/><circle cx='24' cy='13.5' r='3.6' fill='#FFD45C'/></svg>"
+  },
+  {
+    "id": "garden-stage-8",
+    "name": "Garden in Full Glory",
+    "desc": "Stage eight — sunflower, arch, and all. Your garden is in its fullest bloom, and you grew every inch of it.",
+    "icon": "<svg viewBox='0 0 48 48'><g transform='translate(24 16)' fill='#FFD45C'><ellipse cy='-12' rx='4.5' ry='10'/><ellipse cy='-12' rx='4.5' ry='10' transform='rotate(45)'/><ellipse cy='-12' rx='4.5' ry='10' transform='rotate(90)'/><ellipse cy='-12' rx='4.5' ry='10' transform='rotate(135)'/><ellipse cy='-12' rx='4.5' ry='10' transform='rotate(180)'/><ellipse cy='-12' rx='4.5' ry='10' transform='rotate(225)'/><ellipse cy='-12' rx='4.5' ry='10' transform='rotate(270)'/><ellipse cy='-12' rx='4.5' ry='10' transform='rotate(315)'/></g><circle cx='24' cy='16' r='8' fill='#1F4D2E'/><path d='M24 24 V42' stroke='#5BA869' stroke-width='4' stroke-linecap='round'/><ellipse cx='15' cy='34' rx='7' ry='3.6' fill='#5BA869' transform='rotate(-25 15 34)'/></svg>"
+  },
+  {
+    "id": "streak-14",
+    "name": "Two-Week Wonder",
+    "desc": "Fourteen days in the chain, grace days and all. You keep coming back, and that is the whole magic.",
+    "icon": "<svg viewBox='0 0 48 48'><circle cx='24' cy='24' r='10' fill='#FFD45C'/><g stroke='#F58F7C' stroke-width='3' stroke-linecap='round'><path d='M24 6v5'/><path d='M24 37v5'/><path d='M6 24h5'/><path d='M37 24h5'/><path d='M11 11l3.6 3.6'/><path d='M33.4 33.4L37 37'/><path d='M37 11l-3.6 3.6'/><path d='M14.6 33.4L11 37'/></g></svg>"
+  },
+  {
+    "id": "streak-30",
+    "name": "Thirty-Day Grove",
+    "desc": "A whole month of showing up. One garden became a little grove — rooted, steady, and yours.",
+    "icon": "<svg viewBox='0 0 48 48'><rect x='6' y='39' width='36' height='4' rx='2' fill='#1F4D2E'/><g fill='#5BA869'><circle cx='14' cy='28' r='8'/><circle cx='24' cy='21' r='9.5'/><circle cx='34' cy='28' r='8'/></g><g stroke='#2E6B3D' stroke-width='3' stroke-linecap='round'><path d='M14 39v-9'/><path d='M24 39v-13'/><path d='M34 39v-9'/></g></svg>"
+  },
+  {
+    "id": "calm-25",
+    "name": "Twenty-Five Stillnesses",
+    "desc": "Twenty-five meditations sat through. A quiet practice you keep choosing — gentle, and quietly powerful.",
+    "icon": "<svg viewBox='0 0 48 48'><ellipse cx='24' cy='35' rx='15' ry='4' fill='#7EC4E8' opacity='0.6'/><path d='M24 32c-7 0-12-4-12-9 5 0 9 2 12 7 3-5 7-7 12-7 0 5-5 9-12 9z' fill='#9AD9CF'/><path d='M24 30c-2-4-2-8 0-12 2 4 2 8 0 12z' fill='#2F9E8F'/></svg>"
+  },
+  {
+    "id": "calm-50",
+    "name": "Fifty Times Calmer",
+    "desc": "Fifty meditations. On the bright days and the heavy ones, you kept returning to the quiet. That is devotion.",
+    "icon": "<svg viewBox='0 0 48 48'><ellipse cx='24' cy='36' rx='17' ry='4.5' fill='#7EC4E8' opacity='0.6'/><path d='M24 33c-7 0-12-5-12-11 5 0 9 3 12 8 3-5 7-8 12-8 0 6-5 11-12 11z' fill='#9AD9CF'/><path d='M24 31c-3-5-3-10 0-15 3 5 3 10 0 15z' fill='#2F9E8F'/><path d='M13 27c-1-4 0-8 3-11 2 4 1 9-3 11z' fill='#54C2B2'/><path d='M35 27c1-4 0-8-3-11-2 4-1 9 3 11z' fill='#54C2B2'/></svg>"
+  },
+  {
+    "id": "sessions-50",
+    "name": "Fifty Blooms",
+    "desc": "Fifty sessions in the books. Fifty small choices to care for yourself — and a garden that shows every one.",
+    "icon": "<svg viewBox='0 0 48 48'><rect x='6' y='40' width='36' height='4' rx='2' fill='#1F4D2E'/><circle cx='14' cy='24' r='5' fill='#F58F7C'/><circle cx='24' cy='18' r='5.5' fill='#FFD45C'/><circle cx='34' cy='24' r='5' fill='#7EC4E8'/><g stroke='#5BA869' stroke-width='3' stroke-linecap='round'><path d='M14 40V27'/><path d='M24 40V21'/><path d='M34 40V27'/></g></svg>"
+  },
+  {
+    "id": "sessions-100",
+    "name": "Hundred-Bloom Garden",
+    "desc": "One hundred sessions. This is not a streak or a sprint — it is a practice you have woven into your life.",
+    "icon": "<svg viewBox='0 0 48 48'><circle cx='24' cy='21' r='14' fill='#FFD45C' stroke='#F4A300' stroke-width='2'/><path d='M24 12l2.6 5.3 5.8 .8-4.2 4.1 1 5.8L24 25.3 18.8 28l1-5.8-4.2-4.1 5.8-.8z' fill='#fff'/><path d='M15 32l-3 12 12-5 12 5-3-12' fill='#F58F7C'/></svg>"
+  },
+  {
+    "id": "balance-day",
+    "name": "Two Pillars in a Day",
+    "desc": "In one day you tended two of the three — mind, body, or soul. A lovely, balanced kind of day.",
+    "icon": "<svg viewBox='0 0 48 48'><circle cx='19' cy='24' r='12' fill='#7B8FE8' opacity='0.85'/><circle cx='29' cy='24' r='12' fill='#5BA869' opacity='0.85'/></svg>"
+  },
+  {
+    "id": "whole-self-day",
+    "name": "Mind, Body & Soul",
+    "desc": "All three in a single day — a lesson for the mind, movement for the body, and stillness for the soul. The whole you, cared for.",
+    "icon": "<svg viewBox='0 0 48 48'><circle cx='24' cy='14' r='9' fill='#7B8FE8'/><circle cx='15' cy='30' r='9' fill='#5BA869'/><circle cx='33' cy='30' r='9' fill='#9B6FD0'/><circle cx='24' cy='24' r='5' fill='#FFD45C'/></svg>"
+  },
+  {
+    "id": "balanced-week",
+    "name": "A Well-Rounded Week",
+    "desc": "Across one week you touched all three pillars — mind, body, and soul. Balance, not pressure.",
+    "icon": "<svg viewBox='0 0 48 48'><circle cx='24' cy='24' r='17' fill='none' stroke='#FFD45C' stroke-width='2.5'/><circle cx='24' cy='15' r='6.5' fill='#7B8FE8'/><circle cx='16' cy='29' r='6.5' fill='#5BA869'/><circle cx='32' cy='29' r='6.5' fill='#9B6FD0'/></svg>"
   }
 ];
