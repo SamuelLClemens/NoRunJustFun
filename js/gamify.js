@@ -118,6 +118,22 @@ export function checkBadges(store, gardenThresholds) {
   const stage = gardenStage(p.sessions.length, gardenThresholds);
   const last = p.sessions[p.sessions.length - 1];
 
+  // Cross-pillar balance: classify each session by pillar. A Mind (learning) session
+  // always carries a lessonIds array (finishLearning/recordQuiz write it); a Soul
+  // session is kind:'meditation'; everything else (movement / default) is Body. So
+  // these badges read the existing session records with no new bookkeeping.
+  const pillar = (s) => (Array.isArray(s.lessonIds) ? 'mind' : s.kind === 'meditation' ? 'soul' : 'body');
+  const pillarsWhen = (pred) => {
+    const set = new Set();
+    for (const s of p.sessions) if (pred(s)) set.add(pillar(s));
+    return set;
+  };
+  const last7 = new Set();
+  for (let i = 0; i < 7; i++) last7.add(shiftDay(today, -i));
+  const pillarsToday = pillarsWhen((s) => s.date === today);
+  const pillarsWeek = pillarsWhen((s) => last7.has(s.date));
+  const medCount = p.meditationCount || 0;
+
   const conditions = {
     'first-session': p.sessions.length >= 1,
     'three-in-week': sessionsInLast7Days(p.sessions, today) >= 3,
@@ -138,6 +154,19 @@ export function checkBadges(store, gardenThresholds) {
     // meditation badges — count of completed meditations; NOT gated on intensity.
     'first-stillness': (p.meditationCount || 0) >= 1,
     'settled-ten': (p.meditationCount || 0) >= 10,
+    // --- additive milestones (count-based, grace-day-aware; no intensity gates) ---
+    'garden-stage-4': stage >= 4,
+    'garden-stage-8': stage >= 8,
+    'streak-14': streak.count >= 14,
+    'streak-30': streak.count >= 30,
+    'calm-25': medCount >= 25,
+    'calm-50': medCount >= 50,
+    'sessions-50': p.sessions.length >= 50,
+    'sessions-100': p.sessions.length >= 100,
+    // cross-pillar balance — tending more than one of Mind / Body / Soul
+    'balance-day': pillarsToday.size >= 2,
+    'whole-self-day': pillarsToday.size >= 3,
+    'balanced-week': pillarsWeek.size >= 3,
   };
 
   const earned = [];

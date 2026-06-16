@@ -79,6 +79,7 @@ export function checkTrackBadges(store, trackId) {
   if (cb.three) conditions[cb.three] = t.lessonsCompleted >= 3;
   if (cb.seven) conditions[cb.seven] = t.lessonsCompleted >= 7;
   if (cb.streak3) conditions[cb.streak3] = streak.count >= 3;
+  if (cb.streak7) conditions[cb.streak7] = streak.count >= 7;
   for (const [badgeId, lessonIds] of Object.entries(track.topicBadges || {})) {
     const need = lessonIds || [];
     // length>0 guard: [].every(...) is vacuously true, so a misconfigured empty
@@ -89,6 +90,14 @@ export function checkTrackBadges(store, trackId) {
   const gb = track.gameBadges || {};
   if (gb.firstWin) conditions[gb.firstWin] = t.gamesWon >= 1;
   if (gb.fiveWins) conditions[gb.fiveWins] = t.gamesWon >= 5;
+
+  // mastery badges — read the registry's catalog so they auto-scale as the curriculum
+  // grows. scholar = every catalog lesson completed; master = that plus a perfect quiz
+  // (completedAt set) and at least one game won. Both read existing counters only.
+  const catalogIds = ((track.lessons && track.lessons.LESSON_LIBRARY) || []).map((l) => l.id);
+  const allLessonsDone = catalogIds.length > 0 && catalogIds.every((lid) => done.has(lid));
+  if (track.scholarBadge) conditions[track.scholarBadge] = allLessonsDone;
+  if (track.masteryBadge) conditions[track.masteryBadge] = allLessonsDone && !!t.completedAt && t.gamesWon >= 1;
 
   const earned = [];
   for (const [id, ok] of Object.entries(conditions)) {

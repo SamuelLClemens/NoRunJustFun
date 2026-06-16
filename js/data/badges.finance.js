@@ -68,5 +68,33 @@ export const FINANCE_BADGES = [
     "name": "Quick Cents",
     "desc": "Five money games won. Risk, reward, and the right questions are second nature now.",
     "icon": "<svg viewBox='0 0 48 48'><circle cx='24' cy='24' r='15' fill='none' stroke='#5B6BD0' stroke-width='2.5'/><path d='M26 10l-9 16h6l-2 12 11-17h-7z' fill='#FFD45C' stroke='#F4A300' stroke-width='1.5' stroke-linejoin='round'/></svg>"
+  },
+  {
+    "id": "fin-streak-7",
+    "category": "finance",
+    "name": "Seven-Day Saver",
+    "desc": "A whole week of money lessons, day after day. Steady habits are the quiet engine behind every healthy budget.",
+    "icon": "<svg viewBox='0 0 48 48'><circle cx='24' cy='24' r='10' fill='#FFD45C' stroke='#F4A300' stroke-width='2'/><text x='24' y='28' text-anchor='middle' font-family='Fredoka, system-ui' font-weight='700' font-size='11' fill='#9A6500'>7</text><g stroke='#5B6BD0' stroke-width='2.5' stroke-linecap='round'><path d='M24 8v4'/><path d='M24 36v4'/><path d='M8 24h4'/><path d='M36 24h4'/></g></svg>"
+  },
+  {
+    "id": "fin-credit-savvy",
+    "category": "finance",
+    "name": "Credit Savvy",
+    "desc": "You learned what a credit score really measures and how to tend it — knowledge that quietly saves real money.",
+    "icon": "<svg viewBox='0 0 48 48'><path d='M10 34a14 14 0 0 1 28 0' fill='none' stroke='#5B6BD0' stroke-width='3' stroke-linecap='round'/><path d='M24 34l9-7' stroke='#F4A300' stroke-width='3' stroke-linecap='round'/><circle cx='24' cy='34' r='3' fill='#5B6BD0'/><circle cx='13' cy='30' r='2' fill='#F58F7C'/><circle cx='35' cy='30' r='2' fill='#5BA869'/></svg>"
+  },
+  {
+    "id": "fin-scholar",
+    "category": "finance",
+    "name": "Money Scholar",
+    "desc": "Every money lesson, finished. You have walked the whole Money Garden — budgeting to property, risks and all.",
+    "icon": "<svg viewBox='0 0 48 48'><rect x='9' y='14' width='9' height='26' rx='2' fill='#FFD45C' stroke='#F4A300' stroke-width='2'/><rect x='20' y='11' width='9' height='29' rx='2' fill='#ECEEFB' stroke='#5B6BD0' stroke-width='2'/><rect x='31' y='16' width='9' height='24' rx='2' fill='#FFD45C' stroke='#F4A300' stroke-width='2'/><path d='M22 18h5M22 22h5' stroke='#5B6BD0' stroke-width='1.6' stroke-linecap='round'/></svg>"
+  },
+  {
+    "id": "fin-master",
+    "category": "finance",
+    "name": "Money Garden Master",
+    "desc": "All lessons done, a perfect quiz, and a game won. You have truly mastered the Money Garden — and it shows.",
+    "icon": "<svg viewBox='0 0 48 48'><path d='M14 10h20v6a10 10 0 0 1-20 0z' fill='#FFD45C' stroke='#F4A300' stroke-width='2'/><path d='M14 12H9a5 5 0 0 0 5 6M34 12h5a5 5 0 0 1-5 6' fill='none' stroke='#F4A300' stroke-width='2'/><rect x='21' y='26' width='6' height='7' fill='#5B6BD0'/><rect x='15' y='33' width='18' height='5' rx='2' fill='#5B6BD0'/><path d='M20 14l2.4 2.4L28 12' fill='none' stroke='#9A6500' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>"
   }
 ];

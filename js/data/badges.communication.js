@@ -66,5 +66,33 @@ export const COMMUNICATION_BADGES = [
     "name": "Clear Speaker",
     "desc": "Five communication games won. Observations over evaluations, requests over demands — it is becoming natural.",
     "icon": "<svg viewBox='0 0 48 48'><path d='M9 12h26a3 3 0 0 1 3 3v13a3 3 0 0 1-3 3H19l-8 7v-7a3 3 0 0 1-2-3V15a3 3 0 0 1 3-3z' fill='#54C2B2' stroke='#2F9E8F' stroke-width='2' stroke-linejoin='round'/><path d='M16 27l5-12 4 8 3-5 4 9' fill='none' stroke='#fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>"
+  },
+  {
+    "id": "com-streak-7",
+    "category": "communication",
+    "name": "A Week of Connection",
+    "desc": "Seven days of practicing connection, in a row. Like any language, this one deepens with daily, gentle use.",
+    "icon": "<svg viewBox='0 0 48 48'><circle cx='24' cy='24' r='10' fill='#54C2B2' stroke='#2F9E8F' stroke-width='2'/><text x='24' y='28' text-anchor='middle' font-family='Fredoka, system-ui' font-weight='700' font-size='11' fill='#fff'>7</text><g stroke='#2F9E8F' stroke-width='2.5' stroke-linecap='round'><path d='M24 8v4'/><path d='M24 36v4'/><path d='M8 24h4'/><path d='M36 24h4'/></g></svg>"
+  },
+  {
+    "id": "com-peacemaker",
+    "category": "communication",
+    "name": "Peacemaker",
+    "desc": "You learned to stay connected in conflict and sidestep the patterns that pull people apart. Steady, not combative.",
+    "icon": "<svg viewBox='0 0 48 48'><path d='M10 31c8 2 15-2 21-11 2 6-1 14-9 17-4 1.6-9 1-12-6z' fill='#54C2B2'/><path d='M31 20q5-4 9-2-3 1-4 4' fill='none' stroke='#2F9E8F' stroke-width='2.5' stroke-linecap='round'/><path d='M14 35q3 2 7 1' fill='none' stroke='#5BA869' stroke-width='2.5' stroke-linecap='round'/><circle cx='12' cy='30' r='2' fill='#2F9E8F'/></svg>"
+  },
+  {
+    "id": "com-scholar",
+    "category": "communication",
+    "name": "Connection Scholar",
+    "desc": "Every communication lesson, finished. Observations, feelings, needs, requests — the whole framework, walked with care.",
+    "icon": "<svg viewBox='0 0 48 48'><rect x='9' y='14' width='9' height='26' rx='2' fill='#54C2B2' stroke='#2F9E8F' stroke-width='2'/><rect x='20' y='11' width='9' height='29' rx='2' fill='#E4F4F1' stroke='#2F9E8F' stroke-width='2'/><rect x='31' y='16' width='9' height='24' rx='2' fill='#54C2B2' stroke='#2F9E8F' stroke-width='2'/><path d='M22 18h5M22 22h5' stroke='#2F9E8F' stroke-width='1.6' stroke-linecap='round'/></svg>"
+  },
+  {
+    "id": "com-master",
+    "category": "communication",
+    "name": "Connection Master",
+    "desc": "All lessons done, a perfect quiz, and a game won. Honest, caring communication is becoming second nature.",
+    "icon": "<svg viewBox='0 0 48 48'><path d='M14 10h20v6a10 10 0 0 1-20 0z' fill='#54C2B2' stroke='#2F9E8F' stroke-width='2'/><path d='M14 12H9a5 5 0 0 0 5 6M34 12h5a5 5 0 0 1-5 6' fill='none' stroke='#2F9E8F' stroke-width='2'/><rect x='21' y='26' width='6' height='7' fill='#2F9E8F'/><rect x='15' y='33' width='18' height='5' rx='2' fill='#2F9E8F'/><circle cx='20' cy='15' r='1.6' fill='#fff'/><circle cx='24' cy='15' r='1.6' fill='#fff'/><circle cx='28' cy='15' r='1.6' fill='#fff'/></svg>"
   }
 ];

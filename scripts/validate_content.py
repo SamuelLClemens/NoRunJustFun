@@ -212,6 +212,42 @@ ok('2026' in money_lessons and ('Notice 2025-67' in money_lessons or 'irs.gov' i
 # 15) topic badges award off completed lesson ids (generic engine)
 ok('done.has' in learn_code, "learning.js topic badges do not key off completed lesson ids")
 
+# 15b) thoroughness floor — each Mind subject now carries a full 20-lesson curriculum,
+#      and the expanded reward sets are present AND wired (additive milestones,
+#      cross-pillar balance, per-subject scholar/mastery). All consistent with the
+#      count-based, grace-day, anti-compulsion design.
+for _sid, _cfg in LEARN_SUBJECTS.items():
+    if not exists(_cfg['lessons']):
+        continue
+    _Lsrc = read(_cfg['lessons'])
+    _m = re.search(r'const CURRICULUM = \[(.*?)\];', _Lsrc)
+    _cur = re.findall(r'"[^"]+"|\'[^\']+\'', _m.group(1)) if _m else []
+    ok(len(_cur) >= 20, f"{_sid} curriculum has {len(_cur)} lessons, expected >= 20")
+
+NEW_TRACK_BADGES = {
+    'money': ['fin-scholar', 'fin-master', 'fin-streak-7', 'fin-credit-savvy'],
+    'parenting': ['par-scholar', 'par-master', 'par-streak-7', 'par-sleep-guide'],
+    'communication': ['com-scholar', 'com-master', 'com-streak-7', 'com-peacemaker'],
+    'memory': ['mem-scholar', 'mem-master', 'mem-streak-7', 'mem-mnemonist'],
+}
+for _sid, _ids in NEW_TRACK_BADGES.items():
+    _bsrc = read(LEARN_SUBJECTS[_sid]['badges'])
+    for _bid in _ids:
+        ok(f'"{_bid}"' in _bsrc, f"{_sid} badges missing new badge '{_bid}'")
+
+NEW_SHARED_BADGES = ['garden-stage-4', 'garden-stage-8', 'streak-14', 'streak-30',
+                     'calm-25', 'calm-50', 'sessions-50', 'sessions-100',
+                     'balance-day', 'whole-self-day', 'balanced-week']
+_fitsrc = read('js/data/badges.js')
+for _bid in NEW_SHARED_BADGES:
+    ok(f'"{_bid}"' in _fitsrc, f"badges.js missing new shared badge '{_bid}'")
+# the new conditions must be WIRED, not merely defined
+_gam = read('js/gamify.js')
+ok('whole-self-day' in _gam and 'balanced-week' in _gam, "gamify.js does not award the cross-pillar badges")
+ok('masteryBadge' in learn_code and 'scholarBadge' in learn_code,
+   "learning.js missing the per-subject scholar/mastery conditions")
+ok('streak7' in learn_code, "learning.js missing the per-track 7-day streak condition")
+
 # 16) service worker precaches the learning engine files + bumped past v3.3.0 so
 #     installed PWAs pick them up (addAll is atomic — every path must resolve)
 sw = read('sw.js')
@@ -326,7 +362,7 @@ ok('function moveScreen' in main_src and "startsWith('#move-')" in main_src, 'ma
 for go in ['#move-stretch', '#move-yoga', '#move-exercise']:
     ok(go in main_src, f'main.js missing the {go} path')
 libcount = med.split('export const MEDITATION_LIBRARY')[1].split('];')[0].count('"id":')
-ok(libcount >= 16, f'expected >=16 library meditations, found {libcount}')
+ok(libcount >= 30, f'expected >=30 library meditations, found {libcount}')
 for mid in ['med-lib-morning-gentle-7', 'med-lib-box-breath-5', 'med-lib-loving-kindness-15', 'med-lib-reset-5']:
     ok(f'"{mid}"' in med, f'meditation library missing {mid}')
 
