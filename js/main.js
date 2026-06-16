@@ -908,7 +908,16 @@ function youScreen() {
     <main class="narrow you-screen">
       <section class="card center">
         <div class="garden-svg small">${gardenSVG(stage)}</div>
-        <p class="you-hello">${name ? 'Hi, ' + esc(name) + '!' : 'Your progress'}${age != null ? ` · <strong>${age}</strong>` : ''}</p>
+        ${name
+          ? `<p class="you-hello">Hi, ${esc(name)}!${age != null ? ` · <strong>${age}</strong>` : ''}</p>`
+          : `<div class="you-name-prompt">
+              <label class="you-hello" for="you-name-input">What should your coach call you?</label>
+              <div class="you-name-form">
+                <input type="text" id="you-name-input" maxlength="20" autocomplete="given-name" placeholder="Your name" aria-label="Your name">
+                <button class="btn btn-primary" id="you-name-save">Save</button>
+              </div>
+              <p class="hint">Optional, and only stored on this device. Your coach will greet you by it.</p>
+            </div>`}
         <div class="you-stats">
           <div><strong>${p.sessions.length}</strong><span>sessions grown</span></div>
           <div><strong>${streak.count}</strong><span>day streak</span></div>
@@ -953,6 +962,18 @@ function youScreen() {
     </main>`;
 
   app.querySelectorAll('.you-subject').forEach((b) => b.addEventListener('click', () => go(b.dataset.go)));
+  const nsave = document.getElementById('you-name-save');
+  if (nsave) {
+    const commitName = () => {
+      const val = (document.getElementById('you-name-input').value || '').trim().slice(0, 20);
+      store.profile.name = val;
+      save();
+      youScreen();
+    };
+    nsave.addEventListener('click', commitName);
+    const ninput = document.getElementById('you-name-input');
+    if (ninput) ninput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); commitName(); } });
+  }
   const wsave = document.getElementById('you-weight-save');
   if (wsave) wsave.addEventListener('click', () => {
     const v = parseFloat(document.getElementById('you-weight-input').value);

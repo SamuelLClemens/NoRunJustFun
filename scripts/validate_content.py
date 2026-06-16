@@ -551,6 +551,12 @@ for _ledger in ['js/journal.js', 'js/journal-screen.js', 'js/meals.js', 'js/cycl
         ok('sessions.push' not in _src and 'recordSession' not in _src,
            f'{_ledger} must not write to sessions[] (breaks garden/streak isolation)')
 
+# 29) S1: the You page captures the name when missing — a friendly inline prompt
+#     (in addition to Settings) that persists to profile.name.
+ok('you-name-input' in main_src and 'you-name-save' in main_src,
+   'You page missing the inline name prompt (you-name-input / you-name-save)')
+ok('store.profile.name = val' in main_src, 'You page name prompt does not persist to profile.name')
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")
