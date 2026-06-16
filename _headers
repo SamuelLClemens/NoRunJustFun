@@ -1,0 +1,12 @@
+# Security response headers for static hosting (Netlify / Cloudflare Pages format).
+# This file is applied by the HOST at deploy time; the local preview server ignores it,
+# so it never affects development. See docs/security-headers.md for the rationale and a
+# first-deploy checklist (the CSP must allow the optional on-device model CDNs, or the
+# lifelike voice / journal transcription will silently fall back to lighter modes).
+/*
+  Referrer-Policy: no-referrer
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Cross-Origin-Opener-Policy: same-origin
+  Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=(), usb=(), interest-cohort=()
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; worker-src 'self' blob:; child-src 'self' blob:; connect-src 'self' https://cdn.jsdelivr.net https://huggingface.co https://cdn-lfs.huggingface.co https://*.hf.co

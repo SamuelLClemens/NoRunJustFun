@@ -667,6 +667,18 @@ if stt_src:
     for _f in ['js/stt.js', 'js/stt-worker.js']:
         ok(f"'{_f}'" in read('sw.js'), f'sw.js does not precache {_f}')
 
+# 38) S9: security headers shipped for the host (a static site cannot set them from
+#     HTML). The CSP must keep the optional on-device models working — allow the model
+#     CDNs and WebAssembly — and scope the microphone to self for journal voice notes.
+hdrs = _read_opt('_headers')
+if hdrs:
+    ok('Content-Security-Policy:' in hdrs, '_headers missing a Content-Security-Policy')
+    ok('Permissions-Policy:' in hdrs and 'microphone=(self)' in hdrs, '_headers missing Permissions-Policy with microphone=(self)')
+    ok('wasm-unsafe-eval' in hdrs, 'CSP must allow wasm-unsafe-eval (on-device models use WebAssembly)')
+    ok('cdn.jsdelivr.net' in hdrs and 'huggingface.co' in hdrs, 'CSP must allow the model CDNs (voice/STT would break)')
+    ok('X-Content-Type-Options: nosniff' in hdrs, '_headers missing X-Content-Type-Options: nosniff')
+    ok('frame-ancestors' in hdrs or 'X-Frame-Options' in hdrs, '_headers missing clickjacking protection')
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")
