@@ -634,6 +634,22 @@ if meals_src:
     ok('addMeal' in main_src and 'you-meal-save' in main_src, 'You page does not render the meal notes')
     ok("'js/meals.js'" in read('sw.js'), 'sw.js does not precache js/meals.js')
 
+# 36) S7: menstrual/cycle tracking — opt-in (default OFF, guarded in #26), DESCRIPTIVE
+#     only with a clear non-medical disclaimer, and isolated from sessions[]. (The
+#     disclaimer legitimately names ovulation/fertility to DENY them, so no banned-word
+#     scan here — assert the disclaimer + no-prediction framing positively instead.)
+cycle_src = _read_opt('js/cycle.js')
+if cycle_src:
+    ok('sessions.push' not in cycle_src and 'recordSession' not in cycle_src,
+       'cycle.js must not write to sessions[] (breaks garden/streak isolation)')
+    ok('progress.cycle' in cycle_src, 'cycle.js does not use the progress.cycle ledger')
+    ok('isEnabled' in cycle_src and 'setEnabled' in cycle_src, 'cycle.js missing the opt-in toggle')
+    _cl = cycle_src.lower()
+    ok('medical device' in _cl, 'cycle.js missing the non-medical disclaimer')
+    ok('predict' in _cl, 'cycle.js must state it is descriptive, not a prediction')
+    ok('data-cycle' in main_src and 'cycleCardHTML' in main_src, 'You page does not render the cycle card')
+    ok("'js/cycle.js'" in read('sw.js'), 'sw.js does not precache js/cycle.js')
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")
