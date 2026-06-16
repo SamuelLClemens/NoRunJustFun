@@ -7,7 +7,7 @@
 import { store } from './state.js';
 import { coach } from './tts.js';
 import { getCharacter } from './characters.js';
-import { listEntries, bookOrder, addTextEntry, removeEntry } from './journal.js';
+import { listEntries, bookOrder, addTextEntry, addVoiceEntry, getEntryAudio, removeEntry } from './journal.js';
 
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => (
@@ -23,6 +23,23 @@ function fmtStamp(iso) {
 }
 
 let _stopOnLeave = null;
+// Recording state lives at module scope so navigate-away can stop a stray recorder.
+// getUserMedia/MediaRecorder are created ONLY on the record tap — never at import/boot.
+let _rec = null;        // { mr, stream, startMs, tick }
+let _playUrl = null;    // object URL of the recording currently playing (revoked on stop)
+
+function fmtMMSS(sec) {
+  const s = Math.max(0, Math.floor(sec));
+  return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+}
+
+function stopRecorder() {
+  if (!_rec) return;
+  try { _rec.mr.stop(); } catch { /* ok */ }
+  try { (_rec.stream.getTracks() || []).forEach((t) => t.stop()); } catch { /* ok */ }
+  if (_rec.tick) clearInterval(_rec.tick);
+  _rec = null;
+}
 
 export function journalScreen() {
   const app = document.getElementById('app');
@@ -41,8 +58,9 @@ export function journalScreen() {
           </header>
           ${e.text
             ? `<p class="journal-text">${esc(e.text)}</p>`
-            : '<p class="journal-text hint">(voice entry — transcript coming)</p>'}
+            : (e.audioKey ? `<p class="journal-text hint">Voice note${e.durationSec ? ' · ' + fmtMMSS(e.durationSec) : ''}</p>` : '<p class="journal-text hint">(empty)</p>')}
           <div class="journal-entry-actions">
+            ${e.audioKey ? `<button class="linkish journal-play" data-id="${esc(e.id)}">▶ Play recording</button>` : ''}
             <button class="linkish journal-del" data-id="${esc(e.id)}">Delete</button>
           </div>
         </article>`).join('')
@@ -56,6 +74,8 @@ export function journalScreen() {
         <textarea id="journal-text" class="journal-compose" rows="4" maxlength="4000" placeholder="What is on your mind today?" aria-label="New journal entry"></textarea>
         <div class="journal-compose-actions">
           <button class="btn btn-primary" id="journal-save">Save entry</button>
+          <button class="btn" id="journal-record">\u{1F399} Record a voice note</button>
+          <span class="journal-rec-state" id="journal-rec-state" hidden><span class="journal-rec-dot">●</span> <span id="journal-rec-time">0:00</span></span>
         </div>
       </section>
 
@@ -79,6 +99,8 @@ export function journalScreen() {
   _stopOnLeave = () => {
     if (location.hash !== '#journal') {
       coach.cancel();
+      stopRecorder();
+      if (_playUrl) { try { URL.revokeObjectURL(_playUrl); } catch { /* ok */ } _playUrl = null; }
       window.removeEventListener('hashchange', _stopOnLeave);
       _stopOnLeave = null;
     }
@@ -111,6 +133,56 @@ export function journalScreen() {
     stopBtn.hidden = true; if (listenBtn) listenBtn.hidden = false;
     const el = document.getElementById('journal-now'); if (el) el.textContent = '';
   });
+
+  // Voice recording. The mic stream + MediaRecorder are created only on this tap.
+  const recBtn = document.getElementById('journal-record');
+  const recState = document.getElementById('journal-rec-state');
+  const recTime = document.getElementById('journal-rec-time');
+  if (recBtn) recBtn.addEventListener('click', async () => {
+    if (_rec) { stopRecorder(); return; } // tapping again stops + saves (via onstop)
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === 'undefined') {
+      alert('Recording is not supported on this device. You can still write your entry.');
+      return;
+    }
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch {
+      alert('Microphone access was not granted. You can still write your entry.');
+      return;
+    }
+    const chunks = [];
+    let mr;
+    try { mr = new MediaRecorder(stream); } catch {
+      try { (stream.getTracks() || []).forEach((t) => t.stop()); } catch { /* ok */ }
+      alert('Recording could not start on this device. You can still write your entry.');
+      return;
+    }
+    const startMs = Date.now();
+    mr.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+    mr.onstop = async () => {
+      const blob = new Blob(chunks, { type: mr.mimeType || 'audio/webm' });
+      const dur = (Date.now() - startMs) / 1000;
+      if (recState) recState.hidden = true;
+      recBtn.textContent = '\u{1F399} Record a voice note';
+      if (blob.size > 0) { await addVoiceEntry(blob, dur, ''); journalScreen(); }
+    };
+    _rec = { mr, stream, startMs, tick: setInterval(() => { if (recTime) recTime.textContent = fmtMMSS((Date.now() - startMs) / 1000); }, 500) };
+    mr.start();
+    if (recState) recState.hidden = false;
+    recBtn.textContent = '■ Stop & save';
+  });
+
+  // Play a voice entry's raw recording (date/time order is the book order).
+  app.querySelectorAll('.journal-play').forEach((b) => b.addEventListener('click', async () => {
+    const entry = listEntries().find((e) => e.id === b.dataset.id);
+    const blob = await getEntryAudio(entry);
+    if (!blob) { b.textContent = '⚠ recording unavailable'; return; }
+    if (_playUrl) { try { URL.revokeObjectURL(_playUrl); } catch { /* ok */ } }
+    _playUrl = URL.createObjectURL(blob);
+    const audio = new Audio(_playUrl);
+    audio.play().catch(() => {});
+  }));
 
   app.querySelectorAll('.journal-del').forEach((b) => b.addEventListener('click', async () => {
     if (!confirm('Delete this entry? This cannot be undone.')) return;

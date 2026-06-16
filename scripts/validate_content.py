@@ -609,6 +609,18 @@ if journal_src:
     for _f in ['js/idb.js', 'js/journal.js', 'js/journal-screen.js']:
         ok(f"'{_f}'" in read('sw.js'), f'sw.js does not precache {_f}')
 
+# 34) S5b: voice journaling — mic recording + raw playback. getUserMedia/MediaRecorder
+#     must live ONLY in the on-demand journal screen, never on the boot path (main.js),
+#     and recordings must play back from IndexedDB.
+js_screen_src = _read_opt('js/journal-screen.js')
+if js_screen_src and 'journal-record' in js_screen_src:
+    ok('getUserMedia' in js_screen_src and 'MediaRecorder' in js_screen_src,
+       'journal-screen.js missing voice recording (getUserMedia/MediaRecorder)')
+    ok('getUserMedia' not in main_src and 'MediaRecorder' not in main_src,
+       'getUserMedia/MediaRecorder must not appear on the boot path (main.js)')
+    ok('journal-play' in js_screen_src and 'getEntryAudio' in js_screen_src,
+       'journal-screen.js missing raw-recording playback from IndexedDB')
+
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:
     print("FAIL:")
