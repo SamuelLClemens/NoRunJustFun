@@ -211,6 +211,9 @@ export class RealisticAvatar {
     this._blinkClock = 0;
     this._nextBlink = 2 + Math.random() * 3;
     this._gazeX = 0; this._gazeY = 0; this._gazeTarget = [0, 0]; this._gazeClock = 0; this._nextGaze = 1.5;
+    // gesture layer — eased intensity so she shifts fluidly between calm presence
+    // (idle) and animated explaining (talking); _emphasis pulses with live speech.
+    this._gestureGain = 0; this._emphasis = 0; this._headNod = 0; this._headTilt = 0;
     // decorative breathing — honor reduced motion (in-app setting wins; OS fallback)
     this._breathe = !prefersReducedMotion();
 
@@ -401,7 +404,8 @@ export class RealisticAvatar {
   }
 
   setPose(/* def */) {
-    // v3.0: standing demo posture for every move (per-exercise motion: v3.1).
+    // Standing demo posture for every move, brought to life by the gesture layer
+    // (idle + talking motion, see _gesture). Per-exercise choreography remains v3.1.
     this.time = 0;
   }
 
@@ -463,9 +467,52 @@ export class RealisticAvatar {
       }
       // very soft weight-shift sway
       this.pivot.rotation.y = (14 + 1.4 * Math.sin(this.time * (Math.PI * 2) / 7.5)) * D2R;
+      this._gesture(dt);
     }
     if (this.faceReady) this._animateFace(dt);
     this.renderer.render(this.scene, this.camera);
+  }
+
+  // A living gesture layer composed ON TOP of the standing posture. Always-on idle
+  // micro-motion keeps her from ever freezing; while talking, an emphasis-pulsed
+  // layer animates the arms, forearms, torso and head so she gestures WITH her words.
+  // All amplitudes are small (a few degrees) and built from incommensurate sine
+  // frequencies, so the motion is smooth, organic, and never visibly repeats.
+  _gesture(dt) {
+    // ramp gesture intensity up while talking, down at rest — fluid, never snapped
+    const targetGain = this._talking ? 1 : 0;
+    this._gestureGain += (targetGain - this._gestureGain) * Math.min(1, dt * 3.0);
+    // speech emphasis: live audio loudness drives bigger gestures (hands move with
+    // the words); without a signal, a slow organic pulse stands in
+    let emph;
+    if (this._talking && this._levelProvider) {
+      let v = 0; try { const x = this._levelProvider(); if (typeof x === 'number') v = x; } catch { /* best-effort */ }
+      emph = Math.min(1, v * 1.5);
+    } else {
+      emph = 0.5 + 0.5 * Math.sin(this.time * 2.0);
+    }
+    this._emphasis += (emph - this._emphasis) * Math.min(1, dt * 6);
+
+    const t = this.time, g = this._gestureGain, e = this._emphasis;
+    const talk = g * (0.45 + 0.55 * e);   // 0..~1 talking drive, pulsing with speech
+
+    // arms: subtle asymmetric idle sway always; a livelier lift while explaining
+    const aL = 0.9 * Math.sin(t * 0.92) + 3.4 * talk * Math.sin(t * 1.70 + 0.4);
+    const aR = 0.9 * Math.sin(t * 0.85 + 1.9) + 3.4 * talk * Math.sin(t * 1.60 + 2.2);
+    const fL = 1.2 * Math.sin(t * 0.70 + 0.3) + 5.0 * talk * Math.sin(t * 2.35 + 0.9);
+    const fR = 1.2 * Math.sin(t * 0.65 + 2.4) + 5.0 * talk * Math.sin(t * 2.20 + 2.6);
+    this._setBone('mixamorigLeftArm', POSTURE_STAND['mixamorigLeftArm'], [aL, 0, -0.5 * aL]);
+    this._setBone('mixamorigRightArm', POSTURE_STAND['mixamorigRightArm'], [aR, 0, 0.5 * aR]);
+    this._setBone('mixamorigLeftForeArm', POSTURE_STAND['mixamorigLeftForeArm'], [0.5 * fL, fL, 0]);
+    this._setBone('mixamorigRightForeArm', POSTURE_STAND['mixamorigRightForeArm'], [0.5 * fR, -fR, 0]);
+
+    // torso: a slow lean, a little more engaged while talking
+    const lean = 0.7 * Math.sin(t * 0.55) + 1.6 * talk * Math.sin(t * 1.05 + 0.5);
+    this._setBone('mixamorigSpine', POSTURE_STAND['mixamorigSpine'], [0, 0.7 * lean, 0.4 * lean]);
+
+    // head nod/tilt for emphasis — folded into the head quaternion alongside gaze
+    this._headNod = 0.5 * Math.sin(t * 0.70) + 2.6 * talk * Math.sin(t * 2.60 + 0.2);
+    this._headTilt = 0.5 * Math.sin(t * 0.48 + 1.1) + 1.6 * talk * Math.sin(t * 1.30 + 0.8);
   }
 
   // Blink, gaze, resting micro-smile, and speech-driven lip-sync. All gated on the
@@ -537,7 +584,8 @@ export class RealisticAvatar {
     const head = this.bones.get('mixamorigHead') || this.bones.get('Head');
     const rest = head && this.rest.get(head.name);
     if (head && rest) {
-      const e = new THREE.Euler(this._gazeY * D2R, this._gazeX * D2R, 0, 'XYZ');
+      // gaze (eye-follow) + gesture nod/tilt, composed so the head moves naturally
+      const e = new THREE.Euler((this._gazeY + this._headNod) * D2R, this._gazeX * D2R, this._headTilt * D2R, 'XYZ');
       head.quaternion.copy(rest.clone().multiply(new THREE.Quaternion().setFromEuler(e)));
     }
   }
