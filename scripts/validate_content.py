@@ -431,7 +431,7 @@ if sx:
        'movements-sexercise.js missing SEXERCISE_MOVES / SEXERCISE_CATEGORY')
     sx_block = sx.split('export const SEXERCISE_MOVES')[1].split('export const SEXERCISE_CATEGORY')[0]
     sx_ids = re.findall(r"id:\s*'([^']+)'", sx_block)
-    ok(len(sx_ids) >= 12, f'expected >=12 sexercise moves, found {len(sx_ids)}')
+    ok(len(sx_ids) >= 24, f'expected >=24 sexercise moves, found {len(sx_ids)}')
     ok(all(re.fullmatch(r'[a-z0-9-]+', i) for i in sx_ids), 'a sexercise move id is not kebab-case')
     ok(not (set(sx_ids) & set(FROZEN)) and not (set(sx_ids) & set(new_ids)) and not (set(sx_ids) & set(extra_ids)) and not (set(sx_ids) & set(ext3_ids)),
        'a sexercise move id collides with an existing id')
@@ -459,6 +459,7 @@ if bd:
     ok('not medical' in bd.lower() or 'not medical or explicit' in bd.lower(), 'bedroom-screen.js missing the non-medical/non-explicit framing')
     ok('consent' in bd.lower(), 'bedroom-screen.js must center consent')
     ok('SPARKS' in bd and 'TRUTHS' in bd and 'DARES' in bd and 'TIPS' in bd, 'bedroom-screen.js missing the games/tips content')
+    ok('DICE_ACTIONS' in bd and 'POSITIONS' in bd and 'WYR' in bd and 'SENSES' in bd, 'bedroom-screen.js missing the expanded games (dice/positions/would-you-rather/senses)')
     ok("import('./bedroom-screen.js')" in main_src and "h === '#bedroom'" in main_src, 'main.js router does not lazy-load #bedroom')
     ok('#bedroom' in main_src and 'soul-bedroom' in main_src, 'soulScreen missing the Playful/bedroom card linking to #bedroom')
     ok("'js/bedroom-screen.js'" in sw, 'sw.js PRECACHE missing js/bedroom-screen.js')

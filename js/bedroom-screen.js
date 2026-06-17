@@ -28,6 +28,14 @@ const SPARKS = [
   'Ask for exactly what you want, kindly and clearly.',
   'Build anticipation all day with a single playful text.',
   'Focus on one kind of touch and savor it.',
+  'Undress each other slowly, one layer at a time.',
+  'Set a five-minute timer and only kiss until it rings.',
+  'Take a warm shower or bath together first.',
+  'Narrate what you are about to do before you do it.',
+  'Trade places — recreate how your very first time felt.',
+  'Keep one hand always touching, wherever you both move.',
+  'Let one person keep their eyes closed the whole time.',
+  'Pick an outfit you know they love.',
 ];
 
 // Truth or Dare, bedroom edition — connection first, all tasteful and optional.
@@ -42,6 +50,12 @@ const TRUTHS = [
   'What is one thing you would like more of?',
   'What makes you feel closest to me afterward?',
   'What is a compliment you wish you heard more often?',
+  'What is the most attractive thing I do without realizing it?',
+  'When do you feel most confident in your own skin?',
+  'What is something new you would feel excited to learn together?',
+  'What is a sound or word you love to hear in the moment?',
+  'Where is somewhere you have always wanted to be kissed?',
+  'What is a slow, non-physical thing that really turns you on?',
 ];
 const DARES = [
   'Give a sixty-second kiss with no rush to anything else.',
@@ -54,6 +68,12 @@ const DARES = [
   'Pick the next song and dance one slow song together.',
   'Show, gently, one place you love being touched.',
   'Whisper your favorite thing about tonight so far.',
+  'Plant three slow kisses, anywhere you choose.',
+  'Guide their hand to exactly where you want it.',
+  'Keep eye contact for one full, unhurried minute.',
+  'Give a one-minute foot or hand rub.',
+  'Take ten slow breaths together, foreheads touching.',
+  'Say one thing you cannot wait to do later.',
 ];
 
 // Yes / No / Maybe — a calm, consent-forward way to explore together.
@@ -68,6 +88,49 @@ const EXPLORE = [
   'A morning rather than a night.',
   'Sending playful messages earlier in the day.',
   'A longer, unhurried wind-down afterward.',
+  'Reading or watching something steamy together first.',
+  'A "you are not allowed to touch yet" teasing game.',
+  'Keeping the lights on instead of off (or the reverse).',
+  'Leaving a playful note or surprise for later.',
+];
+
+// Desire dice — roll an action + a place for a playful, tasteful combo.
+const DICE_ACTIONS = ['Kiss', 'Caress', 'Massage', 'Trace a fingertip along', 'Lightly graze', 'Breathe softly against', 'Whisper into', 'Plant slow kisses down'];
+const DICE_SPOTS = ['the neck', 'the collarbone', 'the shoulders', 'the lower back', 'the inner wrist', 'behind the ear', 'the jawline', 'wherever they guide you'];
+
+// Position play — PG-13 ideas to try or adapt; comfort and consent first.
+const POSITIONS = [
+  'Face to face, wrapped close',
+  'One partner on top, setting the pace',
+  'Spooning, slow and close',
+  'Seated, one in the other\'s lap',
+  'Side by side, facing each other',
+  'Standing, in a close embrace',
+  'One leaning back, fully supported by pillows',
+  'Switch who is leading halfway through',
+];
+
+// Would you rather — playful, low-stakes bedroom either/ors to talk through.
+const WYR = [
+  'Would you rather a slow morning or a spontaneous midnight?',
+  'Would you rather give a massage or receive one first?',
+  'Would you rather candlelight or full daylight?',
+  'Would you rather lead tonight or be led?',
+  'Would you rather tease for ages or dive right in?',
+  'Would you rather silence or your favorite playlist?',
+  'Would you rather a new spot in the house or the classic one?',
+  'Would you rather lots of words or mostly touch?',
+];
+
+// Sensory focus — pick one sense and a tasteful way to play with it.
+const SENSES = [
+  '👀 Sight: keep the lights soft and really look at each other.',
+  '👂 Sound: put on a slow song and move to its rhythm.',
+  '✋ Touch: use only fingertips for the first few minutes.',
+  '👅 Taste: share a square of chocolate or a sip of something cold.',
+  '👃 Scent: light a favorite candle or wear a scent they love.',
+  '🌡️ Temperature: try something cool, then something warm.',
+  '🪶 Texture: bring in silk, a feather, or a soft blindfold.',
 ];
 
 // Tasteful, body-positive, consent-forward tips — wellness, never explicit or medical.
@@ -110,6 +173,30 @@ function gamesHTML() {
       <p class="hint">Draw an idea and each say yes, no, or maybe — a calm way to find what you both want.</p>
       <button class="btn btn-primary" id="bd-explore">Draw a card</button>
       <p class="bedroom-result" id="bd-explore-out" aria-live="polite"></p>
+    </section>
+    <section class="card bedroom-game">
+      <h2>🎲 Desire dice</h2>
+      <p class="hint">Roll an action and a place — then take your time with it.</p>
+      <button class="btn btn-primary" id="bd-dice">Roll the dice</button>
+      <p class="bedroom-result" id="bd-dice-out" aria-live="polite"></p>
+    </section>
+    <section class="card bedroom-game">
+      <h2>🔄 Position play</h2>
+      <p class="hint">A tasteful idea to try or adapt — only ever what feels good for you both.</p>
+      <button class="btn btn-primary" id="bd-pos">Spin a position</button>
+      <p class="bedroom-result" id="bd-pos-out" aria-live="polite"></p>
+    </section>
+    <section class="card bedroom-game">
+      <h2>🤔 Would you rather</h2>
+      <p class="hint">A playful either/or to talk through together.</p>
+      <button class="btn btn-primary" id="bd-wyr">Ask one</button>
+      <p class="bedroom-result" id="bd-wyr-out" aria-live="polite"></p>
+    </section>
+    <section class="card bedroom-game">
+      <h2>🕯️ Sensory focus</h2>
+      <p class="hint">Pick a single sense and play with it — slow everything else down.</p>
+      <button class="btn btn-primary" id="bd-sense">Pick a sense</button>
+      <p class="bedroom-result" id="bd-sense-out" aria-live="polite"></p>
     </section>`;
 }
 
@@ -146,4 +233,12 @@ export function bedroomScreen() {
   if (dare) dare.addEventListener('click', () => { document.getElementById('bd-td-out').textContent = '🔥 ' + pick(DARES); });
   const explore = document.getElementById('bd-explore');
   if (explore) explore.addEventListener('click', () => { document.getElementById('bd-explore-out').textContent = pick(EXPLORE); });
+  const dice = document.getElementById('bd-dice');
+  if (dice) dice.addEventListener('click', () => { document.getElementById('bd-dice-out').textContent = `🎲 ${pick(DICE_ACTIONS)} ${pick(DICE_SPOTS)}.`; });
+  const pos = document.getElementById('bd-pos');
+  if (pos) pos.addEventListener('click', () => { document.getElementById('bd-pos-out').textContent = '🔄 ' + pick(POSITIONS); });
+  const wyr = document.getElementById('bd-wyr');
+  if (wyr) wyr.addEventListener('click', () => { document.getElementById('bd-wyr-out').textContent = pick(WYR); });
+  const sense = document.getElementById('bd-sense');
+  if (sense) sense.addEventListener('click', () => { document.getElementById('bd-sense-out').textContent = pick(SENSES); });
 }
