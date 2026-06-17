@@ -2,6 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <!-- Content Security Policy: execution and connections are locked to this origin.
+       The ONLY third-party origins are for the OPT-IN natural voice — the kokoro-js
+       code (jsDelivr) and the voice model (Hugging Face); everything else is
+       self-hosted. The single inline script is the import map (required by the
+       vendored three.js addons that import the bare 'three' specifier); it is pinned
+       by its sha256 hash, so no other inline script can run. If you edit the import
+       map, recompute the hash or the app will refuse to boot. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-UgmQuy5XoYajQJcDPhkppNoPV6/7XoYrOXwOuyDiynQ=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; connect-src 'self' blob: data: https://cdn.jsdelivr.net https://huggingface.co https://*.hf.co https://*.huggingface.co; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Garden Moves — move, grow, bloom</title>
   <meta name="description" content="Garden Moves is a free, private companion for mind, body, and soul. No accounts, no tracking — everything stays on your device. Move, grow, bloom.">
