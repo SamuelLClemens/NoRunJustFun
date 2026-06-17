@@ -26,6 +26,7 @@ import { availableTiers, gateMessage, filterPool,
   PARQ_GENERAL, PARQ_POSTPARTUM, LIFE_STAGES, SEX_OPTIONS, AGE_BANDS, INJURY_FLAGS, SPACE_OPTIONS } from './data/profiles.js';
 import { PROGRAMS, getProgram, programSuggestion, advanceProgram } from './data/programs.js';
 import { getTrack, TRACK_LIST, SOUL_TRACK_LIST } from './data/tracks.js';
+import { ensureVariants } from './data/lessons.shared.js';
 import { trackHubScreen, learningDone, gameScreen, quizScreen } from './learning-screen.js';
 import { usageGraphsHTML } from './usage-graph.js';
 import { composeCheckin } from './checkin.js';
@@ -1578,6 +1579,10 @@ async function routeTo(h, seq) {
     if (tail.startsWith('game-')) return gameScreen(trackId, tail.slice('game-'.length));
 
     let plan = null;
+    // The reading-level variants (simpler/deeper text) are kept off the boot path and
+    // loaded on first lesson open, so make sure they are resolved before we build a
+    // playable plan — the builders merge them in synchronously once loaded.
+    await ensureVariants();
     if (tail.startsWith('lib-')) {
       plan = track.lessons.buildLessonById(tail.slice('lib-'.length));
     } else {

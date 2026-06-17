@@ -7,7 +7,7 @@
 // spelled out for text-to-speech. Plan builders + catalog come from lessons.shared.js.
 
 import { makeDisclaimerSeg, makeLessonModule } from './lessons.shared.js';
-import { LESSON_VARIANTS } from './lesson-variants.js';
+// Reading-level variants load lazily via ensureVariants() in lessons.shared.js.
 
 export const DREAMS_DISCLAIMER = "This section blends the science of sleep and dreaming with the cultural history of dream interpretation. It is educational only — not medical or psychological advice, and not a substitute for professional care. Popular dream-symbol meanings are not scientifically validated, though reflecting on your dreams can still be a meaningful personal practice. If distressing dreams persist, please reach out to a qualified professional.";
 
@@ -277,7 +277,7 @@ const mod = makeLessonModule({
   disclaimerSeg: DISCLAIMER_SEG,
   sessionTitle: "Understanding dreams",
   kind: "dreams",
-  variants: LESSON_VARIANTS.dreams,
+  variantsKey: 'dreams',
 });
 
 export const LESSON_LIBRARY = mod.LESSON_LIBRARY;

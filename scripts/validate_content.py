@@ -676,9 +676,22 @@ ok('speakVariant' in main_src, 'session screen does not invoke speakVariant')
 ok('simpler:' in read('js/data/lessons.js'), 'money lesson plan items do not carry difficulty variants')
 # S8 prep: variants merge from a companion file so the vetted lesson sources stay
 # untouched; the engine applies them via withVariants in both the shared + money builders.
+# PERF: the large companion file (~0.7 MB) is loaded ON DEMAND (dynamic import +
+# ensureVariants in lessons.shared.js), so it must NOT be statically imported anywhere —
+# that would force it back onto the cold-start parse path.
 ok('withVariants' in shared_src, 'lessons.shared.js missing the withVariants merge')
-ok("from './lesson-variants.js'" in read('js/data/lessons.js') and 'withVariants' in read('js/data/lessons.js'),
-   'money builder does not merge variants from the companion file')
+ok("import('./lesson-variants.js')" in shared_src and 'ensureVariants' in shared_src,
+   'lessons.shared.js missing the lazy ensureVariants() loader for lesson-variants.js')
+_money_src = read('js/data/lessons.js')
+ok('withVariants' in _money_src and "variantsFor('money')" in _money_src,
+   'money builder does not merge variants via the lazy variantsFor() path')
+_static_lv = [p for p in [
+    'js/main.js', 'js/data/lessons.js', 'js/data/lessons.shared.js',
+    'js/data/lessons.crystals.js', 'js/data/lessons.dreams.js', 'js/data/lessons.parenting.js',
+    'js/data/lessons.memory.js', 'js/data/lessons.communication.js',
+] if "from './lesson-variants.js'" in read(p)]
+ok(not _static_lv, 'lesson-variants.js is statically imported (forces it onto the boot path): ' + ', '.join(_static_lv))
+ok('await ensureVariants()' in main_src, 'main.js does not await ensureVariants() before building a lesson')
 _lv = _read_opt('js/data/lesson-variants.js')
 ok(bool(_lv) and 'LESSON_VARIANTS' in _lv, 'js/data/lesson-variants.js missing LESSON_VARIANTS')
 ok("'js/data/lesson-variants.js'" in read('sw.js'), 'sw.js does not precache lesson-variants.js')

@@ -10,7 +10,7 @@
 // (js/data/lessons.shared.js) so the duration-scaling logic lives in one place.
 
 import { makeDisclaimerSeg, makeLessonModule } from './lessons.shared.js';
-import { LESSON_VARIANTS } from './lesson-variants.js';
+// Reading-level variants load lazily via ensureVariants() in lessons.shared.js.
 import { EXTRA_LESSONS_PARENTING, EXTRA_CURRICULUM_PARENTING } from './lessons.parenting.ext.js';
 
 export const PARENTING_DISCLAIMER = "This is general educational information, not medical advice, and not a substitute for your pediatrician or a qualified professional. Every child and family is different. If you have any concern about your child's development, mental health, or safety, please reach out to a qualified professional.";
@@ -467,7 +467,7 @@ const mod = makeLessonModule({
   disclaimerSeg: DISCLAIMER_SEG,
   sessionTitle: "Parenting basics",
   kind: "parenting",
-  variants: LESSON_VARIANTS.parenting,
+  variantsKey: 'parenting',
 });
 
 export const LESSON_LIBRARY = mod.LESSON_LIBRARY;

@@ -20,10 +20,10 @@
 // A catalog lesson (#fin-lib-<id>) plays its full segment list, opened by the
 // spoken disclaimer.
 
-import { withVariants } from './lessons.shared.js';
-import { LESSON_VARIANTS } from './lesson-variants.js';
+import { withVariants, variantsFor } from './lessons.shared.js';
+// Reading-level variants load lazily via ensureVariants() in lessons.shared.js.
 import { EXTRA_LESSONS_MONEY, EXTRA_CURRICULUM_MONEY } from './lessons.money.ext.js';
-const VAR_MONEY = LESSON_VARIANTS.money || {};
+// VAR_MONEY now read lazily via variantsFor('money') after ensureVariants().
 
 export const FINANCE_DISCLAIMER = "This is educational information, not financial advice. It is not a substitute for a licensed financial professional, and nothing here is a recommendation to buy, sell, or hold anything. No investment is guaranteed or risk-free, and you can lose money. Dollar figures are labelled with the year they apply to and can change.";
 
@@ -535,7 +535,7 @@ export function buildLessonById(id) {
   // standalone, completable lesson (no content/sources to "complete"), so
   // #fin-lib-welcome-money resolves to null and the route falls back to the hub.
   if (!L || id === 'welcome-money') return null;
-  const segs = [DISCLAIMER_SEG, ...L.segments].map((s) => withVariants(s, VAR_MONEY[id]));
+  const segs = [DISCLAIMER_SEG, ...L.segments].map((s) => withVariants(s, variantsFor('money')[id]));
   return planFromSegments(segs, {
     durationKey: Math.max(1, Math.round(lessonSecs(segs) / 60)),
     lessonIds: [id],
@@ -563,7 +563,7 @@ export function buildLessonSession(durationMins) {
   let used = 0;
 
   const add = (id, chosen) => {
-    segs.push(...chosen.map((s) => withVariants(s, VAR_MONEY[id])));
+    segs.push(...chosen.map((s) => withVariants(s, variantsFor('money')[id])));
     used += chosen.reduce((t, s) => t + segDur(s), 0);
     if (id !== 'welcome-money') {
       const L = LESSONS[id];
