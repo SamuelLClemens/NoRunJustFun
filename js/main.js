@@ -648,6 +648,14 @@ function sessionScreen(plan) {
     canvas.closest('.stage').classList.add('no-webgl');
   }
 
+  // Lip-sync: drive the avatar's mouth from the coach's actual voice. A no-op on
+  // rigs without visemes (the lean coach, or a Mixamo body), so it is safe to wire
+  // unconditionally. The closure reads the outer `avatar`, so it survives a mid-
+  // session swap to the lean coach. Cleared in teardown so later screens never poke
+  // a disposed avatar.
+  coach.onSpeechStart = () => { if (avatar && avatar.setTalking) try { avatar.setTalking(true); } catch { /* ok */ } };
+  coach.onSpeechEnd = () => { if (avatar && avatar.setTalking) try { avatar.setTalking(false); } catch { /* ok */ } };
+
   const dots = document.getElementById('dots');
   dots.innerHTML = plan.items.map((it, i) =>
     `<span class="dot" data-i="${i}" title="${esc(it.ex.name)}"></span>`).join('');
@@ -771,6 +779,8 @@ function teardownSession() {
   player = null;
   coach.cancel();
   coach.onCaption = null;
+  coach.onSpeechStart = null;
+  coach.onSpeechEnd = null;
   naturalVoice.onProgress = null;
   music.stop();
   if (avatar) { avatar.dispose(); avatar = null; }

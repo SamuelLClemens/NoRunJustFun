@@ -264,9 +264,23 @@ for orphan in ['js/finance.js', 'js/finance-screen.js']:
     ok(f"'{orphan}'" not in sw, f"sw.js should no longer precache the orphaned {orphan}")
 # The realistic-avatar dependency chain is precached so the opt-in photoreal coach
 # works offline; the ~1.9 MB GLB is warmed best-effort in install (cannot reject addAll).
-for dep in ['lib/jsm/loaders/GLTFLoader.js', 'lib/jsm/utils/BufferGeometryUtils.js']:
+for dep in ['lib/jsm/loaders/GLTFLoader.js', 'lib/jsm/utils/BufferGeometryUtils.js', 'lib/jsm/environments/RoomEnvironment.js']:
     ok(f"'{dep}'" in sw, f"sw.js PRECACHE missing avatar dependency {dep}")
 ok('models/vera.glb' in sw, "sw.js install does not warm the photoreal model models/vera.glb")
+# The realistic avatar gained a human "presence" layer: image-based lighting (RoomEnvironment
+# + ACES) and real lip-sync (viseme morph targets) driven by the coach's actual voice. The
+# face layer is morph-gated, so it stays inert (no breakage) on a viseme-less Mixamo body and
+# activates automatically when a Ready Player Me / ARKit-rigged GLB is dropped in models/.
+ra_src = read('js/realistic-avatar.js') if exists('js/realistic-avatar.js') else ''
+if ra_src:
+    ok('RoomEnvironment' in ra_src and 'ACESFilmicToneMapping' in ra_src,
+       'realistic-avatar.js missing image-based lighting (RoomEnvironment + ACES tone mapping)')
+    ok('setTalking' in ra_src and 'jawOpen' in ra_src,
+       'realistic-avatar.js missing viseme lip-sync (setTalking + ARKit jawOpen morph)')
+    ok('morphTargetInfluences' in ra_src and 'faceReady' in ra_src,
+       'realistic-avatar.js must morph-gate the face layer (graceful on viseme-less rigs)')
+    ok('onSpeechStart' in read('js/tts.js') and 'onSpeechEnd' in read('js/tts.js'),
+       'tts.js missing the lip-sync speech hooks (onSpeechStart/onSpeechEnd)')
 for sid, cfg in LEARN_SUBJECTS.items():
     for f in [cfg['badges'], cfg['lessons']]:
         if exists(f):
