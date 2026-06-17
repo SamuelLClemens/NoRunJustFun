@@ -26,6 +26,7 @@ let _vy = null, _vm = null;   // displayed year / month
 let _sel = null;              // selected 'YYYY-MM-DD' or null
 let _showSettings = false;
 let _qlOpen = false;          // keep the day's quick-log panel open across tap-rerenders
+let _justExpanded = false;    // a day was just expanded — focus its drawer once (not on taps)
 let _pinErr = '';
 let _importMsg = '';
 
@@ -124,8 +125,8 @@ function calendarHTML() {
   const wm = L.weight ? weightMap() : {};
   const bMD = L.birthday ? birthdayMD() : '';
   const aMD = L.anniversary ? anniversaryMD() : '';
-  let cells = '';
-  for (let i = 0; i < startDow; i++) cells += '<div class="cal-cell cal-empty" aria-hidden="true"></div>';
+  const cellArr = [];
+  for (let i = 0; i < startDow; i++) cellArr.push('<div class="cal-cell cal-empty" aria-hidden="true"></div>');
   for (let d = 1; d <= daysInMonth; d++) {
     const date = mk(_vy, _vm, d);
     const g = dayGlyphs(date);
@@ -160,10 +161,20 @@ function calendarHTML() {
       + (isBday ? ', birthday' : '')
       + (isAnniv ? ', app anniversary' : '');
     const logged = g.count || dd.desire != null || dd.period || dd.mood != null || dd.energy != null || (dd.symptoms && dd.symptoms.length) || (u && u.total) || mm[date] || jm[date] || wm[date] != null || isBday || isAnniv;
-    cells += `<button type="button" class="cal-cell${isToday ? ' is-today' : ''}${isSel ? ' is-sel' : ''}${logged ? ' has-log' : ''}" data-date="${date}" aria-label="${esc(label)}">
+    cellArr.push(`<button type="button" class="cal-cell${isToday ? ' is-today' : ''}${isSel ? ' is-sel' : ''}${logged ? ' has-log' : ''}" data-date="${date}" aria-expanded="${isSel ? 'true' : 'false'}" aria-label="${esc(label)}">
         <span class="cal-num">${d}</span>${faceHTML}
         <span class="cal-marks">${marks.join(' ')}</span>
-      </button>`;
+      </button>`);
+  }
+  // The selected day expands IN PLACE: its detail drawer is injected as a full-width row
+  // directly beneath the week that holds it. Tapping the day again clears _sel (see bind),
+  // collapsing back to the plain month grid.
+  const selInMonth = _sel && _sel.slice(0, 7) === mk(_vy, _vm, 1).slice(0, 7);
+  const selCellIdx = selInMonth ? (startDow + parseInt(_sel.slice(8, 10), 10) - 1) : -1;
+  let grid = '';
+  for (let r = 0; r * 7 < cellArr.length; r++) {
+    grid += cellArr.slice(r * 7, r * 7 + 7).join('');
+    if (selCellIdx >= r * 7 && selCellIdx < r * 7 + 7) grid += `<div class="cal-daydetail">${dayEditorHTML(_sel)}</div>`;
   }
   return `
     <div class="intim-layers">${LAYER_LABELS.map(([k, lbl]) => `<button type="button" class="intim-layer-chip${L[k] ? ' is-sel' : ''}" data-layer="${k}" aria-pressed="${L[k] ? 'true' : 'false'}">${lbl}</button>`).join('')}</div>
@@ -173,7 +184,7 @@ function calendarHTML() {
       <button class="btn cal-next" id="intim-next" aria-label="Next month">›</button>
     </div>
     <div class="cal-dow">${DOW.map((x) => `<span>${x}</span>`).join('')}</div>
-    <div class="cal-grid">${cells}</div>`;
+    <div class="cal-grid">${grid}</div>`;
 }
 
 // ---- day editor ---------------------------------------------------------
@@ -210,7 +221,7 @@ function dayEditorHTML(date) {
   const ps = listPartners();
   return `
     <section class="card intim-day">
-      <h2>${MONTHS[parseInt(date.slice(5, 7), 10) - 1]} ${parseInt(date.slice(8, 10), 10)}, ${date.slice(0, 4)}</h2>
+      <h2 id="intim-day-h" tabindex="-1">${MONTHS[parseInt(date.slice(5, 7), 10) - 1]} ${parseInt(date.slice(8, 10), 10)}, ${date.slice(0, 4)} <button type="button" class="intim-day-close" aria-label="Close this day">✕</button></h2>
       ${(() => {
         const u = usageMap()[date];
         const meals = mealsMap()[date] || 0;
@@ -400,7 +411,6 @@ export function intimacyScreen(opts = {}) {
   if (!isEnabled()) { location.hash = '#you'; return; }
   if (hasPin() && !isUnlocked()) { renderPinGate(app); return; }
   initView();
-  if (!_sel) _sel = todayStr();
 
   app.innerHTML = `
     <header class="topbar"><a class="back" href="#you">← You</a><h1 class="page-title" tabindex="-1">Personal calendar</h1>
@@ -410,7 +420,6 @@ export function intimacyScreen(opts = {}) {
         <p class="cal-legend">🔥 times · 💥 orgasms · 💞 partner · 🌙 solo · 💭 wanted to · 🩸 period · 🌱 activity · 🍽️ meals · 📔 journal · ⚖️ weight · 🎂 birthday · 🎉 anniversary · tap a day for details</p>
         ${cycleLineHTML()}
       </section>
-      ${_sel ? dayEditorHTML(_sel) : ''}
       ${insightsHTML()}
       ${graphsHTML()}
       ${_showSettings ? settingsHTML() : ''}
@@ -420,6 +429,14 @@ export function intimacyScreen(opts = {}) {
   // which would yank the viewport back to the top on each desire/mood/symptom tap.
   const h1 = app.querySelector('.page-title'); if (h1 && !opts.rerender) try { h1.focus(); } catch { /* ok */ }
   bind(app);
+
+  // When a day was just expanded, move focus to its detail heading and bring the drawer into
+  // view so keyboard/screen-reader users land on it. Not on in-panel taps (mood/desire/etc).
+  if (_justExpanded) {
+    _justExpanded = false;
+    const dh = app.querySelector('#intim-day-h');
+    if (dh) { try { dh.focus(); dh.scrollIntoView({ block: 'nearest' }); } catch { /* ok */ } }
+  }
 }
 
 // Tap-driven updates rebuild the whole screen; preserve the user's in-progress, not-yet-
@@ -438,7 +455,14 @@ function bind(app) {
   const next = document.getElementById('intim-next');
   if (next) next.addEventListener('click', () => { _vm++; if (_vm > 11) { _vm = 0; _vy++; } rerender(); });
 
-  app.querySelectorAll('.cal-cell[data-date]').forEach((c) => c.addEventListener('click', () => { _sel = c.dataset.date; rerender(); }));
+  app.querySelectorAll('.cal-cell[data-date]').forEach((c) => c.addEventListener('click', () => {
+    // Toggle: tapping the already-open day collapses it back to the full month grid.
+    _sel = (_sel === c.dataset.date) ? null : c.dataset.date;
+    _justExpanded = !!_sel;
+    rerender();
+  }));
+  const dayClose = app.querySelector('.intim-day-close');
+  if (dayClose) dayClose.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); _sel = null; rerender(); });
 
   app.querySelectorAll('.intim-layer-chip').forEach((b) => b.addEventListener('click', () => { const k = b.dataset.layer; setLayer(k, !getLayers()[k]); rerender(); }));
 
