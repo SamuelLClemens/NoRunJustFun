@@ -143,6 +143,17 @@ export function partnerName(id) { const p = im().partners.find((x) => x.id === i
 // ---- cycle overlay ------------------------------------------------------
 export function showCycle() { return !!im().showCycle; }
 export function setShowCycle(on) { im().showCycle = !!on; save(); }
+
+// Toggleable calendar layers — view the period, intimacy, mood, usage, or birthday layer
+// on its own, any combination, or all at once. Persisted so the view is remembered.
+export const LAYER_KEYS = ['intimacy', 'period', 'mood', 'usage', 'birthday'];
+export function getLayers() {
+  const x = im();
+  if (!x.layers || typeof x.layers !== 'object' || Array.isArray(x.layers)) x.layers = {};
+  LAYER_KEYS.forEach((k) => { if (typeof x.layers[k] !== 'boolean') x.layers[k] = true; });
+  return x.layers;
+}
+export function setLayer(k, on) { const L = getLayers(); if (LAYER_KEYS.includes(k)) { L[k] = !!on; save(); } }
 // Period tracking now lives in this calendar's own day model (merged from the old cycle
 // ledger). isPeriodDay reflects what the user has logged here — descriptive, not a forecast.
 export function isPeriod(date) { const d = im().days[date]; return !!(d && d.period); }

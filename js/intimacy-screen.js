@@ -6,8 +6,10 @@
 // Everything stays on this device. Re-renders the whole screen on each action (simple and
 // robust at this scale); view state lives at module scope so month + selection persist.
 
+import { store } from './state.js';
 import {
   isEnabled, hasPin, isUnlocked, verifyPin, setPin, clearPin, lock,
+  getLayers, setLayer, LAYER_KEYS,
   listPartners, addPartner, removePartner, setDefaultPartner, defaultPartner, partnerName,
   showCycle, setShowCycle, isPeriodDay, isPeriod, setPeriod, cycleStats,
   getDay, setDesire, setDayNote, addEncounter, removeEncounter,
@@ -37,6 +39,25 @@ function initView() {
     _vm = (parseInt(t[1], 10) || 1) - 1;
   }
 }
+
+// Read-only app-activity map (from progress.sessions) and birthday — extra calendar
+// layers. We only READ sessions here; logging the calendar never writes sessions[].
+function usageMap() {
+  const m = {};
+  const sessions = (store.progress && store.progress.sessions) || [];
+  sessions.forEach((s) => {
+    if (!s || !s.date) return;
+    const k = s.kind || '';
+    const t = (k === 'meditation') ? 'meditation'
+      : ((k.endsWith('-game') || k.endsWith('-quiz')) || (Array.isArray(s.lessonIds) && s.lessonIds.length)) ? 'learn'
+        : 'move';
+    const e = m[s.date] || (m[s.date] = { meditation: 0, learn: 0, move: 0, total: 0, mins: 0 });
+    e[t] += 1; e.total += 1; e.mins += (s.mins || 0);
+  });
+  return m;
+}
+function birthdayMD() { const b = (store.profile && store.profile.birthday) || ''; return (typeof b === 'string' && b.length >= 10) ? b.slice(5) : ''; }
+const LAYER_LABELS = [['intimacy', '💞 Intimacy'], ['period', '🩸 Period'], ['mood', '🙂 Mood'], ['usage', '🌱 Activity'], ['birthday', '🎂 Birthday']];
 
 // ---- PIN gate -----------------------------------------------------------
 function renderPinGate(app) {
@@ -71,27 +92,46 @@ function calendarHTML() {
   const startDow = first.getDay();
   const daysInMonth = new Date(_vy, _vm + 1, 0).getDate();
   const today = todayStr();
+  const L = getLayers();
+  const um = L.usage ? usageMap() : {};
+  const bMD = L.birthday ? birthdayMD() : '';
   let cells = '';
   for (let i = 0; i < startDow; i++) cells += '<div class="cal-cell cal-empty" aria-hidden="true"></div>';
   for (let d = 1; d <= daysInMonth; d++) {
     const date = mk(_vy, _vm, d);
     const g = dayGlyphs(date);
+    const dd = getDay(date);
     const isToday = date === today;
     const isSel = date === _sel;
     const marks = [];
-    if (g.count) marks.push(`🔥${g.count > 1 ? g.count : ''}`);
-    if (g.org) marks.push(`💥${g.org}`);
-    if (g.kind) marks.push(g.kind);
-    if (g.wantedUnmet) marks.push('💭');
-    if (g.period) marks.push('🩸');
-    const face = g.face ? `<span class="cal-face">${g.face}</span>` : '';
-    const label = `${MONTHS[_vm]} ${d}${g.count ? `, ${g.count} time${g.count === 1 ? '' : 's'}` : ''}${g.org ? `, ${g.org} orgasm${g.org === 1 ? '' : 's'}` : ''}${g.period ? ', period day' : ''}`;
-    cells += `<button type="button" class="cal-cell${isToday ? ' is-today' : ''}${isSel ? ' is-sel' : ''}${g.count || g.desire != null ? ' has-log' : ''}" data-date="${date}" aria-label="${esc(label)}">
-        <span class="cal-num">${d}</span>${face}
+    let face = '';
+    if (L.intimacy && g.face) face = g.face;
+    else if (L.mood && dd.mood != null) face = moodFor(dd.mood);
+    if (L.intimacy) {
+      if (g.count) marks.push(`🔥${g.count > 1 ? g.count : ''}`);
+      if (g.org) marks.push(`💥${g.org}`);
+      if (g.kind) marks.push(g.kind);
+      if (g.wantedUnmet) marks.push('💭');
+    }
+    if (L.period && isPeriod(date)) marks.push('🩸');
+    if (L.usage && um[date]) marks.push(`🌱${um[date].total}`);
+    const isBday = bMD && date.slice(5) === bMD;
+    if (isBday) marks.push('🎂');
+    const faceHTML = face ? `<span class="cal-face">${face}</span>` : '';
+    const u = um[date];
+    const label = `${MONTHS[_vm]} ${d}`
+      + (g.count ? `, ${g.count} time${g.count === 1 ? '' : 's'}` : '')
+      + (isPeriod(date) ? ', period day' : '')
+      + (u ? `, ${u.total} activit${u.total === 1 ? 'y' : 'ies'}` : '')
+      + (isBday ? ', birthday' : '');
+    const logged = g.count || dd.desire != null || dd.period || dd.mood != null || dd.energy != null || (dd.symptoms && dd.symptoms.length) || (u && u.total) || isBday;
+    cells += `<button type="button" class="cal-cell${isToday ? ' is-today' : ''}${isSel ? ' is-sel' : ''}${logged ? ' has-log' : ''}" data-date="${date}" aria-label="${esc(label)}">
+        <span class="cal-num">${d}</span>${faceHTML}
         <span class="cal-marks">${marks.join(' ')}</span>
       </button>`;
   }
   return `
+    <div class="intim-layers">${LAYER_LABELS.map(([k, lbl]) => `<button type="button" class="intim-layer-chip${L[k] ? ' is-sel' : ''}" data-layer="${k}" aria-pressed="${L[k] ? 'true' : 'false'}">${lbl}</button>`).join('')}</div>
     <div class="cal-nav">
       <button class="btn cal-prev" id="intim-prev" aria-label="Previous month">‹</button>
       <span class="cal-title">${MONTHS[_vm]} ${_vy}</span>
@@ -136,6 +176,14 @@ function dayEditorHTML(date) {
   return `
     <section class="card intim-day">
       <h2>${MONTHS[parseInt(date.slice(5, 7), 10) - 1]} ${parseInt(date.slice(8, 10), 10)}, ${date.slice(0, 4)}</h2>
+      ${(() => {
+        const u = usageMap()[date];
+        const isBday = birthdayMD() && date.slice(5) === birthdayMD();
+        if (!u && !isBday) return '';
+        const parts = [];
+        if (u) { if (u.learn) parts.push(`📚 ${u.learn} learning`); if (u.meditation) parts.push(`🧘 ${u.meditation} meditation${u.meditation === 1 ? '' : 's'}`); if (u.move) parts.push(`💪 ${u.move} movement`); }
+        return `<p class="hint intim-onday">${isBday ? '🎂 Your birthday! ' : ''}${u ? `In the app this day: ${parts.join(', ')}${u.mins ? ` · ${u.mins} min` : ''}.` : ''}</p>`;
+      })()}
       <label class="intim-check intim-period-toggle"><input type="checkbox" id="intim-period" data-date="${esc(date)}" ${isPeriod(date) ? 'checked' : ''}> 🩸 Period day</label>
       <p class="hint">How much did you want to today?</p>
       <div class="intim-desire-row">${desireRow}</div>
@@ -293,7 +341,7 @@ export function intimacyScreen() {
       <button class="topbar-action" id="intim-toggle-settings" aria-label="Settings">⚙️</button></header>
     <main class="narrow intim-screen">
       <section class="card">${statsHTML()}${calendarHTML()}
-        <p class="cal-legend">🔥 times · 💥 orgasms · 💞 partner · 🌙 solo · 💭 wanted to · 🩸 period</p>
+        <p class="cal-legend">🔥 times · 💥 orgasms · 💞 partner · 🌙 solo · 💭 wanted to · 🩸 period · 🌱 activity · 🎂 birthday · tap a day for details</p>
         ${cycleLineHTML()}
       </section>
       ${_sel ? dayEditorHTML(_sel) : ''}
@@ -315,6 +363,8 @@ function bind(app) {
   if (next) next.addEventListener('click', () => { _vm++; if (_vm > 11) { _vm = 0; _vy++; } rerender(); });
 
   app.querySelectorAll('.cal-cell[data-date]').forEach((c) => c.addEventListener('click', () => { _sel = c.dataset.date; rerender(); }));
+
+  app.querySelectorAll('.intim-layer-chip').forEach((b) => b.addEventListener('click', () => { const k = b.dataset.layer; setLayer(k, !getLayers()[k]); rerender(); }));
 
   app.querySelectorAll('.intim-desire-btn').forEach((b) => b.addEventListener('click', () => { setDesire(b.dataset.date, parseInt(b.dataset.desire, 10)); rerender(); }));
 
