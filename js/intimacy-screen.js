@@ -6,7 +6,9 @@
 // Everything stays on this device. Re-renders the whole screen on each action (simple and
 // robust at this scale); view state lives at module scope so month + selection persist.
 
-import { store } from './state.js';
+import { store, save } from './state.js';
+import { addMeal } from './meals.js';
+import { addTextEntry } from './journal.js';
 import {
   isEnabled, hasPin, isUnlocked, verifyPin, setPin, clearPin, lock,
   getLayers, setLayer, LAYER_KEYS,
@@ -23,6 +25,7 @@ const DOW = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 let _vy = null, _vm = null;   // displayed year / month
 let _sel = null;              // selected 'YYYY-MM-DD' or null
 let _showSettings = false;
+let _qlOpen = false;          // keep the day's quick-log panel open across tap-rerenders
 let _pinErr = '';
 let _importMsg = '';
 
@@ -265,6 +268,17 @@ function dayEditorHTML(date) {
       <label class="cycle-field intim-note-field">Day note
         <input type="text" id="intim-daynote" maxlength="280" value="${esc(d.note || '')}" data-date="${esc(date)}" placeholder="optional">
       </label>
+      <details class="intim-add intim-quicklog" id="intim-quicklog" ${_qlOpen ? 'open' : ''}>
+        <summary>+ Quick-log meal · journal · weight for this day</summary>
+        <div class="intim-enc-form">
+          <label class="cycle-field intim-note-field">🍽️ Meal <input type="text" id="intim-ql-meal" maxlength="200" placeholder="what you ate"></label>
+          <button class="btn" id="intim-ql-meal-add" data-date="${esc(date)}">Add meal note</button>
+          <label class="cycle-field intim-note-field">📔 Journal <input type="text" id="intim-ql-journal" maxlength="280" placeholder="a thought for this day"></label>
+          <button class="btn" id="intim-ql-journal-add" data-date="${esc(date)}">Add journal entry</button>
+          <label class="cycle-field">⚖️ Weight (${esc((store.profile && store.profile.weightUnit) || 'lb')}) <input type="number" id="intim-ql-weight" min="0" max="999" step="0.1" inputmode="decimal" value="${weightMap()[date] != null ? weightMap()[date] : ''}" placeholder="optional"></label>
+          <button class="btn" id="intim-ql-weight-save" data-date="${esc(date)}">Save weight</button>
+        </div>
+      </details>
     </section>`;
 }
 
@@ -410,7 +424,7 @@ export function intimacyScreen(opts = {}) {
 
 // Tap-driven updates rebuild the whole screen; preserve the user's in-progress, not-yet-
 // saved text (encounter entry + day note) across that rebuild so a tap never wipes typing.
-const TRANSIENT_FIELDS = ['intim-org', 'intim-sat', 'intim-note', 'intim-daynote'];
+const TRANSIENT_FIELDS = ['intim-org', 'intim-sat', 'intim-note', 'intim-daynote', 'intim-ql-meal', 'intim-ql-journal', 'intim-ql-weight'];
 function rerender() {
   const keep = {};
   TRANSIENT_FIELDS.forEach((id) => { const el = document.getElementById(id); if (el) keep[id] = el.value; });
@@ -478,6 +492,34 @@ function bind(app) {
 
   const dayNote = document.getElementById('intim-daynote');
   if (dayNote) dayNote.addEventListener('change', () => { setDayNote(dayNote.dataset.date, dayNote.value); });
+
+  // Quick-log meal / journal / weight straight onto the calendar for the selected day.
+  // Writes to the SAME shared ledgers the You page uses (progress.meals/journal/weights) —
+  // never sessions[] — so the markers + day summary update at once and stay isolated from
+  // garden/streak. The panel stays open (_qlOpen) so several entries can be added fast.
+  const ql = document.getElementById('intim-quicklog');
+  if (ql) ql.addEventListener('toggle', () => { _qlOpen = ql.open; });
+  const qlMeal = document.getElementById('intim-ql-meal-add');
+  if (qlMeal) qlMeal.addEventListener('click', () => {
+    const inp = document.getElementById('intim-ql-meal'); const v = ((inp && inp.value) || '').trim();
+    if (!v) return; addMeal(v, qlMeal.dataset.date); if (inp) inp.value = ''; _qlOpen = true; rerender();
+  });
+  const qlJrnl = document.getElementById('intim-ql-journal-add');
+  if (qlJrnl) qlJrnl.addEventListener('click', () => {
+    const inp = document.getElementById('intim-ql-journal'); const v = ((inp && inp.value) || '').trim();
+    if (!v) return; addTextEntry(v, qlJrnl.dataset.date); if (inp) inp.value = ''; _qlOpen = true; rerender();
+  });
+  const qlWt = document.getElementById('intim-ql-weight-save');
+  if (qlWt) qlWt.addEventListener('click', () => {
+    const inp = document.getElementById('intim-ql-weight'); const raw = ((inp && inp.value) || '').trim();
+    const date = qlWt.dataset.date;
+    if (!Array.isArray(store.progress.weights)) store.progress.weights = [];
+    const arr = store.progress.weights;
+    const i = arr.findIndex((w) => w.date === date);
+    if (raw === '') { if (i >= 0) arr.splice(i, 1); }                 // clear this day's weight
+    else { const val = parseFloat(raw); if (!isNaN(val) && val >= 0) { if (i >= 0) arr[i].value = val; else arr.push({ date, value: val }); } }
+    save(); _qlOpen = true; rerender();
+  });
 
   const settingsToggle = document.getElementById('intim-toggle-settings');
   if (settingsToggle) settingsToggle.addEventListener('click', () => { _showSettings = !_showSettings; rerender(); });
