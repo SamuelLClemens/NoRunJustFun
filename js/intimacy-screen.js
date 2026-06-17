@@ -6,12 +6,15 @@
 // Everything stays on this device. Re-renders the whole screen on each action (simple and
 // robust at this scale); view state lives at module scope so month + selection persist.
 
+import { store } from './state.js';
 import {
   isEnabled, hasPin, isUnlocked, verifyPin, setPin, clearPin, lock,
+  getLayers, setLayer, LAYER_KEYS,
   listPartners, addPartner, removePartner, setDefaultPartner, defaultPartner, partnerName,
   showCycle, setShowCycle, isPeriodDay, isPeriod, setPeriod, cycleStats,
   getDay, setDesire, setDayNote, addEncounter, removeEncounter,
   dayGlyphs, faceFor, FACES, loggingStreak, statsMonth, statsAll, series, todayStr, setEnabled,
+  setMood, setEnergy, toggleSymptom, hasSymptom, moodFor, MOODS, SYMPTOMS, insights, exportData, importData,
 } from './intimacy.js';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -21,6 +24,7 @@ let _vy = null, _vm = null;   // displayed year / month
 let _sel = null;              // selected 'YYYY-MM-DD' or null
 let _showSettings = false;
 let _pinErr = '';
+let _importMsg = '';
 
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -35,6 +39,33 @@ function initView() {
     _vm = (parseInt(t[1], 10) || 1) - 1;
   }
 }
+
+// Read-only app-activity map (from progress.sessions) and birthday — extra calendar
+// layers. We only READ sessions here; logging the calendar never writes sessions[].
+function usageMap() {
+  const m = {};
+  const sessions = (store.progress && store.progress.sessions) || [];
+  sessions.forEach((s) => {
+    if (!s || !s.date) return;
+    const k = s.kind || '';
+    const t = (k === 'meditation') ? 'meditation'
+      : ((k.endsWith('-game') || k.endsWith('-quiz')) || (Array.isArray(s.lessonIds) && s.lessonIds.length)) ? 'learn'
+        : 'move';
+    const e = m[s.date] || (m[s.date] = { meditation: 0, learn: 0, move: 0, total: 0, mins: 0 });
+    e[t] += 1; e.total += 1; e.mins += (s.mins || 0);
+  });
+  return m;
+}
+function birthdayMD() { const b = (store.profile && store.profile.birthday) || ''; return (typeof b === 'string' && b.length >= 10) ? b.slice(5) : ''; }
+// App anniversary: the month-day the user started using the app, marked every year (🎉).
+function anniversaryMD() { const a = (store.profile && store.profile.startedAt) || ''; return (typeof a === 'string' && a.length >= 10) ? a.slice(5) : ''; }
+function anniversaryYears(date) {
+  const a = (store.profile && store.profile.startedAt) || '';
+  if (!a || a.length < 4 || !date) return null;
+  const y0 = parseInt(a.slice(0, 4), 10); const y1 = parseInt(date.slice(0, 4), 10);
+  return (isFinite(y0) && isFinite(y1)) ? Math.max(0, y1 - y0) : null;
+}
+const LAYER_LABELS = [['intimacy', '💞 Intimacy'], ['period', '🩸 Period'], ['mood', '🙂 Mood'], ['usage', '🌱 Activity'], ['birthday', '🎂 Birthday'], ['anniversary', '🎉 Anniversary']];
 
 // ---- PIN gate -----------------------------------------------------------
 function renderPinGate(app) {
@@ -69,27 +100,50 @@ function calendarHTML() {
   const startDow = first.getDay();
   const daysInMonth = new Date(_vy, _vm + 1, 0).getDate();
   const today = todayStr();
+  const L = getLayers();
+  const um = L.usage ? usageMap() : {};
+  const bMD = L.birthday ? birthdayMD() : '';
+  const aMD = L.anniversary ? anniversaryMD() : '';
   let cells = '';
   for (let i = 0; i < startDow; i++) cells += '<div class="cal-cell cal-empty" aria-hidden="true"></div>';
   for (let d = 1; d <= daysInMonth; d++) {
     const date = mk(_vy, _vm, d);
     const g = dayGlyphs(date);
+    const dd = getDay(date);
     const isToday = date === today;
     const isSel = date === _sel;
     const marks = [];
-    if (g.count) marks.push(`🔥${g.count > 1 ? g.count : ''}`);
-    if (g.org) marks.push(`💥${g.org}`);
-    if (g.kind) marks.push(g.kind);
-    if (g.wantedUnmet) marks.push('💭');
-    if (g.period) marks.push('🩸');
-    const face = g.face ? `<span class="cal-face">${g.face}</span>` : '';
-    const label = `${MONTHS[_vm]} ${d}${g.count ? `, ${g.count} time${g.count === 1 ? '' : 's'}` : ''}${g.org ? `, ${g.org} orgasm${g.org === 1 ? '' : 's'}` : ''}${g.period ? ', period day' : ''}`;
-    cells += `<button type="button" class="cal-cell${isToday ? ' is-today' : ''}${isSel ? ' is-sel' : ''}${g.count || g.desire != null ? ' has-log' : ''}" data-date="${date}" aria-label="${esc(label)}">
-        <span class="cal-num">${d}</span>${face}
+    let face = '';
+    if (L.intimacy && g.face) face = g.face;
+    else if (L.mood && dd.mood != null) face = moodFor(dd.mood);
+    if (L.intimacy) {
+      if (g.count) marks.push(`🔥${g.count > 1 ? g.count : ''}`);
+      if (g.org) marks.push(`💥${g.org}`);
+      if (g.kind) marks.push(g.kind);
+      if (g.wantedUnmet) marks.push('💭');
+    }
+    if (L.period && isPeriod(date)) marks.push('🩸');
+    if (L.usage && um[date]) marks.push(`🌱${um[date].total}`);
+    const isBday = bMD && date.slice(5) === bMD;
+    if (isBday) marks.push('🎂');
+    const isAnniv = aMD && date.slice(5) === aMD;
+    if (isAnniv) marks.push('🎉');
+    const faceHTML = face ? `<span class="cal-face">${face}</span>` : '';
+    const u = um[date];
+    const label = `${MONTHS[_vm]} ${d}`
+      + (g.count ? `, ${g.count} time${g.count === 1 ? '' : 's'}` : '')
+      + (isPeriod(date) ? ', period day' : '')
+      + (u ? `, ${u.total} activit${u.total === 1 ? 'y' : 'ies'}` : '')
+      + (isBday ? ', birthday' : '')
+      + (isAnniv ? ', app anniversary' : '');
+    const logged = g.count || dd.desire != null || dd.period || dd.mood != null || dd.energy != null || (dd.symptoms && dd.symptoms.length) || (u && u.total) || isBday || isAnniv;
+    cells += `<button type="button" class="cal-cell${isToday ? ' is-today' : ''}${isSel ? ' is-sel' : ''}${logged ? ' has-log' : ''}" data-date="${date}" aria-label="${esc(label)}">
+        <span class="cal-num">${d}</span>${faceHTML}
         <span class="cal-marks">${marks.join(' ')}</span>
       </button>`;
   }
   return `
+    <div class="intim-layers">${LAYER_LABELS.map(([k, lbl]) => `<button type="button" class="intim-layer-chip${L[k] ? ' is-sel' : ''}" data-layer="${k}" aria-pressed="${L[k] ? 'true' : 'false'}">${lbl}</button>`).join('')}</div>
     <div class="cal-nav">
       <button class="btn cal-prev" id="intim-prev" aria-label="Previous month">‹</button>
       <span class="cal-title">${MONTHS[_vm]} ${_vy}</span>
@@ -134,9 +188,31 @@ function dayEditorHTML(date) {
   return `
     <section class="card intim-day">
       <h2>${MONTHS[parseInt(date.slice(5, 7), 10) - 1]} ${parseInt(date.slice(8, 10), 10)}, ${date.slice(0, 4)}</h2>
+      ${(() => {
+        const u = usageMap()[date];
+        const isBday = birthdayMD() && date.slice(5) === birthdayMD();
+        const isAnniv = anniversaryMD() && date.slice(5) === anniversaryMD();
+        if (!u && !isBday && !isAnniv) return '';
+        const parts = [];
+        if (u) { if (u.learn) parts.push(`📚 ${u.learn} learning`); if (u.meditation) parts.push(`🧘 ${u.meditation} meditation${u.meditation === 1 ? '' : 's'}`); if (u.move) parts.push(`💪 ${u.move} movement`); }
+        let anniv = '';
+        if (isAnniv) {
+          const yrs = anniversaryYears(date);
+          anniv = (yrs && yrs >= 1)
+            ? `🎉 ${yrs} year${yrs === 1 ? '' : 's'} with Garden Moves! `
+            : '🎉 You started Garden Moves on this day. ';
+        }
+        return `<p class="hint intim-onday">${isBday ? '🎂 Your birthday! ' : ''}${anniv}${u ? `In the app this day: ${parts.join(', ')}${u.mins ? ` · ${u.mins} min` : ''}.` : ''}</p>`;
+      })()}
       <label class="intim-check intim-period-toggle"><input type="checkbox" id="intim-period" data-date="${esc(date)}" ${isPeriod(date) ? 'checked' : ''}> 🩸 Period day</label>
       <p class="hint">How much did you want to today?</p>
       <div class="intim-desire-row">${desireRow}</div>
+      <p class="hint">Mood</p>
+      <div class="intim-pick-row">${[1, 2, 3, 4, 5].map((v) => `<button type="button" class="intim-pick-btn intim-mood-btn${d.mood === v ? ' is-sel' : ''}" data-date="${esc(date)}" data-mood="${v}" aria-label="Mood ${v} of 5">${MOODS[v]}</button>`).join('')}</div>
+      <p class="hint">Energy</p>
+      <div class="intim-desire-row">${[1, 2, 3, 4, 5].map((v) => `<button type="button" class="intim-desire-btn intim-energy-btn${d.energy === v ? ' is-sel' : ''}" data-date="${esc(date)}" data-energy="${v}" aria-label="Energy ${v} of 5">⚡<small>${v}</small></button>`).join('')}</div>
+      <p class="hint">Anything you felt?</p>
+      <div class="intim-symptoms">${SYMPTOMS.map((s) => `<button type="button" class="intim-sym-chip${hasSymptom(date, s.id) ? ' is-sel' : ''}" data-date="${esc(date)}" data-sym="${esc(s.id)}">${esc(s.label)}</button>`).join('')}</div>
       ${encList}
       <details class="intim-add" ${enc.length ? '' : 'open'}>
         <summary>+ Add an encounter</summary>
@@ -176,6 +252,18 @@ function statsHTML() {
     <div><strong>${sm.avgSatisfaction != null ? faceFor(sm.avgSatisfaction) + ' ' + sm.avgSatisfaction : '–'}</strong><span>satisfaction</span></div>
     <div><strong>${streak}</strong><span>day streak</span></div>
   </div>`;
+}
+
+function insightsHTML() {
+  const ins = insights();
+  if (!ins.enough) {
+    return `<section class="card"><h2>Insights</h2><p class="hint">Log a few more days and gentle patterns will appear here — across your cycle, desire, satisfaction, mood, and energy. Descriptive only, never a prediction.</p></section>`;
+  }
+  return `<section class="card">
+      <h2>Insights</h2>
+      <ul class="intim-insights">${ins.lines.map((l) => `<li>${l}</li>`).join('')}</ul>
+      <p class="hint">These describe what you have logged — they are not predictions or medical advice.</p>
+    </section>`;
 }
 
 function cycleLineHTML() {
@@ -248,6 +336,11 @@ function settingsHTML() {
              <button class="btn" id="intim-savepin">Set PIN</button>
            </div>`}
       ${_pinErr ? `<p class="hint intim-err">${esc(_pinErr)}</p>` : ''}
+      <h3 class="intim-sub">Backup</h3>
+      <p class="hint">Download your whole calendar to a file you keep, or restore from one. Nothing leaves this device unless you export it — and the file is <strong>not</strong> encrypted, so store it somewhere safe.</p>
+      <button class="btn" id="intim-export">Export to a file</button>
+      <label class="btn intim-import-label">Restore from a file<input type="file" id="intim-import" accept="application/json,.json" hidden></label>
+      ${_importMsg ? `<p class="hint">${esc(_importMsg)}</p>` : ''}
       <h3 class="intim-sub">This space</h3>
       <p class="hint cycle-disclaimer">A private place to note your intimate life, if it helps you understand your own patterns. It describes only what you log — there are no goals or judgments, and it is <strong>not</strong> medical, fertility, or contraception advice. Everything stays on this device.</p>
       <button class="linkish" id="intim-lock">Lock now</button> · <button class="linkish" id="intim-disable">Turn off intimacy tracking</button>
@@ -268,10 +361,11 @@ export function intimacyScreen() {
       <button class="topbar-action" id="intim-toggle-settings" aria-label="Settings">⚙️</button></header>
     <main class="narrow intim-screen">
       <section class="card">${statsHTML()}${calendarHTML()}
-        <p class="cal-legend">🔥 times · 💥 orgasms · 💞 partner · 🌙 solo · 💭 wanted to · 🩸 period</p>
+        <p class="cal-legend">🔥 times · 💥 orgasms · 💞 partner · 🌙 solo · 💭 wanted to · 🩸 period · 🌱 activity · 🎂 birthday · 🎉 anniversary · tap a day for details</p>
         ${cycleLineHTML()}
       </section>
       ${_sel ? dayEditorHTML(_sel) : ''}
+      ${insightsHTML()}
       ${graphsHTML()}
       ${_showSettings ? settingsHTML() : ''}
     </main>`;
@@ -290,10 +384,16 @@ function bind(app) {
 
   app.querySelectorAll('.cal-cell[data-date]').forEach((c) => c.addEventListener('click', () => { _sel = c.dataset.date; rerender(); }));
 
+  app.querySelectorAll('.intim-layer-chip').forEach((b) => b.addEventListener('click', () => { const k = b.dataset.layer; setLayer(k, !getLayers()[k]); rerender(); }));
+
   app.querySelectorAll('.intim-desire-btn').forEach((b) => b.addEventListener('click', () => { setDesire(b.dataset.date, parseInt(b.dataset.desire, 10)); rerender(); }));
 
   const periodCb = document.getElementById('intim-period');
   if (periodCb) periodCb.addEventListener('change', () => { setPeriod(periodCb.dataset.date, periodCb.checked); rerender(); });
+
+  app.querySelectorAll('.intim-mood-btn').forEach((b) => b.addEventListener('click', () => { const v = parseInt(b.dataset.mood, 10); setMood(b.dataset.date, getDay(b.dataset.date).mood === v ? null : v); rerender(); }));
+  app.querySelectorAll('.intim-energy-btn').forEach((b) => b.addEventListener('click', () => { const v = parseInt(b.dataset.energy, 10); setEnergy(b.dataset.date, getDay(b.dataset.date).energy === v ? null : v); rerender(); }));
+  app.querySelectorAll('.intim-sym-chip').forEach((b) => b.addEventListener('click', () => { toggleSymptom(b.dataset.date, b.dataset.sym); rerender(); }));
 
   // satisfaction face picker (local, no re-render)
   const faces = app.querySelectorAll('.intim-face-btn');
@@ -347,6 +447,29 @@ function bind(app) {
   app.querySelectorAll('.intim-prem').forEach((b) => b.addEventListener('click', () => { removePartner(b.dataset.id); rerender(); }));
   const cyc = document.getElementById('intim-cycle');
   if (cyc) cyc.addEventListener('change', () => { setShowCycle(cyc.checked); rerender(); });
+
+  const exportBtn = document.getElementById('intim-export');
+  if (exportBtn) exportBtn.addEventListener('click', () => {
+    try {
+      const blob = new Blob([exportData()], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'garden-moves-personal-calendar.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      _importMsg = 'Exported. Keep that file somewhere safe — it is not encrypted.';
+      rerender();
+    } catch { _importMsg = 'Could not export on this device.'; rerender(); }
+  });
+  const importInput = document.getElementById('intim-import');
+  if (importInput) importInput.addEventListener('change', () => {
+    const file = importInput.files && importInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => { _importMsg = importData(String(reader.result)) ? 'Restored from your file.' : 'That file could not be read as a calendar backup.'; rerender(); };
+    reader.onerror = () => { _importMsg = 'Could not read that file.'; rerender(); };
+    reader.readAsText(file);
+  });
 
   const savePin = document.getElementById('intim-savepin');
   if (savePin) savePin.addEventListener('click', async () => {

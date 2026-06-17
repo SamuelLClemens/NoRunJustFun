@@ -175,7 +175,7 @@ ok('durationsTried' not in learn_code, "learning.js must not write durationsTrie
 #     that moved the legacy progress.finance blob into learning.money, the v3->v4 branch
 #     adding the dashboard fields, and the v4->v5 branch adding the You-page ledgers
 #     (journal/meals/cycle). All on-device only.
-ok('CURRENT_VERSION = 6' in st, "state.js CURRENT_VERSION must be 6 (You-page ledgers + intimacy)")
+ok('CURRENT_VERSION = 7' in st, "state.js CURRENT_VERSION must be 7 (You-page ledgers + intimacy + app anniversary)")
 ok('learning:' in st, "state.js defaults() missing the learning sub-object")
 ok('data.progress.finance' in st, "state.js v2->v3 branch does not migrate the legacy progress.finance blob")
 ok('(data.version || 1) < 3' in st, "state.js missing the v2->v3 migration branch guard")
@@ -264,9 +264,23 @@ for orphan in ['js/finance.js', 'js/finance-screen.js']:
     ok(f"'{orphan}'" not in sw, f"sw.js should no longer precache the orphaned {orphan}")
 # The realistic-avatar dependency chain is precached so the opt-in photoreal coach
 # works offline; the ~1.9 MB GLB is warmed best-effort in install (cannot reject addAll).
-for dep in ['lib/jsm/loaders/GLTFLoader.js', 'lib/jsm/utils/BufferGeometryUtils.js']:
+for dep in ['lib/jsm/loaders/GLTFLoader.js', 'lib/jsm/utils/BufferGeometryUtils.js', 'lib/jsm/environments/RoomEnvironment.js']:
     ok(f"'{dep}'" in sw, f"sw.js PRECACHE missing avatar dependency {dep}")
 ok('models/vera.glb' in sw, "sw.js install does not warm the photoreal model models/vera.glb")
+# The realistic avatar gained a human "presence" layer: image-based lighting (RoomEnvironment
+# + ACES) and real lip-sync (viseme morph targets) driven by the coach's actual voice. The
+# face layer is morph-gated, so it stays inert (no breakage) on a viseme-less Mixamo body and
+# activates automatically when a Ready Player Me / ARKit-rigged GLB is dropped in models/.
+ra_src = read('js/realistic-avatar.js') if exists('js/realistic-avatar.js') else ''
+if ra_src:
+    ok('RoomEnvironment' in ra_src and 'ACESFilmicToneMapping' in ra_src,
+       'realistic-avatar.js missing image-based lighting (RoomEnvironment + ACES tone mapping)')
+    ok('setTalking' in ra_src and 'jawOpen' in ra_src,
+       'realistic-avatar.js missing viseme lip-sync (setTalking + ARKit jawOpen morph)')
+    ok('morphTargetInfluences' in ra_src and 'faceReady' in ra_src,
+       'realistic-avatar.js must morph-gate the face layer (graceful on viseme-less rigs)')
+    ok('onSpeechStart' in read('js/tts.js') and 'onSpeechEnd' in read('js/tts.js'),
+       'tts.js missing the lip-sync speech hooks (onSpeechStart/onSpeechEnd)')
 for sid, cfg in LEARN_SUBJECTS.items():
     for f in [cfg['badges'], cfg['lessons']]:
         if exists(f):
@@ -516,7 +530,7 @@ ok("p.voicePref = e.target.checked ? 'on' : 'off'" in main_src, 'settings toggle
 # 26) State v5 + You-page personal ledgers (journal/meals/cycle). New on-device ledgers
 #     must exist and default safely; cycle is opt-in (default OFF); the additive v<5
 #     migration branch must backfill them losslessly (shallow-spread nested-object trap).
-ok('CURRENT_VERSION = 6' in st, 'state.js CURRENT_VERSION must be 6')
+ok('CURRENT_VERSION = 7' in st, 'state.js CURRENT_VERSION must be 7')
 ok('journal: []' in st, 'state.js defaults missing progress.journal[]')
 ok('meals: []' in st, 'state.js defaults missing progress.meals[]')
 ok(re.search(r"cycle:\s*\{\s*enabled:\s*false", st) is not None,
@@ -525,6 +539,10 @@ ok(re.search(r"intimacy:\s*\{\s*enabled:\s*false", st) is not None,
    'state.js defaults missing opt-in (default-OFF) progress.intimacy')
 ok('< 5' in st, 'state.js missing the v4->v5 migration branch')
 ok('< 6' in st, 'state.js missing the v5->v6 (intimacy) migration branch')
+# v7: app-anniversary date (profile.startedAt), backfilled from earliest activity for
+# existing users so the personal calendar can mark the day they started, every year.
+ok('startedAt' in st, 'state.js missing profile.startedAt (app anniversary date)')
+ok('< 7' in st, 'state.js missing the v6->v7 (app anniversary) migration branch')
 
 # 27) Privacy guard (ALWAYS ON): no off-device speech recognition anywhere in js/.
 #     Browser SpeechRecognition streams microphone audio to the vendor (Google on

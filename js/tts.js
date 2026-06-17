@@ -39,6 +39,8 @@ export const coach = {
   enabled: true,
   naturalOn: false,          // user opt-in; engages only once the model is ready
   onCaption: null,           // (text) => void — captions always render, even muted
+  onSpeechStart: null,       // () => void — fires when audible speech begins (avatar lip-sync)
+  onSpeechEnd: null,         // () => void — fires when audible speech ends/cancels (close the mouth)
   voice: null,               // the active coach's voice config (see characters.js)
   _sgen: 0,                  // bumped by cancel() so in-flight speech stops cleanly
   transcript: [],            // durable per-session log of every narrated line. The live
@@ -86,7 +88,11 @@ export const coach = {
     naturalVoice.cancel();
     if (synth) synth.cancel();
     clearInterval(resumeTimer);
+    this._endSpeech();
   },
+
+  _startSpeech() { if (this.onSpeechStart) { try { this.onSpeechStart(); } catch { /* lip-sync is best-effort */ } } },
+  _endSpeech() { if (this.onSpeechEnd) { try { this.onSpeechEnd(); } catch { /* lip-sync is best-effort */ } } },
 
   // Speak text (string or array of strings). Captions render even when audio is
   // off (accessibility). When audio plays, the caption advances sentence-by-sentence
@@ -131,6 +137,11 @@ export const coach = {
     const onChunk = (t) => { played += 1; if (this.onCaption) this.onCaption(t); };
     if (interrupt && this.onCaption) this.onCaption(chunks[0] || fullCaption);
 
+    // Lip-sync hook: the avatar's mouth moves only while audio actually plays.
+    // Fire start now (audio begins) and end once the whole line finishes/cancels.
+    this._startSpeech();
+    const endSpeech = () => this._endSpeech();
+
     // Two cancellation counters on purpose: naturalVoice._gen stops queued
     // and playing audio inside the voice module; coach._sgen stops THIS
     // method's fallback from speaking a line the user already cancelled.
@@ -142,10 +153,10 @@ export const coach = {
         // system voice handle the REST of the line (skip sentences already spoken)
         naturalVoice.retire();
         if (gen === this._sgen) return this._webSpeak(chunks.slice(played), onChunk);
-      });
+      }).finally(endSpeech);
     }
 
-    return this._webSpeak(chunks, onChunk);
+    return this._webSpeak(chunks, onChunk).finally(endSpeech);
   },
 
   _webSpeak(chunks, onChunk = null) {

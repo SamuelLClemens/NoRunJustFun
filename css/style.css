@@ -826,6 +826,11 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 .intim-stats > div { flex: 1; text-align: center; background: var(--soul-tint, #F3F0FA); border-radius: var(--radius-sm); padding: 8px 4px; }
 .intim-stats strong { display: block; font-size: 1.1rem; }
 .intim-stats span { font-size: 0.7rem; color: var(--ink-soft); }
+/* layer toggles */
+.intim-layers { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.intim-layer-chip { border: 2px solid var(--line, #E3E0D8); border-radius: 999px; background: #fff; padding: 4px 11px; cursor: pointer; font: inherit; font-size: 0.78rem; color: var(--ink-soft); opacity: 0.6; }
+.intim-layer-chip.is-sel { border-color: var(--soul-accent, #8E7CC3); background: var(--soul-tint, #F6F3FC); color: var(--ink, #2E2A24); opacity: 1; }
+.intim-onday { background: var(--soul-tint, #F6F3FC); border-radius: var(--radius-sm); padding: 7px 10px; }
 /* month nav */
 .cal-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
 .cal-title { font-weight: 700; }
@@ -872,6 +877,17 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 .intim-pin-row { display: flex; gap: 8px; justify-content: center; margin: 10px 0; }
 .intim-pin-row input { width: 8em; text-align: center; letter-spacing: 0.3em; padding: 9px 10px; border: 2px solid var(--line, #E3E0D8); border-radius: var(--radius-sm); font: inherit; }
 .intim-err { color: #c0392b; }
+/* mood / energy pickers + symptom chips + insights + backup */
+.intim-pick-row { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0 12px; }
+.intim-pick-btn { border: 2px solid var(--line, #E3E0D8); border-radius: var(--radius-sm); background: #fff; padding: 5px 9px; cursor: pointer; font: inherit; font-size: 1.3rem; line-height: 1; filter: grayscale(0.55); opacity: 0.7; }
+.intim-pick-btn.is-sel { border-color: var(--soul-accent, #8E7CC3); filter: none; opacity: 1; background: var(--soul-tint, #F6F3FC); }
+.intim-symptoms { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0 12px; }
+.intim-sym-chip { border: 2px solid var(--line, #E3E0D8); border-radius: 999px; background: #fff; padding: 5px 12px; cursor: pointer; font: inherit; font-size: 0.82rem; color: var(--ink-soft); }
+.intim-sym-chip.is-sel { border-color: var(--soul-accent, #8E7CC3); background: var(--soul-tint, #F6F3FC); color: var(--ink, #2E2A24); }
+.intim-insights { list-style: none; margin: 8px 0 0; padding: 0; }
+.intim-insights li { padding: 8px 0; border-top: 1px solid var(--line, #EFECE4); }
+.intim-insights li:first-child { border-top: none; }
+.intim-import-label { display: inline-block; cursor: pointer; margin-left: 8px; }
 
 /* Body workout paths (Stretching / Yoga / Exercises) */
 .move-paths { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
