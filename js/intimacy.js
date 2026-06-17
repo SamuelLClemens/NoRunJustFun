@@ -144,10 +144,11 @@ export function partnerName(id) { const p = im().partners.find((x) => x.id === i
 export function showCycle() { return !!im().showCycle; }
 export function setShowCycle(on) { im().showCycle = !!on; save(); }
 
-// Toggleable calendar layers — view the period, intimacy, mood, usage, birthday, or
-// anniversary layer on its own, any combination, or all at once. Persisted so the view
-// is remembered. ('anniversary' = the day the user started the app, marked every year.)
-export const LAYER_KEYS = ['intimacy', 'period', 'mood', 'usage', 'birthday', 'anniversary'];
+// Toggleable calendar layers — view any one on its own, any combination, or all at
+// once. Persisted so the view is remembered. ('anniversary' = the day the user started
+// the app, marked every year.) meals/journal/weight READ their own ledgers (read-only;
+// the calendar never writes sessions[]/meals[]/journal[]/weights[]).
+export const LAYER_KEYS = ['intimacy', 'period', 'mood', 'usage', 'meals', 'journal', 'weight', 'birthday', 'anniversary'];
 export function getLayers() {
   const x = im();
   if (!x.layers || typeof x.layers !== 'object' || Array.isArray(x.layers)) x.layers = {};
@@ -323,19 +324,48 @@ export function loggingStreak() {
   return n;
 }
 
+function pctOf(n, d) { return d ? Math.round((n / d) * 100) : 0; }
+
 export function statsMonth(year, month) {
   const prefix = `${year}-${String(month + 1).padStart(2, '0')}-`;
   const days = im().days;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const t = todayStr();
+  const isCurrent = t.startsWith(prefix);
+  // "% of the month" measures against days elapsed in the current month, full month otherwise
+  const denom = isCurrent ? Math.max(1, parseInt(t.slice(8, 10), 10)) : daysInMonth;
   let enc = 0, org = 0, sat = 0, satN = 0, logged = 0, withSex = 0;
+  let solo = 0, partnered = 0, prot = 0, toys = 0, oNone = 0, oSingle = 0, oMulti = 0;
+  let topDay = null;
   Object.keys(days).forEach((k) => {
     if (!k.startsWith(prefix)) return;
     logged++;
     const d = days[k];
-    enc += (d.encounters || []).length;
-    if ((d.encounters || []).length) withSex++;
-    (d.encounters || []).forEach((e) => { org += (e.orgasms || 0); if (e.satisfaction != null) { sat += e.satisfaction; satN++; } });
+    const ec = (d.encounters || []).length;
+    if (ec) withSex++;
+    if (ec && (!topDay || ec > topDay.count)) topDay = { date: k, count: ec };
+    enc += ec;
+    (d.encounters || []).forEach((e) => {
+      const o = e.orgasms || 0; org += o;
+      if (o <= 0) oNone++; else if (o === 1) oSingle++; else oMulti++;
+      if (e.solo) solo++; else partnered++;
+      if (e.protection) prot++;
+      if (e.toys) toys++;
+      if (e.satisfaction != null) { sat += e.satisfaction; satN++; }
+    });
   });
-  return { encounters: enc, orgasms: org, avgSatisfaction: satN ? Math.round((sat / satN) * 10) / 10 : null, daysLogged: logged, daysWithSex: withSex };
+  return {
+    encounters: enc, orgasms: org,
+    avgSatisfaction: satN ? Math.round((sat / satN) * 10) / 10 : null,
+    daysLogged: logged, daysWithSex: withSex,
+    daysInMonth, denom, pctDaysWithSex: pctOf(withSex, denom),
+    avgOrgPerTime: enc ? Math.round((org / enc) * 10) / 10 : 0,
+    org: { none: oNone, single: oSingle, multi: oMulti },
+    orgPct: { none: pctOf(oNone, enc), single: pctOf(oSingle, enc), multi: pctOf(oMulti, enc) },
+    solo, partnered, soloPct: pctOf(solo, enc), partneredPct: pctOf(partnered, enc),
+    protUsed: prot, toysUsed: toys, protPct: pctOf(prot, enc), toysPct: pctOf(toys, enc),
+    topDay,
+  };
 }
 
 export function statsAll() {
@@ -386,6 +416,173 @@ export function insights() {
   if (bDow >= 0) lines.push(`Satisfaction tended to be highest on <strong>${DOW[bDow]}s</strong>.`);
   return { enough: true, count: keys.length, lines };
 }
+
+// Cross-ledger READ-ONLY accessors for the stats engine. The personal calendar
+// reflects the rest of the app; it never writes these ledgers (isolation invariant).
+function sessionsArr() { return (store.progress && store.progress.sessions) || []; }
+function journalArr() { return (store.progress && store.progress.journal) || []; }
+function mealsArr() { return (store.progress && store.progress.meals) || []; }
+function weightsArr() { return (store.progress && store.progress.weights) || []; }
+function usageKind(s) {
+  const k = (s && s.kind) || '';
+  if (k === 'meditation') return 'meditation';
+  if (k.endsWith('-game') || k.endsWith('-quiz') || (Array.isArray(s.lessonIds) && s.lessonIds.length)) return 'learn';
+  return 'move';
+}
+
+// THE juicy stats engine. Descriptive, celebratory, pattern-naming — never a goal,
+// score, judgment, prediction, or medical/fertility claim (that framing is intentional
+// and must not change). Returns ordered sections [{ title, lines:[html] }] across sex,
+// app usage, journaling, meals, and weight. Lines use <strong> for the punchy numbers.
+export function richInsights(year, month) {
+  const days = im().days;
+  const keys = Object.keys(days).sort();
+  const r1 = (n) => Math.round(n * 10) / 10;
+  const pct = (n, d) => (d ? Math.round((n / d) * 100) : 0);
+  const avg = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : null);
+  const DOW = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const sections = [];
+
+  // ---------- gather all-time intimacy data ----------
+  let encTotal = 0, orgTotal = 0, oNone = 0, oSingle = 0, oMulti = 0, oBig = 0, solo = 0, part = 0, prot = 0, toys = 0;
+  let wantedDays = 0, wantedMet = 0, bestDay = null;
+  const satAll = []; const satByDow = [[], [], [], [], [], [], []];
+  const tod = { morning: 0, afternoon: 0, evening: 0, night: 0 };
+  const dowCount = [0, 0, 0, 0, 0, 0, 0];
+  const partnerCount = {};
+  const desP = [], desN = [], moodP = [], moodN = []; const symCount = {};
+  keys.forEach((k) => {
+    const d = days[k]; const isP = !!d.period;
+    const ec = (d.encounters || []).length;
+    encTotal += ec;
+    if (ec && (!bestDay || ec > bestDay.count)) bestDay = { date: k, count: ec };
+    if (d.desire != null && d.desire >= 3) { wantedDays++; if (ec) wantedMet++; }
+    if (d.desire != null) (isP ? desP : desN).push(d.desire);
+    if (d.mood != null) (isP ? moodP : moodN).push(d.mood);
+    (d.symptoms || []).forEach((s) => { symCount[s] = (symCount[s] || 0) + 1; });
+    let dow = 0; try { dow = new Date(k + 'T00:00:00').getDay(); } catch { dow = 0; }
+    if (ec) dowCount[dow] += ec;
+    (d.encounters || []).forEach((e) => {
+      const o = e.orgasms || 0; orgTotal += o;
+      if (o <= 0) oNone++; else if (o === 1) oSingle++; else { oMulti++; if (o >= 3) oBig++; }
+      if (e.solo) solo++; else { part++; if (e.partnerId) { const nm = partnerName(e.partnerId) || 'a partner'; partnerCount[nm] = (partnerCount[nm] || 0) + 1; } }
+      if (e.protection) prot++;
+      if (e.toys) toys++;
+      if (e.satisfaction != null) { satAll.push(e.satisfaction); satByDow[dow].push(e.satisfaction); }
+      if (e.time) { const h = parseInt(String(e.time).slice(0, 2), 10); if (isFinite(h)) { if (h >= 5 && h < 12) tod.morning++; else if (h < 17) tod.afternoon++; else if (h < 22) tod.evening++; else tod.night++; } }
+    });
+  });
+
+  // ---------- "This month" ----------
+  const sm = statsMonth(year, month);
+  const monthLines = [];
+  if (sm.daysWithSex) {
+    monthLines.push(`You were intimate on <strong>${sm.pctDaysWithSex}%</strong> of days this month (${sm.daysWithSex} of ${sm.denom}).`);
+    if (sm.encounters) monthLines.push(`<strong>${sm.encounters}</strong> time${sm.encounters === 1 ? '' : 's'}, <strong>${sm.orgasms}</strong> orgasm${sm.orgasms === 1 ? '' : 's'} — about <strong>${sm.avgOrgPerTime}</strong> each time.`);
+    if (sm.orgPct.multi) monthLines.push(`Multiple orgasms happened <strong>${sm.orgPct.multi}%</strong> of the time this month. 🎉`);
+    if (sm.topDay) { const dd = sm.topDay.date; monthLines.push(`Your liveliest day was <strong>${MONTH_ABBR[parseInt(dd.slice(5, 7), 10) - 1]} ${parseInt(dd.slice(8, 10), 10)}</strong> with <strong>${sm.topDay.count}</strong>.`); }
+    if (sm.avgSatisfaction != null) monthLines.push(`Satisfaction this month: <strong>${faceFor(sm.avgSatisfaction)} ${sm.avgSatisfaction}/5</strong>.`);
+  }
+  if (monthLines.length) sections.push({ title: 'This month', lines: monthLines });
+
+  // ---------- Orgasms (all time) ----------
+  if (encTotal) {
+    const ol = [];
+    ol.push(`Across <strong>${encTotal}</strong> time${encTotal === 1 ? '' : 's'}, that is <strong>${orgTotal}</strong> orgasm${orgTotal === 1 ? '' : 's'} in all.`);
+    ol.push(`The breakdown: <strong>${pct(oMulti, encTotal)}%</strong> multiple, <strong>${pct(oSingle, encTotal)}%</strong> a single, <strong>${pct(oNone, encTotal)}%</strong> none.`);
+    if (oBig) ol.push(`<strong>${oBig}</strong> time${oBig === 1 ? '' : 's'} you reached <strong>three or more</strong>. ✨`);
+    ol.push(`That averages <strong>${r1(orgTotal / encTotal)}</strong> orgasms a time.`);
+    sections.push({ title: 'Your orgasms', lines: ol });
+  }
+
+  // ---------- Patterns ----------
+  const pat = [];
+  let spanDays = 1;
+  if (keys.length) { try { spanDays = Math.max(1, Math.round((new Date(keys[keys.length - 1] + 'T00:00:00') - new Date(keys[0] + 'T00:00:00')) / 86400000) + 1); } catch { spanDays = 1; } }
+  if (encTotal) pat.push(`You average about <strong>${r1((encTotal / spanDays) * 7)}</strong> times a week.`);
+  const todTop = Object.entries(tod).sort((a, b) => b[1] - a[1])[0];
+  if (todTop && todTop[1] > 0) pat.push(`You are most often intimate in the <strong>${todTop[0]}</strong>.`);
+  let bDow = -1, bN = 0; dowCount.forEach((n, i) => { if (n > bN) { bN = n; bDow = i; } });
+  if (bDow >= 0 && bN > 0) pat.push(`<strong>${DOW[bDow]}</strong> is your most active day of the week.`);
+  if (encTotal) {
+    if (solo && part) pat.push(`<strong>${pct(part, encTotal)}%</strong> partnered, <strong>${pct(solo, encTotal)}%</strong> solo.`);
+    else if (solo) pat.push(`All solo so far — <strong>${solo}</strong> time${solo === 1 ? '' : 's'}.`);
+    else if (part) pat.push(`All partnered so far — <strong>${part}</strong> time${part === 1 ? '' : 's'}.`);
+    if (prot) pat.push(`Protection used <strong>${pct(prot, encTotal)}%</strong> of the time.`);
+    if (toys) pat.push(`Toys featured <strong>${pct(toys, encTotal)}%</strong> of the time. 🧸`);
+  }
+  if (wantedDays) pat.push(`On days you wanted to, it happened <strong>${pct(wantedMet, wantedDays)}%</strong> of the time.`);
+  const topPartner = Object.entries(partnerCount).sort((a, b) => b[1] - a[1])[0];
+  if (topPartner && Object.keys(partnerCount).length > 1) pat.push(`Most-logged partner: <strong>${topPartner[0]}</strong> (${topPartner[1]}).`);
+  const sa = avg(satAll); if (sa != null) pat.push(`Overall satisfaction: <strong>${faceFor(sa)} ${r1(sa)}/5</strong>.`);
+  let sbDow = -1, sbVal = -1; satByDow.forEach((arr, i) => { const a = avg(arr); if (a != null && arr.length >= 2 && a > sbVal) { sbVal = a; sbDow = i; } });
+  if (sbDow >= 0) pat.push(`Satisfaction tends to peak on <strong>${DOW[sbDow]}s</strong>.`);
+  if (bestDay && bestDay.count >= 2) pat.push(`Your record in a single day: <strong>${bestDay.count}</strong>. 🔥`);
+  if (pat.length) sections.push({ title: 'Your patterns', lines: pat });
+
+  // ---------- Across your cycle ----------
+  const cyc = [];
+  const dp = avg(desP), dn = avg(desN);
+  if (dp != null && dn != null) cyc.push(`Desire averages <strong>${r1(dp)}/5</strong> on period days vs <strong>${r1(dn)}/5</strong> on other days.`);
+  const mp = avg(moodP), mn = avg(moodN);
+  if (mp != null && mn != null) cyc.push(`Mood averages <strong>${moodFor(mp)} ${r1(mp)}/5</strong> on period days vs <strong>${moodFor(mn)} ${r1(mn)}/5</strong> on other days.`);
+  const topSym = Object.entries(symCount).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  if (topSym.length) cyc.push(`Most-logged feelings: ${topSym.map(([id, n]) => `${symptomLabel(id)} (${n})`).join(', ')}.`);
+  const cs = cycleStats();
+  if (cs && cs.avgLen != null) cyc.push(`Your cycles average about <strong>${cs.avgLen}</strong> days (descriptive, not a prediction).`);
+  if (cyc.length) sections.push({ title: 'Across your cycle', lines: cyc });
+
+  // ---------- Your app life (usage) ----------
+  const monthPrefix = `${year}-${String(month + 1).padStart(2, '0')}-`;
+  const sess = sessionsArr();
+  if (sess.length) {
+    const app = [];
+    const activeMonth = new Set(sess.filter((s) => s && s.date && s.date.startsWith(monthPrefix)).map((s) => s.date)).size;
+    const allDays = new Set(sess.filter((s) => s && s.date).map((s) => s.date)).size;
+    const typeCount = { meditation: 0, learn: 0, move: 0 };
+    let mins = 0;
+    sess.forEach((s) => { typeCount[usageKind(s)]++; mins += (s.mins || 0); });
+    const typeLabel = { meditation: 'meditating', learn: 'learning', move: 'moving' };
+    const favType = Object.entries(typeCount).sort((a, b) => b[1] - a[1])[0];
+    if (activeMonth) app.push(`You showed up in the app on <strong>${activeMonth}</strong> day${activeMonth === 1 ? '' : 's'} this month.`);
+    app.push(`<strong>${sess.length}</strong> sessions across <strong>${allDays}</strong> day${allDays === 1 ? '' : 's'} — about <strong>${Math.round(mins)}</strong> minutes in all.`);
+    if (favType && favType[1] > 0) app.push(`Your favorite way to show up is <strong>${typeLabel[favType[0]]}</strong>.`);
+    sections.push({ title: 'Your app life', lines: app });
+  }
+
+  // ---------- Your journal ----------
+  const jr = journalArr();
+  if (jr.length) {
+    const jl = [];
+    const jMonth = jr.filter((j) => j && j.ts && j.ts.startsWith(monthPrefix)).length;
+    const words = jr.reduce((s, j) => s + (((j.text || '').trim()) ? j.text.trim().split(/\s+/).length : 0), 0);
+    const voiceN = jr.filter((j) => j.kind === 'voice').length;
+    jl.push(`<strong>${jr.length}</strong> journal entr${jr.length === 1 ? 'y' : 'ies'}${jMonth ? `, ${jMonth} this month` : ''} — <strong>${words}</strong> word${words === 1 ? '' : 's'} in all.`);
+    if (voiceN) jl.push(`<strong>${voiceN}</strong> of them you spoke out loud. 🎙️`);
+    sections.push({ title: 'Your journal', lines: jl });
+  }
+
+  // ---------- Meals ----------
+  const ml = mealsArr();
+  if (ml.length) {
+    const mlMonth = ml.filter((m) => m && m.ts && m.ts.startsWith(monthPrefix)).length;
+    const mealDays = new Set(ml.filter((m) => m && m.ts).map((m) => m.ts.slice(0, 10))).size;
+    sections.push({ title: 'Your meals', lines: [`<strong>${ml.length}</strong> meal note${ml.length === 1 ? '' : 's'}${mlMonth ? `, ${mlMonth} this month` : ''}, across <strong>${mealDays}</strong> day${mealDays === 1 ? '' : 's'}.`] });
+  }
+
+  // ---------- Weight (neutral, no judgment) ----------
+  const w = weightsArr().filter((x) => x && x.date && typeof x.value === 'number').slice().sort((a, b) => (a.date < b.date ? -1 : 1));
+  if (w.length) {
+    const unit = (store.profile && store.profile.weightUnit) || 'lb';
+    const wl = [`<strong>${w.length}</strong> weigh-in${w.length === 1 ? '' : 's'} logged; most recent <strong>${w[w.length - 1].value} ${unit}</strong>.`];
+    sections.push({ title: 'Your weight', lines: wl });
+  }
+
+  const count = keys.length;
+  return { enough: count >= 3 || encTotal > 0 || sess.length > 0 || jr.length > 0, count, sections };
+}
+
+const MONTH_ABBR = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 // --- Export / backup (the user's own data, by their action) -------------
 export function exportData() {

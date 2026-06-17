@@ -822,8 +822,8 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 .intimacy-note { color: var(--ink-soft); }
 .topbar-action { margin-left: auto; background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 4px 8px; }
 /* stats strip */
-.intim-stats { display: flex; gap: 6px; justify-content: space-between; margin-bottom: 12px; }
-.intim-stats > div { flex: 1; text-align: center; background: var(--soul-tint, #F3F0FA); border-radius: var(--radius-sm); padding: 8px 4px; }
+.intim-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); gap: 6px; margin-bottom: 12px; }
+.intim-stats > div { text-align: center; background: var(--soul-tint, #F3F0FA); border-radius: var(--radius-sm); padding: 8px 4px; }
 .intim-stats strong { display: block; font-size: 1.1rem; }
 .intim-stats span { font-size: 0.7rem; color: var(--ink-soft); }
 /* layer toggles */

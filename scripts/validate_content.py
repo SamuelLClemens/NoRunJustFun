@@ -701,6 +701,17 @@ if intim_src:
        'intimacy.js missing the merged period/cycle functions (setPeriod/isPeriod/cycleStats)')
     if intim_scr:
         ok('intim-period' in intim_scr, 'personal calendar day editor missing the period-day toggle')
+        # Toggleable layers now include the meals / journal / weight ledgers (read-only).
+        for _lay in ['meals', 'journal', 'weight']:
+            ok(f"'{_lay}'" in intim_src, f"personal calendar LAYER_KEYS missing the '{_lay}' layer")
+        ok('mealsMap' in intim_scr and 'journalMap' in intim_scr and 'weightMap' in intim_scr,
+           'personal calendar missing read-only meal/journal/weight day maps')
+        # Rich, pattern-naming stats engine (orgasm distribution + % of month + cross-ledger).
+        ok('richInsights' in intim_src and 'orgPct' in intim_src and 'pctDaysWithSex' in intim_src,
+           'intimacy.js missing the rich stats engine (richInsights / orgasm distribution / % of month)')
+        # The stats engine reads sibling ledgers but must never WRITE them (isolation).
+        for _w in ['sessions.push', 'journal.push', 'meals.push', 'weights.push']:
+            ok(_w not in intim_src, f"intimacy.js must not write sibling ledgers ({_w})")
     ok('data-intimacy' in main_src and 'intimacyCardHTML' in main_src, 'You page does not render the personal calendar card')
     ok('Personal calendar' in main_src, 'You page card should be titled "Personal calendar"')
     ok("#calendar" in main_src and 'intimacy-screen.js' in main_src, 'router does not lazy-load the personal calendar screen at #calendar')

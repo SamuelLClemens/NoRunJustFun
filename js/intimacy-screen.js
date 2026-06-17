@@ -14,7 +14,7 @@ import {
   showCycle, setShowCycle, isPeriodDay, isPeriod, setPeriod, cycleStats,
   getDay, setDesire, setDayNote, addEncounter, removeEncounter,
   dayGlyphs, faceFor, FACES, loggingStreak, statsMonth, statsAll, series, todayStr, setEnabled,
-  setMood, setEnergy, toggleSymptom, hasSymptom, moodFor, MOODS, SYMPTOMS, insights, exportData, importData,
+  setMood, setEnergy, toggleSymptom, hasSymptom, moodFor, MOODS, SYMPTOMS, richInsights, exportData, importData,
 } from './intimacy.js';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -57,6 +57,20 @@ function usageMap() {
   return m;
 }
 function birthdayMD() { const b = (store.profile && store.profile.birthday) || ''; return (typeof b === 'string' && b.length >= 10) ? b.slice(5) : ''; }
+// Read-only day maps for the meal / journal / weight ledgers (counts per date). The
+// calendar only READS these — logging here never writes meals[]/journal[]/weights[].
+function countByDate(arr, dateOf) {
+  const m = {};
+  (arr || []).forEach((x) => { const k = x && dateOf(x); if (k && k.length >= 10) { const d = k.slice(0, 10); m[d] = (m[d] || 0) + 1; } });
+  return m;
+}
+function mealsMap() { return countByDate((store.progress && store.progress.meals) || [], (x) => x.ts); }
+function journalMap() { return countByDate((store.progress && store.progress.journal) || [], (x) => x.ts); }
+function weightMap() {
+  const m = {};
+  ((store.progress && store.progress.weights) || []).forEach((w) => { if (w && w.date) m[w.date] = w.value; });
+  return m;
+}
 // App anniversary: the month-day the user started using the app, marked every year (🎉).
 function anniversaryMD() { const a = (store.profile && store.profile.startedAt) || ''; return (typeof a === 'string' && a.length >= 10) ? a.slice(5) : ''; }
 function anniversaryYears(date) {
@@ -65,7 +79,7 @@ function anniversaryYears(date) {
   const y0 = parseInt(a.slice(0, 4), 10); const y1 = parseInt(date.slice(0, 4), 10);
   return (isFinite(y0) && isFinite(y1)) ? Math.max(0, y1 - y0) : null;
 }
-const LAYER_LABELS = [['intimacy', '💞 Intimacy'], ['period', '🩸 Period'], ['mood', '🙂 Mood'], ['usage', '🌱 Activity'], ['birthday', '🎂 Birthday'], ['anniversary', '🎉 Anniversary']];
+const LAYER_LABELS = [['intimacy', '💞 Intimacy'], ['period', '🩸 Period'], ['mood', '🙂 Mood'], ['usage', '🌱 Activity'], ['meals', '🍽️ Meals'], ['journal', '📔 Journal'], ['weight', '⚖️ Weight'], ['birthday', '🎂 Birthday'], ['anniversary', '🎉 Anniversary']];
 
 // ---- PIN gate -----------------------------------------------------------
 function renderPinGate(app) {
@@ -102,6 +116,9 @@ function calendarHTML() {
   const today = todayStr();
   const L = getLayers();
   const um = L.usage ? usageMap() : {};
+  const mm = L.meals ? mealsMap() : {};
+  const jm = L.journal ? journalMap() : {};
+  const wm = L.weight ? weightMap() : {};
   const bMD = L.birthday ? birthdayMD() : '';
   const aMD = L.anniversary ? anniversaryMD() : '';
   let cells = '';
@@ -124,6 +141,9 @@ function calendarHTML() {
     }
     if (L.period && isPeriod(date)) marks.push('🩸');
     if (L.usage && um[date]) marks.push(`🌱${um[date].total}`);
+    if (L.meals && mm[date]) marks.push(`🍽️${mm[date] > 1 ? mm[date] : ''}`);
+    if (L.journal && jm[date]) marks.push(`📔${jm[date] > 1 ? jm[date] : ''}`);
+    if (L.weight && wm[date] != null) marks.push('⚖️');
     const isBday = bMD && date.slice(5) === bMD;
     if (isBday) marks.push('🎂');
     const isAnniv = aMD && date.slice(5) === aMD;
@@ -136,7 +156,7 @@ function calendarHTML() {
       + (u ? `, ${u.total} activit${u.total === 1 ? 'y' : 'ies'}` : '')
       + (isBday ? ', birthday' : '')
       + (isAnniv ? ', app anniversary' : '');
-    const logged = g.count || dd.desire != null || dd.period || dd.mood != null || dd.energy != null || (dd.symptoms && dd.symptoms.length) || (u && u.total) || isBday || isAnniv;
+    const logged = g.count || dd.desire != null || dd.period || dd.mood != null || dd.energy != null || (dd.symptoms && dd.symptoms.length) || (u && u.total) || mm[date] || jm[date] || wm[date] != null || isBday || isAnniv;
     cells += `<button type="button" class="cal-cell${isToday ? ' is-today' : ''}${isSel ? ' is-sel' : ''}${logged ? ' has-log' : ''}" data-date="${date}" aria-label="${esc(label)}">
         <span class="cal-num">${d}</span>${faceHTML}
         <span class="cal-marks">${marks.join(' ')}</span>
@@ -190,11 +210,17 @@ function dayEditorHTML(date) {
       <h2>${MONTHS[parseInt(date.slice(5, 7), 10) - 1]} ${parseInt(date.slice(8, 10), 10)}, ${date.slice(0, 4)}</h2>
       ${(() => {
         const u = usageMap()[date];
+        const meals = mealsMap()[date] || 0;
+        const jrnl = journalMap()[date] || 0;
+        const wt = weightMap()[date];
         const isBday = birthdayMD() && date.slice(5) === birthdayMD();
         const isAnniv = anniversaryMD() && date.slice(5) === anniversaryMD();
-        if (!u && !isBday && !isAnniv) return '';
+        if (!u && !meals && !jrnl && wt == null && !isBday && !isAnniv) return '';
         const parts = [];
         if (u) { if (u.learn) parts.push(`📚 ${u.learn} learning`); if (u.meditation) parts.push(`🧘 ${u.meditation} meditation${u.meditation === 1 ? '' : 's'}`); if (u.move) parts.push(`💪 ${u.move} movement`); }
+        if (meals) parts.push(`🍽️ ${meals} meal${meals === 1 ? '' : 's'}`);
+        if (jrnl) parts.push(`📔 ${jrnl} journal entr${jrnl === 1 ? 'y' : 'ies'}`);
+        if (wt != null) parts.push(`⚖️ ${wt} ${(store.profile && store.profile.weightUnit) || 'lb'}`);
         let anniv = '';
         if (isAnniv) {
           const yrs = anniversaryYears(date);
@@ -202,7 +228,7 @@ function dayEditorHTML(date) {
             ? `🎉 ${yrs} year${yrs === 1 ? '' : 's'} with Garden Moves! `
             : '🎉 You started Garden Moves on this day. ';
         }
-        return `<p class="hint intim-onday">${isBday ? '🎂 Your birthday! ' : ''}${anniv}${u ? `In the app this day: ${parts.join(', ')}${u.mins ? ` · ${u.mins} min` : ''}.` : ''}</p>`;
+        return `<p class="hint intim-onday">${isBday ? '🎂 Your birthday! ' : ''}${anniv}${parts.length ? `In the app this day: ${parts.join(', ')}${u && u.mins ? ` · ${u.mins} min` : ''}.` : ''}</p>`;
       })()}
       <label class="intim-check intim-period-toggle"><input type="checkbox" id="intim-period" data-date="${esc(date)}" ${isPeriod(date) ? 'checked' : ''}> 🩸 Period day</label>
       <p class="hint">How much did you want to today?</p>
@@ -247,22 +273,28 @@ function statsHTML() {
   const sm = statsMonth(_vy, _vm);
   const streak = loggingStreak();
   return `<div class="intim-stats">
-    <div><strong>${sm.encounters}</strong><span>this month</span></div>
+    <div><strong>${sm.encounters}</strong><span>times this month</span></div>
+    <div><strong>${sm.pctDaysWithSex}%</strong><span>of days</span></div>
     <div><strong>${sm.orgasms}</strong><span>orgasms</span></div>
+    <div><strong>${sm.avgOrgPerTime}</strong><span>avg each time</span></div>
+    <div><strong>${sm.orgPct.multi}%</strong><span>multi-orgasm</span></div>
     <div><strong>${sm.avgSatisfaction != null ? faceFor(sm.avgSatisfaction) + ' ' + sm.avgSatisfaction : '–'}</strong><span>satisfaction</span></div>
+    <div><strong>${sm.partneredPct}%</strong><span>partnered</span></div>
     <div><strong>${streak}</strong><span>day streak</span></div>
   </div>`;
 }
 
 function insightsHTML() {
-  const ins = insights();
-  if (!ins.enough) {
-    return `<section class="card"><h2>Insights</h2><p class="hint">Log a few more days and gentle patterns will appear here — across your cycle, desire, satisfaction, mood, and energy. Descriptive only, never a prediction.</p></section>`;
+  const ins = richInsights(_vy, _vm);
+  if (!ins.enough || !ins.sections.length) {
+    return `<section class="card"><h2>Insights &amp; patterns</h2><p class="hint">Log a few more days and your stats come alive here — your sex life, orgasms, patterns across your cycle, your app life, journaling, and more. Descriptive and yours alone, never a prediction or a goal.</p></section>`;
   }
-  return `<section class="card">
-      <h2>Insights</h2>
-      <ul class="intim-insights">${ins.lines.map((l) => `<li>${l}</li>`).join('')}</ul>
-      <p class="hint">These describe what you have logged — they are not predictions or medical advice.</p>
+  return `<section class="card intim-insights-card">
+      <h2>Insights &amp; patterns</h2>
+      ${ins.sections.map((s) => `
+        <h3 class="intim-sub">${esc(s.title)}</h3>
+        <ul class="intim-insights">${s.lines.map((l) => `<li>${l}</li>`).join('')}</ul>`).join('')}
+      <p class="hint">These describe only what you have logged — they are not predictions, goals, or medical advice.</p>
     </section>`;
 }
 
@@ -361,7 +393,7 @@ export function intimacyScreen() {
       <button class="topbar-action" id="intim-toggle-settings" aria-label="Settings">⚙️</button></header>
     <main class="narrow intim-screen">
       <section class="card">${statsHTML()}${calendarHTML()}
-        <p class="cal-legend">🔥 times · 💥 orgasms · 💞 partner · 🌙 solo · 💭 wanted to · 🩸 period · 🌱 activity · 🎂 birthday · 🎉 anniversary · tap a day for details</p>
+        <p class="cal-legend">🔥 times · 💥 orgasms · 💞 partner · 🌙 solo · 💭 wanted to · 🩸 period · 🌱 activity · 🍽️ meals · 📔 journal · ⚖️ weight · 🎂 birthday · 🎉 anniversary · tap a day for details</p>
         ${cycleLineHTML()}
       </section>
       ${_sel ? dayEditorHTML(_sel) : ''}
