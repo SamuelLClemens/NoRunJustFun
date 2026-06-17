@@ -2,7 +2,7 @@
 // ever leaves it. Schema migrations keep future updates from wiping progress.
 
 const KEY = 'nrjf.store';
-const CURRENT_VERSION = 7;
+const CURRENT_VERSION = 8;
 
 function defaults() {
   return {
@@ -14,13 +14,17 @@ function defaults() {
       style: 'gentle',          // gentle | cheerleader | funny
       voiceOn: true,
       naturalOn: false,         // is the in-browser natural (lifelike) voice currently active
-      voicePref: 'auto',        // 'auto' | 'on' | 'off' — 'auto' lets capable devices
-                                // load the lifelike voice in the background (system voice
-                                // covers slow devices); 'on'/'off' are explicit user choices
+                                // (flips true once the model loads — see maybeAutoEnableNaturalVoice)
+      voicePref: 'on',          // 'auto' | 'on' | 'off'. DEFAULT 'on': the lifelike on-device
+                                // voice loads in the background on capable devices (system voice
+                                // covers until ready; Data-Saver / 2g / slow devices stay on the
+                                // system voice). 'off' is an explicit opt-out.
+      theme: 'light',           // 'light' | 'dark' — toggled by the moon/sun control (on-device)
       fullInstructorOn: true,   // realistic 3D coach ON by default — device-gated
                                 // (realisticInstructorSupported) so weak devices fall back to
                                 // the light coach, and the perf watchdog demotes if it runs slow
       sfxOn: true,
+      sfxVol: 0.7,              // chime/sfx volume 0..1 (user-controllable)
       musicOn: false,           // default OFF per iOS autoplay + brief
       musicVol: 0.5,
       seenSafety: false,
@@ -192,6 +196,15 @@ function migrate(data) {
       (out.progress.weights || []).forEach((w) => consider(w && w.date));
       out.profile.startedAt = earliest || todayKey();
     }
+  }
+  // v7 -> v8: the lifelike voice is now ON by default. The old 'auto' value never actually
+  // auto-loaded (opt-in only), so promote legacy 'auto' to 'on' to realize that intent;
+  // an explicit 'off' is preserved. profile.theme / profile.sfxVol are new and self-default
+  // via the spread above. None of this transmits anything — the voice runs on-device.
+  if ((data.version || 1) < 8) {
+    if (out.profile.voicePref === 'auto' || out.profile.voicePref == null) out.profile.voicePref = 'on';
+    if (typeof out.profile.theme !== 'string') out.profile.theme = 'light';
+    if (typeof out.profile.sfxVol !== 'number') out.profile.sfxVol = 0.7;
   }
   // Retired-roster remap: the original four coach ids were replaced by the
   // name-driven cast. Map any stored old id to its nearest new coach so the

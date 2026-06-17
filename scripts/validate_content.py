@@ -175,7 +175,7 @@ ok('durationsTried' not in learn_code, "learning.js must not write durationsTrie
 #     that moved the legacy progress.finance blob into learning.money, the v3->v4 branch
 #     adding the dashboard fields, and the v4->v5 branch adding the You-page ledgers
 #     (journal/meals/cycle). All on-device only.
-ok('CURRENT_VERSION = 7' in st, "state.js CURRENT_VERSION must be 7 (You-page ledgers + intimacy + app anniversary)")
+ok('CURRENT_VERSION = 8' in st, "state.js CURRENT_VERSION must be 8 (v8: lifelike voice on by default + theme + chime volume)")
 ok('learning:' in st, "state.js defaults() missing the learning sub-object")
 ok('data.progress.finance' in st, "state.js v2->v3 branch does not migrate the legacy progress.finance blob")
 ok('(data.version || 1) < 3' in st, "state.js missing the v2->v3 migration branch guard")
@@ -591,7 +591,7 @@ ok("p.voicePref = e.target.checked ? 'on' : 'off'" in main_src, 'settings toggle
 # 26) State v5 + You-page personal ledgers (journal/meals/cycle). New on-device ledgers
 #     must exist and default safely; cycle is opt-in (default OFF); the additive v<5
 #     migration branch must backfill them losslessly (shallow-spread nested-object trap).
-ok('CURRENT_VERSION = 7' in st, 'state.js CURRENT_VERSION must be 7')
+ok('CURRENT_VERSION = 8' in st, 'state.js CURRENT_VERSION must be 8')
 ok('journal: []' in st, 'state.js defaults missing progress.journal[]')
 ok('meals: []' in st, 'state.js defaults missing progress.meals[]')
 ok(re.search(r"cycle:\s*\{\s*enabled:\s*false", st) is not None,

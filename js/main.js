@@ -55,6 +55,25 @@ function applyMotionPref() {
   document.documentElement.dataset.reducedMotion = m;
 }
 
+// Apply the light/dark theme (CSS reskins via html[data-theme="dark"]). On-device only.
+function applyThemePref() {
+  document.documentElement.dataset.theme = store.profile.theme === 'dark' ? 'dark' : 'light';
+}
+
+// Flip light <-> dark. Bound once via delegation so the moon/sun button works on any screen.
+function toggleTheme(btn) {
+  store.profile.theme = store.profile.theme === 'dark' ? 'light' : 'dark';
+  save();
+  applyThemePref();
+  if (btn) btn.textContent = store.profile.theme === 'dark' ? '☀️' : '🌙';
+}
+if (typeof document !== 'undefined') {
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest && e.target.closest('#theme-toggle');
+    if (t) toggleTheme(t);
+  });
+}
+
 // Logo lockup — the veronica flower forms the exclamation mark.
 // Keep in sync with the static copy in index.html (.hello-logo).
 function logoSVG() {
@@ -103,6 +122,7 @@ function homeScreen() {
     <header class="topbar">
       <div class="brand">${logoSVG()}</div>
       <nav class="topnav">
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch between light and dark" title="Light / dark">${store.profile.theme === 'dark' ? '☀️' : '🌙'}</button>
         <a href="#you">You</a>
         <a href="#badges">Badges</a>
         <a href="#settings" aria-label="Settings">Settings</a>
@@ -660,6 +680,7 @@ function sessionScreen(plan) {
   coach.naturalOn = profile.naturalOn;
   if (profile.naturalOn && naturalVoice.state === 'off') naturalVoice.enable(); // warms up in the background; system voice covers until ready
   sound.sfxOn = profile.sfxOn;
+  sound.setVolume(profile.sfxVol);
   music.volume = profile.musicVol;
 
   // avatar (graceful fallback if WebGL is unavailable)
@@ -1278,8 +1299,8 @@ function settingsScreen() {
 
       <section class="card">
         <strong>Lifelike voice <span class="beta-chip">beta</span></strong>
-        <p class="hint">Each coach gets their own warm, human-sounding voice that runs entirely on this device. It is off until you switch it on here: turning it on downloads the voice model once (about 90 MB) in the background — nothing about you is ever sent anywhere. Until then, and on slower devices, the regular on-device voice is used.</p>
-        <label class="toggle"><input type="checkbox" id="set-natural" ${p.naturalOn ? 'checked' : ''}> Use the lifelike voice</label>
+        <p class="hint">Each coach gets their own warm, human-sounding voice that runs entirely on this device. It is on by default: on capable devices the voice model downloads once (about 90 MB) in the background — nothing about you is ever sent anywhere. Data Saver, a slow connection, or a slower device keeps the regular on-device voice instead. Turn it off here any time.</p>
+        <label class="toggle"><input type="checkbox" id="set-natural" ${(p.naturalOn || p.voicePref === 'on') ? 'checked' : ''}> Use the lifelike voice</label>
         <div class="nv-progress" id="nv-progress" hidden>
           <div class="nv-track"><div class="nv-bar" id="nv-bar"></div></div>
           <small id="nv-status" role="status"></small>
@@ -1307,6 +1328,8 @@ function settingsScreen() {
       <section class="card">
         <strong>Sound</strong>
         <label class="toggle"><input type="checkbox" id="set-sfx" ${p.sfxOn ? 'checked' : ''}> Gentle chimes</label>
+        <label for="set-chimevol" class="vol-label">Chime volume</label>
+        <input type="range" id="set-chimevol" min="0" max="1" step="0.05" value="${p.sfxVol}" aria-label="Chime volume">
         <label class="toggle"><input type="checkbox" id="set-music" ${p.musicOn ? 'checked' : ''}> Background music <small>(soft generated ambience)</small></label>
         <label for="set-vol" class="vol-label">Music volume</label>
         <input type="range" id="set-vol" min="0" max="1" step="0.05" value="${p.musicVol}">
@@ -1421,6 +1444,11 @@ function settingsScreen() {
     p.sfxOn = e.target.checked; sound.sfxOn = p.sfxOn; save();
     if (p.sfxOn) { sound.unlock(); sound.chime(); }
   });
+  document.getElementById('set-chimevol').addEventListener('input', (e) => {
+    p.sfxVol = parseFloat(e.target.value);
+    sound.setVolume(p.sfxVol); save();
+    if (p.sfxOn) { sound.unlock(); sound.chime(); }   // preview the new level
+  });
   document.getElementById('set-music').addEventListener('change', (e) => {
     p.musicOn = e.target.checked; save();
     if (p.musicOn) { sound.unlock(); music.volume = p.musicVol; music.start(); }
@@ -1462,7 +1490,7 @@ async function ensureRealisticClass() {
     // ?v bust: bump on every realistic-avatar.js change so browsers fetch the new
     // module instead of a cached copy (the SW matches with ignoreSearch, so the
     // precached file still serves offline regardless of the query).
-    const mod = await import('./realistic-avatar.js?v=rig6');
+    const mod = await import('./realistic-avatar.js?v=rig8');
     RealisticAvatar = mod.RealisticAvatar;
     realisticHelpers = mod;
   }
@@ -1512,6 +1540,7 @@ async function render() {
   const seq = ++renderSeq;
   teardownSession();
   applyMotionPref();
+  applyThemePref();
   window.scrollTo(0, 0);
   maybeBirthdayParty();   // once per year, on the day — self-guards against re-showing
   await routeTo(location.hash || '#', seq);
@@ -1658,6 +1687,10 @@ function maybeAutoEnableNaturalVoice() {
     coach.naturalOn = true;                                // upgrade the live coach now
   }).catch(() => { /* system voice already covers it */ });
 }
+
+// apply the saved chime volume + theme globally, before first paint
+sound.setVolume(store.profile.sfxVol);
+applyThemePref();
 
 // dev visual QA: ?dev=poses or ?dev=garden
 const devMode = new URLSearchParams(location.search).get('dev');

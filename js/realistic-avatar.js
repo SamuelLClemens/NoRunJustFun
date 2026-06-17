@@ -275,6 +275,11 @@ export class RealisticAvatar {
     this._restBasis = new Map();     // joint key -> { B, Binv } rest orientation in model frame
     this._basePos = null;            // grounded model position (feet at floor) to pose from
     this._restFootY = null;          // lowest foot world-y at rest, for per-frame re-grounding
+    // reusable scratch objects so the per-frame pose loop allocates nothing (no GC hitch)
+    this._sEuler = new THREE.Euler(0, 0, 0, 'XYZ');
+    this._sQuatR = new THREE.Quaternion();
+    this._sQuatRl = new THREE.Quaternion();
+    this._sVec = new THREE.Vector3();
     // decorative breathing — honor reduced motion (in-app setting wins; OS fallback)
     this._breathe = !prefersReducedMotion();
 
@@ -311,24 +316,40 @@ export class RealisticAvatar {
       root.traverse((o) => {
         if (o.isMesh) {
           o.frustumCulled = false; o.castShadow = false;
-          // MPFB/MakeHuman glTF exports tend to flag even opaque skin + clothing as
-          // alpha-BLEND, which washes the model out and breaks depth sorting. Convert
-          // any blended material to alpha-TEST cutout: solid materials (alpha≈1) then
-          // render fully opaque, while hair/eyelash cards still cut out correctly.
-          const hairy = /hair|ponytail|afro|beard|brow|lash|short0|loose|fro/i.test(o.name);
+          // MPFB/MakeHuman glTF exports flag EVERY material as alpha-BLEND + double-sided,
+          // which washes the model out, breaks depth sorting, and — because the old code
+          // cut every blended mesh at alphaTest 0.5 — punched holes in skin AND clothing
+          // (read as "skin showing through"). Classify each mesh and make skin + clothing
+          // fully OPAQUE, bias clothing toward the camera, and draw clothing last so it is
+          // ALWAYS on top of the skin. Hair/lash cards keep the cutout that fixed flicker.
+          const nm = o.name || '';
+          const hairy  = /hair|ponytail|afro|beard|brow|lash|short0|loose|fro/i.test(nm);
+          const isSkin = /^base|(^|\.)body|low-?poly|high-?poly|^skin|teeth|tongue/i.test(nm) && !hairy;
+          const isCloth = /cargo|pant|tank|keyhole|polo|shirt|suit|top|^bra|short(?!0)/i.test(nm) && !hairy;
           const mats = Array.isArray(o.material) ? o.material : (o.material ? [o.material] : []);
           for (const m of mats) {
-            if (m && (m.transparent || m.alphaMap || hairy)) {
-              // Render alpha as a CUTOUT, never alpha-blend: blended hair/lashes flicker
-              // (depth-sort), and a high cutoff drops thin hair strands at distance / mip
-              // levels so the hair "appears and disappears". A lower cutoff on hairy meshes
-              // keeps the strands; depthWrite keeps the sort stable.
-              m.alphaTest = hairy ? 0.2 : 0.5;
-              m.transparent = false;
-              m.depthWrite = true;
-              m.needsUpdate = true;
+            if (!m) continue;
+            if (hairy) {
+              // unchanged hair-card behavior — preserves the hair-flicker fix exactly
+              m.alphaTest = 0.2; m.transparent = false; m.depthWrite = true;
+            } else if (isSkin) {
+              // skin/teeth/tongue: fully opaque, never a cutout (no holes), single-sided
+              m.alphaTest = 0; m.alphaMap = null; m.transparent = false;
+              m.depthWrite = true; m.depthTest = true; m.side = THREE.FrontSide;
+            } else if (isCloth) {
+              // clothing: fully opaque + a polygon-offset bias toward the camera so it wins
+              // the depth tie against coincident skin even under motion. Keep the exported
+              // DoubleSide so open shells (keyhole neck, armholes, cargo cuffs) do not vanish.
+              m.alphaTest = 0; m.alphaMap = null; m.transparent = false;
+              m.depthWrite = true; m.depthTest = true;
+              m.polygonOffset = true; m.polygonOffsetFactor = -1; m.polygonOffsetUnits = -1;
+            } else if (m.transparent || m.alphaMap) {
+              // generic blended mesh fallback — same as the old non-hair branch
+              m.alphaTest = 0.5; m.transparent = false; m.depthWrite = true;
             }
+            m.needsUpdate = true;
           }
+          o.userData.isSkin = isSkin; o.userData.isCloth = isCloth;
         }
         if (o.isSkinnedMesh && o.skeleton) this.skeleton = o.skeleton;
         // collect morph targets (visemes + facial expressions) across every mesh
@@ -338,6 +359,13 @@ export class RealisticAvatar {
             this.morphs.get(name).push([o, idx]);
           }
         }
+      });
+      // draw order: skin first, hair/face-cards between, clothing last so it is always
+      // ON TOP of the skin. Safe now that every mesh is opaque — this only breaks exact
+      // depth ties, it cannot mis-sort transparency (there is none left).
+      root.traverse((o) => {
+        if (!o.isMesh) return;
+        o.renderOrder = o.userData.isSkin ? 0 : (o.userData.isCloth ? 2 : 1);
       });
       // collect bones + rest snapshot
       root.traverse((o) => {
@@ -568,7 +596,7 @@ export class RealisticAvatar {
   // after a pose bends the legs — a cheap stand-in for inverse kinematics.
   _minFootWorldY() {
     let m = null;
-    const v = new THREE.Vector3();
+    const v = this._sVec;
     for (const k of ['ankleL', 'ankleR']) {
       const b = this._bone(k);
       if (!b) continue;
@@ -606,6 +634,13 @@ export class RealisticAvatar {
       const vb = (b.joints && b.joints[key]) || base[key] || ZERO3;
       J[key] = [va[0] + (vb[0] - va[0]) * e, va[1] + (vb[1] - va[1]) * e, va[2] + (vb[2] - va[2]) * e];
     }
+    // Cap stacked torso flexion: the clothing mesh and the body skin have different vertex
+    // weights across the waist, so beyond ~60° combined the top shears off the torso and
+    // skin shows. Scale spine+chest proportionally (keeps the fold's shape) so clothing stays
+    // on. Only ever reduces; sub-threshold poses are untouched. Runs before mirror.
+    const sx = J.spine[0] + J.chest[0];
+    if (sx > 60) { const k = 60 / sx; J.spine[0] *= k; J.chest[0] *= k; }
+    if (sx < -40) { const k = -40 / sx; J.spine[0] *= k; J.chest[0] *= k; }   // and for back-bends
     if (mirror) {
       for (const [l, r] of [['shoulderL', 'shoulderR'], ['elbowL', 'elbowR'], ['hipL', 'hipR'], ['kneeL', 'kneeR'], ['ankleL', 'ankleR']]) {
         const t = J[l]; J[l] = J[r]; J[r] = t;
@@ -624,15 +659,20 @@ export class RealisticAvatar {
       if (!restLocal || !basis) continue;
       const d = J[key];
       if (d[0] === 0 && d[1] === 0 && d[2] === 0) { bone.quaternion.copy(restLocal); continue; }
-      const R = new THREE.Quaternion().setFromEuler(new THREE.Euler(d[0] * D2R, d[1] * D2R, d[2] * D2R, 'XYZ'));
-      const Rl = basis.Binv.clone().multiply(R).multiply(basis.B);   // body-space → bone-local
-      bone.quaternion.copy(restLocal).multiply(Rl);
+      this._sEuler.set(d[0] * D2R, d[1] * D2R, d[2] * D2R);
+      this._sQuatR.setFromEuler(this._sEuler);
+      this._sQuatRl.copy(basis.Binv).multiply(this._sQuatR).multiply(basis.B);   // body-space → bone-local
+      bone.quaternion.copy(restLocal).multiply(this._sQuatRl);
     }
 
     // re-ground: shift the whole body so the lowest foot returns to its rest height,
     // turning leg-bend keyframes (squats, chair, warrior) into a body that sinks with
-    // feet planted instead of feet that lift toward a fixed-height pelvis.
-    this.model.updateMatrixWorld(true);
+    // feet planted instead of feet that lift toward a fixed-height pelvis. Update only the
+    // two ankle chains we read (not the whole skinned rig); renderer.render does the full
+    // pass once, with the corrected position.y.
+    const aL = this._bone('ankleL'), aR = this._bone('ankleR');
+    if (aL) aL.updateWorldMatrix(true, false);
+    if (aR) aR.updateWorldMatrix(true, false);
     const fy = this._minFootWorldY();
     if (fy != null && this._restFootY != null) this.model.position.y += (this._restFootY - fy);
   }
@@ -903,6 +943,12 @@ export class RealisticAvatar {
     this._ro.disconnect();
     disposeModel(this.model);            // geometry + every texture slot, not just .map
     this.model = null;
+    // drop detached bone refs / cached quaternions / closures so nothing zombie-references
+    // a torn-down coach (defensive — main.js also nulls the instance right after)
+    this.onReady = null; this._levelProvider = null; this._pose = null;
+    this.bones.clear(); this.rest.clear(); this.morphs.clear();
+    this._restBasis.clear(); this._rig = {};
+    this._basePos = null; this._restFootY = null;
     try { if (this._envRT) this._envRT.dispose(); if (this._pmrem) this._pmrem.dispose(); } catch { /* ok */ }
     this.scene.environment = null;
     this.renderer.dispose();

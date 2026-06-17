@@ -4,6 +4,7 @@
 let ctx = null;
 let musicNodes = null;
 let musicGain = null;
+let sfxVolume = 0.7;   // 0..1 user-controllable chime/sfx volume (see sound.setVolume)
 
 function ensureCtx() {
   if (!ctx) {
@@ -27,8 +28,10 @@ function pluck(freq, time, dur, gain, type = 'sine') {
   const g = ctx.createGain();
   o.type = type;
   o.frequency.value = freq;
+  // scale every chime by the user's chime-volume setting (exponential ramps need >0)
+  const peak = Math.max(0.0001, gain * sfxVolume);
   g.gain.setValueAtTime(0.0001, time);
-  g.gain.exponentialRampToValueAtTime(gain, time + 0.02);
+  g.gain.exponentialRampToValueAtTime(peak, time + 0.02);
   g.gain.exponentialRampToValueAtTime(0.0001, time + dur);
   o.connect(g).connect(ctx.destination);
   o.start(time);
@@ -37,6 +40,13 @@ function pluck(freq, time, dur, gain, type = 'sine') {
 
 export const sound = {
   sfxOn: true,
+  volume: 0.7,
+
+  // Set the chime/sfx volume (0..1). Persisted in profile.sfxVol and applied at boot.
+  setVolume(v) {
+    const n = Math.max(0, Math.min(1, Number(v)));
+    this.volume = sfxVolume = Number.isFinite(n) ? n : 0.7;
+  },
 
   unlock() { ensureCtx(); },
 

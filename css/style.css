@@ -69,6 +69,54 @@
   --font-body: 'Nunito', -apple-system, 'Segoe UI', system-ui, sans-serif;
 }
 
+/* ---- dark mode: earthy-night. Toggled by the moon/sun control (profile.theme). ----
+   Flips surfaces + text and re-tones the ramps so the "light tint" steps (100/200) become
+   DARK tints (light text stays legible) while the saturated steps lighten for fills/text.
+   --green-700 is intentionally LIGHT here: the chrome uses it both as a button fill (whose
+   on-color text is var(--card)) AND as nav/link text, so one light value keeps both readable. */
+html[data-theme="dark"] {
+  --cream: #1E1813;
+  --card: #2A2219;
+  --ink: #F0E6D6;
+  --ink-soft: #B6A488;
+  --line: #3A3026;
+  --shadow: 0 6px 22px rgba(0, 0, 0, 0.45);
+  --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.35);
+  --green-100: #2C3320;   /* dark sage — light-bg uses (buttons, bars, quiz) */
+  --green-200: #3A4329;
+  --green-300: #8FA15B;
+  --green-500: #A4B86A;
+  --green-600: #BFD08A;   /* grace notes / pillar hover — light on dark */
+  --green-700: #C9D88F;   /* LIGHT: primary-btn fill + nav link text both read */
+  --sun-200: #3A2E18;     /* dark ochre — chip-streak bg, stage top, hero glow */
+  --sun-300: #4A3A1E;     /* dark ochre — btn-skip bg */
+  --sun-500: #E0B25A;
+  --sun-700: #D89A3E;
+  --sun-800: #E6C07A;
+  --coral: #D2724E;       /* terracotta, lifted for dark */
+  --sky-100: #243029;     /* dark eucalyptus — chip bg, stage mid */
+  --sky-300: #557066;
+  --sky-400: #6E9388;
+  /* base Soul / Finance(+Mind) tints for dark. The per-subject [data-track] tints stay
+     light on their lesson screens — a known, still-readable limitation. */
+  --soul-tint: #2E2630; --soul-border: #4A3D4E; --soul-ink: #DAC7DC; --soul-accent: #BD93C0;
+  --finance-tint: #1E2E30; --finance-border: #34474A; --finance-ink: #BBD6DA; --finance-accent: #6FA9B3; --finance-accent-soft: #5E8F99;
+}
+/* dark: the primary/duration buttons are a LIGHT sage fill, so keep hover light enough
+   that the dark on-color text stays legible; darken the hardcoded "wrong" quiz pink. */
+html[data-theme="dark"] .btn-primary:hover,
+html[data-theme="dark"] .duration-btn:hover { background: #B3C47B; }
+html[data-theme="dark"] .quiz-opt.wrong,
+html[data-theme="dark"] .sort-bucket.wrong,
+html[data-theme="dark"] .order-pick.wrong { background: #3A2620; }
+
+/* moon/sun theme toggle in the top nav */
+.theme-toggle {
+  background: none; border: 0; cursor: pointer; font-size: 1.15rem; line-height: 1;
+  min-width: 44px; min-height: 44px; padding: 8px; border-radius: var(--radius-pill);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+
 * { box-sizing: border-box; }
 
 html { -webkit-text-size-adjust: 100%; }
