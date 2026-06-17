@@ -848,10 +848,19 @@ function sessionScreen(plan) {
 
   if (DEV_QA) window.__nrjf = { player, store, avatar, POSES, poseForExercise };   // dev-only QA handle (?dev=…)
 
-  document.getElementById('btn-pause').addEventListener('click', () => {
+  // One pause/resume action, shared by every control that triggers it.
+  const togglePause = () => {
     if (player.phase === 'paused') player.resume();
     else player.pause();
-  });
+  };
+  document.getElementById('btn-pause').addEventListener('click', togglePause);
+  // Tapping the coach or the timer ring pauses/resumes too — the same action as the
+  // Pause button. These are progressive enhancements layered over the real button, so
+  // they stay mouse/touch only and do not alter the timer's assistive-tech semantics.
+  const stageEl = document.querySelector('.session .stage');
+  if (stageEl) { stageEl.style.cursor = 'pointer'; stageEl.title = 'Tap to pause or resume'; stageEl.addEventListener('click', togglePause); }
+  const ringWrap = document.querySelector('.session .ring-wrap');
+  if (ringWrap) { ringWrap.style.cursor = 'pointer'; ringWrap.title = 'Tap to pause or resume'; ringWrap.addEventListener('click', togglePause); }
   document.getElementById('btn-skip').addEventListener('click', () => player.skip());
   const btnSimpler = document.getElementById('btn-simpler');
   if (btnSimpler) btnSimpler.addEventListener('click', () => {
