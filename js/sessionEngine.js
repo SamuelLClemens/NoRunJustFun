@@ -64,7 +64,7 @@ function alternate(strength, soft) {
 // otherwise check the tierEligibility map (absent => all tiers, preserving v1).
 function tierAllows(e, tier, elig) {
   if (e.blocks.includes('close') || (e.tags && e.tags.includes('breath'))) return true;
-  if (!tier || tier === 'stretch' || tier === 'yoga' || tier === 'face' || tier === 'baby') return true; // these gate by category, not intensity
+  if (!tier || tier === 'stretch' || tier === 'yoga' || tier === 'face' || tier === 'baby' || tier === 'sexercise') return true; // these gate by category, not intensity
   if (!elig) return true;
   const te = elig[e.id];
   if (!te || !te.length) return true;
@@ -79,6 +79,8 @@ const CATEGORY_POOLS = {
   exercise: ['exercise', 'stretch'],
   face: ['face'],
   baby: ['baby'],
+  // Sexercise draws its own moves, borrowing gentle stretches for warm-up/cool-down bookends.
+  sexercise: ['sexercise', 'stretch'],
 };
 function categoryAllows(e, category, catMap) {
   if (!category) return true; // legacy / unscoped

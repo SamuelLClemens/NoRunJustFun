@@ -19,6 +19,7 @@ import { POSES } from './data/poses.js';
 import { NEW_EXERCISES, TIER_ELIGIBILITY } from './data/movements-ext.js';
 import { EXTRA_EXERCISES, EXTRA_TIER_ELIGIBILITY, WORKOUT_CATEGORY } from './data/movements-ext2.js';
 import { EXTRA_EXERCISES2, EXTRA_TIER_ELIGIBILITY2, WORKOUT_CATEGORY2 } from './data/movements-ext3.js';
+import { SEXERCISE_MOVES, SEXERCISE_CATEGORY } from './data/movements-sexercise.js';
 import { MODES, TIER_META, DURATIONS } from './data/tiers.js';
 import { buildMeditation, buildMeditationById, MEDITATION_LIBRARY } from './data/meditation.js';
 import { availableTiers, gateMessage, routeTrack, filterPool, evaluateScreening,
@@ -42,9 +43,9 @@ const DEV_QA = new URLSearchParams(location.search).has('dev');
 
 // The full movement pool = frozen 29 + appended new movements. exercises.js stays
 // byte-stable; tier metadata and new moves live in movements-ext.js.
-const ALL_EXERCISES = [...EXERCISES, ...NEW_EXERCISES, ...EXTRA_EXERCISES, ...EXTRA_EXERCISES2];
+const ALL_EXERCISES = [...EXERCISES, ...NEW_EXERCISES, ...EXTRA_EXERCISES, ...EXTRA_EXERCISES2, ...SEXERCISE_MOVES];
 const ALL_TIER_ELIGIBILITY = { ...TIER_ELIGIBILITY, ...EXTRA_TIER_ELIGIBILITY, ...EXTRA_TIER_ELIGIBILITY2 };
-const ALL_WORKOUT_CATEGORY = { ...WORKOUT_CATEGORY, ...WORKOUT_CATEGORY2 };
+const ALL_WORKOUT_CATEGORY = { ...WORKOUT_CATEGORY, ...WORKOUT_CATEGORY2, ...SEXERCISE_CATEGORY };
 
 // Honor the reduced-motion preference override (auto | on | off) on every render.
 function applyMotionPref() {
@@ -175,6 +176,7 @@ function bodyScreen() {
     { go: '#move-exercise', ic: '💪', title: 'Exercises', blurb: 'Build strength and gentle cardio — choose your intensity' },
     { go: '#move-face', ic: '😌', title: 'Face yoga', blurb: 'Gentle facial release and relaxation — sit anywhere' },
     { go: '#move-baby', ic: '🍼', title: 'With your baby', blurb: 'Gentle movement you can do holding your little one' },
+    { go: '#move-sexercise', ic: '🔥', title: 'Sexercise', blurb: 'Playful strength, stamina and mobility for a more active, joyful intimate life' },
   ];
   app.innerHTML = `
     <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Body · Move</h1></header>
@@ -201,6 +203,8 @@ const MOVE_META = {
   face: { label: 'Face yoga', note: 'gentle facial release and relaxation' },
   baby: { label: 'With your baby', note: 'gentle movement holding your baby',
     safety: 'Always support the head and neck, hold your baby securely, and never bounce. Begin only once your doctor has cleared you after birth, and stop if your baby is unsettled.' },
+  sexercise: { label: 'Sexercise', note: 'playful strength, stamina and mobility for a more active, joyful intimate life',
+    safety: 'For consenting adults. This is gentle fitness — strength, stamina, hip mobility and pelvic-floor work — not medical or explicit sex advice. Move within your comfort, communicate with any partner, keep everything consensual, and stop if anything hurts.' },
 };
 
 function moveScreen(category) {
@@ -1427,7 +1431,7 @@ function planFor(mins, tier) {
   if (tier === 'meditation') return buildMeditation(mins);
   // The Body paths: Stretching / Yoga scope the pool by category (always available);
   // Exercises uses the intensity tiers, which the screening can gate.
-  const category = ['stretch', 'yoga', 'face', 'baby'].includes(tier) ? tier : 'exercise';
+  const category = ['stretch', 'yoga', 'face', 'baby', 'sexercise'].includes(tier) ? tier : 'exercise';
   if (category === 'exercise' && !availableTiers(store.profile).includes(tier)) return null;
   const pool = filterPool(ALL_EXERCISES, store.profile);
   return buildSession(mins, pool, {

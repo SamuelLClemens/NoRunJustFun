@@ -419,6 +419,35 @@ for go in ['#move-face', '#move-baby']:
     ok(go in main_src, f'main.js missing the {go} path')
 ok('safety' in main_src, 'main.js MOVE_META missing the baby safety note')
 
+# 21b) Sexercise — the sixth Body path: gentle, body-positive fitness (strength, stamina,
+#      hip mobility, pelvic floor) for a more active intimate life. CONSENTING-ADULTS,
+#      fitness framing only (no explicit/medical advice); stays in the gentle, postpartum-
+#      aware envelope (no banned high-impact/diastasis-risk moves). Category-gated like the
+#      other paths; its own data file so the ext2/ext3 checks above are untouched.
+sx = read('js/data/movements-sexercise.js') if exists('js/data/movements-sexercise.js') else ''
+ok(bool(sx), 'js/data/movements-sexercise.js is missing')
+if sx:
+    ok('export const SEXERCISE_MOVES' in sx and 'export const SEXERCISE_CATEGORY' in sx,
+       'movements-sexercise.js missing SEXERCISE_MOVES / SEXERCISE_CATEGORY')
+    sx_block = sx.split('export const SEXERCISE_MOVES')[1].split('export const SEXERCISE_CATEGORY')[0]
+    sx_ids = re.findall(r"id:\s*'([^']+)'", sx_block)
+    ok(len(sx_ids) >= 12, f'expected >=12 sexercise moves, found {len(sx_ids)}')
+    ok(all(re.fullmatch(r'[a-z0-9-]+', i) for i in sx_ids), 'a sexercise move id is not kebab-case')
+    ok(not (set(sx_ids) & set(FROZEN)) and not (set(sx_ids) & set(new_ids)) and not (set(sx_ids) & set(extra_ids)) and not (set(sx_ids) & set(ext3_ids)),
+       'a sexercise move id collides with an existing id')
+    for i in sx_ids:
+        for b in BANNED:
+            ok(b not in i.lower(), f"banned high-impact pattern '{b}' in sexercise move '{i}'")
+    # consent + non-medical framing must be present (in the data file and the path note)
+    ok('consenting adults' in (sx + main_src).lower(), 'sexercise missing the consenting-adults framing')
+    ok('not medical' in (sx + main_src).lower() or 'not medical or explicit' in (sx + main_src).lower(),
+       'sexercise missing the non-medical/non-explicit framing')
+    ok("'sexercise'" in tiers and 'WORKOUT_PATHS' in tiers, 'tiers.js missing the sexercise session type')
+    ok("sexercise: ['sexercise'" in seng, 'sessionEngine.js CATEGORY_POOLS missing sexercise')
+    ok("tier === 'sexercise'" in seng, 'sessionEngine.js tierAllows must bypass intensity for sexercise (category-gated)')
+    ok('#move-sexercise' in main_src, 'main.js missing the #move-sexercise path')
+    ok('js/data/movements-sexercise.js' in sw, 'sw.js PRECACHE missing js/data/movements-sexercise.js')
+
 # 22) Soul sections — Crystal energy + Dream interpretation. Belief-flagged,
 #     lessons-only learning tracks: every lesson cites >=5 sources, over-claim phrases
 #     are absent, honest disclaimers are present, and they register under the Soul
