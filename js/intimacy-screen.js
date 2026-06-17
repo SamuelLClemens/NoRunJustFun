@@ -57,7 +57,15 @@ function usageMap() {
   return m;
 }
 function birthdayMD() { const b = (store.profile && store.profile.birthday) || ''; return (typeof b === 'string' && b.length >= 10) ? b.slice(5) : ''; }
-const LAYER_LABELS = [['intimacy', '💞 Intimacy'], ['period', '🩸 Period'], ['mood', '🙂 Mood'], ['usage', '🌱 Activity'], ['birthday', '🎂 Birthday']];
+// App anniversary: the month-day the user started using the app, marked every year (🎉).
+function anniversaryMD() { const a = (store.profile && store.profile.startedAt) || ''; return (typeof a === 'string' && a.length >= 10) ? a.slice(5) : ''; }
+function anniversaryYears(date) {
+  const a = (store.profile && store.profile.startedAt) || '';
+  if (!a || a.length < 4 || !date) return null;
+  const y0 = parseInt(a.slice(0, 4), 10); const y1 = parseInt(date.slice(0, 4), 10);
+  return (isFinite(y0) && isFinite(y1)) ? Math.max(0, y1 - y0) : null;
+}
+const LAYER_LABELS = [['intimacy', '💞 Intimacy'], ['period', '🩸 Period'], ['mood', '🙂 Mood'], ['usage', '🌱 Activity'], ['birthday', '🎂 Birthday'], ['anniversary', '🎉 Anniversary']];
 
 // ---- PIN gate -----------------------------------------------------------
 function renderPinGate(app) {
@@ -95,6 +103,7 @@ function calendarHTML() {
   const L = getLayers();
   const um = L.usage ? usageMap() : {};
   const bMD = L.birthday ? birthdayMD() : '';
+  const aMD = L.anniversary ? anniversaryMD() : '';
   let cells = '';
   for (let i = 0; i < startDow; i++) cells += '<div class="cal-cell cal-empty" aria-hidden="true"></div>';
   for (let d = 1; d <= daysInMonth; d++) {
@@ -117,14 +126,17 @@ function calendarHTML() {
     if (L.usage && um[date]) marks.push(`🌱${um[date].total}`);
     const isBday = bMD && date.slice(5) === bMD;
     if (isBday) marks.push('🎂');
+    const isAnniv = aMD && date.slice(5) === aMD;
+    if (isAnniv) marks.push('🎉');
     const faceHTML = face ? `<span class="cal-face">${face}</span>` : '';
     const u = um[date];
     const label = `${MONTHS[_vm]} ${d}`
       + (g.count ? `, ${g.count} time${g.count === 1 ? '' : 's'}` : '')
       + (isPeriod(date) ? ', period day' : '')
       + (u ? `, ${u.total} activit${u.total === 1 ? 'y' : 'ies'}` : '')
-      + (isBday ? ', birthday' : '');
-    const logged = g.count || dd.desire != null || dd.period || dd.mood != null || dd.energy != null || (dd.symptoms && dd.symptoms.length) || (u && u.total) || isBday;
+      + (isBday ? ', birthday' : '')
+      + (isAnniv ? ', app anniversary' : '');
+    const logged = g.count || dd.desire != null || dd.period || dd.mood != null || dd.energy != null || (dd.symptoms && dd.symptoms.length) || (u && u.total) || isBday || isAnniv;
     cells += `<button type="button" class="cal-cell${isToday ? ' is-today' : ''}${isSel ? ' is-sel' : ''}${logged ? ' has-log' : ''}" data-date="${date}" aria-label="${esc(label)}">
         <span class="cal-num">${d}</span>${faceHTML}
         <span class="cal-marks">${marks.join(' ')}</span>
@@ -179,10 +191,18 @@ function dayEditorHTML(date) {
       ${(() => {
         const u = usageMap()[date];
         const isBday = birthdayMD() && date.slice(5) === birthdayMD();
-        if (!u && !isBday) return '';
+        const isAnniv = anniversaryMD() && date.slice(5) === anniversaryMD();
+        if (!u && !isBday && !isAnniv) return '';
         const parts = [];
         if (u) { if (u.learn) parts.push(`📚 ${u.learn} learning`); if (u.meditation) parts.push(`🧘 ${u.meditation} meditation${u.meditation === 1 ? '' : 's'}`); if (u.move) parts.push(`💪 ${u.move} movement`); }
-        return `<p class="hint intim-onday">${isBday ? '🎂 Your birthday! ' : ''}${u ? `In the app this day: ${parts.join(', ')}${u.mins ? ` · ${u.mins} min` : ''}.` : ''}</p>`;
+        let anniv = '';
+        if (isAnniv) {
+          const yrs = anniversaryYears(date);
+          anniv = (yrs && yrs >= 1)
+            ? `🎉 ${yrs} year${yrs === 1 ? '' : 's'} with Garden Moves! `
+            : '🎉 You started Garden Moves on this day. ';
+        }
+        return `<p class="hint intim-onday">${isBday ? '🎂 Your birthday! ' : ''}${anniv}${u ? `In the app this day: ${parts.join(', ')}${u.mins ? ` · ${u.mins} min` : ''}.` : ''}</p>`;
       })()}
       <label class="intim-check intim-period-toggle"><input type="checkbox" id="intim-period" data-date="${esc(date)}" ${isPeriod(date) ? 'checked' : ''}> 🩸 Period day</label>
       <p class="hint">How much did you want to today?</p>
@@ -341,7 +361,7 @@ export function intimacyScreen() {
       <button class="topbar-action" id="intim-toggle-settings" aria-label="Settings">⚙️</button></header>
     <main class="narrow intim-screen">
       <section class="card">${statsHTML()}${calendarHTML()}
-        <p class="cal-legend">🔥 times · 💥 orgasms · 💞 partner · 🌙 solo · 💭 wanted to · 🩸 period · 🌱 activity · 🎂 birthday · tap a day for details</p>
+        <p class="cal-legend">🔥 times · 💥 orgasms · 💞 partner · 🌙 solo · 💭 wanted to · 🩸 period · 🌱 activity · 🎂 birthday · 🎉 anniversary · tap a day for details</p>
         ${cycleLineHTML()}
       </section>
       ${_sel ? dayEditorHTML(_sel) : ''}

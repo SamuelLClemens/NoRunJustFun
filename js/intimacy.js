@@ -144,9 +144,10 @@ export function partnerName(id) { const p = im().partners.find((x) => x.id === i
 export function showCycle() { return !!im().showCycle; }
 export function setShowCycle(on) { im().showCycle = !!on; save(); }
 
-// Toggleable calendar layers — view the period, intimacy, mood, usage, or birthday layer
-// on its own, any combination, or all at once. Persisted so the view is remembered.
-export const LAYER_KEYS = ['intimacy', 'period', 'mood', 'usage', 'birthday'];
+// Toggleable calendar layers — view the period, intimacy, mood, usage, birthday, or
+// anniversary layer on its own, any combination, or all at once. Persisted so the view
+// is remembered. ('anniversary' = the day the user started the app, marked every year.)
+export const LAYER_KEYS = ['intimacy', 'period', 'mood', 'usage', 'birthday', 'anniversary'];
 export function getLayers() {
   const x = im();
   if (!x.layers || typeof x.layers !== 'object' || Array.isArray(x.layers)) x.layers = {};

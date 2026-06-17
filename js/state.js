@@ -2,7 +2,7 @@
 // ever leaves it. Schema migrations keep future updates from wiping progress.
 
 const KEY = 'nrjf.store';
-const CURRENT_VERSION = 6;
+const CURRENT_VERSION = 7;
 
 function defaults() {
   return {
@@ -32,6 +32,10 @@ function defaults() {
       birthday: '',             // ISO 'YYYY-MM-DD' | '' (not set) — used for age + birthday party
       weightUnit: 'lb',         // 'lb' | 'kg'
       lastBirthdayParty: '',    // year (e.g. '2026') the birthday party was last shown, so it shows once
+      // --- v7 addition: the day this person started using the app. Brand-new stores stamp
+      // today; existing stores backfill from their earliest activity (see migrate v6->v7).
+      // Surfaced as an annual 🎉 anniversary marker on the personal calendar. On-device only.
+      startedAt: todayKey(),    // ISO 'YYYY-MM-DD' — first-use date (app anniversary)
     },
     progress: {
       sessions: [],             // { date, mins, durationKey, startHour, breathClose, completed:[], skipped:[], tier, kind }
@@ -166,6 +170,25 @@ function migrate(data) {
     } else {
       if (typeof it.enabled !== 'boolean') it.enabled = false;
       if (!Array.isArray(it.entries)) it.entries = [];
+    }
+  }
+  // v6 -> v7: app-anniversary date. profile.startedAt self-defaults to today via the spread,
+  // but that would be wrong for an EXISTING user (they started long ago). So when the stored
+  // profile has no startedAt, backfill it from the earliest evidence we have — the oldest
+  // session/journal/meal/weight date — falling back to today only if there is no history.
+  if ((data.version || 1) < 7) {
+    if (!(data.profile && data.profile.startedAt)) {
+      let earliest = '';
+      const consider = (v) => {
+        if (!v || typeof v !== 'string' || v.length < 10) return;
+        const d = v.slice(0, 10);
+        if (!earliest || d < earliest) earliest = d;
+      };
+      (out.progress.sessions || []).forEach((s) => consider(s && s.date));
+      (out.progress.journal || []).forEach((j) => consider(j && j.ts));
+      (out.progress.meals || []).forEach((m) => consider(m && m.ts));
+      (out.progress.weights || []).forEach((w) => consider(w && w.date));
+      out.profile.startedAt = earliest || todayKey();
     }
   }
   // Retired-roster remap: the original four coach ids were replaced by the
