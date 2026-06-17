@@ -645,26 +645,21 @@ if meals_src:
     ok('addMeal' in main_src and 'you-meal-save' in main_src, 'You page does not render the meal notes')
     ok("'js/meals.js'" in read('sw.js'), 'sw.js does not precache js/meals.js')
 
-# 36) S7: menstrual/cycle tracking — opt-in (default OFF, guarded in #26), DESCRIPTIVE
-#     only with a clear non-medical disclaimer, and isolated from sessions[]. (The
-#     disclaimer legitimately names ovulation/fertility to DENY them, so no banned-word
-#     scan here — assert the disclaimer + no-prediction framing positively instead.)
+# 36) Cycle tracking is now MERGED into the personal calendar (see #36b). The legacy
+#     cycle.js module may remain on disk (vestigial; its data is migrated once into the
+#     calendar's day model) but it must still never write to sessions[] if present, and it
+#     is no longer rendered as its own You-page card.
 cycle_src = _read_opt('js/cycle.js')
 if cycle_src:
     ok('sessions.push' not in cycle_src and 'recordSession' not in cycle_src,
        'cycle.js must not write to sessions[] (breaks garden/streak isolation)')
-    ok('progress.cycle' in cycle_src, 'cycle.js does not use the progress.cycle ledger')
-    ok('isEnabled' in cycle_src and 'setEnabled' in cycle_src, 'cycle.js missing the opt-in toggle')
-    _cl = cycle_src.lower()
-    ok('medical device' in _cl, 'cycle.js missing the non-medical disclaimer')
-    ok('predict' in _cl, 'cycle.js must state it is descriptive, not a prediction')
-    ok('data-cycle' in main_src and 'cycleCardHTML' in main_src, 'You page does not render the cycle card')
-    ok("'js/cycle.js'" in read('sw.js'), 'sw.js does not precache js/cycle.js')
+    ok('data-cycle' not in main_src, 'the standalone Cycle card must be removed (merged into the personal calendar)')
 
-# 36b) v6 intimacy calendar — opt-in (default OFF, guarded in #26), DESCRIPTIVE/PRIVATE
-#      only, isolated from sessions[], with a clear no-judgment, non-medical disclaimer,
-#      an optional PIN that is stored ONLY as a hash (never the raw PIN), and a lazy-loaded
-#      calendar screen. The data layer is intimacy.js; the calendar UI is intimacy-screen.js.
+# 36b) v6 personal calendar — opt-in (default OFF, guarded in #26), DESCRIPTIVE/PRIVATE
+#      only, isolated from sessions[]. Merges cycle (period days) + intimacy in one place,
+#      with a no-judgment, non-medical disclaimer, an optional PIN stored ONLY as a hash
+#      (never the raw PIN), and a lazy-loaded calendar screen. Data layer = intimacy.js;
+#      calendar UI = intimacy-screen.js.
 intim_src = _read_opt('js/intimacy.js')
 intim_scr = _read_opt('js/intimacy-screen.js')
 if intim_src:
@@ -678,14 +673,20 @@ if intim_src:
     ok('progress.intimacy' in intim_src, 'intimacy.js does not use the progress.intimacy ledger')
     ok('isEnabled' in intim_src and 'setEnabled' in intim_src, 'intimacy.js missing the opt-in toggle')
     ok('not</strong> medical' in _combined or 'not medical' in _combined,
-       'intimacy missing the non-medical disclaimer')
-    ok('judg' in _combined, 'intimacy must state it does not judge/score')
+       'personal calendar missing the non-medical disclaimer')
+    ok('judg' in _combined, 'personal calendar must state it does not judge/score')
     # PIN privacy: the raw PIN is never persisted — only a SHA-256 hash field (pinHash).
     ok('pinhash' in intim_src.lower() and 'sha-256' in intim_src.lower(),
        'intimacy.js PIN must be stored as a SHA-256 hash (pinHash), never the raw PIN')
-    ok('data-intimacy' in main_src and 'intimacyCardHTML' in main_src, 'You page does not render the intimacy card')
-    ok("#intimacy" in main_src and 'intimacy-screen.js' in main_src, 'router does not lazy-load the intimacy calendar screen')
-    ok("'js/intimacy.js'" in _sw and "'js/intimacy-screen.js'" in _sw, 'sw.js does not precache the intimacy modules')
+    # Cycle merge: period logging lives in the calendar's own day model.
+    ok('setPeriod' in intim_src and 'isPeriod' in intim_src and 'cycleStats' in intim_src,
+       'intimacy.js missing the merged period/cycle functions (setPeriod/isPeriod/cycleStats)')
+    if intim_scr:
+        ok('intim-period' in intim_scr, 'personal calendar day editor missing the period-day toggle')
+    ok('data-intimacy' in main_src and 'intimacyCardHTML' in main_src, 'You page does not render the personal calendar card')
+    ok('Personal calendar' in main_src, 'You page card should be titled "Personal calendar"')
+    ok("#calendar" in main_src and 'intimacy-screen.js' in main_src, 'router does not lazy-load the personal calendar screen at #calendar')
+    ok("'js/intimacy.js'" in _sw and "'js/intimacy-screen.js'" in _sw, 'sw.js does not precache the calendar modules')
 
 # 37) S5c: the book is editable, and voice notes transcribe ON-DEVICE in a Web Worker,
 #     gated like the lifelike voice (Data Saver / persisted speed verdict) — never the

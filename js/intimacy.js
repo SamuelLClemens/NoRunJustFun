@@ -20,7 +20,7 @@ function uid(pre) {
 // v6 default is { enabled, pinHash, partners, defaultPartnerId, showCycle, days{} }.
 // The very first intimacy build (shipped earlier this session) used a flat entries[] of
 // { date, count, orgasms, desire(0-10), note }. Normalize that losslessly into days{}.
-function blank() { return { enabled: false, pinHash: null, partners: [], defaultPartnerId: null, showCycle: true, days: {} }; }
+function blank() { return { enabled: false, pinHash: null, partners: [], defaultPartnerId: null, showCycle: true, days: {}, cycleMerged: true }; }
 
 function im() {
   let x = store.progress.intimacy;
@@ -48,6 +48,31 @@ function im() {
     save();
   } else if (Array.isArray(x.entries)) {
     delete x.entries;
+  }
+  // One-time merge of the old standalone cycle ledger into the personal calendar:
+  // expand each logged period range into per-day period flags on this calendar's days{}.
+  // The cycle tracker is now part of the personal calendar, so this is the single source.
+  if (!('cycleMerged' in x)) {
+    try {
+      const c = store.progress.cycle;
+      if (c && Array.isArray(c.periods)) {
+        c.periods.forEach((p) => {
+          if (!p || !p.start) return;
+          const end = p.end || p.start;
+          let d = new Date(p.start + 'T00:00:00');
+          const endD = new Date(end + 'T00:00:00');
+          for (let i = 0; i < 400 && d <= endD; i++) {
+            const key = ymd(d);
+            const day = x.days[key] || { desire: null, note: '', encounters: [] };
+            day.period = true;
+            x.days[key] = day;
+            d.setDate(d.getDate() + 1);
+          }
+        });
+      }
+    } catch { /* nothing to merge */ }
+    x.cycleMerged = true;
+    save();
   }
   return x;
 }
@@ -118,16 +143,50 @@ export function partnerName(id) { const p = im().partners.find((x) => x.id === i
 // ---- cycle overlay ------------------------------------------------------
 export function showCycle() { return !!im().showCycle; }
 export function setShowCycle(on) { im().showCycle = !!on; save(); }
-export function isPeriodDay(date) {
-  try {
-    const c = store.progress.cycle;
-    if (!c || !c.enabled || !Array.isArray(c.periods)) return false;
-    return c.periods.some((p) => {
-      if (!p.start) return false;
-      const end = p.end || p.start;
-      return date >= p.start && date <= end;
-    });
-  } catch { return false; }
+// Period tracking now lives in this calendar's own day model (merged from the old cycle
+// ledger). isPeriodDay reflects what the user has logged here — descriptive, not a forecast.
+export function isPeriod(date) { const d = im().days[date]; return !!(d && d.period); }
+export function isPeriodDay(date) { return isPeriod(date); }
+export function setPeriod(date, on) {
+  const d = ensureDay(date);
+  d.period = !!on;
+  pruneDay(date);
+  save();
+}
+
+// Group logged period days into consecutive clusters (one cluster = one period), then read
+// cycle length as the gap between cluster starts. Purely descriptive — never a prediction.
+function periodClusters() {
+  const keys = Object.keys(im().days).filter((k) => im().days[k].period).sort();
+  const clusters = [];
+  keys.forEach((k) => {
+    const last = clusters[clusters.length - 1];
+    if (last) {
+      const prev = last[last.length - 1];
+      const gap = Math.round((new Date(k + 'T00:00:00') - new Date(prev + 'T00:00:00')) / 86400000);
+      if (gap === 1) { last.push(k); return; }
+    }
+    clusters.push([k]);
+  });
+  return clusters;
+}
+export function cycleStats() {
+  const cl = periodClusters();
+  if (!cl.length) return null;
+  const starts = cl.map((c) => c[0]);
+  const gaps = [];
+  for (let i = 1; i < starts.length; i++) {
+    const g = Math.round((new Date(starts[i] + 'T00:00:00') - new Date(starts[i - 1] + 'T00:00:00')) / 86400000);
+    if (g > 0 && g < 200) gaps.push(g);
+  }
+  const avgLen = gaps.length ? Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length) : null;
+  const lastStart = starts[starts.length - 1];
+  let daysSince = null;
+  try { daysSince = Math.round((new Date(todayStr() + 'T00:00:00') - new Date(lastStart + 'T00:00:00')) / 86400000); } catch { daysSince = null; }
+  return {
+    avgLen, lastStart, daysSince, periodCount: cl.length,
+    recent: cl.slice(-6).reverse().map((c) => ({ start: c[0], end: c[c.length - 1], days: c.length })),
+  };
 }
 
 // ---- day + encounter mutations -----------------------------------------
@@ -171,7 +230,7 @@ export function removeEncounter(date, encId) {
 // drop a day that holds nothing, so the calendar stays clean
 function pruneDay(date) {
   const d = im().days[date];
-  if (d && (!d.encounters || !d.encounters.length) && d.desire == null && !d.note) delete im().days[date];
+  if (d && (!d.encounters || !d.encounters.length) && d.desire == null && !d.note && !d.period) delete im().days[date];
 }
 
 // ---- derived: glyphs, stats, streak, series -----------------------------
@@ -261,7 +320,7 @@ export function series(n = 30) {
 }
 
 // ---- You-page entry card -----------------------------------------------
-const INVITE = 'Optional, for anyone. A private emoji calendar for your sex life — how often, orgasms, satisfaction, desire (including the days you wanted to and did not), partners, and more. It stays on this device, never scores or judges, and can be locked with a PIN.';
+const INVITE = 'Optional, for anyone. One private emoji calendar for your body — your cycle (period days) and your intimate life (how often, orgasms, satisfaction, desire including the days you wanted to and did not, partners, and more) in one place, seen together. It stays on this device, never scores or judges, and can be locked with a PIN.';
 
 export function intimacyCardHTML() {
   if (!isEnabled()) {
@@ -270,11 +329,13 @@ export function intimacyCardHTML() {
   }
   if (hasPin() && !isUnlocked()) {
     return `<p class="hint">🔒 This space is locked. Open it to enter your PIN.</p>
-      <a class="btn btn-primary" href="#intimacy">Open the calendar</a>`;
+      <a class="btn btn-primary" href="#calendar">Open the calendar</a>`;
   }
   const s = statsMonth(new Date().getFullYear(), new Date().getMonth());
   const streak = loggingStreak();
+  const cs = cycleStats();
+  const cyc = cs && cs.daysSince != null ? ` 🩸 Last period <strong>${cs.daysSince}</strong> day${cs.daysSince === 1 ? '' : 's'} ago.` : '';
   return `
-    <p class="hint">This month: <strong>${s.encounters}</strong> time${s.encounters === 1 ? '' : 's'}, <strong>${s.orgasms}</strong> orgasm${s.orgasms === 1 ? '' : 's'}${s.avgSatisfaction != null ? `, satisfaction ${faceFor(s.avgSatisfaction)} ${s.avgSatisfaction}/5` : ''}. Logging streak: <strong>${streak}</strong> day${streak === 1 ? '' : 's'}.</p>
-    <a class="btn btn-primary" href="#intimacy">Open the calendar</a>`;
+    <p class="hint">This month: <strong>${s.encounters}</strong> time${s.encounters === 1 ? '' : 's'}, <strong>${s.orgasms}</strong> orgasm${s.orgasms === 1 ? '' : 's'}${s.avgSatisfaction != null ? `, satisfaction ${faceFor(s.avgSatisfaction)} ${s.avgSatisfaction}/5` : ''}. Logging streak: <strong>${streak}</strong> day${streak === 1 ? '' : 's'}.${cyc}</p>
+    <a class="btn btn-primary" href="#calendar">Open the calendar</a>`;
 }

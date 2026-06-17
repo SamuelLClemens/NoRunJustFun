@@ -29,7 +29,6 @@ import { trackHubScreen, learningDone, gameScreen, quizScreen } from './learning
 import { usageGraphsHTML } from './usage-graph.js';
 import { composeCheckin } from './checkin.js';
 import { listMeals, addMeal, removeMeal } from './meals.js';
-import { cycleCardHTML, setEnabled as setCycleEnabled, addPeriod as addCyclePeriod, removePeriod as removeCyclePeriod } from './cycle.js';
 import { intimacyCardHTML, setEnabled as setIntimEnabled } from './intimacy.js';
 
 const app = document.getElementById('app');
@@ -1042,13 +1041,8 @@ function youScreen() {
         ${recentMeals.length ? `<ul class="you-log you-meal-list">${recentMeals.map((m) => `<li><span class="you-log-what">${esc(m.note)}</span><span class="you-log-date">${esc(m.stamp)}</span> <button class="linkish you-meal-del" data-id="${esc(m.id)}" aria-label="Delete meal note">✕</button></li>`).join('')}</ul>` : '<p class="hint">No notes yet.</p>'}
       </section>
 
-      <section class="card" data-cycle>
-        <h2>Cycle</h2>
-        ${cycleCardHTML()}
-      </section>
-
       <section class="card" data-intimacy>
-        <h2>Intimacy</h2>
+        <h2>Personal calendar</h2>
         ${intimacyCardHTML()}
       </section>
 
@@ -1107,19 +1101,8 @@ function youScreen() {
     if (minput) minput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); commitMeal(); } });
   }
   app.querySelectorAll('.you-meal-del').forEach((b) => b.addEventListener('click', () => { removeMeal(b.dataset.id); youScreen(); }));
-  const cycEnable = document.getElementById('you-cycle-enable');
-  if (cycEnable) cycEnable.addEventListener('click', () => { setCycleEnabled(true); youScreen(); });
-  const cycDisable = document.getElementById('you-cycle-disable');
-  if (cycDisable) cycDisable.addEventListener('click', () => { setCycleEnabled(false); youScreen(); });
-  const cycSave = document.getElementById('you-cycle-save');
-  if (cycSave) cycSave.addEventListener('click', () => {
-    const s = document.getElementById('you-cycle-start').value;
-    const e = document.getElementById('you-cycle-end').value;
-    if (s) { addCyclePeriod(s, e); youScreen(); }
-  });
-  app.querySelectorAll('.cycle-del').forEach((b) => b.addEventListener('click', () => { removeCyclePeriod(b.dataset.id); youScreen(); }));
   const intimEnable = document.getElementById('you-intim-enable');
-  if (intimEnable) intimEnable.addEventListener('click', () => { setIntimEnabled(true); go('#intimacy'); });
+  if (intimEnable) intimEnable.addEventListener('click', () => { setIntimEnabled(true); go('#calendar'); });
   const bsave = document.getElementById('you-bday-save');
   if (bsave) bsave.addEventListener('click', () => {
     const val = document.getElementById('you-bday-input').value;
@@ -1549,7 +1532,7 @@ async function routeTo(h, seq) {
   if (h === '#you') return youScreen();
   // Journal: loaded on demand so its IndexedDB/recorder code never touches the boot path.
   if (h === '#journal') { import('./journal-screen.js').then((m) => m.journalScreen()).catch((e) => console.warn('journal load failed', e)); return; }
-  if (h === '#intimacy') { import('./intimacy-screen.js').then((m) => m.intimacyScreen()).catch((e) => console.warn('intimacy load failed', e)); return; }
+  if (h === '#calendar' || h === '#intimacy') { import('./intimacy-screen.js').then((m) => m.intimacyScreen()).catch((e) => console.warn('calendar load failed', e)); return; }
   // Help screens: loaded on demand — static copy that never needs to ride the boot path.
   if (h === '#tutorial') { import('./help-screens.js').then((m) => m.tutorialScreen()).catch((e) => console.warn('tutorial load failed', e)); return; }
   if (h === '#faq') { import('./help-screens.js').then((m) => m.faqScreen()).catch((e) => console.warn('faq load failed', e)); return; }

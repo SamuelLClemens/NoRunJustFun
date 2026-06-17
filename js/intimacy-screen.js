@@ -9,7 +9,7 @@
 import {
   isEnabled, hasPin, isUnlocked, verifyPin, setPin, clearPin, lock,
   listPartners, addPartner, removePartner, setDefaultPartner, defaultPartner, partnerName,
-  showCycle, setShowCycle, isPeriodDay,
+  showCycle, setShowCycle, isPeriodDay, isPeriod, setPeriod, cycleStats,
   getDay, setDesire, setDayNote, addEncounter, removeEncounter,
   dayGlyphs, faceFor, FACES, loggingStreak, statsMonth, statsAll, series, todayStr, setEnabled,
 } from './intimacy.js';
@@ -133,7 +133,8 @@ function dayEditorHTML(date) {
   const ps = listPartners();
   return `
     <section class="card intim-day">
-      <h2>${MONTHS[parseInt(date.slice(5, 7), 10) - 1]} ${parseInt(date.slice(8, 10), 10)}, ${date.slice(0, 4)}${isPeriodDay(date) && showCycle() ? ' · 🩸 period' : ''}</h2>
+      <h2>${MONTHS[parseInt(date.slice(5, 7), 10) - 1]} ${parseInt(date.slice(8, 10), 10)}, ${date.slice(0, 4)}</h2>
+      <label class="intim-check intim-period-toggle"><input type="checkbox" id="intim-period" data-date="${esc(date)}" ${isPeriod(date) ? 'checked' : ''}> 🩸 Period day</label>
       <p class="hint">How much did you want to today?</p>
       <div class="intim-desire-row">${desireRow}</div>
       ${encList}
@@ -175,6 +176,15 @@ function statsHTML() {
     <div><strong>${sm.avgSatisfaction != null ? faceFor(sm.avgSatisfaction) + ' ' + sm.avgSatisfaction : '–'}</strong><span>satisfaction</span></div>
     <div><strong>${streak}</strong><span>day streak</span></div>
   </div>`;
+}
+
+function cycleLineHTML() {
+  const cs = cycleStats();
+  if (!cs) return '';
+  if (cs.avgLen != null && cs.daysSince != null) {
+    return `<p class="hint intim-cycle-line">🩸 Last period <strong>${cs.daysSince}</strong> day${cs.daysSince === 1 ? '' : 's'} ago · your cycles average about <strong>${cs.avgLen}</strong> days. This describes what you logged — it is not a prediction.</p>`;
+  }
+  return `<p class="hint intim-cycle-line">🩸 <strong>${cs.periodCount}</strong> period${cs.periodCount === 1 ? '' : 's'} logged. Mark a few more period days to see your average cycle length.</p>`;
 }
 
 function graphsHTML() {
@@ -227,8 +237,8 @@ function settingsHTML() {
         <label class="cycle-field">Add partner <input type="text" id="intim-newpartner" maxlength="40" placeholder="name"></label>
         <button class="btn" id="intim-addpartner">Add</button>
       </div>
-      <h3 class="intim-sub">Cycle overlay</h3>
-      <label class="intim-check"><input type="checkbox" id="intim-cycle" ${showCycle() ? 'checked' : ''}> Show period days (🩸) from your cycle tracker on this calendar</label>
+      <h3 class="intim-sub">Period markers</h3>
+      <label class="intim-check"><input type="checkbox" id="intim-cycle" ${showCycle() ? 'checked' : ''}> Show period days (🩸) on the calendar. Tap any day and toggle "Period day" to log your cycle here.</label>
       <h3 class="intim-sub">PIN lock</h3>
       ${hasPin()
         ? `<p class="hint">A PIN is set. It hides this section from casual view; it does not encrypt your data.</p>
@@ -254,11 +264,12 @@ export function intimacyScreen() {
   if (!_sel) _sel = todayStr();
 
   app.innerHTML = `
-    <header class="topbar"><a class="back" href="#you">← You</a><h1 class="page-title" tabindex="-1">Intimacy</h1>
+    <header class="topbar"><a class="back" href="#you">← You</a><h1 class="page-title" tabindex="-1">Personal calendar</h1>
       <button class="topbar-action" id="intim-toggle-settings" aria-label="Settings">⚙️</button></header>
     <main class="narrow intim-screen">
       <section class="card">${statsHTML()}${calendarHTML()}
         <p class="cal-legend">🔥 times · 💥 orgasms · 💞 partner · 🌙 solo · 💭 wanted to · 🩸 period</p>
+        ${cycleLineHTML()}
       </section>
       ${_sel ? dayEditorHTML(_sel) : ''}
       ${graphsHTML()}
@@ -280,6 +291,9 @@ function bind(app) {
   app.querySelectorAll('.cal-cell[data-date]').forEach((c) => c.addEventListener('click', () => { _sel = c.dataset.date; rerender(); }));
 
   app.querySelectorAll('.intim-desire-btn').forEach((b) => b.addEventListener('click', () => { setDesire(b.dataset.date, parseInt(b.dataset.desire, 10)); rerender(); }));
+
+  const periodCb = document.getElementById('intim-period');
+  if (periodCb) periodCb.addEventListener('change', () => { setPeriod(periodCb.dataset.date, periodCb.checked); rerender(); });
 
   // satisfaction face picker (local, no re-render)
   const faces = app.querySelectorAll('.intim-face-btn');
