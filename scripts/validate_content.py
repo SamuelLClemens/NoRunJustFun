@@ -661,20 +661,31 @@ if cycle_src:
     ok('data-cycle' in main_src and 'cycleCardHTML' in main_src, 'You page does not render the cycle card')
     ok("'js/cycle.js'" in read('sw.js'), 'sw.js does not precache js/cycle.js')
 
-# 36b) v6 intimacy tracking — opt-in (default OFF, guarded in #26), DESCRIPTIVE/PRIVATE
-#      only, isolated from sessions[], with a clear no-judgment, non-medical disclaimer.
+# 36b) v6 intimacy calendar — opt-in (default OFF, guarded in #26), DESCRIPTIVE/PRIVATE
+#      only, isolated from sessions[], with a clear no-judgment, non-medical disclaimer,
+#      an optional PIN that is stored ONLY as a hash (never the raw PIN), and a lazy-loaded
+#      calendar screen. The data layer is intimacy.js; the calendar UI is intimacy-screen.js.
 intim_src = _read_opt('js/intimacy.js')
+intim_scr = _read_opt('js/intimacy-screen.js')
 if intim_src:
+    _sw = read('sw.js')
+    _combined = (intim_src + '\n' + (intim_scr or '')).lower()
     ok('sessions.push' not in intim_src and 'recordSession' not in intim_src,
        'intimacy.js must not write to sessions[] (breaks garden/streak isolation)')
+    if intim_scr:
+        ok('sessions.push' not in intim_scr and 'recordSession' not in intim_scr,
+           'intimacy-screen.js must not write to sessions[] (breaks garden/streak isolation)')
     ok('progress.intimacy' in intim_src, 'intimacy.js does not use the progress.intimacy ledger')
     ok('isEnabled' in intim_src and 'setEnabled' in intim_src, 'intimacy.js missing the opt-in toggle')
-    _il = intim_src.lower()
-    ok('not</strong> medical' in _il or 'not medical' in _il or 'not</strong> medical, fertility' in _il,
-       'intimacy.js missing the non-medical disclaimer')
-    ok('judg' in _il, 'intimacy.js must state it does not judge/score')
+    ok('not</strong> medical' in _combined or 'not medical' in _combined,
+       'intimacy missing the non-medical disclaimer')
+    ok('judg' in _combined, 'intimacy must state it does not judge/score')
+    # PIN privacy: the raw PIN is never persisted — only a SHA-256 hash field (pinHash).
+    ok('pinhash' in intim_src.lower() and 'sha-256' in intim_src.lower(),
+       'intimacy.js PIN must be stored as a SHA-256 hash (pinHash), never the raw PIN')
     ok('data-intimacy' in main_src and 'intimacyCardHTML' in main_src, 'You page does not render the intimacy card')
-    ok("'js/intimacy.js'" in read('sw.js'), 'sw.js does not precache js/intimacy.js')
+    ok("#intimacy" in main_src and 'intimacy-screen.js' in main_src, 'router does not lazy-load the intimacy calendar screen')
+    ok("'js/intimacy.js'" in _sw and "'js/intimacy-screen.js'" in _sw, 'sw.js does not precache the intimacy modules')
 
 # 37) S5c: the book is editable, and voice notes transcribe ON-DEVICE in a Web Worker,
 #     gated like the lifelike voice (Data Saver / persisted speed verdict) — never the

@@ -30,7 +30,7 @@ import { usageGraphsHTML } from './usage-graph.js';
 import { composeCheckin } from './checkin.js';
 import { listMeals, addMeal, removeMeal } from './meals.js';
 import { cycleCardHTML, setEnabled as setCycleEnabled, addPeriod as addCyclePeriod, removePeriod as removeCyclePeriod } from './cycle.js';
-import { intimacyCardHTML, setEnabled as setIntimEnabled, addEntry as addIntimEntry, removeEntry as removeIntimEntry } from './intimacy.js';
+import { intimacyCardHTML, setEnabled as setIntimEnabled } from './intimacy.js';
 
 const app = document.getElementById('app');
 let avatar = null;        // lazy three.js instance, one at a time
@@ -1119,28 +1119,7 @@ function youScreen() {
   });
   app.querySelectorAll('.cycle-del').forEach((b) => b.addEventListener('click', () => { removeCyclePeriod(b.dataset.id); youScreen(); }));
   const intimEnable = document.getElementById('you-intim-enable');
-  if (intimEnable) intimEnable.addEventListener('click', () => { setIntimEnabled(true); youScreen(); });
-  const intimDisable = document.getElementById('you-intim-disable');
-  if (intimDisable) intimDisable.addEventListener('click', () => { setIntimEnabled(false); youScreen(); });
-  const intimDesire = document.getElementById('you-intim-desire');
-  const intimDesireVal = document.getElementById('you-intim-desire-val');
-  if (intimDesire && intimDesireVal) {
-    const sync = () => { intimDesireVal.textContent = intimDesire.value; };
-    intimDesire.addEventListener('input', sync);
-  }
-  const intimSave = document.getElementById('you-intim-save');
-  if (intimSave) intimSave.addEventListener('click', () => {
-    const date = document.getElementById('you-intim-date').value;
-    const count = document.getElementById('you-intim-count').value;
-    const orgasms = document.getElementById('you-intim-org').value;
-    const desireEl = document.getElementById('you-intim-desire');
-    // a slider always carries a value; only record desire if the user actually moved it
-    const desire = (desireEl && desireEl.dataset.touched === '1') ? desireEl.value : null;
-    const note = document.getElementById('you-intim-note').value;
-    if (date) { addIntimEntry({ date, count, orgasms, desire, note }); youScreen(); }
-  });
-  if (intimDesire) intimDesire.addEventListener('input', () => { intimDesire.dataset.touched = '1'; });
-  app.querySelectorAll('.intimacy-del').forEach((b) => b.addEventListener('click', () => { removeIntimEntry(b.dataset.id); youScreen(); }));
+  if (intimEnable) intimEnable.addEventListener('click', () => { setIntimEnabled(true); go('#intimacy'); });
   const bsave = document.getElementById('you-bday-save');
   if (bsave) bsave.addEventListener('click', () => {
     const val = document.getElementById('you-bday-input').value;
@@ -1570,6 +1549,7 @@ async function routeTo(h, seq) {
   if (h === '#you') return youScreen();
   // Journal: loaded on demand so its IndexedDB/recorder code never touches the boot path.
   if (h === '#journal') { import('./journal-screen.js').then((m) => m.journalScreen()).catch((e) => console.warn('journal load failed', e)); return; }
+  if (h === '#intimacy') { import('./intimacy-screen.js').then((m) => m.intimacyScreen()).catch((e) => console.warn('intimacy load failed', e)); return; }
   // Help screens: loaded on demand — static copy that never needs to ride the boot path.
   if (h === '#tutorial') { import('./help-screens.js').then((m) => m.tutorialScreen()).catch((e) => console.warn('tutorial load failed', e)); return; }
   if (h === '#faq') { import('./help-screens.js').then((m) => m.faqScreen()).catch((e) => console.warn('faq load failed', e)); return; }
