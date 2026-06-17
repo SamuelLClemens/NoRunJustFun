@@ -1,6 +1,6 @@
-# Vernal Plot 🌷
+# Garden Moves 🌷
 
-*Your plot, in bloom.*
+*Move, grow, bloom.*
 
 A free, private companion for **mind, body, and soul**. No accounts, no
 tracking — everything you do stays on your device. Learn (money, parenting,
@@ -21,7 +21,7 @@ nothing to install or sign up for.
 1. Open the link above in **Safari** on your iPhone.
 2. Tap the **Share** button (the square with the arrow).
 3. Scroll down and tap **"Add to Home Screen"**.
-4. Tap **Add**. You now have a "Vernal Plot" app icon — it even works
+4. Tap **Add**. You now have a "Garden Moves" app icon — it even works
    offline after the first visit.
 
 ### Share it with friends

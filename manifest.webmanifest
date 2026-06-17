@@ -1,7 +1,7 @@
 {
-  "name": "Vernal Plot",
-  "short_name": "Vernal Plot",
-  "description": "A free, private companion for mind, body, and soul. No accounts, no tracking — everything stays on your device. Your plot, in bloom.",
+  "name": "Garden Moves",
+  "short_name": "Garden Moves",
+  "description": "A free, private companion for mind, body, and soul. No accounts, no tracking — everything stays on your device. Move, grow, bloom.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",

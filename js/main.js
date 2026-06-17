@@ -1,4 +1,4 @@
-// You Got This! — app shell and screens.
+// Garden Moves — app shell and screens.
 // Private by design: every byte of your data lives in localStorage on this
 // device. No accounts, no analytics, no tracking, no server. Ever.
 
@@ -56,9 +56,9 @@ function applyMotionPref() {
 // Logo lockup — the veronica flower forms the exclamation mark.
 // Keep in sync with the static copy in index.html (.hello-logo).
 function logoSVG() {
-  return `<svg class="logo-svg" viewBox="0 0 494 92" role="img" aria-label="Vernal Plot" xmlns="http://www.w3.org/2000/svg">
-    <title>Vernal Plot</title>
-    <text x="12" y="74" font-family="Fredoka, 'Avenir Next Rounded', system-ui, sans-serif" font-weight="600" font-size="74" fill="var(--ink, #1F4D2E)" textLength="421" lengthAdjust="spacingAndGlyphs">Vernal Plot</text>
+  return `<svg class="logo-svg" viewBox="0 0 494 92" role="img" aria-label="Garden Moves" xmlns="http://www.w3.org/2000/svg">
+    <title>Garden Moves</title>
+    <text x="12" y="74" font-family="Fredoka, 'Avenir Next Rounded', system-ui, sans-serif" font-weight="600" font-size="74" fill="var(--ink, #1F4D2E)" textLength="421" lengthAdjust="spacingAndGlyphs">Garden Moves</text>
     <path d="M 452.3 21.5 A 4.7 4.7 0 0 1 461.6 21.0 C 460.6 28.5 460.0 36 459.6 42.5 A 3.1 3.1 0 0 1 453.4 42.8 C 453.2 35.5 452.7 28.5 452.3 21.5 Z" fill="var(--green-700, #2E6B3D)"/>
     <path d="M 452.8 30.5 C 448 26.5 441.8 27.2 438.4 31.4 C 442 35.6 448.6 35.2 452.8 30.5 Z" fill="var(--green-500, #5BA869)"/>
     <g transform="translate(457 70) rotate(10) scale(0.88)">
