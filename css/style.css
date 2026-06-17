@@ -138,51 +138,62 @@ html[data-theme="dark"] .order-pick.wrong { background: #3A2620; }
 .tabbar[hidden] { display: none; }
 .has-tabbar #app { padding-bottom: calc(78px + env(safe-area-inset-bottom)); }
 
-/* ---- journal as a book ---- */
-/* Closed cover — a warm leather-and-gold book with the reader's name embossed. The cover
-   is an intentional decorative object (fixed leather tone in both themes, like a real book). */
-.book-cover-wrap { display: flex; justify-content: center; padding: 14px 0 4px; }
-.book-cover {
-  position: relative; width: 100%; max-width: 320px; min-height: 372px; cursor: pointer; border: 0;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center;
-  padding: 30px 24px; color: #F7EBD2; font-family: var(--font-body);
+/* ---- journal as a two-page book ---- */
+/* The composer sits above; this is the book below it. Paper + leather tones are fixed in
+   both themes (a book is its own object), with dark-brown ink that stays legible. */
+.journal-compose-card .hint { margin-top: 0; }
+.journal-book-card { padding: 16px; }
+.book2-shelf { display: flex; justify-content: center; padding: 4px 0; }
+.book2-closed {
+  position: relative; width: 100%; max-width: 300px; min-height: 156px; cursor: pointer; border: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; text-align: center;
+  padding: 22px 20px; color: #F7EBD2; font-family: var(--font-body);
   background: linear-gradient(135deg, #6E3B2A 0%, #8A4E33 48%, #5C3120 100%);
-  border-radius: 6px 16px 16px 6px;
-  box-shadow: var(--shadow), inset 0 0 0 2px rgba(0, 0, 0, 0.22), inset 0 0 0 9px rgba(235, 207, 140, 0.16);
-  transition: transform var(--dur-2) var(--ease-settle), box-shadow var(--dur-2) var(--ease-settle);
+  border-radius: 5px 13px 13px 5px;
+  box-shadow: var(--shadow), inset 0 0 0 2px rgba(0, 0, 0, 0.22), inset 0 0 0 8px rgba(235, 207, 140, 0.16);
+  transition: transform var(--dur-2) var(--ease-settle);
 }
-.book-cover:hover { transform: translateY(-2px); }
-.book-cover-flourish { font-size: 1.6rem; color: var(--sun-300); opacity: 0.9; }
-.book-cover-kicker { text-transform: uppercase; letter-spacing: 0.34em; font-size: 0.72rem; font-weight: 800; color: var(--sun-300); }
-.book-cover-name { font-family: var(--font-display); font-weight: 700; font-size: 1.7rem; line-height: 1.1; color: #FBF1DC; margin-top: 2px; }
-.book-cover-sub { font-size: 0.9rem; opacity: 0.86; }
-.book-cover-range { font-size: 0.74rem; opacity: 0.7; }
-.book-cover-hint { margin-top: 14px; font-size: 0.74rem; letter-spacing: 0.04em; color: var(--sun-300); opacity: 0.85; }
-.book-cover-ribbon { position: absolute; top: 0; right: 30px; width: 14px; height: 62px; background: var(--coral); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35); }
-.book-cover-ribbon::after { content: ""; position: absolute; bottom: -7px; left: 0; border-left: 7px solid var(--coral); border-right: 7px solid var(--coral); border-bottom: 7px solid transparent; }
-.journal-cover-actions { display: flex; justify-content: center; margin-top: 14px; }
+.book2-closed:hover { transform: translateY(-2px); }
+.book2-closed-flourish { font-size: 1.3rem; color: var(--sun-300); }
+.book2-closed-kicker { text-transform: uppercase; letter-spacing: 0.3em; font-size: 0.66rem; font-weight: 800; color: var(--sun-300); }
+.book2-closed-name { font-family: var(--font-display); font-weight: 700; font-size: 1.45rem; color: #FBF1DC; }
+.book2-closed-sub { font-size: 0.82rem; opacity: 0.85; }
+.book2-closed-hint { margin-top: 6px; font-size: 0.7rem; color: var(--sun-300); opacity: 0.85; }
 
-/* Table of contents — chapters by date */
-.book-toc { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
-.book-chapter-title { font: 700 0.95rem var(--font-display); color: var(--ink); margin: 0 0 8px; padding-bottom: 5px; border-bottom: 1px solid var(--line); }
-.book-chapter-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
-.book-toc-entry {
-  width: 100%; min-height: 44px; display: flex; align-items: center; gap: 10px; text-align: left; cursor: pointer;
-  background: var(--cream); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 10px 12px;
-  transition: border-color var(--dur-2) var(--ease-settle), background-color var(--dur-2) var(--ease-settle);
+.book2-bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 6px; }
+.book2-bar .linkish { padding: 6px 2px; font-size: 0.82rem; }
+
+/* the open spread — two parchment pages with a center spine */
+.book2 {
+  display: grid; grid-template-columns: 1fr 1fr; border-radius: 6px; overflow: hidden;
+  background: #FBF3DF; box-shadow: var(--shadow); min-height: 320px;
 }
-.book-toc-entry:hover { border-color: var(--green-500); background: var(--green-100); }
-.toc-time { flex: 0 0 auto; min-width: 64px; font-weight: 800; font-size: 0.8rem; color: var(--ink-soft); }
-.toc-snip { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.toc-kind { flex: 0 0 auto; opacity: 0.7; }
-
-/* A single entry as a page */
-.book-page { background: var(--card); border-radius: var(--radius-md); box-shadow: var(--shadow-soft); padding: 22px; border-left: 4px solid var(--sun-500); }
-.book-page-head { display: flex; flex-direction: column; gap: 2px; margin-bottom: 12px; }
-.book-page-day { font: 700 1.05rem var(--font-display); color: var(--ink); }
-.book-page-time { font-size: 0.78rem; font-weight: 700; color: var(--ink-soft); }
-.book-page-text { font-size: 1.05rem; line-height: 1.7; white-space: pre-wrap; color: var(--ink); }
-.book-page-nav { display: flex; justify-content: space-between; gap: 10px; margin-top: 16px; }
+.book2.is-open { animation: bookTurn var(--dur-3) var(--ease-out); transform-origin: left center; }
+@keyframes bookTurn { from { opacity: 0.45; transform: perspective(900px) rotateY(-7deg); } to { opacity: 1; transform: none; } }
+.book2-page {
+  position: relative; padding: 18px 15px; background: #FBF3DF; color: #3A2F1F; min-height: 320px;
+  max-height: 60vh; overflow-y: auto;
+}
+.book2-page:first-child { box-shadow: inset -11px 0 14px -11px rgba(60, 30, 10, 0.30); }
+.book2-page:last-child { box-shadow: inset 11px 0 14px -11px rgba(60, 30, 10, 0.30); }
+.book2-h { font: 700 1.05rem var(--font-display); color: #5C3120; margin: 0 0 10px; text-align: center; border-bottom: 1px solid rgba(92, 49, 32, 0.25); padding-bottom: 6px; }
+.book2-chapter { margin-bottom: 12px; }
+.book2-chapter-title { font: 700 0.8rem var(--font-display); color: #6E4322; margin: 0 0 4px; }
+.book2-toc-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.book2-toc-entry { width: 100%; min-height: 32px; display: flex; gap: 8px; align-items: baseline; text-align: left; background: none; border: 0; cursor: pointer; padding: 5px 4px; border-radius: 6px; color: #3A2F1F; }
+.book2-toc-entry:hover { background: rgba(92, 49, 32, 0.08); }
+.book2-toc-entry .t { flex: 0 0 auto; min-width: 52px; font-weight: 800; font-size: 0.72rem; color: #8A5A33; }
+.book2-toc-entry .s { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.85rem; }
+.book2-blank { display: flex; align-items: flex-end; justify-content: center; cursor: pointer; }
+.book2-turnhint { color: #8A5A33; font-size: 0.8rem; font-weight: 700; opacity: 0.85; padding-bottom: 14px; }
+.book2-entry-head { display: flex; flex-direction: column; gap: 1px; margin-bottom: 8px; border-bottom: 1px solid rgba(92, 49, 32, 0.22); padding-bottom: 5px; }
+.book2-day { font: 700 0.92rem var(--font-display); color: #5C3120; }
+.book2-time { font-size: 0.72rem; font-weight: 700; color: #8A5A33; }
+.book2-text { font-size: 0.95rem; line-height: 1.6; white-space: pre-wrap; color: #3A2F1F; }
+.book2-page-empty { background: #FBF3DF; }
+.book2-nav { display: flex; justify-content: space-between; gap: 10px; margin-top: 12px; }
+.book2-entry .journal-entry-actions { margin-top: 10px; }
+.book2-entry .journal-entry-actions .linkish { color: #6E4322; }
 
 /* journal entries surfaced in the personal-calendar day detail */
 .intim-journal-day { margin: 8px 0 4px; }
