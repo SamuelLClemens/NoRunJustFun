@@ -119,7 +119,38 @@ const RIG = {
   rHand: ['RightHand', 'mixamorigRightHand', 'wristR'],
   chest: ['Spine2', 'mixamorigSpine2', 'spine03', 'Spine1', 'spine02', 'Spine', 'spine01'],
   head:  ['Head', 'mixamorigHead', 'head'],
+  // --- joints used by the exercise choreography (POSES, see js/data/poses.js).
+  // Same logical names as the rig-spec so the pose player resolves either rig. ---
+  spine:     ['Spine', 'mixamorigSpine', 'spine01', 'spine02'],
+  neck:      ['Neck', 'mixamorigNeck', 'neck01', 'neck02', 'neck03'],
+  shoulderL: ['LeftArm', 'mixamorigLeftArm', 'upperarm01L'],
+  shoulderR: ['RightArm', 'mixamorigRightArm', 'upperarm01R'],
+  elbowL:    ['LeftForeArm', 'mixamorigLeftForeArm', 'lowerarm01L'],
+  elbowR:    ['RightForeArm', 'mixamorigRightForeArm', 'lowerarm01R'],
+  hipL:      ['LeftUpLeg', 'mixamorigLeftUpLeg', 'upperleg01L'],
+  hipR:      ['RightUpLeg', 'mixamorigRightUpLeg', 'upperleg01R'],
+  kneeL:     ['LeftLeg', 'mixamorigLeftLeg', 'lowerleg01L'],
+  kneeR:     ['RightLeg', 'mixamorigRightLeg', 'lowerleg01R'],
+  ankleL:    ['LeftFoot', 'mixamorigLeftFoot', 'foot01L', 'footL', 'foot.L'],
+  ankleR:    ['RightFoot', 'mixamorigRightFoot', 'foot01R', 'footR', 'foot.R'],
 };
+
+// Every logical joint the pose player drives. Order matters only for readability;
+// Three.js propagates the hierarchy at render. Two pelvis spines (spine/chest) +
+// neck/head + the four limbs.
+const MANAGED_JOINTS = [
+  'spine', 'chest', 'neck', 'head',
+  'shoulderL', 'shoulderR', 'elbowL', 'elbowR',
+  'hipL', 'hipR', 'kneeL', 'kneeR', 'ankleL', 'ankleR',
+];
+const ZERO3 = [0, 0, 0];
+
+// Base postures supply the joints a keyframe omits (rig-spec §"Base positions").
+// v1 of the GLB pose player renders STANDING choreography only — floor/seated moves
+// are routed to standing analogs by poseForExercise() in poses.js — so only 'stand'
+// is needed here. A standing keyframe lists every joint that differs from rest, so
+// the stand base contributes no extra joints (arms already rest aimed-down).
+const BASES = { stand: { joints: {} } };
 
 // Morph-target name candidates per facial action, tried in order. Covers both the
 // ARKit naming (Ready Player Me / facecap) and the Oculus Visemes naming, so the
@@ -235,6 +266,15 @@ export class RealisticAvatar {
     // gesture layer — eased intensity so she shifts fluidly between calm presence
     // (idle) and animated explaining (talking); _emphasis pulses with live speech.
     this._gestureGain = 0; this._emphasis = 0; this._headNod = 0; this._headTilt = 0;
+    // exercise pose player — drives the keyframed move choreography (POSES) so the
+    // coach performs each exercise for the user to mirror. See setPose/_applyMovePose.
+    this._pose = null;               // active pose def (a POSES entry) | null
+    this._poseT = 0;                 // pose phase clock (separate from this.time)
+    this._poseActive = false;        // true while a move is being performed (full framing)
+    this._wasMoving = false;         // edge-detect leaving a pose to restore rest once
+    this._restBasis = new Map();     // joint key -> { B, Binv } rest orientation in model frame
+    this._basePos = null;            // grounded model position (feet at floor) to pose from
+    this._restFootY = null;          // lowest foot world-y at rest, for per-frame re-grounding
     // decorative breathing — honor reduced motion (in-app setting wins; OS fallback)
     this._breathe = !prefersReducedMotion();
 
@@ -328,6 +368,12 @@ export class RealisticAvatar {
       this._aimArmsRest();
       // Coach GLBs export bulging eyeballs; seat them. The host is already fitted.
       if (this._modelUrl.includes('coach-') && !this._modelUrl.includes('coach-host')) this._seatEyes(0.72);
+      // Snapshot the rest pose for the exercise player: the grounded position to pose
+      // from, the lowest foot height for per-frame re-grounding, and each joint's rest
+      // orientation in the model frame (so spec body-space angles retarget to this rig).
+      this._basePos = root.position.clone();
+      this._snapshotPoseBasis();
+      this._restFootY = this._minFootWorldY();
       this._frameCamera();
       this._renderOnce();
       if (this._pendingStart) this._resume();
@@ -492,6 +538,120 @@ export class RealisticAvatar {
     }
   }
 
+  // ---- exercise pose player ----------------------------------------------------
+  // The POSES choreography is authored in BODY space (rig-spec: char faces +z, +x is
+  // the character's left, arms hang along −y at zero). The GLB coaches have arbitrary
+  // bone-local axes, so we cannot apply those Euler triples as bone-local rotations.
+  // Instead we snapshot each joint's REST orientation expressed in the model's frame
+  // (B), and per frame convert a body-space rotation R into the bone's local frame by
+  // conjugation: R_local = B⁻¹·R·B, then compose rest×R_local. This reproduces the
+  // lean rig's hierarchical local-euler composition on ANY skeleton — no per-bone
+  // calibration, and twist/side-bend are preserved (a pure "aim" would lose them).
+  _snapshotPoseBasis() {
+    if (!this.model) return;
+    this.model.updateMatrixWorld(true);
+    const mq = new THREE.Quaternion();
+    this.model.getWorldQuaternion(mq);          // includes the pivot yaw…
+    const mqInv = mq.clone().invert();          // …which cancels below, leaving model-frame
+    this._restBasis.clear();
+    for (const key of MANAGED_JOINTS) {
+      const b = this._bone(key);
+      if (!b) continue;
+      const bwq = new THREE.Quaternion();
+      b.getWorldQuaternion(bwq);
+      const B = mqInv.clone().multiply(bwq);    // bone's rest axes in the model frame
+      this._restBasis.set(key, { B, Binv: B.clone().invert() });
+    }
+  }
+
+  // Lowest foot-bone world-y (or null). Used to keep the planted foot on the floor
+  // after a pose bends the legs — a cheap stand-in for inverse kinematics.
+  _minFootWorldY() {
+    let m = null;
+    const v = new THREE.Vector3();
+    for (const k of ['ankleL', 'ankleR']) {
+      const b = this._bone(k);
+      if (!b) continue;
+      b.getWorldPosition(v);
+      if (m === null || v.y < m) m = v.y;
+    }
+    return m;
+  }
+
+  // Drive one frame of the active move: sample + interpolate the keyframes, retarget
+  // each joint into bone-local space, and re-ground so the lower foot stays planted.
+  _applyMovePose() {
+    const def = this._pose;
+    if (!def || !this._basePos) return;
+    const loop = def.loopSecs || 8;
+    const reduced = !this._breathe;                 // reduced motion → hold the apex, no loop
+    const phase = reduced ? 0.5 : (this._poseT % loop) / loop;
+    const mirror = !reduced && !!def.mirrorHalfway && (Math.floor(this._poseT / loop) % 2 === 1);
+    const frames = def.frames;
+
+    // bracketing keyframes (frames are sorted, first t=0, last t=1)
+    let a = frames[0], b = frames[frames.length - 1];
+    for (let i = 0; i < frames.length - 1; i++) {
+      if (phase >= frames[i].t && phase <= frames[i + 1].t) { a = frames[i]; b = frames[i + 1]; break; }
+    }
+    const span = (b.t - a.t) || 1;
+    let lt = (phase - a.t) / span; lt = lt < 0 ? 0 : lt > 1 ? 1 : lt;
+    const e = lt * lt * (3 - 2 * lt);               // smoothstep easing (rig-spec)
+
+    // sample every managed joint; omitted joints fall back to the base value (rest)
+    const base = (BASES[def.base] || BASES.stand).joints;
+    const J = {};
+    for (const key of MANAGED_JOINTS) {
+      const va = (a.joints && a.joints[key]) || base[key] || ZERO3;
+      const vb = (b.joints && b.joints[key]) || base[key] || ZERO3;
+      J[key] = [va[0] + (vb[0] - va[0]) * e, va[1] + (vb[1] - va[1]) * e, va[2] + (vb[2] - va[2]) * e];
+    }
+    if (mirror) {
+      for (const [l, r] of [['shoulderL', 'shoulderR'], ['elbowL', 'elbowR'], ['hipL', 'hipR'], ['kneeL', 'kneeR'], ['ankleL', 'ankleR']]) {
+        const t = J[l]; J[l] = J[r]; J[r] = t;
+      }
+      for (const key of MANAGED_JOINTS) J[key] = [J[key][0], -J[key][1], -J[key][2]];  // reflect across the sagittal plane
+    }
+
+    // pose from the grounded rest, upright (standing analogs never tip the root)
+    this.model.position.copy(this._basePos);
+    this.model.rotation.set(0, 0, 0);
+    for (const key of MANAGED_JOINTS) {
+      const bone = this._bone(key);
+      if (!bone) continue;
+      const restLocal = this.rest.get(bone.name);
+      const basis = this._restBasis.get(key);
+      if (!restLocal || !basis) continue;
+      const d = J[key];
+      if (d[0] === 0 && d[1] === 0 && d[2] === 0) { bone.quaternion.copy(restLocal); continue; }
+      const R = new THREE.Quaternion().setFromEuler(new THREE.Euler(d[0] * D2R, d[1] * D2R, d[2] * D2R, 'XYZ'));
+      const Rl = basis.Binv.clone().multiply(R).multiply(basis.B);   // body-space → bone-local
+      bone.quaternion.copy(restLocal).multiply(Rl);
+    }
+
+    // re-ground: shift the whole body so the lowest foot returns to its rest height,
+    // turning leg-bend keyframes (squats, chair, warrior) into a body that sinks with
+    // feet planted instead of feet that lift toward a fixed-height pelvis.
+    this.model.updateMatrixWorld(true);
+    const fy = this._minFootWorldY();
+    if (fy != null && this._restFootY != null) this.model.position.y += (this._restFootY - fy);
+  }
+
+  // Return every posed joint to rest and re-ground the body. Called once when a move
+  // ends so the legs/spine/neck (which the idle gesture does not touch) do not freeze.
+  _clearPose() {
+    for (const key of MANAGED_JOINTS) {
+      const bone = this._bone(key);
+      const restLocal = bone && this.rest.get(bone.name);
+      if (bone && restLocal) bone.quaternion.copy(restLocal);
+    }
+    this._restoreModelRest();
+  }
+
+  _restoreModelRest() {
+    if (this.model && this._basePos) { this.model.position.copy(this._basePos); this.model.rotation.set(0, 0, 0); }
+  }
+
   // ---- public API (mirrors Avatar) ----
   setCharacter(character) {
     if (character === this.character) return;
@@ -500,10 +660,14 @@ export class RealisticAvatar {
     if (this.ready && url !== this._modelUrl) this._swapModel(url);
   }
 
-  setPose(/* def */) {
-    // Standing demo posture for every move, brought to life by the gesture layer
-    // (idle + talking motion, see _gesture). Per-exercise choreography remains v3.1.
-    this.time = 0;
+  // Perform an exercise. `def` is a POSES-style keyframe object (base + loopSecs +
+  // frames of body-space Euler angles per joint) chosen by poseForExercise() in
+  // poses.js — already resolved to a STANDING, GLB-renderable pose (floor/seated
+  // moves arrive here as standing analogs). Pass null to stop performing and return
+  // to the idle/talking presence. The loop is driven each frame in _applyMovePose.
+  setPose(def) {
+    this._pose = (def && def.frames && def.frames.length) ? def : null;
+    this._poseT = 0;
   }
 
   setMirrored(m) { this.mirrored = m; if (this.pivot) this.pivot.scale.x = m ? -1 : 1; }
@@ -556,10 +720,21 @@ export class RealisticAvatar {
 
   _tick(dt) {
     this.time += dt * this.speed;
+    // Performing a move (workout framing) takes over the body; lessons/meditation
+    // ('talk' framing) and the rest of the time keep the idle/talking gesture.
+    const moving = !!this._pose && this._framing === 'full' && this.ready && this._restBasis.size > 0;
+    this._poseActive = moving;
     if (this._breathe) {
-      // very soft whole-body weight-shift sway
+      // very soft whole-body weight-shift sway (presentation turntable)
       this.pivot.rotation.y = (14 + 1.4 * Math.sin(this.time * (Math.PI * 2) / 7.5)) * D2R;
-      this._gesture(dt);
+    }
+    if (moving) {
+      if (this._breathe) this._poseT += dt * this.speed;   // reduced motion holds a static apex
+      this._applyMovePose();
+      this._wasMoving = true;
+    } else {
+      if (this._wasMoving) { this._clearPose(); this._wasMoving = false; }
+      if (this._breathe) this._gesture(dt);
     }
     if (this.faceReady) this._animateFace(dt);
     this.renderer.render(this.scene, this.camera);
@@ -678,7 +853,9 @@ export class RealisticAvatar {
     this._gazeY += (this._gazeTarget[1] - this._gazeY) * Math.min(1, dt * 6);
     const head = this._bone('head');
     const rest = head && this.rest.get(head.name);
-    if (head && rest) {
+    // While performing a move, the pose player owns the head (e.g. neck rolls); do not
+    // overwrite it with the gaze/nod here, or the head would snap back every frame.
+    if (head && rest && !this._poseActive) {
       // gaze (eye-follow) + gesture nod/tilt, composed so the head moves naturally
       const e = new THREE.Euler((this._gazeY + this._headNod) * D2R, this._gazeX * D2R, this._headTilt * D2R, 'XYZ');
       head.quaternion.copy(rest.clone().multiply(new THREE.Quaternion().setFromEuler(e)));

@@ -15,7 +15,7 @@ import { EXERCISES } from './data/exercises.js';
 import { PHRASES } from './data/phrases.js';
 import { BADGES } from './data/badges.js';
 import { gardenSVG, GARDEN_STAGE_SESSIONS } from './data/garden.js';
-import { POSES } from './data/poses.js';
+import { POSES, poseForExercise } from './data/poses.js';
 import { NEW_EXERCISES, TIER_ELIGIBILITY } from './data/movements-ext.js';
 import { EXTRA_EXERCISES, EXTRA_TIER_ELIGIBILITY, WORKOUT_CATEGORY } from './data/movements-ext2.js';
 import { EXTRA_EXERCISES2, EXTRA_TIER_ELIGIBILITY2, WORKOUT_CATEGORY2 } from './data/movements-ext3.js';
@@ -671,6 +671,7 @@ function sessionScreen(plan) {
   try {
     if (wantReal) {
       avatar = new RealisticAvatar(canvas, char);
+      avatar.isRealistic = true;   // GLB coach: renders upright choreography (standing analogs)
       // show a calm "coach is getting ready" state while the 5–7 MB model loads,
       // so the flagship feature never opens to a blank stage (cleared on ready/error)
       const stageEl = canvas.closest('.stage');
@@ -756,7 +757,14 @@ function sessionScreen(plan) {
           d.classList.toggle('done', i < idx);
           d.classList.toggle('now', i === idx);
         });
-        if (avatar) avatar.setPose(POSES[item.ex.id] || null);
+        // Perform the exercise so the user can mirror the coach. The lean primitive
+        // coach is the native rig for POSES and renders the exact choreography (incl.
+        // floor/seated moves); the realistic GLB coach renders upright moves, so it
+        // gets the standing-resolved pose. Either way the coach performs every move.
+        if (avatar) {
+          const raw = POSES[item.ex.id] || null;
+          avatar.setPose(avatar.isRealistic ? poseForExercise(item.ex) : (raw || poseForExercise(item.ex)));
+        }
         // Lesson difficulty controls: show "Explain it simpler" / "Go deeper" only on
         // lesson segments that actually provide that variant (graceful when absent).
         const levels = document.getElementById('lesson-levels');
@@ -781,7 +789,7 @@ function sessionScreen(plan) {
     },
   });
 
-  if (DEV_QA) window.__nrjf = { player, store, avatar };   // dev-only QA handle (?dev=…)
+  if (DEV_QA) window.__nrjf = { player, store, avatar, POSES, poseForExercise };   // dev-only QA handle (?dev=…)
 
   document.getElementById('btn-pause').addEventListener('click', () => {
     if (player.phase === 'paused') player.resume();
@@ -834,7 +842,7 @@ function swapToLeanAvatar(oldCanvas, char) {
     avatar.start();
     if (DEV_QA && window.__nrjf) window.__nrjf.avatar = avatar;
     const it = player && player.plan && player.plan.items[player.idx];
-    if (it) avatar.setPose(POSES[it.ex.id] || null);
+    if (it) avatar.setPose((POSES[it.ex.id] || null) || poseForExercise(it.ex));   // lean coach: native pose
   } catch (e) {
     console.warn('lean fallback failed:', e);
     fresh.closest('.stage')?.classList.add('no-webgl');
@@ -1454,7 +1462,7 @@ async function ensureRealisticClass() {
     // ?v bust: bump on every realistic-avatar.js change so browsers fetch the new
     // module instead of a cached copy (the SW matches with ignoreSearch, so the
     // precached file still serves offline regardless of the query).
-    const mod = await import('./realistic-avatar.js?v=rig5');
+    const mod = await import('./realistic-avatar.js?v=rig6');
     RealisticAvatar = mod.RealisticAvatar;
     realisticHelpers = mod;
   }
