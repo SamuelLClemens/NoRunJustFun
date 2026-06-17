@@ -1,4 +1,4 @@
-// You Got This! — app shell and screens.
+// Garden Moves — app shell and screens.
 // Private by design: every byte of your data lives in localStorage on this
 // device. No accounts, no analytics, no tracking, no server. Ever.
 
@@ -29,8 +29,7 @@ import { trackHubScreen, learningDone, gameScreen, quizScreen } from './learning
 import { usageGraphsHTML } from './usage-graph.js';
 import { composeCheckin } from './checkin.js';
 import { listMeals, addMeal, removeMeal } from './meals.js';
-import { cycleCardHTML, setEnabled as setCycleEnabled, addPeriod as addCyclePeriod, removePeriod as removeCyclePeriod } from './cycle.js';
-import { intimacyCardHTML, setEnabled as setIntimEnabled, addEntry as addIntimEntry, removeEntry as removeIntimEntry } from './intimacy.js';
+import { intimacyCardHTML, setEnabled as setIntimEnabled } from './intimacy.js';
 
 const app = document.getElementById('app');
 let avatar = null;        // lazy three.js instance, one at a time
@@ -56,9 +55,9 @@ function applyMotionPref() {
 // Logo lockup — the veronica flower forms the exclamation mark.
 // Keep in sync with the static copy in index.html (.hello-logo).
 function logoSVG() {
-  return `<svg class="logo-svg" viewBox="0 0 494 92" role="img" aria-label="You Got This!" xmlns="http://www.w3.org/2000/svg">
-    <title>You Got This!</title>
-    <text x="12" y="74" font-family="Fredoka, 'Avenir Next Rounded', system-ui, sans-serif" font-weight="600" font-size="74" fill="var(--ink, #1F4D2E)" textLength="421" lengthAdjust="spacingAndGlyphs">You Got This</text>
+  return `<svg class="logo-svg" viewBox="0 0 494 92" role="img" aria-label="Garden Moves" xmlns="http://www.w3.org/2000/svg">
+    <title>Garden Moves</title>
+    <text x="12" y="74" font-family="Fredoka, 'Avenir Next Rounded', system-ui, sans-serif" font-weight="600" font-size="74" fill="var(--ink, #1F4D2E)" textLength="421" lengthAdjust="spacingAndGlyphs">Garden Moves</text>
     <path d="M 452.3 21.5 A 4.7 4.7 0 0 1 461.6 21.0 C 460.6 28.5 460.0 36 459.6 42.5 A 3.1 3.1 0 0 1 453.4 42.8 C 453.2 35.5 452.7 28.5 452.3 21.5 Z" fill="var(--green-700, #2E6B3D)"/>
     <path d="M 452.8 30.5 C 448 26.5 441.8 27.2 438.4 31.4 C 442 35.6 448.6 35.2 452.8 30.5 Z" fill="var(--green-500, #5BA869)"/>
     <g transform="translate(457 70) rotate(10) scale(0.88)">
@@ -1042,13 +1041,8 @@ function youScreen() {
         ${recentMeals.length ? `<ul class="you-log you-meal-list">${recentMeals.map((m) => `<li><span class="you-log-what">${esc(m.note)}</span><span class="you-log-date">${esc(m.stamp)}</span> <button class="linkish you-meal-del" data-id="${esc(m.id)}" aria-label="Delete meal note">✕</button></li>`).join('')}</ul>` : '<p class="hint">No notes yet.</p>'}
       </section>
 
-      <section class="card" data-cycle>
-        <h2>Cycle</h2>
-        ${cycleCardHTML()}
-      </section>
-
       <section class="card" data-intimacy>
-        <h2>Intimacy</h2>
+        <h2>Personal calendar</h2>
         ${intimacyCardHTML()}
       </section>
 
@@ -1107,40 +1101,8 @@ function youScreen() {
     if (minput) minput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); commitMeal(); } });
   }
   app.querySelectorAll('.you-meal-del').forEach((b) => b.addEventListener('click', () => { removeMeal(b.dataset.id); youScreen(); }));
-  const cycEnable = document.getElementById('you-cycle-enable');
-  if (cycEnable) cycEnable.addEventListener('click', () => { setCycleEnabled(true); youScreen(); });
-  const cycDisable = document.getElementById('you-cycle-disable');
-  if (cycDisable) cycDisable.addEventListener('click', () => { setCycleEnabled(false); youScreen(); });
-  const cycSave = document.getElementById('you-cycle-save');
-  if (cycSave) cycSave.addEventListener('click', () => {
-    const s = document.getElementById('you-cycle-start').value;
-    const e = document.getElementById('you-cycle-end').value;
-    if (s) { addCyclePeriod(s, e); youScreen(); }
-  });
-  app.querySelectorAll('.cycle-del').forEach((b) => b.addEventListener('click', () => { removeCyclePeriod(b.dataset.id); youScreen(); }));
   const intimEnable = document.getElementById('you-intim-enable');
-  if (intimEnable) intimEnable.addEventListener('click', () => { setIntimEnabled(true); youScreen(); });
-  const intimDisable = document.getElementById('you-intim-disable');
-  if (intimDisable) intimDisable.addEventListener('click', () => { setIntimEnabled(false); youScreen(); });
-  const intimDesire = document.getElementById('you-intim-desire');
-  const intimDesireVal = document.getElementById('you-intim-desire-val');
-  if (intimDesire && intimDesireVal) {
-    const sync = () => { intimDesireVal.textContent = intimDesire.value; };
-    intimDesire.addEventListener('input', sync);
-  }
-  const intimSave = document.getElementById('you-intim-save');
-  if (intimSave) intimSave.addEventListener('click', () => {
-    const date = document.getElementById('you-intim-date').value;
-    const count = document.getElementById('you-intim-count').value;
-    const orgasms = document.getElementById('you-intim-org').value;
-    const desireEl = document.getElementById('you-intim-desire');
-    // a slider always carries a value; only record desire if the user actually moved it
-    const desire = (desireEl && desireEl.dataset.touched === '1') ? desireEl.value : null;
-    const note = document.getElementById('you-intim-note').value;
-    if (date) { addIntimEntry({ date, count, orgasms, desire, note }); youScreen(); }
-  });
-  if (intimDesire) intimDesire.addEventListener('input', () => { intimDesire.dataset.touched = '1'; });
-  app.querySelectorAll('.intimacy-del').forEach((b) => b.addEventListener('click', () => { removeIntimEntry(b.dataset.id); youScreen(); }));
+  if (intimEnable) intimEnable.addEventListener('click', () => { setIntimEnabled(true); go('#calendar'); });
   const bsave = document.getElementById('you-bday-save');
   if (bsave) bsave.addEventListener('click', () => {
     const val = document.getElementById('you-bday-input').value;
@@ -1570,6 +1532,7 @@ async function routeTo(h, seq) {
   if (h === '#you') return youScreen();
   // Journal: loaded on demand so its IndexedDB/recorder code never touches the boot path.
   if (h === '#journal') { import('./journal-screen.js').then((m) => m.journalScreen()).catch((e) => console.warn('journal load failed', e)); return; }
+  if (h === '#calendar' || h === '#intimacy') { import('./intimacy-screen.js').then((m) => m.intimacyScreen()).catch((e) => console.warn('calendar load failed', e)); return; }
   // Help screens: loaded on demand — static copy that never needs to ride the boot path.
   if (h === '#tutorial') { import('./help-screens.js').then((m) => m.tutorialScreen()).catch((e) => console.warn('tutorial load failed', e)); return; }
   if (h === '#faq') { import('./help-screens.js').then((m) => m.faqScreen()).catch((e) => console.warn('faq load failed', e)); return; }

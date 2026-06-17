@@ -131,8 +131,13 @@ export function trackHubScreen(trackId) {
       </section>
 
       <section class="card">
-        <h2>Or pick a topic</h2>
-        <div class="fin-lib" id="fin-library">${lessonCards}</div>
+        <details class="fin-lib-details">
+          <summary class="fin-lib-summary">
+            <span class="fin-lib-summary-txt"><strong>Or pick a topic</strong><small>Browse all ${track.lessons.LESSON_LIBRARY.length} lessons — open it when you want, tuck it away when you don't.</small></span>
+            <span class="fin-lib-chevron" aria-hidden="true">▾</span>
+          </summary>
+          <div class="fin-lib" id="fin-library">${lessonCards}</div>
+        </details>
       </section>
 
       ${quizHTML}

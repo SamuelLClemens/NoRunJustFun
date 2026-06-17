@@ -1,11 +1,13 @@
-# You Got This! 🌸
+# Garden Moves 🌷
 
-A free, private, playful stretch-and-strength app for busy women — especially
-after pregnancy. No equipment, no accounts, no tracking. A friendly 3D coach
-talks you through short yoga-leaning sessions, and a little garden grows every
-time you show up. The logo joins the name and a veronica — a small flower
-that thrives just about anywhere — into one mark: the flower forms the
-exclamation point of "You Got This!".
+*Move, grow, bloom.*
+
+A free, private companion for **mind, body, and soul**. No accounts, no
+tracking — everything you do stays on your device. Learn (money, parenting,
+communication, memory), move (gentle stretch / yoga / strength / face yoga /
+with-your-baby), and be still (guided meditation), while a little garden grows
+every time you show up. The logo pairs the name with a veronica — a small
+flower that thrives just about anywhere.
 
 ## Your live app
 
@@ -19,7 +21,7 @@ nothing to install or sign up for.
 1. Open the link above in **Safari** on your iPhone.
 2. Tap the **Share** button (the square with the arrow).
 3. Scroll down and tap **"Add to Home Screen"**.
-4. Tap **Add**. You now have a "You Got This" app icon — it even works
+4. Tap **Add**. You now have a "Garden Moves" app icon — it even works
    offline after the first visit.
 
 ### Share it with friends
