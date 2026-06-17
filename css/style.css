@@ -431,6 +431,15 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 .fin-banner strong { color: var(--finance-ink); }
 
 .fin-lib { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 8px; }
+/* Optional dropdown wrapping the full lesson list — hidden until the user opens it. */
+.fin-lib-details > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; }
+.fin-lib-details > summary::-webkit-details-marker { display: none; }
+.fin-lib-summary-txt { flex: 1; min-width: 0; }
+.fin-lib-summary-txt strong { display: block; font-size: 1.15rem; }
+.fin-lib-summary-txt small { color: var(--ink-soft); }
+.fin-lib-chevron { flex: 0 0 auto; font-size: 1.1rem; color: var(--ink-soft); transition: transform 0.18s ease; }
+.fin-lib-details[open] > summary .fin-lib-chevron { transform: rotate(180deg); }
+@media (prefers-reduced-motion: reduce) { .fin-lib-chevron { transition: none; } }
 .fin-lib-btn {
   border: 2px solid var(--finance-border); border-radius: var(--radius-sm); background: var(--card);
   padding: 12px 14px; display: flex; align-items: center; gap: 12px; text-align: left;
