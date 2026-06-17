@@ -17,7 +17,9 @@ function defaults() {
       voicePref: 'auto',        // 'auto' | 'on' | 'off' — 'auto' lets capable devices
                                 // load the lifelike voice in the background (system voice
                                 // covers slow devices); 'on'/'off' are explicit user choices
-      fullInstructorOn: false,  // optional photoreal instructor (beta)
+      fullInstructorOn: true,   // realistic 3D coach ON by default — device-gated
+                                // (realisticInstructorSupported) so weak devices fall back to
+                                // the light coach, and the perf watchdog demotes if it runs slow
       sfxOn: true,
       musicOn: false,           // default OFF per iOS autoplay + brief
       musicVol: 0.5,
