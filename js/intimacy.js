@@ -204,6 +204,36 @@ export function setDesire(date, val) {
 }
 export function setDayNote(date, note) { const d = ensureDay(date); d.note = String(note || '').slice(0, 280); pruneDay(date); save(); }
 
+// --- Mood, energy, symptoms (per day) ----------------------------------
+function clamp1to5(v) { const n = Math.round(Number(v)); return isFinite(n) ? Math.max(1, Math.min(5, n)) : null; }
+export const MOODS = ['', '😞', '😕', '😐', '🙂', '😄']; // 1..5
+export function moodFor(v) { return v == null ? '' : (MOODS[Math.max(1, Math.min(5, Math.round(v)))] || ''); }
+export const SYMPTOMS = [
+  { id: 'cramps', label: 'Cramps' },
+  { id: 'headache', label: 'Headache' },
+  { id: 'bloating', label: 'Bloating' },
+  { id: 'tender', label: 'Tender breasts' },
+  { id: 'fatigue', label: 'Fatigue' },
+  { id: 'nausea', label: 'Nausea' },
+  { id: 'backache', label: 'Backache' },
+  { id: 'acne', label: 'Acne' },
+  { id: 'cravings', label: 'Cravings' },
+  { id: 'poorsleep', label: 'Poor sleep' },
+];
+const SYMPTOM_LABEL = Object.fromEntries(SYMPTOMS.map((s) => [s.id, s.label]));
+export function symptomLabel(id) { return SYMPTOM_LABEL[id] || id; }
+export function setMood(date, v) { const d = ensureDay(date); d.mood = (v === '' || v == null) ? null : clamp1to5(v); pruneDay(date); save(); }
+export function setEnergy(date, v) { const d = ensureDay(date); d.energy = (v === '' || v == null) ? null : clamp1to5(v); pruneDay(date); save(); }
+export function toggleSymptom(date, id) {
+  const d = ensureDay(date);
+  if (!Array.isArray(d.symptoms)) d.symptoms = [];
+  const i = d.symptoms.indexOf(id);
+  if (i >= 0) d.symptoms.splice(i, 1); else d.symptoms.push(id);
+  pruneDay(date);
+  save();
+}
+export function hasSymptom(date, id) { const d = im().days[date]; return !!(d && Array.isArray(d.symptoms) && d.symptoms.includes(id)); }
+
 export function addEncounter(date, f = {}) {
   const d = ensureDay(date);
   const e = {
@@ -230,7 +260,8 @@ export function removeEncounter(date, encId) {
 // drop a day that holds nothing, so the calendar stays clean
 function pruneDay(date) {
   const d = im().days[date];
-  if (d && (!d.encounters || !d.encounters.length) && d.desire == null && !d.note && !d.period) delete im().days[date];
+  if (d && (!d.encounters || !d.encounters.length) && d.desire == null && !d.note && !d.period
+    && d.mood == null && d.energy == null && (!d.symptoms || !d.symptoms.length)) delete im().days[date];
 }
 
 // ---- derived: glyphs, stats, streak, series -----------------------------
@@ -303,6 +334,69 @@ export function statsAll() {
     (d.encounters || []).forEach((e) => { org += (e.orgasms || 0); if (e.satisfaction != null) { sat += e.satisfaction; satN++; } });
   });
   return { encounters: enc, orgasms: org, avgSatisfaction: satN ? Math.round((sat / satN) * 10) / 10 : null, daysLogged: logged };
+}
+
+// Gentle, DESCRIPTIVE insights across everything logged — cycle, desire, satisfaction,
+// mood, symptoms. Never a prediction, never medical advice. Returns readable sentences.
+export function insights() {
+  const days = im().days;
+  const keys = Object.keys(days).sort();
+  if (keys.length < 3) return { enough: false, count: keys.length, lines: [] };
+  const avg = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : null);
+  const r1 = (n) => Math.round(n * 10) / 10;
+  let encTotal = 0; const satAll = []; const desP = []; const desN = []; const moodP = []; const moodN = [];
+  const symCount = {}; const satByDow = [[], [], [], [], [], [], []];
+  keys.forEach((k) => {
+    const d = days[k]; const isP = !!d.period;
+    encTotal += (d.encounters || []).length;
+    (d.encounters || []).forEach((e) => {
+      if (e.satisfaction != null) { satAll.push(e.satisfaction); try { satByDow[new Date(k + 'T00:00:00').getDay()].push(e.satisfaction); } catch { /* skip */ } }
+    });
+    if (d.desire != null) (isP ? desP : desN).push(d.desire);
+    if (d.mood != null) (isP ? moodP : moodN).push(d.mood);
+    (d.symptoms || []).forEach((s) => { symCount[s] = (symCount[s] || 0) + 1; });
+  });
+  const lines = [];
+  let spanDays = 1;
+  try { spanDays = Math.max(1, Math.round((new Date(keys[keys.length - 1] + 'T00:00:00') - new Date(keys[0] + 'T00:00:00')) / 86400000) + 1); } catch { spanDays = 1; }
+  const perWeek = r1((encTotal / spanDays) * 7);
+  lines.push(`You have logged <strong>${encTotal}</strong> encounter${encTotal === 1 ? '' : 's'} over ${spanDays} day${spanDays === 1 ? '' : 's'} — about <strong>${perWeek}</strong> a week.`);
+  const sa = avg(satAll); if (sa != null) lines.push(`Average satisfaction: <strong>${faceFor(sa)} ${r1(sa)}/5</strong>.`);
+  const dp = avg(desP); const dn = avg(desN);
+  if (dp != null && dn != null) lines.push(`Desire averaged <strong>${r1(dp)}/5</strong> on period days and <strong>${r1(dn)}/5</strong> on other days.`);
+  const mp = avg(moodP); const mn = avg(moodN);
+  if (mp != null && mn != null) lines.push(`Mood averaged <strong>${moodFor(mp)} ${r1(mp)}/5</strong> on period days and <strong>${moodFor(mn)} ${r1(mn)}/5</strong> on other days.`);
+  const topSym = Object.entries(symCount).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  if (topSym.length) lines.push(`Most-logged feelings: ${topSym.map(([id, n]) => `${symptomLabel(id)} (${n})`).join(', ')}.`);
+  const DOW = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  let bDow = -1; let bVal = -1;
+  satByDow.forEach((arr, i) => { const a = avg(arr); if (a != null && arr.length >= 2 && a > bVal) { bVal = a; bDow = i; } });
+  if (bDow >= 0) lines.push(`Satisfaction tended to be highest on <strong>${DOW[bDow]}s</strong>.`);
+  return { enough: true, count: keys.length, lines };
+}
+
+// --- Export / backup (the user's own data, by their action) -------------
+export function exportData() {
+  return JSON.stringify({ app: 'garden-moves', type: 'personal-calendar', schema: 1, exported: todayStr(), data: im() }, null, 2);
+}
+export function importData(text) {
+  try {
+    const o = JSON.parse(text);
+    const d = (o && o.data && typeof o.data === 'object') ? o.data : ((o && o.days) ? o : null);
+    if (!d || typeof d !== 'object') return false;
+    store.progress.intimacy = {
+      enabled: true,
+      pinHash: d.pinHash || null,
+      partners: Array.isArray(d.partners) ? d.partners : [],
+      defaultPartnerId: d.defaultPartnerId || null,
+      showCycle: d.showCycle !== false,
+      cycleMerged: true,
+      days: (d.days && typeof d.days === 'object' && !Array.isArray(d.days)) ? d.days : {},
+    };
+    _unlocked = true;
+    save();
+    return true;
+  } catch { return false; }
 }
 
 // Per-day series for the last `n` days (oldest first): encounter counts + avg satisfaction.

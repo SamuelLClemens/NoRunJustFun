@@ -12,6 +12,7 @@ import {
   showCycle, setShowCycle, isPeriodDay, isPeriod, setPeriod, cycleStats,
   getDay, setDesire, setDayNote, addEncounter, removeEncounter,
   dayGlyphs, faceFor, FACES, loggingStreak, statsMonth, statsAll, series, todayStr, setEnabled,
+  setMood, setEnergy, toggleSymptom, hasSymptom, moodFor, MOODS, SYMPTOMS, insights, exportData, importData,
 } from './intimacy.js';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -21,6 +22,7 @@ let _vy = null, _vm = null;   // displayed year / month
 let _sel = null;              // selected 'YYYY-MM-DD' or null
 let _showSettings = false;
 let _pinErr = '';
+let _importMsg = '';
 
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -137,6 +139,12 @@ function dayEditorHTML(date) {
       <label class="intim-check intim-period-toggle"><input type="checkbox" id="intim-period" data-date="${esc(date)}" ${isPeriod(date) ? 'checked' : ''}> 🩸 Period day</label>
       <p class="hint">How much did you want to today?</p>
       <div class="intim-desire-row">${desireRow}</div>
+      <p class="hint">Mood</p>
+      <div class="intim-pick-row">${[1, 2, 3, 4, 5].map((v) => `<button type="button" class="intim-pick-btn intim-mood-btn${d.mood === v ? ' is-sel' : ''}" data-date="${esc(date)}" data-mood="${v}" aria-label="Mood ${v} of 5">${MOODS[v]}</button>`).join('')}</div>
+      <p class="hint">Energy</p>
+      <div class="intim-desire-row">${[1, 2, 3, 4, 5].map((v) => `<button type="button" class="intim-desire-btn intim-energy-btn${d.energy === v ? ' is-sel' : ''}" data-date="${esc(date)}" data-energy="${v}" aria-label="Energy ${v} of 5">⚡<small>${v}</small></button>`).join('')}</div>
+      <p class="hint">Anything you felt?</p>
+      <div class="intim-symptoms">${SYMPTOMS.map((s) => `<button type="button" class="intim-sym-chip${hasSymptom(date, s.id) ? ' is-sel' : ''}" data-date="${esc(date)}" data-sym="${esc(s.id)}">${esc(s.label)}</button>`).join('')}</div>
       ${encList}
       <details class="intim-add" ${enc.length ? '' : 'open'}>
         <summary>+ Add an encounter</summary>
@@ -176,6 +184,18 @@ function statsHTML() {
     <div><strong>${sm.avgSatisfaction != null ? faceFor(sm.avgSatisfaction) + ' ' + sm.avgSatisfaction : '–'}</strong><span>satisfaction</span></div>
     <div><strong>${streak}</strong><span>day streak</span></div>
   </div>`;
+}
+
+function insightsHTML() {
+  const ins = insights();
+  if (!ins.enough) {
+    return `<section class="card"><h2>Insights</h2><p class="hint">Log a few more days and gentle patterns will appear here — across your cycle, desire, satisfaction, mood, and energy. Descriptive only, never a prediction.</p></section>`;
+  }
+  return `<section class="card">
+      <h2>Insights</h2>
+      <ul class="intim-insights">${ins.lines.map((l) => `<li>${l}</li>`).join('')}</ul>
+      <p class="hint">These describe what you have logged — they are not predictions or medical advice.</p>
+    </section>`;
 }
 
 function cycleLineHTML() {
@@ -248,6 +268,11 @@ function settingsHTML() {
              <button class="btn" id="intim-savepin">Set PIN</button>
            </div>`}
       ${_pinErr ? `<p class="hint intim-err">${esc(_pinErr)}</p>` : ''}
+      <h3 class="intim-sub">Backup</h3>
+      <p class="hint">Download your whole calendar to a file you keep, or restore from one. Nothing leaves this device unless you export it — and the file is <strong>not</strong> encrypted, so store it somewhere safe.</p>
+      <button class="btn" id="intim-export">Export to a file</button>
+      <label class="btn intim-import-label">Restore from a file<input type="file" id="intim-import" accept="application/json,.json" hidden></label>
+      ${_importMsg ? `<p class="hint">${esc(_importMsg)}</p>` : ''}
       <h3 class="intim-sub">This space</h3>
       <p class="hint cycle-disclaimer">A private place to note your intimate life, if it helps you understand your own patterns. It describes only what you log — there are no goals or judgments, and it is <strong>not</strong> medical, fertility, or contraception advice. Everything stays on this device.</p>
       <button class="linkish" id="intim-lock">Lock now</button> · <button class="linkish" id="intim-disable">Turn off intimacy tracking</button>
@@ -272,6 +297,7 @@ export function intimacyScreen() {
         ${cycleLineHTML()}
       </section>
       ${_sel ? dayEditorHTML(_sel) : ''}
+      ${insightsHTML()}
       ${graphsHTML()}
       ${_showSettings ? settingsHTML() : ''}
     </main>`;
@@ -294,6 +320,10 @@ function bind(app) {
 
   const periodCb = document.getElementById('intim-period');
   if (periodCb) periodCb.addEventListener('change', () => { setPeriod(periodCb.dataset.date, periodCb.checked); rerender(); });
+
+  app.querySelectorAll('.intim-mood-btn').forEach((b) => b.addEventListener('click', () => { const v = parseInt(b.dataset.mood, 10); setMood(b.dataset.date, getDay(b.dataset.date).mood === v ? null : v); rerender(); }));
+  app.querySelectorAll('.intim-energy-btn').forEach((b) => b.addEventListener('click', () => { const v = parseInt(b.dataset.energy, 10); setEnergy(b.dataset.date, getDay(b.dataset.date).energy === v ? null : v); rerender(); }));
+  app.querySelectorAll('.intim-sym-chip').forEach((b) => b.addEventListener('click', () => { toggleSymptom(b.dataset.date, b.dataset.sym); rerender(); }));
 
   // satisfaction face picker (local, no re-render)
   const faces = app.querySelectorAll('.intim-face-btn');
@@ -347,6 +377,29 @@ function bind(app) {
   app.querySelectorAll('.intim-prem').forEach((b) => b.addEventListener('click', () => { removePartner(b.dataset.id); rerender(); }));
   const cyc = document.getElementById('intim-cycle');
   if (cyc) cyc.addEventListener('change', () => { setShowCycle(cyc.checked); rerender(); });
+
+  const exportBtn = document.getElementById('intim-export');
+  if (exportBtn) exportBtn.addEventListener('click', () => {
+    try {
+      const blob = new Blob([exportData()], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'garden-moves-personal-calendar.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      _importMsg = 'Exported. Keep that file somewhere safe — it is not encrypted.';
+      rerender();
+    } catch { _importMsg = 'Could not export on this device.'; rerender(); }
+  });
+  const importInput = document.getElementById('intim-import');
+  if (importInput) importInput.addEventListener('change', () => {
+    const file = importInput.files && importInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => { _importMsg = importData(String(reader.result)) ? 'Restored from your file.' : 'That file could not be read as a calendar backup.'; rerender(); };
+    reader.onerror = () => { _importMsg = 'Could not read that file.'; rerender(); };
+    reader.readAsText(file);
+  });
 
   const savePin = document.getElementById('intim-savepin');
   if (savePin) savePin.addEventListener('click', async () => {
