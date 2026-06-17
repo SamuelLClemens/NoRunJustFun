@@ -7,6 +7,7 @@
 // spelled out for text-to-speech. Plan builders + catalog come from lessons.shared.js.
 
 import { makeDisclaimerSeg, makeLessonModule } from './lessons.shared.js';
+import { LESSON_VARIANTS } from './lesson-variants.js';
 
 export const CRYSTALS_DISCLAIMER = "This section explores crystal practices as a cultural and reflective tradition. It is educational only — not medical, psychological, or scientific advice, and not a substitute for professional care. There is no good scientific evidence that crystals emit energy or heal; any benefits people report are best explained by relaxation, ritual, and the placebo effect. Please never use crystals in place of medical or mental-health treatment.";
 
@@ -283,6 +284,7 @@ const mod = makeLessonModule({
   disclaimerSeg: DISCLAIMER_SEG,
   sessionTitle: "Exploring crystals",
   kind: "crystals",
+  variants: LESSON_VARIANTS.crystals,
 });
 
 export const LESSON_LIBRARY = mod.LESSON_LIBRARY;

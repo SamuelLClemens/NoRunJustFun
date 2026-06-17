@@ -20,6 +20,11 @@
 // A catalog lesson (#fin-lib-<id>) plays its full segment list, opened by the
 // spoken disclaimer.
 
+import { withVariants } from './lessons.shared.js';
+import { LESSON_VARIANTS } from './lesson-variants.js';
+import { EXTRA_LESSONS_MONEY, EXTRA_CURRICULUM_MONEY } from './lessons.money.ext.js';
+const VAR_MONEY = LESSON_VARIANTS.money || {};
+
 export const FINANCE_DISCLAIMER = "This is educational information, not financial advice. It is not a substitute for a licensed financial professional, and nothing here is a recommendation to buy, sell, or hold anything. No investment is guaranteed or risk-free, and you can lose money. Dollar figures are labelled with the year they apply to and can change.";
 
 export const FINANCE_DISCLAIMER_SHORT = "Educational only — not financial advice, and no returns are guaranteed.";
@@ -479,6 +484,12 @@ const LESSONS = {
 // Curriculum order for the duration-scaled study session.
 const CURRICULUM = ['budgeting', 'compound-growth', 'risk-diversification', 'retirement-accounts', 'property-basics', "credit-score-basics", "paying-down-debt", "banking-and-apy", "emergency-fund-deeper", "credit-card-traps", "spotting-money-scams", "index-funds-and-etfs", "dollar-cost-averaging", "investment-fees", "stocks-and-bonds", "inflation-and-rates", "saving-for-goals", "roth-vs-traditional-deep", "hsa-and-fsa", "first-home-and-mortgage"];
 
+// S8b expansion: fold in the fact-checked extension lessons (authored separately in
+// lessons.money.ext.js; each segment carries its own simpler/deeper variants). Additive
+// and in-place so the vetted base map above stays byte-stable.
+Object.assign(LESSONS, EXTRA_LESSONS_MONEY);
+CURRICULUM.push(...EXTRA_CURRICULUM_MONEY);
+
 // Catalog cards for the hub, ordered welcome-first then curriculum.
 export const LESSON_LIBRARY = CURRICULUM
   .filter((id) => LESSONS[id])
@@ -495,7 +506,7 @@ export { LESSONS };
 
 function planFromSegments(segs, meta) {
   const items = segs.map((s) => ({
-    ex: { id: s.id, name: s.name, why: s.say, cues: [], sided: false, secs: segDur(s) },
+    ex: { id: s.id, name: s.name, why: s.say, simpler: s.simpler || '', deeper: s.deeper || '', cues: [], sided: false, secs: segDur(s) },
     secs: segDur(s), block: 'lesson',
   }));
   const totalSecs = items.reduce((t, i) => t + i.secs, 0);
@@ -524,7 +535,7 @@ export function buildLessonById(id) {
   // standalone, completable lesson (no content/sources to "complete"), so
   // #fin-lib-welcome-money resolves to null and the route falls back to the hub.
   if (!L || id === 'welcome-money') return null;
-  const segs = [DISCLAIMER_SEG, ...L.segments];
+  const segs = [DISCLAIMER_SEG, ...L.segments].map((s) => withVariants(s, VAR_MONEY[id]));
   return planFromSegments(segs, {
     durationKey: Math.max(1, Math.round(lessonSecs(segs) / 60)),
     lessonIds: [id],
@@ -552,7 +563,7 @@ export function buildLessonSession(durationMins) {
   let used = 0;
 
   const add = (id, chosen) => {
-    segs.push(...chosen);
+    segs.push(...chosen.map((s) => withVariants(s, VAR_MONEY[id])));
     used += chosen.reduce((t, s) => t + segDur(s), 0);
     if (id !== 'welcome-money') {
       const L = LESSONS[id];

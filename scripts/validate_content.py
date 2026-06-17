@@ -171,14 +171,16 @@ ok('recordSession(' not in learn_code, "learning.js must not call recordSession 
 ok('totalMins' not in learn_code, "learning.js must not write totalMins (no level inflation)")
 ok('durationsTried' not in learn_code, "learning.js must not write durationsTried (protects 'all-durations')")
 
-# 12) learning state migration — additive & lossless: v4, retaining the v2->v3 branch
-#     that moved the legacy progress.finance blob into learning.money, plus a v3->v4
-#     branch adding the dashboard fields (on-device only).
-ok('CURRENT_VERSION = 4' in st, "state.js CURRENT_VERSION must be 4 (dashboard additions)")
+# 12) learning state migration — additive & lossless: v5, retaining the v2->v3 branch
+#     that moved the legacy progress.finance blob into learning.money, the v3->v4 branch
+#     adding the dashboard fields, and the v4->v5 branch adding the You-page ledgers
+#     (journal/meals/cycle). All on-device only.
+ok('CURRENT_VERSION = 6' in st, "state.js CURRENT_VERSION must be 6 (You-page ledgers + intimacy)")
 ok('learning:' in st, "state.js defaults() missing the learning sub-object")
 ok('data.progress.finance' in st, "state.js v2->v3 branch does not migrate the legacy progress.finance blob")
 ok('(data.version || 1) < 3' in st, "state.js missing the v2->v3 migration branch guard")
 ok('(data.version || 1) < 4' in st, "state.js missing the v3->v4 migration branch guard")
+ok('(data.version || 1) < 5' in st, "state.js missing the v4->v5 migration branch guard")
 for f in ['birthday', 'weightUnit', 'weights', 'quizBest', 'completedAt']:
     ok(f in st, f"state.js v4 missing the '{f}' field")
 
@@ -510,6 +512,304 @@ ok(main_src.count('maybeAutoEnableNaturalVoice') >= 2, 'maybeAutoEnableNaturalVo
 ok("p.voicePref === 'off'" in main_src, 'auto-enable must respect an explicit voicePref off')
 ok('saveData' in main_src, 'auto-enable must honor Data Saver (navigator.connection.saveData)')
 ok("p.voicePref = e.target.checked ? 'on' : 'off'" in main_src, 'settings toggle must record an explicit voicePref')
+
+# 26) State v5 + You-page personal ledgers (journal/meals/cycle). New on-device ledgers
+#     must exist and default safely; cycle is opt-in (default OFF); the additive v<5
+#     migration branch must backfill them losslessly (shallow-spread nested-object trap).
+ok('CURRENT_VERSION = 6' in st, 'state.js CURRENT_VERSION must be 6')
+ok('journal: []' in st, 'state.js defaults missing progress.journal[]')
+ok('meals: []' in st, 'state.js defaults missing progress.meals[]')
+ok(re.search(r"cycle:\s*\{\s*enabled:\s*false", st) is not None,
+   'state.js defaults missing opt-in (default-OFF) progress.cycle')
+ok(re.search(r"intimacy:\s*\{\s*enabled:\s*false", st) is not None,
+   'state.js defaults missing opt-in (default-OFF) progress.intimacy')
+ok('< 5' in st, 'state.js missing the v4->v5 migration branch')
+ok('< 6' in st, 'state.js missing the v5->v6 (intimacy) migration branch')
+
+# 27) Privacy guard (ALWAYS ON): no off-device speech recognition anywhere in js/.
+#     Browser SpeechRecognition streams microphone audio to the vendor (Google on
+#     Chrome) and is absent on iOS Safari — journal transcription must be on-device only.
+def _all_js_src():
+    out = []
+    for base, _dirs, files in os.walk(os.path.join(ROOT, 'js')):
+        for f in files:
+            if f.endswith('.js'):
+                out.append(open(os.path.join(base, f), encoding='utf-8').read())
+    return out
+_js_all = _all_js_src()
+ok(not any(('SpeechRecognition' in s or 'webkitSpeechRecognition' in s) for s in _js_all),
+   'off-device SpeechRecognition found in js/ — journal transcription must stay on-device only')
+
+# 28) Isolation guard (feature-gated): the You-page ledger modules, once they exist,
+#     must NEVER write a sessions[] record — that would silently grow the count-based
+#     garden and fabricate a streak day (gamify.js streakInfo/gardenStage). They are
+#     their own ledgers, like weights[]. Gates on file existence so the suite stays
+#     green before the modules land.
+def _read_opt(p):
+    fp = os.path.join(ROOT, p)
+    return open(fp, encoding='utf-8').read() if os.path.exists(fp) else ''
+for _ledger in ['js/journal.js', 'js/journal-screen.js', 'js/meals.js', 'js/cycle.js']:
+    _src = _read_opt(_ledger)
+    if _src:
+        ok('sessions.push' not in _src and 'recordSession' not in _src,
+           f'{_ledger} must not write to sessions[] (breaks garden/streak isolation)')
+
+# 29) S1: the You page captures the name when missing — a friendly inline prompt
+#     (in addition to Settings) that persists to profile.name.
+ok('you-name-input' in main_src and 'you-name-save' in main_src,
+   'You page missing the inline name prompt (you-name-input / you-name-save)')
+ok('store.profile.name = val' in main_src, 'You page name prompt does not persist to profile.name')
+
+# 30) S2: usage/engagement graphs are READ-ONLY reflection — derived at render time
+#     from the ledgers, never writing back or feeding the streak/garden, and precached.
+usage_src = _read_opt('js/usage-graph.js')
+if usage_src:
+    ok('sessions.push' not in usage_src and 'recordSession' not in usage_src and 'save(' not in usage_src,
+       'usage-graph.js must be read-only (no sessions.push/recordSession/save)')
+    ok('usageGraphsHTML' in main_src, 'You page does not render the usage graphs (usageGraphsHTML)')
+    ok("'js/usage-graph.js'" in read('sw.js'), 'sw.js does not precache js/usage-graph.js')
+
+# 31) S3: longer sessions open with a brief, personalized coach check-in (durationKey>=15),
+#     spoken before content; gentle and anti-compulsion (never pressures the streak).
+checkin_src = _read_opt('js/checkin.js')
+if checkin_src:
+    ok('composeCheckin' in checkin_src, 'checkin.js missing composeCheckin')
+    ok('durationKey' in checkin_src and '>= 15' in checkin_src, 'check-in must gate on durationKey >= 15')
+    ok('composeCheckin' in main_src, 'main.js does not invoke the session check-in')
+    ok('skipWelcome' in read('js/player.js'), 'player.js missing skipWelcome (would double-greet on long workouts)')
+    _low = checkin_src.lower()
+    ok(not any(s in _low for s in ["don't break", 'do not break', 'keep your streak', 'lose your streak', "don't lose"]),
+       'check-in must not pressure the user about their streak (anti-compulsion)')
+    ok("'js/checkin.js'" in read('sw.js'), 'sw.js does not precache js/checkin.js')
+
+# 32) S4: on-demand difficulty — one lesson with "Explain it simpler" / "Go deeper"
+#     buttons that re-narrate the current segment at another reading level. Additive
+#     (lessons without variants are unchanged) and never touches sessions[]. pickLevel
+#     is the shared accessor used by both lesson plan builders.
+shared_src = read('js/data/lessons.shared.js')
+ok('pickLevel' in shared_src, 'lessons.shared.js missing pickLevel')
+ok("pickLevel(s, 'simpler')" in shared_src, 'planFromSegments does not carry the simpler variant')
+ok("pickLevel(s, 'deeper')" in shared_src, 'planFromSegments does not carry the deeper variant')
+ok('speakVariant' in read('js/player.js'), 'player.js missing speakVariant for the difficulty buttons')
+ok("getElementById('btn-simpler')" in main_src and "getElementById('btn-deeper')" in main_src,
+   'session screen missing the simpler/deeper controls')
+ok('speakVariant' in main_src, 'session screen does not invoke speakVariant')
+ok('simpler:' in read('js/data/lessons.js'), 'money lesson plan items do not carry difficulty variants')
+# S8 prep: variants merge from a companion file so the vetted lesson sources stay
+# untouched; the engine applies them via withVariants in both the shared + money builders.
+ok('withVariants' in shared_src, 'lessons.shared.js missing the withVariants merge')
+ok("from './lesson-variants.js'" in read('js/data/lessons.js') and 'withVariants' in read('js/data/lessons.js'),
+   'money builder does not merge variants from the companion file')
+_lv = _read_opt('js/data/lesson-variants.js')
+ok(bool(_lv) and 'LESSON_VARIANTS' in _lv, 'js/data/lesson-variants.js missing LESSON_VARIANTS')
+ok("'js/data/lesson-variants.js'" in read('sw.js'), 'sw.js does not precache lesson-variants.js')
+
+# 33) S5a: the journal — typed entries + the readable/listenable book. Its own ledger
+#     (never sessions[]); audio goes to IndexedDB; the screen loads on demand (off the
+#     boot path); and "Reset everything" also clears the IndexedDB media store.
+journal_src = _read_opt('js/journal.js')
+if journal_src:
+    ok('sessions.push' not in journal_src and 'recordSession' not in journal_src,
+       'journal.js must not write to sessions[] (breaks garden/streak isolation)')
+    ok('progress.journal' in journal_src, 'journal.js does not use the progress.journal ledger')
+    idb_src = _read_opt('js/idb.js')
+    ok(bool(idb_src) and 'indexedDB' in idb_src, 'idb.js missing the IndexedDB wrapper for audio blobs')
+    ok("import('./journal-screen.js')" in main_src, 'router must load the journal screen on demand (dynamic import)')
+    ok("from './journal-screen.js'" not in main_src, 'journal-screen.js must NOT be statically imported (keep it off the boot path)')
+    ok('clearAllAudio' in main_src, 'Reset everything must also clear the journal IndexedDB store')
+    for _f in ['js/idb.js', 'js/journal.js', 'js/journal-screen.js']:
+        ok(f"'{_f}'" in read('sw.js'), f'sw.js does not precache {_f}')
+
+# 34) S5b: voice journaling — mic recording + raw playback. getUserMedia/MediaRecorder
+#     must live ONLY in the on-demand journal screen, never on the boot path (main.js),
+#     and recordings must play back from IndexedDB.
+js_screen_src = _read_opt('js/journal-screen.js')
+if js_screen_src and 'journal-record' in js_screen_src:
+    ok('getUserMedia' in js_screen_src and 'MediaRecorder' in js_screen_src,
+       'journal-screen.js missing voice recording (getUserMedia/MediaRecorder)')
+    ok('getUserMedia' not in main_src and 'MediaRecorder' not in main_src,
+       'getUserMedia/MediaRecorder must not appear on the boot path (main.js)')
+    ok('journal-play' in js_screen_src and 'getEntryAudio' in js_screen_src,
+       'journal-screen.js missing raw-recording playback from IndexedDB')
+
+# 35) S6: meal tracking — gentle timestamped notes only, never sessions[], and NONE of
+#     the disordered-eating triggers (no calories/macros/targets/streaks/scores).
+meals_src = _read_opt('js/meals.js')
+if meals_src:
+    ok('sessions.push' not in meals_src and 'recordSession' not in meals_src,
+       'meals.js must not write to sessions[] (breaks garden/streak isolation)')
+    ok('progress.meals' in meals_src, 'meals.js does not use the progress.meals ledger')
+    _ml = meals_src.lower()
+    ok(not any(w in _ml for w in ['calorie', 'macro', 'protein', 'carb', 'streak', 'goal', 'target']),
+       'meals must stay gentle notes — no calories/macros/targets/streaks (anti-compulsion)')
+    ok('addMeal' in main_src and 'you-meal-save' in main_src, 'You page does not render the meal notes')
+    ok("'js/meals.js'" in read('sw.js'), 'sw.js does not precache js/meals.js')
+
+# 36) S7: menstrual/cycle tracking — opt-in (default OFF, guarded in #26), DESCRIPTIVE
+#     only with a clear non-medical disclaimer, and isolated from sessions[]. (The
+#     disclaimer legitimately names ovulation/fertility to DENY them, so no banned-word
+#     scan here — assert the disclaimer + no-prediction framing positively instead.)
+cycle_src = _read_opt('js/cycle.js')
+if cycle_src:
+    ok('sessions.push' not in cycle_src and 'recordSession' not in cycle_src,
+       'cycle.js must not write to sessions[] (breaks garden/streak isolation)')
+    ok('progress.cycle' in cycle_src, 'cycle.js does not use the progress.cycle ledger')
+    ok('isEnabled' in cycle_src and 'setEnabled' in cycle_src, 'cycle.js missing the opt-in toggle')
+    _cl = cycle_src.lower()
+    ok('medical device' in _cl, 'cycle.js missing the non-medical disclaimer')
+    ok('predict' in _cl, 'cycle.js must state it is descriptive, not a prediction')
+    ok('data-cycle' in main_src and 'cycleCardHTML' in main_src, 'You page does not render the cycle card')
+    ok("'js/cycle.js'" in read('sw.js'), 'sw.js does not precache js/cycle.js')
+
+# 36b) v6 intimacy tracking — opt-in (default OFF, guarded in #26), DESCRIPTIVE/PRIVATE
+#      only, isolated from sessions[], with a clear no-judgment, non-medical disclaimer.
+intim_src = _read_opt('js/intimacy.js')
+if intim_src:
+    ok('sessions.push' not in intim_src and 'recordSession' not in intim_src,
+       'intimacy.js must not write to sessions[] (breaks garden/streak isolation)')
+    ok('progress.intimacy' in intim_src, 'intimacy.js does not use the progress.intimacy ledger')
+    ok('isEnabled' in intim_src and 'setEnabled' in intim_src, 'intimacy.js missing the opt-in toggle')
+    _il = intim_src.lower()
+    ok('not</strong> medical' in _il or 'not medical' in _il or 'not</strong> medical, fertility' in _il,
+       'intimacy.js missing the non-medical disclaimer')
+    ok('judg' in _il, 'intimacy.js must state it does not judge/score')
+    ok('data-intimacy' in main_src and 'intimacyCardHTML' in main_src, 'You page does not render the intimacy card')
+    ok("'js/intimacy.js'" in read('sw.js'), 'sw.js does not precache js/intimacy.js')
+
+# 37) S5c: the book is editable, and voice notes transcribe ON-DEVICE in a Web Worker,
+#     gated like the lifelike voice (Data Saver / persisted speed verdict) — never the
+#     off-device Web Speech API. Editing is the always-works path (the book is theirs).
+stt_src = _read_opt('js/stt.js')
+if stt_src:
+    js_screen2 = _read_opt('js/journal-screen.js')
+    worker_src = _read_opt('js/stt-worker.js')
+    ok('new Worker' in stt_src, 'STT inference must run in a Web Worker (off the main thread)')
+    ok('saveData' in stt_src, 'STT must honor Data Saver (gated like the lifelike voice)')
+    ok('SpeechRecognition' not in stt_src and 'SpeechRecognition' not in worker_src,
+       'STT must be on-device, never the off-device Web Speech API')
+    ok('automatic-speech-recognition' in worker_src, 'stt-worker.js missing the on-device ASR pipeline')
+    ok('setEntryText' in js_screen2, 'journal must let the user edit entry text (the editable book)')
+    ok('journal-edit-btn' in js_screen2 and 'transcribeEntry' in js_screen2, 'journal missing edit + transcribe controls')
+    for _f in ['js/stt.js', 'js/stt-worker.js']:
+        ok(f"'{_f}'" in read('sw.js'), f'sw.js does not precache {_f}')
+
+# 38) S9: security headers shipped for the host (a static site cannot set them from
+#     HTML). The CSP must keep the optional on-device models working — allow the model
+#     CDNs and WebAssembly — and scope the microphone to self for journal voice notes.
+hdrs = _read_opt('_headers')
+if hdrs:
+    ok('Content-Security-Policy:' in hdrs, '_headers missing a Content-Security-Policy')
+    ok('Permissions-Policy:' in hdrs and 'microphone=(self)' in hdrs, '_headers missing Permissions-Policy with microphone=(self)')
+    ok('wasm-unsafe-eval' in hdrs, 'CSP must allow wasm-unsafe-eval (on-device models use WebAssembly)')
+    ok('cdn.jsdelivr.net' in hdrs and 'huggingface.co' in hdrs, 'CSP must allow the model CDNs (voice/STT would break)')
+    ok('X-Content-Type-Options: nosniff' in hdrs, '_headers missing X-Content-Type-Options: nosniff')
+    ok('frame-ancestors' in hdrs or 'X-Frame-Options' in hdrs, '_headers missing clickjacking protection')
+
+# 39) S10: the launch disclaimer must be shown ONCE yet ALWAYS reachable. The dismiss
+#     button is pinned and visible regardless of viewport (gated overlay markup + CSS);
+#     it is shown at boot regardless of which route loads (maybeShowSafety fires at boot
+#     AND on home); dismissing persists seenSafety so it never reappears; and a dedup
+#     guard prevents a second overlay being stacked.
+ok('function maybeShowSafety' in main_src, 'main.js missing maybeShowSafety() launch-disclaimer hook')
+ok(main_src.count('maybeShowSafety()') >= 2,
+   'launch disclaimer must fire at boot AND on home so it shows regardless of entry route')
+ok('seenSafety = true' in main_src, 'dismissing the disclaimer must persist seenSafety (shown only once)')
+ok(".overlay.safety'" in main_src or ".overlay.safety\"" in main_src, 'safety overlay missing the dedup guard')
+ok('overlay-card--gated' in main_src, 'safety overlay must use the gated (pinned-button) card structure')
+_css = read('css/style.css')
+ok('.overlay-card--gated' in _css and 'overlay-scroll' in _css and 'overlay-actions' in _css,
+   'css missing the gated overlay (scroll body + pinned actions) that keeps the dismiss button visible')
+
+# 40) S11/S12: a tutorial (#tutorial) and FAQ (#faq) exist, are routed, lazy-loaded
+#     (off the boot path), precached for offline, and discoverable from home + settings.
+help_src = _read_opt('js/help-screens.js')
+if help_src:
+    ok('export function tutorialScreen' in help_src, 'help-screens.js missing tutorialScreen()')
+    ok('export function faqScreen' in help_src, 'help-screens.js missing faqScreen()')
+    ok("'#tutorial'" in main_src and "'#faq'" in main_src, 'main.js does not route #tutorial / #faq')
+    ok("import('./help-screens.js')" in main_src, 'help screens must be lazy-loaded (kept off the boot path)')
+    ok('help-screens.js' not in main_src.split('async function render')[0],
+       'help screens must not be statically imported on the boot path')
+    ok("'js/help-screens.js'" in read('sw.js'), 'sw.js does not precache js/help-screens.js')
+    ok(main_src.count('href="#tutorial"') >= 2 and main_src.count('href="#faq"') >= 2,
+       'tutorial + FAQ must be linked from both home and settings')
+
+    # 41) S12: the FAQ privacy claims must stay TRUE of the build — data on-device, no
+    #     account, and no analytics/tracking anywhere in shipped JS (so the copy is honest).
+    _hl = help_src.lower()
+    ok('on-device' in _hl or 'on this device' in _hl, 'FAQ must state data stays on-device')
+    ok('no account' in _hl or 'no accounts' in _hl, 'FAQ must state there is no account')
+    ok('analytics' in _hl and 'tracker' in _hl, 'FAQ privacy section must address analytics/trackers')
+    _track_eps = ['google-analytics', 'gtag(', 'googletagmanager', 'mixpanel', 'segment.com', 'sentry.io', 'amplitude.com']
+    ok(not any(any(t in s for s in _js_all) for t in _track_eps),
+       'analytics/tracking endpoint found in js/ — the FAQ privacy claim would be false')
+
+# 42) S8b: the +16-per-subject Mind expansion ships as a separate, fact-checked
+#     extension file per track (lessons.<track>.ext.js), merged into the base module
+#     in place so the vetted base map stays byte-stable. Feature-gated on the ext file
+#     existing, so the suite stays green for tracks not yet expanded. Each ext lesson
+#     must carry >=2 sourced URLs and inline simpler/deeper on every segment, avoid the
+#     track's banned guarantee phrases, be wired into the base file, and be precached.
+import json as _json
+_sw = read('sw.js')
+for _sid in ['money', 'parenting', 'communication', 'memory']:
+    _ext = 'js/data/lessons.%s.ext.js' % _sid
+    _esrc = _read_opt(_ext)
+    if not _esrc:
+        continue
+    _CONST = _sid.upper()
+    _base = read(LEARN_SUBJECTS[_sid]['lessons'])
+    ok(("lessons.%s.ext.js" % _sid) in _base, '%s base does not import its extension file' % _sid)
+    ok(('EXTRA_LESSONS_%s' % _CONST) in _base and ('EXTRA_CURRICULUM_%s' % _CONST) in _base,
+       '%s base does not merge EXTRA_LESSONS_%s / EXTRA_CURRICULUM_%s' % (_sid, _CONST, _CONST))
+    ok(('Object.assign(LESSONS, EXTRA_LESSONS_%s)' % _CONST) in _base, '%s does not Object.assign the extension lessons' % _sid)
+    ok(("EXTRA_CURRICULUM_%s)" % _CONST) in _base, '%s does not push the extension curriculum' % _sid)
+    ok(("'%s'" % _ext) in _sw, 'sw.js does not precache %s' % _ext)
+    _lm = re.search(r'EXTRA_LESSONS_%s\s*=\s*(\{.*\})\s*;\s*export const EXTRA_CURRICULUM_%s' % (_CONST, _CONST), _esrc, re.S)
+    _cm = re.search(r'EXTRA_CURRICULUM_%s\s*=\s*(\[.*?\])\s*;' % _CONST, _esrc, re.S)
+    ok(bool(_lm) and bool(_cm), '%s ext file is not parseable (EXTRA_LESSONS/CURRICULUM blobs)' % _sid)
+    if not (_lm and _cm):
+        continue
+    try:
+        _EL = _json.loads(_lm.group(1)); _EC = _json.loads(_cm.group(1))
+    except Exception as _e:
+        ok(False, '%s ext JSON does not parse: %s' % (_sid, _e)); continue
+    ok(list(_EL.keys()) == _EC, '%s ext curriculum order does not match lesson keys' % _sid)
+    ok(len(_EL) >= 16, '%s ext has %d lessons, expected >= 16' % (_sid, len(_EL)))
+    # combined curriculum (base literal + ext) reaches the 36 thoroughness target
+    _bm = re.search(r'const CURRICULUM = \[(.*?)\];', _base, re.S)
+    _bcount = len(re.findall(r'[\'\"]([a-z0-9-]+)[\'\"]', _bm.group(1))) if _bm else 0
+    ok(_bcount + len(_EC) >= 36, '%s combined curriculum is %d, expected >= 36' % (_sid, _bcount + len(_EC)))
+    # Overclaim scan, negation-aware: a banned word inside a responsible negation
+    # ("no guaranteed outcome", "never fails to" as "no technique always works") is the
+    # OPPOSITE of overclaiming, so only flag occurrences NOT preceded by a negation.
+    _banned = LEARN_SUBJECTS[_sid]['banned']
+    _low = _esrc.lower()
+    _NEG = ('no ', 'not ', 'never ', "n't", 'cannot', 'without', 'avoid', 'rarely', 'isn ', 'aren ', 'doesn ', 'do not', 'cannot be')
+    _hits = []
+    for _b in _banned:
+        _p = 0
+        while True:
+            _i = _low.find(_b, _p)
+            if _i < 0:
+                break
+            if not any(_n in _low[max(0, _i - 36):_i] for _n in _NEG):
+                _hits.append(_b)
+            _p = _i + len(_b)
+    ok(not _hits, '%s ext content uses a non-negated banned overclaim phrase: %s' % (_sid, ', '.join(sorted(set(_hits)))))
+    _bad = []
+    for _lid, _L in _EL.items():
+        if _L.get('id') != _lid:
+            _bad.append('%s id mismatch' % _lid)
+        if len([s for s in _L.get('sources', []) if s.get('url')]) < 2:
+            _bad.append('%s <2 sourced urls' % _lid)
+        _segs = _L.get('segments', [])
+        if not (5 <= len(_segs) <= 12):
+            _bad.append('%s seg count %d' % (_lid, len(_segs)))
+        for _s in _segs:
+            if not (_s.get('say', '').strip() and _s.get('simpler', '').strip() and _s.get('deeper', '').strip()):
+                _bad.append('%s/%s missing say/simpler/deeper' % (_lid, _s.get('id')))
+    ok(not _bad, '%s ext lessons malformed: %s' % (_sid, '; '.join(_bad[:6])))
 
 print(f"validate_content: {checks - len(fails)}/{checks} checks passed")
 if fails:

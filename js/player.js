@@ -6,13 +6,16 @@ import { sound, music } from './audio.js';
 import { TRANSITION_SECS } from './sessionEngine.js';
 
 export class Player {
-  constructor({ plan, phrases, name, style, musicOn, hooks }) {
+  constructor({ plan, phrases, name, style, musicOn, hooks, skipWelcome }) {
     this.plan = plan;
     this.phrases = phrases;
     this.name = name || '';
     this.style = phrases.styles[style] || phrases.styles.gentle;
     this.musicOn = musicOn;
     this.hooks = hooks; // { render, moveStart(item, idx), mirror(bool), done(stats) }
+    // When a personalized check-in has already greeted the user (longer sessions),
+    // skip the generic workout welcome so they are not greeted twice.
+    this.skipWelcome = !!skipWelcome;
 
     this.idx = -1;
     this.phase = 'idle';        // idle | ready | move | paused | done
@@ -43,7 +46,7 @@ export class Player {
     if (this.musicOn) music.start();
     this._requestWakeLock();
     document.addEventListener('visibilitychange', this._onVis);
-    if (!this.plan.isMeditation) {
+    if (!this.plan.isMeditation && !this.skipWelcome) {
       const welcome = personalize(pick(this.style.welcome), this.name);
       coach.speak(welcome, { interrupt: true });
     }
@@ -122,6 +125,21 @@ export class Player {
     }
     if (frac >= 0.55) fire('mid', () => coach.speak(personalize(pick(this.style.mid), this.name)));
     if (frac >= 0.8) fire('cue2', () => coach.speak(item.ex.cues[1] || item.ex.cues[0]));
+  }
+
+  // Re-narrate the CURRENT lesson segment at a different reading level ("Explain it
+  // simpler" / "Go deeper"). Resets the segment's remaining time to fit the new text so
+  // it is not cut off, then the quiet segment-by-segment flow continues as normal. Only
+  // meaningful on the lesson/meditation path; ignored when idle/paused/done.
+  speakVariant(text) {
+    if (!text || this.phase === 'done' || this.phase === 'idle' || this.idx < 0) return;
+    const words = (String(text).match(/\S+/g) || []).length;
+    const secs = Math.max(8, Math.round(words / 2.6)); // ~rough natural speaking time
+    this.phase = 'move';
+    this.remaining = secs;
+    this._fired = {};
+    coach.speak(text, { interrupt: true });
+    this.hooks.render(this);
   }
 
   pause() {

@@ -1,7 +1,7 @@
 // Offline support: precache the whole app on install, serve cache-first.
 // Bump CACHE_VERSION with every release so updates roll out cleanly.
 
-const CACHE_VERSION = 'ygt-v4.5.0';
+const CACHE_VERSION = 'ygt-v4.20.0';
 
 const PRECACHE = [
   './',
@@ -20,6 +20,7 @@ const PRECACHE = [
   'js/characters.js',
   'js/tts.js',
   'js/natural-voice.js',
+  'js/checkin.js',
   'js/audio.js',
   'js/sessionEngine.js',
   'js/gamify.js',
@@ -30,10 +31,23 @@ const PRECACHE = [
   'js/dev.js',
   'js/learning.js',
   'js/learning-screen.js',
+  'js/usage-graph.js',
+  'js/idb.js',
+  'js/journal.js',
+  'js/journal-screen.js',
+  'js/help-screens.js',
+  'js/meals.js',
+  'js/cycle.js',
+  'js/intimacy.js',
+  'js/stt.js',
+  'js/stt-worker.js',
   'js/data/tracks.js',
   'js/data/lessons.shared.js',
+  'js/data/lesson-variants.js',
   'js/data/lessons.parenting.js',
+  'js/data/lessons.parenting.ext.js',
   'js/data/lessons.communication.js',
+  'js/data/lessons.communication.ext.js',
   'js/data/lessons.memory.js',
   'js/data/badges.parenting.js',
   'js/data/badges.communication.js',
@@ -59,6 +73,7 @@ const PRECACHE = [
   'js/data/programs.js',
   'js/data/badges.finance.js',
   'js/data/lessons.js',
+  'js/data/lessons.money.ext.js',
   // Soul sections (belief-flagged learning tracks)
   'js/data/lessons.crystals.js',
   'js/data/lessons.dreams.js',

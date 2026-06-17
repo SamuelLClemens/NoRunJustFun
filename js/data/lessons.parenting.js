@@ -10,6 +10,8 @@
 // (js/data/lessons.shared.js) so the duration-scaling logic lives in one place.
 
 import { makeDisclaimerSeg, makeLessonModule } from './lessons.shared.js';
+import { LESSON_VARIANTS } from './lesson-variants.js';
+import { EXTRA_LESSONS_PARENTING, EXTRA_CURRICULUM_PARENTING } from './lessons.parenting.ext.js';
 
 export const PARENTING_DISCLAIMER = "This is general educational information, not medical advice, and not a substitute for your pediatrician or a qualified professional. Every child and family is different. If you have any concern about your child's development, mental health, or safety, please reach out to a qualified professional.";
 
@@ -453,12 +455,19 @@ const LESSONS = {
 // Curriculum order for the duration-scaled study session (welcome is the intro).
 const CURRICULUM = ["child-development", "positive-discipline", "emotion-coaching", "connection-communication", "praise-motivation", "routines-sleep-screens", "tantrums-and-meltdowns", "toddler-sleep", "screen-time-by-age", "picky-eating", "potty-training", "sibling-relationships", "limits-without-punishment", "childhood-anxiety", "reading-and-language", "the-power-of-play", "social-skills", "chores-and-responsibility", "temperament-and-fit", "handling-defiance"];
 
+// S8b expansion: fold in the fact-checked extension lessons (authored separately in
+// lessons.parenting.ext.js; each segment carries its own simpler/deeper variants).
+// Additive and in-place so the vetted base map above stays byte-stable.
+Object.assign(LESSONS, EXTRA_LESSONS_PARENTING);
+CURRICULUM.push(...EXTRA_CURRICULUM_PARENTING);
+
 const mod = makeLessonModule({
   LESSONS, CURRICULUM,
   welcomeId: "welcome-parenting",
   disclaimerSeg: DISCLAIMER_SEG,
   sessionTitle: "Parenting basics",
   kind: "parenting",
+  variants: LESSON_VARIANTS.parenting,
 });
 
 export const LESSON_LIBRARY = mod.LESSON_LIBRARY;

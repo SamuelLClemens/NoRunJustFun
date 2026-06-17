@@ -12,6 +12,32 @@
 export const segDur = (s) => Math.max(5, Math.round(s.secs || 10));
 export const lessonSecs = (segs) => segs.reduce((t, s) => t + segDur(s), 0);
 
+// On-demand reading level for a segment. A lesson stays a single lesson; the player
+// shows the standard `say`, and the "Explain it simpler" / "Go deeper" buttons swap in
+// the segment's `simpler` (plain-language) or `deeper` (university-level) text when the
+// author has provided them. Falls back to `say` so lessons without variants are
+// unchanged. Used by planFromSegments below (i.e. both buildLessonById and
+// buildLessonSession), and re-exported for tests.
+export function pickLevel(seg, level) {
+  if (!seg) return '';
+  if (level === 'simpler' && seg.simpler) return seg.simpler;
+  if (level === 'deeper' && seg.deeper) return seg.deeper;
+  return seg.say;
+}
+
+// Merge on-demand reading-level variants from a companion map onto a segment, WITHOUT
+// touching the vetted lesson source files. `lessonVariants` is a lesson's map of
+// segmentId -> { simpler?, deeper? } (see js/data/lesson-variants.js, authored
+// separately). A segment's own inline simpler/deeper still wins if present.
+export function withVariants(seg, lessonVariants) {
+  const v = lessonVariants && lessonVariants[seg.id];
+  if (!v) return seg;
+  const out = { ...seg };
+  if (!out.simpler && v.simpler) out.simpler = v.simpler;
+  if (!out.deeper && v.deeper) out.deeper = v.deeper;
+  return out;
+}
+
 export function dedupeSources(list) {
   const seen = new Set();
   const out = [];
@@ -31,7 +57,13 @@ export function makeDisclaimerSeg(idPrefix, say) {
 
 function planFromSegments(segs, meta, kind) {
   const items = segs.map((s) => ({
-    ex: { id: s.id, name: s.name, why: s.say, cues: [], sided: false, secs: segDur(s) },
+    ex: {
+      id: s.id, name: s.name,
+      why: pickLevel(s, 'standard'),
+      simpler: s.simpler ? pickLevel(s, 'simpler') : '',
+      deeper: s.deeper ? pickLevel(s, 'deeper') : '',
+      cues: [], sided: false, secs: segDur(s),
+    },
     secs: segDur(s), block: 'lesson',
   }));
   const totalSecs = items.reduce((t, i) => t + i.secs, 0);
@@ -54,7 +86,8 @@ function planFromSegments(segs, meta, kind) {
 // Build a track's catalog library + its two player-compatible plan builders from its
 // lessons map. config = { LESSONS, CURRICULUM, welcomeId, disclaimerSeg, sessionTitle,
 // kind }. Mirrors the money builders in js/data/lessons.js.
-export function makeLessonModule({ LESSONS, CURRICULUM, welcomeId, disclaimerSeg, sessionTitle, kind }) {
+export function makeLessonModule({ LESSONS, CURRICULUM, welcomeId, disclaimerSeg, sessionTitle, kind, variants }) {
+  const V = variants || {};   // { lessonId: { segId: { simpler?, deeper? } } } — additive, optional
   const LESSON_LIBRARY = CURRICULUM
     .filter((id) => LESSONS[id])
     .map((id) => {
@@ -69,7 +102,7 @@ export function makeLessonModule({ LESSONS, CURRICULUM, welcomeId, disclaimerSeg
   function buildLessonById(id) {
     const L = LESSONS[id];
     if (!L || id === welcomeId) return null;
-    const segs = [disclaimerSeg, ...L.segments];
+    const segs = [disclaimerSeg, ...L.segments].map((s) => withVariants(s, V[id]));
     return planFromSegments(segs, {
       durationKey: Math.max(1, Math.round(lessonSecs(segs) / 60)),
       lessonIds: [id],
@@ -96,7 +129,7 @@ export function makeLessonModule({ LESSONS, CURRICULUM, welcomeId, disclaimerSeg
     let used = 0;
 
     const add = (id, chosen) => {
-      segs.push(...chosen);
+      segs.push(...chosen.map((s) => withVariants(s, V[id])));
       used += chosen.reduce((t, s) => t + segDur(s), 0);
       if (id !== welcomeId) {
         const L = LESSONS[id];

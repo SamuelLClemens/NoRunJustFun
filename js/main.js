@@ -26,6 +26,11 @@ import { availableTiers, gateMessage, routeTrack, filterPool, evaluateScreening,
 import { PROGRAMS, getProgram, programSuggestion, advanceProgram } from './data/programs.js';
 import { getTrack, TRACK_LIST, SOUL_TRACK_LIST } from './data/tracks.js';
 import { trackHubScreen, learningDone, gameScreen, quizScreen } from './learning-screen.js';
+import { usageGraphsHTML } from './usage-graph.js';
+import { composeCheckin } from './checkin.js';
+import { listMeals, addMeal, removeMeal } from './meals.js';
+import { cycleCardHTML, setEnabled as setCycleEnabled, addPeriod as addCyclePeriod, removePeriod as removeCyclePeriod } from './cycle.js';
+import { intimacyCardHTML, setEnabled as setIntimEnabled, addEntry as addIntimEntry, removeEntry as removeIntimEntry } from './intimacy.js';
 
 const app = document.getElementById('app');
 let avatar = null;        // lazy three.js instance, one at a time
@@ -126,7 +131,8 @@ function homeScreen() {
       ${pillarsHTML()}
 
       <footer class="privacy-note">
-        <p>🌱 <strong>Private by design.</strong> Your progress lives only on this device. No account, no tracking, no data ever leaves your phone. <a href="#safety">Safety notice</a></p>
+        <p>🌱 <strong>Private by design.</strong> Your progress lives only on this device. No account, no tracking, no data ever leaves your phone.</p>
+        <p class="home-help-links"><a href="#tutorial">How to use the app</a> · <a href="#faq">FAQ &amp; privacy</a> · <a href="#safety">Safety notice</a></p>
       </footer>
     </main>`;
 
@@ -135,7 +141,7 @@ function homeScreen() {
   const progStart = document.getElementById('prog-start');
   if (progStart) progStart.addEventListener('click', () => { sound.unlock(); go(progStart.dataset.go); });
 
-  if (!store.profile.seenSafety) showSafetyOverlay();
+  maybeShowSafety();
 }
 
 // The three pillars (Mind/Body/Soul) — the app's top-level navigation. Each pillar
@@ -524,14 +530,24 @@ function safetyHTML() {
     <p>All moves here are low-impact and chosen to be kind to postpartum bodies: no crunches, no sit-ups, no full planks.</p>`;
 }
 
+// The launch disclaimer. The card is a flex column: the notice text scrolls, while the
+// dismiss button stays PINNED and visible at the bottom on every viewport — including
+// short / landscape phones, where the old centered card pushed the button below the
+// fold. So no matter how the site loads, the user can always see the button to leave it.
+// Dismissing persists seenSafety, so it never reappears once acknowledged.
 function showSafetyOverlay() {
+  if (document.querySelector('.overlay.safety')) return;   // never double-insert
   const ov = document.createElement('div');
-  ov.className = 'overlay';
+  ov.className = 'overlay safety';
   ov.setAttribute('role', 'dialog');
   ov.setAttribute('aria-modal', 'true');
   ov.setAttribute('aria-label', 'Safety notice');
-  ov.innerHTML = `<div class="overlay-card">${safetyHTML()}
-    <button class="btn btn-primary" id="safety-ok">I understand — let's go</button></div>`;
+  ov.innerHTML = `<div class="overlay-card overlay-card--gated">
+    <div class="overlay-scroll">${safetyHTML()}</div>
+    <div class="overlay-actions">
+      <button class="btn btn-primary" id="safety-ok">I understand — let's go</button>
+      <p class="overlay-once">You will only see this once.</p>
+    </div></div>`;
   document.body.appendChild(ov);
   const btn = ov.querySelector('#safety-ok');
   btn.focus();
@@ -544,6 +560,13 @@ function showSafetyOverlay() {
     save();
     ov.remove();
   });
+}
+
+// Show the launch disclaimer once, at boot, no matter which route the app loads into.
+// It is appended to <body>, so it sits above whatever screen rendered (home or a deep
+// link). Gated on seenSafety so a returning, acknowledged user is never interrupted.
+function maybeShowSafety() {
+  if (!store.profile.seenSafety) showSafetyOverlay();
 }
 
 function safetyScreen() {
@@ -578,6 +601,10 @@ function sessionScreen(plan) {
           </div>
         </div>
         <div class="progress-dots" id="dots" role="img" aria-label="Session progress"></div>
+        <div class="lesson-levels" id="lesson-levels" hidden role="group" aria-label="Adjust this explanation">
+          <button class="btn btn-level" id="btn-simpler" hidden>Explain it simpler</button>
+          <button class="btn btn-level" id="btn-deeper" hidden>Go deeper</button>
+        </div>
         <div class="controls">
           <button class="btn" id="btn-pause">Pause</button>
           <button class="btn btn-skip" id="btn-skip">Skip this move</button>
@@ -630,12 +657,25 @@ function sessionScreen(plan) {
   const CIRC = 2 * Math.PI * 54;
   ringFg.style.strokeDasharray = String(CIRC);
 
+  // Longer sessions (>= 15 min, any pillar) open with a brief, personalized check-in.
+  const checkinText = composeCheckin({
+    name: profile.name,
+    streakCount: streakInfo(store.progress.sessions).count,
+    totalSessions: store.progress.sessions.length,
+    lastDate: (store.progress.sessions[store.progress.sessions.length - 1] || {}).date || '',
+    today: todayKey(),
+    hour: new Date().getHours(),
+    kind: plan.kind || (plan.isMeditation ? 'meditation' : 'movement'),
+    durationKey: plan.durationKey || 0,
+  });
+
   player = new Player({
     plan,
     phrases: PHRASES,
     name: profile.name,
     style: profile.style,
     musicOn: profile.musicOn,
+    skipWelcome: !!checkinText,
     hooks: {
       moveStart(item, idx) {
         document.getElementById('move-name').textContent = item.ex.name;
@@ -647,6 +687,16 @@ function sessionScreen(plan) {
           d.classList.toggle('now', i === idx);
         });
         if (avatar) avatar.setPose(POSES[item.ex.id] || null);
+        // Lesson difficulty controls: show "Explain it simpler" / "Go deeper" only on
+        // lesson segments that actually provide that variant (graceful when absent).
+        const levels = document.getElementById('lesson-levels');
+        if (levels) {
+          const hasS = item.block === 'lesson' && !!item.ex.simpler;
+          const hasD = item.block === 'lesson' && !!item.ex.deeper;
+          levels.hidden = !(hasS || hasD);
+          const bs = document.getElementById('btn-simpler'); if (bs) bs.hidden = !hasS;
+          const bd = document.getElementById('btn-deeper'); if (bd) bd.hidden = !hasD;
+        }
       },
       mirror(m) { if (avatar) avatar.setMirrored(m); },
       render(pl) {
@@ -668,11 +718,35 @@ function sessionScreen(plan) {
     else player.pause();
   });
   document.getElementById('btn-skip').addEventListener('click', () => player.skip());
+  const btnSimpler = document.getElementById('btn-simpler');
+  if (btnSimpler) btnSimpler.addEventListener('click', () => {
+    const it = player.plan.items[player.idx];
+    if (it && it.ex.simpler) player.speakVariant(it.ex.simpler);
+  });
+  const btnDeeper = document.getElementById('btn-deeper');
+  if (btnDeeper) btnDeeper.addEventListener('click', () => {
+    const it = player.plan.items[player.idx];
+    if (it && it.ex.deeper) player.speakVariant(it.ex.deeper);
+  });
   document.getElementById('btn-end').addEventListener('click', () => {
     if (confirm('End this session?')) player.endEarly();
   });
 
-  player.start();
+  // Hold the session (and its timer) until the check-in finishes, then begin. A safety
+  // timeout guarantees a stuck or silent greeting can never strand the session; the
+  // `begun` guard + identity check make sure we only ever start THIS session once.
+  if (checkinText) {
+    const thisPlayer = player;
+    let begun = false;
+    const begin = () => {
+      if (begun) return; begun = true;
+      if (player === thisPlayer && thisPlayer.phase === 'idle') thisPlayer.start();
+    };
+    coach.speak(checkinText, { interrupt: true }).then(begin, begin);
+    setTimeout(begin, 12000);
+  } else {
+    player.start();
+  }
 }
 
 // Quietly replace the photoreal coach with the lean one mid-session. A fresh
@@ -902,18 +976,42 @@ function youScreen() {
     : '<p class="hint">Finish a lesson, game, or quiz and it will show up here.</p>';
 
   const recentWeights = weights.slice(-6).reverse();
+  const recentMeals = listMeals().slice(0, 8).map((m) => ({
+    id: m.id, note: m.note,
+    stamp: (() => { try { return new Date(m.ts).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); } catch { return m.ts; } })(),
+  }));
 
   app.innerHTML = `
     <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">You</h1></header>
     <main class="narrow you-screen">
       <section class="card center">
         <div class="garden-svg small">${gardenSVG(stage)}</div>
-        <p class="you-hello">${name ? 'Hi, ' + esc(name) + '!' : 'Your progress'}${age != null ? ` · <strong>${age}</strong>` : ''}</p>
+        ${name
+          ? `<p class="you-hello">Hi, ${esc(name)}!${age != null ? ` · <strong>${age}</strong>` : ''}</p>`
+          : `<div class="you-name-prompt">
+              <label class="you-hello" for="you-name-input">What should your coach call you?</label>
+              <div class="you-name-form">
+                <input type="text" id="you-name-input" maxlength="20" autocomplete="given-name" placeholder="Your name" aria-label="Your name">
+                <button class="btn btn-primary" id="you-name-save">Save</button>
+              </div>
+              <p class="hint">Optional, and only stored on this device. Your coach will greet you by it.</p>
+            </div>`}
         <div class="you-stats">
           <div><strong>${p.sessions.length}</strong><span>sessions grown</span></div>
           <div><strong>${streak.count}</strong><span>day streak</span></div>
           <div><strong>Lv ${lvl.level}</strong><span>${p.totalMins} min moved</span></div>
         </div>
+      </section>
+
+      <section class="card">
+        <h2>Your rhythm</h2>
+        ${usageGraphsHTML(p)}
+      </section>
+
+      <section class="card">
+        <h2>Your journal</h2>
+        <p class="hint">A private place to write or speak your thoughts — kept as a book you can read, or hear read back in your coach's voice.</p>
+        <a class="btn btn-primary you-journal-open" href="#journal">Open your journal</a>
       </section>
 
       <section class="card">
@@ -935,6 +1033,26 @@ function youScreen() {
       </section>
 
       <section class="card">
+        <h2>Meals</h2>
+        <p class="hint">A gentle place to note what you ate, if it helps you notice patterns. No calories, no targets, no scores — just your own notes, on this device.</p>
+        <div class="you-meal-form">
+          <input type="text" id="you-meal-input" maxlength="200" placeholder="e.g. oatmeal and berries" aria-label="Meal note">
+          <button class="btn btn-primary" id="you-meal-save">Add</button>
+        </div>
+        ${recentMeals.length ? `<ul class="you-log you-meal-list">${recentMeals.map((m) => `<li><span class="you-log-what">${esc(m.note)}</span><span class="you-log-date">${esc(m.stamp)}</span> <button class="linkish you-meal-del" data-id="${esc(m.id)}" aria-label="Delete meal note">✕</button></li>`).join('')}</ul>` : '<p class="hint">No notes yet.</p>'}
+      </section>
+
+      <section class="card" data-cycle>
+        <h2>Cycle</h2>
+        ${cycleCardHTML()}
+      </section>
+
+      <section class="card" data-intimacy>
+        <h2>Intimacy</h2>
+        ${intimacyCardHTML()}
+      </section>
+
+      <section class="card">
         <h2>Birthday</h2>
         <p class="hint">Set it and we will throw you a little party on the day. It stays on this device.</p>
         <div class="you-bday-form">
@@ -953,6 +1071,18 @@ function youScreen() {
     </main>`;
 
   app.querySelectorAll('.you-subject').forEach((b) => b.addEventListener('click', () => go(b.dataset.go)));
+  const nsave = document.getElementById('you-name-save');
+  if (nsave) {
+    const commitName = () => {
+      const val = (document.getElementById('you-name-input').value || '').trim().slice(0, 20);
+      store.profile.name = val;
+      save();
+      youScreen();
+    };
+    nsave.addEventListener('click', commitName);
+    const ninput = document.getElementById('you-name-input');
+    if (ninput) ninput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); commitName(); } });
+  }
   const wsave = document.getElementById('you-weight-save');
   if (wsave) wsave.addEventListener('click', () => {
     const v = parseFloat(document.getElementById('you-weight-input').value);
@@ -966,6 +1096,51 @@ function youScreen() {
     save();
     youScreen();
   });
+  const msave = document.getElementById('you-meal-save');
+  if (msave) {
+    const commitMeal = () => {
+      const inp = document.getElementById('you-meal-input');
+      if (addMeal(inp.value)) { inp.value = ''; youScreen(); }
+    };
+    msave.addEventListener('click', commitMeal);
+    const minput = document.getElementById('you-meal-input');
+    if (minput) minput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); commitMeal(); } });
+  }
+  app.querySelectorAll('.you-meal-del').forEach((b) => b.addEventListener('click', () => { removeMeal(b.dataset.id); youScreen(); }));
+  const cycEnable = document.getElementById('you-cycle-enable');
+  if (cycEnable) cycEnable.addEventListener('click', () => { setCycleEnabled(true); youScreen(); });
+  const cycDisable = document.getElementById('you-cycle-disable');
+  if (cycDisable) cycDisable.addEventListener('click', () => { setCycleEnabled(false); youScreen(); });
+  const cycSave = document.getElementById('you-cycle-save');
+  if (cycSave) cycSave.addEventListener('click', () => {
+    const s = document.getElementById('you-cycle-start').value;
+    const e = document.getElementById('you-cycle-end').value;
+    if (s) { addCyclePeriod(s, e); youScreen(); }
+  });
+  app.querySelectorAll('.cycle-del').forEach((b) => b.addEventListener('click', () => { removeCyclePeriod(b.dataset.id); youScreen(); }));
+  const intimEnable = document.getElementById('you-intim-enable');
+  if (intimEnable) intimEnable.addEventListener('click', () => { setIntimEnabled(true); youScreen(); });
+  const intimDisable = document.getElementById('you-intim-disable');
+  if (intimDisable) intimDisable.addEventListener('click', () => { setIntimEnabled(false); youScreen(); });
+  const intimDesire = document.getElementById('you-intim-desire');
+  const intimDesireVal = document.getElementById('you-intim-desire-val');
+  if (intimDesire && intimDesireVal) {
+    const sync = () => { intimDesireVal.textContent = intimDesire.value; };
+    intimDesire.addEventListener('input', sync);
+  }
+  const intimSave = document.getElementById('you-intim-save');
+  if (intimSave) intimSave.addEventListener('click', () => {
+    const date = document.getElementById('you-intim-date').value;
+    const count = document.getElementById('you-intim-count').value;
+    const orgasms = document.getElementById('you-intim-org').value;
+    const desireEl = document.getElementById('you-intim-desire');
+    // a slider always carries a value; only record desire if the user actually moved it
+    const desire = (desireEl && desireEl.dataset.touched === '1') ? desireEl.value : null;
+    const note = document.getElementById('you-intim-note').value;
+    if (date) { addIntimEntry({ date, count, orgasms, desire, note }); youScreen(); }
+  });
+  if (intimDesire) intimDesire.addEventListener('input', () => { intimDesire.dataset.touched = '1'; });
+  app.querySelectorAll('.intimacy-del').forEach((b) => b.addEventListener('click', () => { removeIntimEntry(b.dataset.id); youScreen(); }));
   const bsave = document.getElementById('you-bday-save');
   if (bsave) bsave.addEventListener('click', () => {
     const val = document.getElementById('you-bday-input').value;
@@ -1091,7 +1266,8 @@ function settingsScreen() {
       </section>
 
       <section class="card">
-        <p><a href="#safety">Read the safety notice</a></p>
+        <strong>Help</strong>
+        <p class="set-help-links"><a href="#tutorial">How to use the app</a> · <a href="#faq">FAQ &amp; privacy</a> · <a href="#safety">Safety notice</a></p>
         <p class="privacy-inline">🌱 Everything you see in this app is stored only on this device. Nothing is ever uploaded, because there is nowhere to upload it to.</p>
         <button class="btn btn-danger" id="btn-reset">Reset my data</button>
       </section>
@@ -1211,6 +1387,8 @@ function settingsScreen() {
   document.getElementById('btn-reset').addEventListener('click', () => {
     if (confirm('Reset everything? Your garden, streak, badges and settings will start over. This cannot be undone.')) {
       resetAll();
+      // resetAll clears localStorage; also wipe the journal audio in IndexedDB (loaded on demand).
+      import('./idb.js').then((m) => m.clearAllAudio()).catch(() => {});
       go('#');
     }
   });
@@ -1390,6 +1568,11 @@ async function routeTo(h, seq) {
   if (h === '#intake') return intakeScreen();
   if (h === '#programs') return programsScreen();
   if (h === '#you') return youScreen();
+  // Journal: loaded on demand so its IndexedDB/recorder code never touches the boot path.
+  if (h === '#journal') { import('./journal-screen.js').then((m) => m.journalScreen()).catch((e) => console.warn('journal load failed', e)); return; }
+  // Help screens: loaded on demand — static copy that never needs to ride the boot path.
+  if (h === '#tutorial') { import('./help-screens.js').then((m) => m.tutorialScreen()).catch((e) => console.warn('tutorial load failed', e)); return; }
+  if (h === '#faq') { import('./help-screens.js').then((m) => m.faqScreen()).catch((e) => console.warn('faq load failed', e)); return; }
   if (h === '#badges') return badgesScreen();
   if (h === '#settings') return settingsScreen();
   if (h === '#safety') return safetyScreen();
@@ -1426,6 +1609,7 @@ if (devMode) {
   import('./dev.js').then((m) => m.runDev(devMode));
 } else {
   render();
+  maybeShowSafety();             // launch disclaimer — shown once, regardless of entry route
   maybeAutoEnableNaturalVoice(); // background warm-up; never blocks first paint
 }
 

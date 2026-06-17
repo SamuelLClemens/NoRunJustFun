@@ -267,6 +267,45 @@ input[type='range'] { accent-color: var(--green-500); }
 .overlay-card li { margin-bottom: 8px; }
 .overlay-card .btn { width: 100%; margin-top: 10px; }
 
+/* Gated launch disclaimer: the notice scrolls, the dismiss button stays pinned and
+   visible at the bottom on every viewport (short / landscape phones included), so the
+   user can always reach the button to leave. min-height:0 lets the scroll area shrink
+   inside the flex column instead of pushing the actions off-screen. */
+.overlay-card--gated { display: flex; flex-direction: column; max-height: 88vh; padding: 0; overflow: hidden; }
+.overlay-card--gated .overlay-scroll { overflow-y: auto; padding: 22px 22px 14px; min-height: 0; }
+.overlay-card--gated .overlay-actions { flex: none; padding: 12px 22px 18px; border-top: 1px solid var(--line, #E3E0D8); background: var(--card); }
+.overlay-card--gated .overlay-actions .btn { width: 100%; margin-top: 0; }
+.overlay-once { text-align: center; color: var(--ink-soft); font-size: 0.8rem; margin: 8px 0 0; }
+
+/* ---- tutorial + FAQ (help screens) ---- */
+.help-intro { margin: 2px 2px 4px; }
+.help-step-head { display: flex; align-items: center; gap: 10px; }
+.help-num { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--green-500, #5BA869); color: #fff; font-weight: 700; font-size: 0.85rem; }
+.help-step-title { font-size: 1.05rem; margin: 0; }
+.help-ic { margin-right: 2px; }
+.help-step p { margin: 8px 0 0; }
+.help-step a, .privacy-list a, .faq-answer a { color: var(--green-700, #2E6B3D); }
+.help-cta { text-align: center; }
+.help-links { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 8px; }
+.help-links .btn { width: auto; flex: 1 1 auto; min-width: 130px; }
+.home-help-links, .set-help-links { font-size: 0.85rem; }
+.home-help-links { margin-top: 4px; }
+.home-help-links a { color: var(--green-700, #2E6B3D); }
+
+.privacy-hero { border: 2px solid var(--green-500, #5BA869); background: var(--card); }
+.privacy-hero h2 { margin: 0 0 2px; font-size: 1.15rem; }
+.privacy-list { margin: 6px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+.privacy-list li { line-height: 1.45; }
+.help-faq-heading { margin: 6px 2px 0; font-size: 1.1rem; }
+.faq-item { padding: 0; }
+.faq-item summary { padding: 14px 16px; cursor: pointer; font-weight: 600; list-style: none; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: '+'; float: right; color: var(--ink-soft); font-weight: 400; }
+.faq-item[open] summary::after { content: '–'; }
+.faq-answer { padding: 0 16px 14px; }
+.faq-answer p { margin: 0; line-height: 1.5; }
+
 /* ---- confetti / dev ---- */
 .confetti-canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 99; }
 .dev-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; padding: 10px; }
@@ -717,15 +756,68 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 .you-subj-stats { display: block; color: var(--ink-soft); font-size: 0.84rem; margin-top: 2px; }
 .you-weight-now { margin: 4px 0; }
 .you-spark { width: 100%; height: 64px; display: block; margin: 6px 0; }
-.you-weight-form, .you-bday-form { display: flex; gap: 8px; margin-top: 8px; align-items: center; flex-wrap: wrap; }
+.you-weight-form, .you-bday-form, .you-name-form, .you-meal-form { display: flex; gap: 8px; margin-top: 8px; align-items: center; flex-wrap: wrap; }
 .you-weight-form input { flex: 1; min-width: 120px; }
-.you-weight-form input, .you-weight-form select, .you-bday-form input {
+.you-weight-form input, .you-weight-form select, .you-bday-form input, .you-name-form input, .you-meal-form input {
   padding: 11px 12px; border: 2px solid var(--line, #E3E0D8); border-radius: var(--radius-sm); font: inherit; background: #fff; }
-.you-bday-form input { flex: 1; min-width: 150px; }
+.you-bday-form input, .you-name-form input, .you-meal-form input { flex: 1; min-width: 150px; }
+/* Usage / engagement graphs (You page) — read-only reflection, never a scoreboard.
+   Single-hue lightness ramp so it reads under any colour vision; static (no motion). */
+.usage-heatmap-wrap, .usage-bars-wrap { overflow-x: auto; margin-top: 8px; -webkit-overflow-scrolling: touch; }
+.usage-heatmap { width: 100%; max-width: 340px; height: auto; display: block; }
+.uh-cell { stroke: rgba(0,0,0,0.04); stroke-width: 0.5; }
+.uh-0 { fill: var(--line, #ECE9E1); background: var(--line, #ECE9E1); }
+.uh-1 { fill: #CDEBD2; background: #CDEBD2; }
+.uh-2 { fill: #92D69D; background: #92D69D; }
+.uh-3 { fill: #57BD6B; background: #57BD6B; }
+.uh-4 { fill: var(--green-700, #2F8F46); background: var(--green-700, #2F8F46); }
+.usage-legend { display: flex; align-items: center; gap: 4px; margin-top: 6px; font-size: 0.74rem; color: var(--ink-soft); }
+.usage-legend .uh-cell { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
+.usage-sub { font-weight: 700; margin: 12px 0 0; font-size: 0.84rem; color: var(--ink-soft); }
+.usage-bars { width: 100%; max-width: 280px; height: auto; display: block; }
+.usage-bar { fill: var(--green-600); }
+.usage-bars-base { stroke: var(--line, #E3E0D8); stroke-width: 1; }
+/* In-lesson difficulty controls (S4): "Explain it simpler" / "Go deeper". */
+.lesson-levels { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 4px 0 10px; }
+.btn-level { font-size: 0.92rem; padding: 9px 16px; }
+/* Journal (S5): private composer + the "book". */
+.you-journal-open { display: inline-block; margin-top: 8px; text-decoration: none; }
+.journal-compose { width: 100%; padding: 11px 12px; border: 2px solid var(--line, #E3E0D8); border-radius: var(--radius-sm); font: inherit; background: #fff; resize: vertical; min-height: 90px; }
+.journal-compose-actions { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+.journal-book-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.journal-book-controls { display: flex; gap: 8px; flex-wrap: wrap; }
+.journal-now { color: var(--green-700); font-style: italic; min-height: 0; margin: 6px 0 0; }
+.journal-now:empty { display: none; }
+.journal-book { margin-top: 10px; display: flex; flex-direction: column; gap: 10px; }
+.journal-entry { border: 1px solid var(--line, #EFECE4); border-radius: var(--radius-sm); padding: 10px 12px; background: #fff; }
+.journal-entry-head { display: flex; justify-content: space-between; gap: 8px; font-size: 0.78rem; color: var(--ink-soft); }
+.journal-text { margin: 6px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.journal-entry-actions { margin-top: 6px; text-align: right; }
+.journal-rec-dot { color: #c0392b; }
+/* Cycle tracking (S7) — opt-in, descriptive only. */
+.cycle-form { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; margin-top: 8px; }
+.cycle-field { display: flex; flex-direction: column; font-size: 0.78rem; color: var(--ink-soft); gap: 3px; }
+.cycle-field input { padding: 9px 10px; border: 2px solid var(--line, #E3E0D8); border-radius: var(--radius-sm); font: inherit; background: #fff; }
+.cycle-avg-note { margin-top: 10px; }
+.cycle-viz { height: 74px; width: auto; max-width: 100%; display: block; margin-top: 8px; }
+.cycle-bar { fill: var(--soul-accent, #8E7CC3); }
+.cycle-bar-num { fill: var(--ink-soft); font-size: 9px; }
+.cycle-avg { stroke: var(--ink-soft); stroke-width: 1; stroke-dasharray: 4 3; }
+.cycle-disclaimer { border-left: 3px solid var(--line, #E3E0D8); padding-left: 10px; margin-top: 10px; }
 .you-wlist, .you-log { list-style: none; margin: 10px 0 0; padding: 0; }
 .you-wlist li, .you-log li { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-top: 1px solid var(--line, #EFECE4); }
 .you-log-date { color: var(--ink-soft); font-size: 0.82rem; flex: 0 0 auto; }
 .you-log-what { min-width: 0; }
+
+/* Intimacy tracking (v6) — opt-in, descriptive only. Reuses the cycle form/viz styles. */
+.intimacy-form .cycle-field input[type="number"] { width: 5.5em; }
+.intimacy-form .intimacy-note-field { flex: 1 1 12em; }
+.intimacy-form .intimacy-note-field input { width: 100%; }
+.intimacy-desire { min-width: 8.5em; }
+.intimacy-desire input[type="range"] { accent-color: var(--soul-accent, #8E7CC3); margin-top: 6px; }
+.intimacy-desire-val { font-weight: 700; color: var(--ink, #2E2A24); }
+.intimacy-note { color: var(--ink-soft); }
+.intimacy-list .you-log-what { white-space: normal; }
 
 /* Body workout paths (Stretching / Yoga / Exercises) */
 .move-paths { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
