@@ -4,13 +4,13 @@
 // no external references. Each stage accumulates everything from the stage
 // before it - nothing ever disappears from the garden.
 
-// Palette
-const GREEN = '#5BA869';
-const YELLOW = '#FFD45C';
-const SKY = '#7EC4E8';
-const CORAL = '#F58F7C';
-const DARK = '#1F4D2E';
-const CREAM = '#FDF9F0';
+// Palette — 70s organic/earthy, mirrors the CSS tokens in css/style.css
+const GREEN = '#7C8B4A';   // avocado (was leafy green)
+const YELLOW = '#D9A23E';  // ochre sun (was sunshine)
+const SKY = '#9FBFB6';     // dusty eucalyptus (was sky blue)
+const CORAL = '#C9603F';   // terracotta (was coral)
+const DARK = '#33291E';    // cocoa ink (was deep green)
+const CREAM = '#F7EFE1';   // warm cream
 
 // Ground line where plants are rooted
 const G = 162;
