@@ -1526,7 +1526,7 @@ async function ensureRealisticClass() {
     // ?v bust: bump on every realistic-avatar.js change so browsers fetch the new
     // module instead of a cached copy (the SW matches with ignoreSearch, so the
     // precached file still serves offline regardless of the query).
-    const mod = await import('./realistic-avatar.js?v=rig8');
+    const mod = await import('./realistic-avatar.js?v=rig9');
     RealisticAvatar = mod.RealisticAvatar;
     realisticHelpers = mod;
   }

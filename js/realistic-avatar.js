@@ -323,9 +323,12 @@ export class RealisticAvatar {
           // fully OPAQUE, bias clothing toward the camera, and draw clothing last so it is
           // ALWAYS on top of the skin. Hair/lash cards keep the cutout that fixed flicker.
           const nm = o.name || '';
+          // Names cover BOTH the MPFB coaches (base/low-poly, cargo_pants, tank_keyhole…)
+          // AND Ready Player Me (Wolf3D_Body/Head/Teeth, EyeLeft/Right, Wolf3D_Outfit_*,
+          // Wolf3D_Hair/Beard) so clothing-over-skin holds on either asset family.
           const hairy  = /hair|ponytail|afro|beard|brow|lash|short0|loose|fro/i.test(nm);
-          const isSkin = /^base|(^|\.)body|low-?poly|high-?poly|^skin|teeth|tongue/i.test(nm) && !hairy;
-          const isCloth = /cargo|pant|tank|keyhole|polo|shirt|suit|top|^bra|short(?!0)/i.test(nm) && !hairy;
+          const isSkin = /^base|(^|\.)body|wolf3d_body|wolf3d_head|low-?poly|high-?poly|^skin|teeth|tongue|^eye(left|right)?$|eyeball/i.test(nm) && !hairy;
+          const isCloth = /cargo|pant|tank|keyhole|polo|shirt|suit|top|^bra|short(?!0)|outfit|bottom|footwear|glasses/i.test(nm) && !hairy;
           const mats = Array.isArray(o.material) ? o.material : (o.material ? [o.material] : []);
           for (const m of mats) {
             if (!m) continue;
