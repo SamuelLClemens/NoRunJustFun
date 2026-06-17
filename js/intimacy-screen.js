@@ -380,7 +380,7 @@ function settingsHTML() {
 }
 
 // ---- main render --------------------------------------------------------
-export function intimacyScreen() {
+export function intimacyScreen(opts = {}) {
   const app = document.getElementById('app');
   if (!app) return;
   if (!isEnabled()) { location.hash = '#you'; return; }
@@ -402,11 +402,21 @@ export function intimacyScreen() {
       ${_showSettings ? settingsHTML() : ''}
     </main>`;
 
-  const h1 = app.querySelector('.page-title'); if (h1) try { h1.focus(); } catch { /* ok */ }
+  // Focus the heading ONLY on first entry (router) — not on every in-screen rerender,
+  // which would yank the viewport back to the top on each desire/mood/symptom tap.
+  const h1 = app.querySelector('.page-title'); if (h1 && !opts.rerender) try { h1.focus(); } catch { /* ok */ }
   bind(app);
 }
 
-function rerender() { intimacyScreen(); }
+// Tap-driven updates rebuild the whole screen; preserve the user's in-progress, not-yet-
+// saved text (encounter entry + day note) across that rebuild so a tap never wipes typing.
+const TRANSIENT_FIELDS = ['intim-org', 'intim-sat', 'intim-note', 'intim-daynote'];
+function rerender() {
+  const keep = {};
+  TRANSIENT_FIELDS.forEach((id) => { const el = document.getElementById(id); if (el) keep[id] = el.value; });
+  intimacyScreen({ rerender: true });
+  TRANSIENT_FIELDS.forEach((id) => { const el = document.getElementById(id); if (el && keep[id] != null && keep[id] !== '') el.value = keep[id]; });
+}
 
 function bind(app) {
   const prev = document.getElementById('intim-prev');

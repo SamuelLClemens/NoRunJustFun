@@ -32,12 +32,16 @@ const D2R = Math.PI / 180;
 // models/. Until then everyone falls back to the legacy body so the app still
 // works — the face layer activates automatically the moment a mapped GLB exists.
 const COACH_MODELS = {
-  // jasmine:  'coach-jasmine.glb',
-  // nokeke:   'coach-nokeke.glb',
-  // abednego: 'coach-abednego.glb',
-  // aguibou:  'coach-aguibou.glb',
+  jasmine:  'coach-jasmine.glb',
+  nokeke:   'coach-nokeke.glb',
+  abednego: 'coach-abednego.glb',
+  aguibou:  'coach-aguibou.glb',
 };
-const FALLBACK_MODEL = 'vera.glb';
+// The shared "host" — a realistic, rigged human with full ARKit visemes (built
+// free in Blender/MPFB). Used for the check-in greeter and as the fallback for
+// any coach that does not yet have an identity-matched GLB. Replaces the legacy
+// viseme-less Mixamo body (vera.glb) so the talking face is live by default.
+const FALLBACK_MODEL = 'coach-host.glb';
 
 function modelFileUrl(file) { return new URL('../models/' + file, import.meta.url).href; }
 function modelUrlFor(character) {
@@ -111,6 +115,26 @@ const MORPHS = {
   blink:  ['eyesClosed', 'blink'],
 };
 
+// Free ALL GPU resources of a loaded model: geometry + EVERY texture slot (not
+// just .map) + materials. renderer.dispose() frees shader programs, not per-mesh
+// geometry/texture memory, so on a mobile PWA that builds a fresh avatar per
+// session this prevents a compounding GPU-memory leak.
+const TEX_SLOTS = ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'emissiveMap', 'aoMap', 'bumpMap', 'displacementMap', 'alphaMap', 'clearcoatMap', 'clearcoatRoughnessMap', 'clearcoatNormalMap', 'lightMap', 'envMap', 'specularMap'];
+function disposeModel(root) {
+  if (!root) return;
+  root.traverse((o) => {
+    if (o.geometry && o.geometry.dispose) o.geometry.dispose();
+    if (o.material) {
+      const mats = Array.isArray(o.material) ? o.material : [o.material];
+      for (const m of mats) {
+        if (!m) continue;
+        for (const k of TEX_SLOTS) { const t = m[k]; if (t && t.dispose) t.dispose(); }
+        m.dispose();
+      }
+    }
+  });
+}
+
 export class RealisticAvatar {
   constructor(canvas, character) {
     this.canvas = canvas;
@@ -169,6 +193,7 @@ export class RealisticAvatar {
     this._resolved = {};                 // logical action -> resolved morph name | null
     this.faceReady = false;              // any viseme/expression morphs present
     this.ready = false;
+    this._disposed = false;              // set in dispose(); neutralizes late async callbacks
     this.mirrored = false;
     this.time = 0;
     this._raf = 0;
@@ -180,6 +205,7 @@ export class RealisticAvatar {
     this._framing = 'full';              // 'full' (body, workouts) | 'talk' (waist-up)
     // face animation state
     this._talking = false;
+    this._levelProvider = null;          // () => 0..1 live audio loudness | null
     this._jaw = 0;
     this._blinkPhase = -1;               // -1 idle, >=0 mid-blink (seconds)
     this._blinkClock = 0;
@@ -204,11 +230,13 @@ export class RealisticAvatar {
     this._modelUrl = url;
     const loader = new GLTFLoader();
     const finishFail = (err) => {
+      if (this._disposed) return;        // teardown already happened — do not spawn a fallback
       console.warn('realistic avatar failed to load:', err);
       this.failed = true;
       if (typeof this.onError === 'function') this.onError(err);
     };
     const onLoaded = (gltf) => {
+      if (this._disposed) { disposeModel(gltf.scene); return; } // late GLB after teardown — free it
       const root = gltf.scene;
       this.skeleton = null;
       this.bones.clear();
@@ -216,7 +244,19 @@ export class RealisticAvatar {
       this.morphs.clear();
       this._resolved = {};
       root.traverse((o) => {
-        if (o.isMesh) { o.frustumCulled = false; o.castShadow = false; }
+        if (o.isMesh) {
+          o.frustumCulled = false; o.castShadow = false;
+          // MPFB/MakeHuman glTF exports tend to flag even opaque skin + clothing as
+          // alpha-BLEND, which washes the model out and breaks depth sorting. Convert
+          // any blended material to alpha-TEST cutout: solid materials (alpha≈1) then
+          // render fully opaque, while hair/eyelash cards still cut out correctly.
+          const mats = Array.isArray(o.material) ? o.material : (o.material ? [o.material] : []);
+          for (const m of mats) {
+            if (m && m.transparent && (m.opacity == null || m.opacity >= 1)) {
+              m.alphaTest = 0.5; m.transparent = false; m.depthWrite = true; m.needsUpdate = true;
+            }
+          }
+        }
         if (o.isSkinnedMesh && o.skeleton) this.skeleton = o.skeleton;
         // collect morph targets (visemes + facial expressions) across every mesh
         if (o.isMesh && o.morphTargetDictionary && o.morphTargetInfluences) {
@@ -256,6 +296,7 @@ export class RealisticAvatar {
       this._frameCamera();
       this._renderOnce();
       if (this._pendingStart) this._resume();
+      if (typeof this.onReady === 'function') { try { this.onReady(); } catch { /* best-effort */ } }
     };
     loader.load(url, onLoaded, undefined, (err) => {
       // a missing per-coach GLB falls back to the shared body so the app never breaks
@@ -269,10 +310,7 @@ export class RealisticAvatar {
   _swapModel(url) {
     if (this.model) {
       this.pivot.remove(this.model);
-      this.model.traverse((o) => {
-        if (o.geometry) o.geometry.dispose();
-        if (o.material) { const m = Array.isArray(o.material) ? o.material : [o.material]; m.forEach((x) => { if (x.map) x.map.dispose(); x.dispose(); }); }
-      });
+      disposeModel(this.model);
       this.model = null;
     }
     this.ready = false;
@@ -324,11 +362,22 @@ export class RealisticAvatar {
     this.camera.updateProjectionMatrix();
   }
 
+  // Resolve a bone by name, tolerating skeletons that drop the Mixamo 'mixamorig'
+  // namespace prefix (e.g. TalkingHead/MPFB exports name the bone 'LeftArm', not
+  // 'mixamorigLeftArm'). Lets the Mixamo-calibrated posture/breath maps drive both.
+  _boneByName(name) {
+    const b = this.bones.get(name);
+    if (b) return b;
+    if (name.startsWith('mixamorig')) return this.bones.get(name.slice(9)) || null;
+    return null;
+  }
+
   // compose rest × delta(euler degrees) onto a bone
   _setBone(name, deg, extraDeg) {
-    const bone = this.bones.get(name);
-    const rest = this.rest.get(name);
-    if (!bone || !rest) return;
+    const bone = this._boneByName(name);
+    if (!bone) return;
+    const rest = this.rest.get(bone.name);
+    if (!rest) return;
     const e = new THREE.Euler(deg[0] * D2R, deg[1] * D2R, deg[2] * D2R, 'XYZ');
     const q = rest.clone().multiply(new THREE.Quaternion().setFromEuler(e));
     if (extraDeg) {
@@ -365,6 +414,11 @@ export class RealisticAvatar {
     if (this._talking && this.ready && !this._raf && this._running) this._resume();
   }
 
+  // Provide a live-loudness source (0..1) so the mouth tracks real speech audio.
+  // Pass null to clear (then the organic talking motion is used). Safe no-op on
+  // the lean coach, so main.js can wire it unconditionally.
+  setLevelProvider(fn) { this._levelProvider = (typeof fn === 'function') ? fn : null; }
+
   // 'talk' = waist-up portrait (lessons/meditation); 'full' = whole body (workouts)
   setFraming(mode) {
     const next = (mode === 'talk') ? 'talk' : 'full';
@@ -389,7 +443,7 @@ export class RealisticAvatar {
   _pause() { cancelAnimationFrame(this._raf); this._raf = 0; this._last = 0; }
 
   _resume() {
-    if (this._raf || !this.ready) return;
+    if (this._raf || !this.ready || !this._running || this._disposed) return;
     const loop = (ts) => {
       this._raf = requestAnimationFrame(loop);
       const dt = this._last ? Math.min((ts - this._last) / 1000, 0.1) : 0.016;
@@ -417,21 +471,35 @@ export class RealisticAvatar {
   // Blink, gaze, resting micro-smile, and speech-driven lip-sync. All gated on the
   // presence of the relevant morphs, so any subset present still works.
   _animateFace(dt) {
-    // --- lip-sync: organic jaw envelope while talking, eased to closed otherwise ---
+    // --- lip-sync: track the real audio when we have it, else an organic motion ---
     let open = 0;
     if (this._talking) {
-      const t = this.time;
-      const syllable = 0.5 + 0.5 * Math.sin(t * 11.0);       // ~1.7 syllables/sec
-      const micro = 0.6 + 0.4 * Math.sin(t * 23.7 + 1.3);    // sub-mouth motion
-      open = Math.max(0, syllable * micro) * 0.7;
+      let lvl = null;
+      if (this._levelProvider) { try { const v = this._levelProvider(); if (typeof v === 'number') lvl = v; } catch { /* best-effort */ } }
+      if (lvl != null) {
+        // real audio amplitude → the mouth opens with the actual speech and
+        // closes in the gaps (word-aligned + fluid). A faint shimmer keeps lips
+        // alive on sustained vowels without fighting the audio.
+        const shimmer = lvl > 0.05 ? 0.03 * (0.5 + 0.5 * Math.sin(this.time * 19)) : 0;
+        open = Math.min(0.82, lvl * 0.95 + shimmer);
+      } else {
+        // no audio signal (system voice): organic syllable bursts gated into
+        // word-groups so the mouth pauses like real speech, not a robotic buzz.
+        const t = this.time;
+        const syllable = 0.5 + 0.5 * Math.sin(t * 10.5);
+        const micro = 0.65 + 0.35 * Math.sin(t * 22.3 + 1.3);
+        const wordGate = Math.min(1, Math.max(0, Math.sin(t * 2.3) * 0.6 + 0.65));
+        open = Math.max(0, syllable * micro * wordGate) * 0.6;
+      }
     }
-    this._jaw += (open - this._jaw) * Math.min(1, dt * 16);
+    // ease toward target — open quickly, close a little slower, so it never snaps
+    this._jaw += (open - this._jaw) * Math.min(1, dt * (open > this._jaw ? 22 : 15));
     this._setMorph('jaw', this._jaw);
-    if (this._talking) {
+    if (this._talking && this._jaw > 0.01) {
       const ph = (Math.sin(this.time * 3.1) + 1) / 2;        // slow vowel shaping
-      this._setMorph('round', this._jaw * 0.55 * ph);
-      this._setMorph('wide', this._jaw * 0.45 * (1 - ph));
-      this._setMorph('pucker', this._jaw * 0.2 * ph);
+      this._setMorph('round', this._jaw * 0.5 * ph);
+      this._setMorph('wide', this._jaw * 0.42 * (1 - ph));
+      this._setMorph('pucker', this._jaw * 0.18 * ph);
     } else {
       this._setMorph('round', 0); this._setMorph('wide', 0); this._setMorph('pucker', 0);
     }
@@ -484,10 +552,11 @@ export class RealisticAvatar {
   // tab (throttled rAF) is ignored so it cannot trigger a false 'slow'.
   watchPerformance(onSlow, { warmupMs = 2200, seconds = 5, minFps = 22 } = {}) {
     const run = () => {
+      if (this._disposed || !this._running) return;          // never poll a disposed/stopped avatar
       if (!this.ready) { setTimeout(run, 200); return; }
       let start = 0, frames = 0, aborted = false;
       const tick = (ts) => {
-        if (!this._running || aborted) return;
+        if (!this._running || aborted || this._disposed) return;
         if (document.hidden) { aborted = true; return; } // throttled — do not judge
         if (!start) start = ts;
         frames++;
@@ -507,18 +576,13 @@ export class RealisticAvatar {
   showPose(/* def, phase */) { this._applyPosture(POSTURE_STAND); this._renderOnce(); }
 
   dispose() {
+    this._disposed = true;               // neutralize any in-flight GLB load / fallback callback
+    this.onError = null;
     this.stop();
     document.removeEventListener('visibilitychange', this._onVis);
     this._ro.disconnect();
-    if (this.model) {
-      this.model.traverse((o) => {
-        if (o.geometry) o.geometry.dispose();
-        if (o.material) {
-          const mats = Array.isArray(o.material) ? o.material : [o.material];
-          for (const m of mats) { if (m.map) m.map.dispose(); m.dispose(); }
-        }
-      });
-    }
+    disposeModel(this.model);            // geometry + every texture slot, not just .map
+    this.model = null;
     try { if (this._envRT) this._envRT.dispose(); if (this._pmrem) this._pmrem.dispose(); } catch { /* ok */ }
     this.scene.environment = null;
     this.renderer.dispose();

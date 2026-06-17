@@ -266,7 +266,7 @@ for orphan in ['js/finance.js', 'js/finance-screen.js']:
 # works offline; the ~1.9 MB GLB is warmed best-effort in install (cannot reject addAll).
 for dep in ['lib/jsm/loaders/GLTFLoader.js', 'lib/jsm/utils/BufferGeometryUtils.js', 'lib/jsm/environments/RoomEnvironment.js']:
     ok(f"'{dep}'" in sw, f"sw.js PRECACHE missing avatar dependency {dep}")
-ok('models/vera.glb' in sw, "sw.js install does not warm the photoreal model models/vera.glb")
+ok("RUNTIME_CACHE" in sw and ".glb" in sw, "sw.js must route immutable coach GLBs to a stable runtime cache (cache-on-use, not precached)")
 # The realistic avatar gained a human "presence" layer: image-based lighting (RoomEnvironment
 # + ACES) and real lip-sync (viseme morph targets) driven by the coach's actual voice. The
 # face layer is morph-gated, so it stays inert (no breakage) on a viseme-less Mixamo body and
@@ -281,6 +281,21 @@ if ra_src:
        'realistic-avatar.js must morph-gate the face layer (graceful on viseme-less rigs)')
     ok('onSpeechStart' in read('js/tts.js') and 'onSpeechEnd' in read('js/tts.js'),
        'tts.js missing the lip-sync speech hooks (onSpeechStart/onSpeechEnd)')
+    # The realistic host GLB (built free in Blender/MPFB, full ARKit visemes) is the
+    # fallback model + check-in greeter; the file must ship and be wired as fallback.
+    ok("FALLBACK_MODEL = 'coach-host.glb'" in ra_src,
+       'realistic-avatar.js FALLBACK_MODEL must be the realistic host (coach-host.glb)')
+    ok(exists('models/coach-host.glb'),
+       'models/coach-host.glb (the realistic talking host) is missing from the repo')
+    # The four identity-matched coach GLBs (built free in Blender/MPFB) ship + are wired
+    # in COACH_MODELS so each coach renders as a distinct realistic human with lip-sync.
+    for _c in ['jasmine', 'nokeke', 'abednego', 'aguibou']:
+        ok(exists(f'models/coach-{_c}.glb'), f'models/coach-{_c}.glb is missing from the repo')
+        ok(f"{_c}:" in ra_src and f"coach-{_c}.glb" in ra_src,
+           f'realistic-avatar.js COACH_MODELS missing the {_c} mapping')
+    main_src = read('js/main.js')
+    ok('setFraming' in main_src and "contentFraming" in main_src,
+       'main.js must frame the host waist-up for the check-in/meditation and full-body for workouts')
 for sid, cfg in LEARN_SUBJECTS.items():
     for f in [cfg['badges'], cfg['lessons']]:
         if exists(f):
@@ -563,12 +578,13 @@ learn_screen_src = read('js/learning-screen.js')
 ok('Read what your coach said' in learn_screen_src and 'it.ex.why' in learn_screen_src,
    'learning-screen.js transcript regressed (lesson transcript must stay intact)')
 
-# 25) Lifelike voice, automatic: capable devices load the natural voice in the
-#     background (system voice covers slow ones), honoring an explicit choice + Data Saver.
-ok("voicePref: 'auto'" in st, "state.js profile missing the voicePref:'auto' default")
-ok('maybeAutoEnableNaturalVoice' in main_src, 'main.js missing the lifelike-voice auto-enable')
+# 25) Lifelike voice — STRICTLY OPT-IN (privacy): the ~90 MB model downloads only when the
+#     user has explicitly turned it on (voicePref 'on' / naturalOn), never silently at first
+#     launch. System voice is the default. Honors Data Saver. Matches the FAQ opt-in promise.
+ok("voicePref:" in st, "state.js profile missing the voicePref default")
+ok('maybeAutoEnableNaturalVoice' in main_src, 'main.js missing the lifelike-voice enable hook')
 ok(main_src.count('maybeAutoEnableNaturalVoice') >= 2, 'maybeAutoEnableNaturalVoice is defined but never called at boot')
-ok("p.voicePref === 'off'" in main_src, 'auto-enable must respect an explicit voicePref off')
+ok("p.voicePref === 'on' || p.naturalOn" in main_src, 'lifelike voice must be OPT-IN (no auto-download unless explicitly enabled)')
 ok('saveData' in main_src, 'auto-enable must honor Data Saver (navigator.connection.saveData)')
 ok("p.voicePref = e.target.checked ? 'on' : 'off'" in main_src, 'settings toggle must record an explicit voicePref')
 

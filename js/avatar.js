@@ -534,6 +534,17 @@ export class Avatar {
     this.stop();
     document.removeEventListener('visibilitychange', this._onVis);
     this._ro.disconnect();
+    // free the per-instance geometry/material GPU buffers buildRig() allocated —
+    // renderer.dispose() frees shader programs, not these (compounding leak otherwise)
+    try {
+      this.scene.traverse((o) => {
+        if (o.geometry && o.geometry.dispose) o.geometry.dispose();
+        if (o.material) {
+          const mats = Array.isArray(o.material) ? o.material : [o.material];
+          for (const m of mats) { if (m) { if (m.map && m.map.dispose) m.map.dispose(); m.dispose(); } }
+        }
+      });
+    } catch { /* best-effort */ }
     this.renderer.dispose();
   }
 }

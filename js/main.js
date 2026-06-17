@@ -22,7 +22,7 @@ import { EXTRA_EXERCISES2, EXTRA_TIER_ELIGIBILITY2, WORKOUT_CATEGORY2 } from './
 import { SEXERCISE_MOVES, SEXERCISE_CATEGORY } from './data/movements-sexercise.js';
 import { MODES, TIER_META, DURATIONS } from './data/tiers.js';
 import { buildMeditation, buildMeditationById, MEDITATION_LIBRARY } from './data/meditation.js';
-import { availableTiers, gateMessage, routeTrack, filterPool, evaluateScreening,
+import { availableTiers, gateMessage, filterPool,
   PARQ_GENERAL, PARQ_POSTPARTUM, LIFE_STAGES, SEX_OPTIONS, AGE_BANDS, INJURY_FLAGS, SPACE_OPTIONS } from './data/profiles.js';
 import { PROGRAMS, getProgram, programSuggestion, advanceProgram } from './data/programs.js';
 import { getTrack, TRACK_LIST, SOUL_TRACK_LIST } from './data/tracks.js';
@@ -544,6 +544,22 @@ function safetyHTML() {
     <p>All moves here are low-impact and chosen to be kind to postpartum bodies: no crunches, no sit-ups, no full planks.</p>`;
 }
 
+// The boot welcome. A first-timer may open straight into Mind, Soul, or the You page,
+// so the launch overlay leads with a warm, neutral welcome + privacy and frames the
+// exercise caution in context ("the Body sessions…") rather than greeting everyone with
+// a workout warning. The full, detailed safety notice still lives on the #safety screen.
+function welcomeHTML() {
+  return `
+    <h2>Welcome to Garden Moves 💚</h2>
+    <p>A calm space to move, learn, and reflect — Mind, Body, and Soul. Everything you do stays private, on this device.</p>
+    <ul>
+      <li>Go at your own pace. Every activity can be paused or skipped — that is self-care, not failure.</li>
+      <li>The Body sessions are gentle, low-impact guidance, <strong>not medical advice</strong>. If a move hurts, stop — and check with your doctor before a new exercise program, especially within 12 weeks of giving birth or with any health concern.</li>
+      <li>Be kind to yourself here. It grows by consistency, never intensity.</li>
+    </ul>
+    <p>You can reread the full safety notice and the privacy details any time from the menu.</p>`;
+}
+
 // The launch disclaimer. The card is a flex column: the notice text scrolls, while the
 // dismiss button stays PINNED and visible at the bottom on every viewport — including
 // short / landscape phones, where the old centered card pushed the button below the
@@ -555,9 +571,9 @@ function showSafetyOverlay() {
   ov.className = 'overlay safety';
   ov.setAttribute('role', 'dialog');
   ov.setAttribute('aria-modal', 'true');
-  ov.setAttribute('aria-label', 'Safety notice');
+  ov.setAttribute('aria-label', 'Welcome');
   ov.innerHTML = `<div class="overlay-card overlay-card--gated">
-    <div class="overlay-scroll">${safetyHTML()}</div>
+    <div class="overlay-scroll">${welcomeHTML()}</div>
     <div class="overlay-actions">
       <button class="btn btn-primary" id="safety-ok">I understand — let's go</button>
       <p class="overlay-once">You will only see this once.</p>
@@ -605,6 +621,7 @@ function sessionScreen(plan) {
           <div>
             <span class="chip chip-block" id="block-chip"></span>
             <h2 id="move-name">Get ready…</h2>
+            <span id="move-live" class="sr-only" role="status" aria-live="polite"></span>
           </div>
           <div class="ring-wrap">
             <svg viewBox="0 0 120 120" class="ring" aria-hidden="true">
@@ -628,6 +645,10 @@ function sessionScreen(plan) {
     </main>`;
 
   const captionEl = document.getElementById('caption');
+  // Screen readers: when the coach voice is ON it already speaks each line, so a live
+  // caption would double-announce. Keep the caption live ONLY when the voice is muted
+  // (so Deaf/HoH users still get it announced); silence it for assistive tech otherwise.
+  captionEl.setAttribute('aria-live', profile.voiceOn ? 'off' : 'polite');
   coach.onCaption = (t) => { captionEl.textContent = t; };
   coach.resetTranscript();   // fresh "Read what your coach said" log for this session
   coach.enabled = profile.voiceOn;
@@ -646,9 +667,15 @@ function sessionScreen(plan) {
   try {
     if (wantReal) {
       avatar = new RealisticAvatar(canvas, char);
+      // show a calm "coach is getting ready" state while the 5–7 MB model loads,
+      // so the flagship feature never opens to a blank stage (cleared on ready/error)
+      const stageEl = canvas.closest('.stage');
+      if (stageEl) stageEl.classList.add('is-loading');
+      const clearLoading = () => { if (stageEl) stageEl.classList.remove('is-loading'); };
+      avatar.onReady = clearLoading;
       avatar.start();
-      // if she fails to load, quietly swap to the lean coach for this session
-      avatar.onError = () => swapToLeanAvatar(canvas, char);
+      // if she fails to load, clear the loader and quietly swap to the lean coach
+      avatar.onError = () => { clearLoading(); swapToLeanAvatar(canvas, char); };
       // if the device renders her too slowly, note it so the NEXT session uses
       // the light coach — but let her finish this one (no jarring mid-session swap)
       avatar.watchPerformance((fps) => {
@@ -670,6 +697,17 @@ function sessionScreen(plan) {
   // a disposed avatar.
   coach.onSpeechStart = () => { if (avatar && avatar.setTalking) try { avatar.setTalking(true); } catch { /* ok */ } };
   coach.onSpeechEnd = () => { if (avatar && avatar.setTalking) try { avatar.setTalking(false); } catch { /* ok */ } };
+  // Audio-aligned lip-sync: let the avatar read the coach's live speech loudness
+  // so the mouth tracks the actual words (natural voice). No-op on the lean coach.
+  if (avatar && avatar.setLevelProvider) { try { avatar.setLevelProvider(() => coach.getMouthLevel()); } catch { /* ok */ } }
+
+  // Camera framing for the realistic host: a waist-up portrait while she speaks
+  // (the check-in greeting, and all of meditation), and the whole body for
+  // workouts so form is visible. A no-op on the lean coach, so it is safe to wire
+  // unconditionally. `contentFraming` is what we settle into once content begins.
+  const isMeditation = !!(plan.isMeditation || plan.kind === 'meditation');
+  const contentFraming = isMeditation ? 'talk' : 'full';
+  const setFraming = (mode) => { if (avatar && avatar.setFraming) { try { avatar.setFraming(mode); } catch { /* ok */ } } };
 
   const dots = document.getElementById('dots');
   dots.innerHTML = plan.items.map((it, i) =>
@@ -691,6 +729,9 @@ function sessionScreen(plan) {
     durationKey: plan.durationKey || 0,
   });
 
+  // Greet waist-up if a check-in will speak first; otherwise frame for content now.
+  setFraming(checkinText ? 'talk' : contentFraming);
+
   player = new Player({
     plan,
     phrases: PHRASES,
@@ -701,8 +742,11 @@ function sessionScreen(plan) {
     hooks: {
       moveStart(item, idx) {
         document.getElementById('move-name').textContent = item.ex.name;
-        document.getElementById('block-chip').textContent =
-          { arrive: 'arrive', warmup: 'warm-up', main: 'main', winddown: 'wind-down', close: 'breathe', meditation: 'meditate', lesson: 'learn' }[item.block] || '';
+        const blockLabel = { arrive: 'arrive', warmup: 'warm-up', main: 'main', winddown: 'wind-down', close: 'breathe', meditation: 'meditate', lesson: 'learn' }[item.block] || '';
+        document.getElementById('block-chip').textContent = blockLabel;
+        // announce the move change to screen readers (the visual <h2> swap is silent to AT)
+        const ml = document.getElementById('move-live');
+        if (ml) ml.textContent = `${item.ex.name}${blockLabel ? ' — ' + blockLabel : ''}`;
         dots.setAttribute('aria-label', `Move ${idx + 1} of ${plan.items.length}: ${item.ex.name}`);
         dots.querySelectorAll('.dot').forEach((d, i) => {
           d.classList.toggle('done', i < idx);
@@ -762,6 +806,7 @@ function sessionScreen(plan) {
     let begun = false;
     const begin = () => {
       if (begun) return; begun = true;
+      setFraming(contentFraming);   // settle from the waist-up greeting into the content framing
       if (player === thisPlayer && thisPlayer.phase === 'idle') thisPlayer.start();
     };
     coach.speak(checkinText, { interrupt: true }).then(begin, begin);
@@ -774,6 +819,9 @@ function sessionScreen(plan) {
 // Quietly replace the photoreal coach with the lean one mid-session. A fresh
 // canvas is used because a disposed WebGL context cannot be re-bound.
 function swapToLeanAvatar(oldCanvas, char) {
+  // If the session was already torn down (canvas detached), a late load-error must
+  // NOT spawn a zombie avatar with a live render loop that nothing will dispose.
+  if (!oldCanvas || !oldCanvas.isConnected) return;
   try { if (avatar && avatar.dispose) avatar.dispose(); } catch { /* ok */ }
   const fresh = oldCanvas.cloneNode(false); // copies id/class, not the GL context
   if (oldCanvas.parentNode) oldCanvas.replaceWith(fresh);
@@ -1218,7 +1266,7 @@ function settingsScreen() {
 
       <section class="card">
         <strong>Lifelike voice <span class="beta-chip">beta</span></strong>
-        <p class="hint">Each coach gets their own warm, human-sounding voice that runs entirely on this device. On capable devices it turns on by itself — a one-time download of about 90 MB, in the background — and nothing about you is ever sent anywhere. On slower devices, or if you switch it off here, the regular voice takes over automatically.</p>
+        <p class="hint">Each coach gets their own warm, human-sounding voice that runs entirely on this device. It is off until you switch it on here: turning it on downloads the voice model once (about 90 MB) in the background — nothing about you is ever sent anywhere. Until then, and on slower devices, the regular on-device voice is used.</p>
         <label class="toggle"><input type="checkbox" id="set-natural" ${p.naturalOn ? 'checked' : ''}> Use the lifelike voice</label>
         <div class="nv-progress" id="nv-progress" hidden>
           <div class="nv-track"><div class="nv-bar" id="nv-bar"></div></div>
@@ -1228,7 +1276,7 @@ function settingsScreen() {
 
       <section class="card">
         <strong>Full instructor <span class="beta-chip">beta</span></strong>
-        <p class="hint">A photoreal coach who breathes and stands with you, instead of the friendly stick-figure. She downloads once (about 2 MB) and then works offline. She is a preview — detailed movement for each exercise is still on the way, and the light coach keeps doing the moves in the meantime. On slower phones the app uses the light coach automatically.</p>
+        <p class="hint">A realistic coach who breathes, stands, and talks with you, instead of the friendly stick-figure. Each coach downloads once (about 6 MB) the first time they appear, then works offline. They are a preview — detailed movement for each exercise is still on the way, and the light coach keeps doing the moves in the meantime. On slower phones the app uses the light coach automatically.</p>
         <label class="toggle"><input type="checkbox" id="set-fullinstructor" ${p.fullInstructorOn ? 'checked' : ''}> Use the full instructor</label>
         <small class="hint" id="fi-status" role="status"></small>
       </section>
@@ -1570,25 +1618,25 @@ async function routeTo(h, seq) {
 
 window.addEventListener('hashchange', render);
 
-// Lifelike voice, automatic: give every user the most human voice their DEVICE can
-// handle, without ever hurting smoothness. On 'auto' (the default) we warm the natural
-// voice in the BACKGROUND — first paint and the system voice are never blocked, the
-// in-engine speed probe keeps weak devices on the lighter system voice, and it upgrades
-// the live coach the moment the model is ready. The ~90 MB model is cached by the
-// browser, so it downloads at most once per device. Honors an explicit on/off choice and
-// Data Saver / very slow links. Nothing about the user is ever transmitted.
+// Lifelike voice — STRICTLY OPT-IN (privacy). The natural voice is a ~90 MB model
+// fetched from a CDN, so we download it ONLY when the user has explicitly turned on
+// "Use the lifelike voice" in Settings — never automatically at first launch. This
+// keeps the code honest with the opt-in promise in the FAQ and never spends a new
+// user's (possibly metered) data without consent. The default experience is the
+// on-device system voice (good quality, zero download). Once opted in, this warms the
+// model in the background — first paint and the system voice are never blocked, the
+// speed probe keeps weak devices on the system voice, and it upgrades the live coach
+// when ready. Nothing about the user is ever transmitted. Honors Data Saver / slow links.
 function maybeAutoEnableNaturalVoice() {
   const p = store.profile;
-  if (p.voicePref === 'off') return;                       // user opted out — respect it
+  if (!(p.voicePref === 'on' || p.naturalOn)) return;      // opt-in only — no silent download
   if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
   const conn = (typeof navigator !== 'undefined' && navigator.connection) || {};
   if (conn.saveData) return;                               // honor Data Saver
   if (/2g$/.test(conn.effectiveType || '')) return;        // skip 2g / slow-2g links
-  const explicit = p.voicePref === 'on' || p.naturalOn;    // user already chose it
   naturalVoice.enable().then((ready) => {
     if (!ready) return;                                    // slow device / failed -> system voice
     coach.naturalOn = true;                                // upgrade the live coach now
-    if (!explicit) { p.naturalOn = true; save(); }         // remember for auto users
   }).catch(() => { /* system voice already covers it */ });
 }
 
