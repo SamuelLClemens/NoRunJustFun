@@ -1,7 +1,7 @@
 {
-  "name": "You Got This!",
-  "short_name": "You Got This",
-  "description": "A free, private, playful stretch-and-strength app. No equipment, no accounts, no tracking.",
+  "name": "Vernal Plot",
+  "short_name": "Vernal Plot",
+  "description": "A free, private companion for mind, body, and soul. No accounts, no tracking — everything stays on your device. Your plot, in bloom.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
