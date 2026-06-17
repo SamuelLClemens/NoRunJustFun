@@ -664,7 +664,14 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 .badge-cell.dreams strong { color: #3C3196; }
 .badge-cell.dreams .badge-date { color: #3C3196; }
 
-/* live reflective cards on the Soul screen (replaced the old .soul-soon stubs) */
+/* Belief & reflection section — Crystals/Dreams now live under Mind · Learn but in a
+   visually distinct (soul-purple) card so they read as a different kind of learning. */
+.reflective-section { background: var(--soul-tint); border: 2px solid var(--soul-border); }
+.reflective-section > h2 { color: var(--soul-ink); }
+.reflective-section > .hint { color: var(--soul-ink); opacity: 0.85; }
+.reflective-section .soul-reflective { background: #fff; }
+
+/* live reflective cards (Crystals/Dreams) */
 .soul-reflectives { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
 .soul-reflective { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
   padding: 12px 14px; border: 2px solid var(--soul-border); border-radius: var(--radius-sm);

@@ -242,18 +242,6 @@ function soulScreen() {
     `<button class="duration-btn" data-mins="${m}"><span class="d-num">${m}</span><span class="d-label">min</span></button>`).join('');
   const libHTML = MEDITATION_LIBRARY.map((m) =>
     `<button class="med-lib-btn" data-med="${m.id}"><span>${esc(m.theme)}</span><small>${m.minutes} min</small></button>`).join('');
-  // Reflective Soul sections (belief-flagged, lessons-only) — driven by the registry
-  // (SOUL_TRACK_LIST) so they stay in sync with tracks.js. Each opens the shared
-  // learning hub at #learn-<track>; its "Back" link returns here via track.hubBack.
-  const reflectiveHTML = SOUL_TRACK_LIST.map((id) => {
-    const t = getTrack(id);
-    if (!t) return '';
-    return `<button class="soul-reflective" data-track="${esc(id)}">
-        <span class="pillar-ic" aria-hidden="true">${(t.theme && t.theme.badgeEmoji) || '🌙'}</span>
-        <span class="pillar-txt"><strong>${esc(t.name)}</strong><small>${esc(t.blurb)}</small></span>
-        <span class="soul-go" aria-hidden="true">→</span>
-      </button>`;
-  }).join('');
   app.innerHTML = `
     <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Soul · Be still</h1></header>
     <main class="narrow soul-screen">
@@ -263,21 +251,20 @@ function soulScreen() {
         <div class="duration-grid" id="soul-durations">${durationBtns}</div>
       </section>
       <section class="card">
-        <strong>Or browse a theme</strong>
-        <div class="med-lib" id="soul-library">${libHTML}</div>
+        <details class="fin-lib-details">
+          <summary class="fin-lib-summary">
+            <span class="fin-lib-summary-txt"><strong>Or browse a theme</strong><small>Browse all ${MEDITATION_LIBRARY.length} meditations — open it when you want, tuck it away when you don't</small></span>
+            <span class="fin-lib-chevron" aria-hidden="true">▾</span>
+          </summary>
+          <div class="med-lib" id="soul-library">${libHTML}</div>
+        </details>
       </section>
-      <section class="card soul-future">
-        <h2>More for the soul</h2>
-        <p class="hint">Calm, honest, well-sourced reflections — belief and evidence held side by side.</p>
-        <div class="soul-reflectives" id="soul-reflectives">${reflectiveHTML}</div>
-      </section>
+      <p class="start-note">Looking for Crystal energy or Dream interpretation? They now live in <a href="#mind">Mind · Learn</a>.</p>
     </main>`;
   document.querySelectorAll('#soul-durations .duration-btn').forEach((b) =>
     b.addEventListener('click', () => { sound.unlock(); go('#play-' + b.dataset.mins + '-meditation'); }));
   document.querySelectorAll('#soul-library .med-lib-btn').forEach((b) =>
     b.addEventListener('click', () => { sound.unlock(); go('#play-lib-' + b.dataset.med); }));
-  document.querySelectorAll('#soul-reflectives .soul-reflective').forEach((b) =>
-    b.addEventListener('click', () => { go('#learn-' + b.dataset.track); }));
 }
 
 // ---------------------------------------------------------------- Mind pillar (learning)
@@ -301,6 +288,18 @@ function mindScreen() {
       : `<button class="fin-lib-btn mind-subject locked" disabled>${inner}
         <span class="fin-lib-meta"><span class="soon-tag">Coming soon</span></span></button>`;
   }).join('');
+  // Belief-flagged reflective sections (Crystal energy, Dream interpretation). They live
+  // under their own SOUL_TRACK_LIST registry (never the Mind TRACK_LIST, so they get no
+  // quiz/games/mastery), and now appear here in Learn as a visually distinct section.
+  const reflectiveHTML = SOUL_TRACK_LIST.map((id) => {
+    const t = getTrack(id);
+    if (!t) return '';
+    return `<button class="soul-reflective" data-track="${esc(id)}">
+        <span class="pillar-ic" aria-hidden="true">${(t.theme && t.theme.badgeEmoji) || '🌙'}</span>
+        <span class="pillar-txt"><strong>${esc(t.name)}</strong><small>${esc(t.blurb)}</small></span>
+        <span class="soul-go" aria-hidden="true">→</span>
+      </button>`;
+  }).join('');
   app.innerHTML = `
     <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Mind · Learn</h1></header>
     <main class="narrow finance-section">
@@ -310,9 +309,16 @@ function mindScreen() {
         <p class="hint">Your coach teaches you, scaled to the time you have. Each subject grows the same garden.</p>
         <div class="fin-lib" id="mind-subjects">${cards}</div>
       </section>
+      ${reflectiveHTML ? `<section class="card reflective-section">
+        <h2>Belief &amp; reflection</h2>
+        <p class="hint">A different kind of learning — honest, well-sourced explorations where belief and evidence sit side by side. Read at your own pace.</p>
+        <div class="soul-reflectives" id="soul-reflectives">${reflectiveHTML}</div>
+      </section>` : ''}
     </main>`;
   document.querySelectorAll('#mind-subjects .mind-subject[data-track]').forEach((b) =>
     b.addEventListener('click', () => { location.hash = '#learn-' + b.dataset.track; }));
+  document.querySelectorAll('#soul-reflectives .soul-reflective').forEach((b) =>
+    b.addEventListener('click', () => { go('#learn-' + b.dataset.track); }));
 }
 
 // Optional guided-program card: today's suggestion if enrolled, else a soft invite.
