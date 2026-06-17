@@ -175,7 +175,7 @@ ok('durationsTried' not in learn_code, "learning.js must not write durationsTrie
 #     that moved the legacy progress.finance blob into learning.money, the v3->v4 branch
 #     adding the dashboard fields, and the v4->v5 branch adding the You-page ledgers
 #     (journal/meals/cycle). All on-device only.
-ok('CURRENT_VERSION = 5' in st, "state.js CURRENT_VERSION must be 5 (You-page ledgers)")
+ok('CURRENT_VERSION = 6' in st, "state.js CURRENT_VERSION must be 6 (You-page ledgers + intimacy)")
 ok('learning:' in st, "state.js defaults() missing the learning sub-object")
 ok('data.progress.finance' in st, "state.js v2->v3 branch does not migrate the legacy progress.finance blob")
 ok('(data.version || 1) < 3' in st, "state.js missing the v2->v3 migration branch guard")
@@ -516,12 +516,15 @@ ok("p.voicePref = e.target.checked ? 'on' : 'off'" in main_src, 'settings toggle
 # 26) State v5 + You-page personal ledgers (journal/meals/cycle). New on-device ledgers
 #     must exist and default safely; cycle is opt-in (default OFF); the additive v<5
 #     migration branch must backfill them losslessly (shallow-spread nested-object trap).
-ok('CURRENT_VERSION = 5' in st, 'state.js CURRENT_VERSION must be 5')
+ok('CURRENT_VERSION = 6' in st, 'state.js CURRENT_VERSION must be 6')
 ok('journal: []' in st, 'state.js defaults missing progress.journal[]')
 ok('meals: []' in st, 'state.js defaults missing progress.meals[]')
 ok(re.search(r"cycle:\s*\{\s*enabled:\s*false", st) is not None,
    'state.js defaults missing opt-in (default-OFF) progress.cycle')
+ok(re.search(r"intimacy:\s*\{\s*enabled:\s*false", st) is not None,
+   'state.js defaults missing opt-in (default-OFF) progress.intimacy')
 ok('< 5' in st, 'state.js missing the v4->v5 migration branch')
+ok('< 6' in st, 'state.js missing the v5->v6 (intimacy) migration branch')
 
 # 27) Privacy guard (ALWAYS ON): no off-device speech recognition anywhere in js/.
 #     Browser SpeechRecognition streams microphone audio to the vendor (Google on
@@ -657,6 +660,21 @@ if cycle_src:
     ok('predict' in _cl, 'cycle.js must state it is descriptive, not a prediction')
     ok('data-cycle' in main_src and 'cycleCardHTML' in main_src, 'You page does not render the cycle card')
     ok("'js/cycle.js'" in read('sw.js'), 'sw.js does not precache js/cycle.js')
+
+# 36b) v6 intimacy tracking — opt-in (default OFF, guarded in #26), DESCRIPTIVE/PRIVATE
+#      only, isolated from sessions[], with a clear no-judgment, non-medical disclaimer.
+intim_src = _read_opt('js/intimacy.js')
+if intim_src:
+    ok('sessions.push' not in intim_src and 'recordSession' not in intim_src,
+       'intimacy.js must not write to sessions[] (breaks garden/streak isolation)')
+    ok('progress.intimacy' in intim_src, 'intimacy.js does not use the progress.intimacy ledger')
+    ok('isEnabled' in intim_src and 'setEnabled' in intim_src, 'intimacy.js missing the opt-in toggle')
+    _il = intim_src.lower()
+    ok('not</strong> medical' in _il or 'not medical' in _il or 'not</strong> medical, fertility' in _il,
+       'intimacy.js missing the non-medical disclaimer')
+    ok('judg' in _il, 'intimacy.js must state it does not judge/score')
+    ok('data-intimacy' in main_src and 'intimacyCardHTML' in main_src, 'You page does not render the intimacy card')
+    ok("'js/intimacy.js'" in read('sw.js'), 'sw.js does not precache js/intimacy.js')
 
 # 37) S5c: the book is editable, and voice notes transcribe ON-DEVICE in a Web Worker,
 #     gated like the lifelike voice (Data Saver / persisted speed verdict) — never the

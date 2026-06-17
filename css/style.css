@@ -809,6 +809,16 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 .you-log-date { color: var(--ink-soft); font-size: 0.82rem; flex: 0 0 auto; }
 .you-log-what { min-width: 0; }
 
+/* Intimacy tracking (v6) — opt-in, descriptive only. Reuses the cycle form/viz styles. */
+.intimacy-form .cycle-field input[type="number"] { width: 5.5em; }
+.intimacy-form .intimacy-note-field { flex: 1 1 12em; }
+.intimacy-form .intimacy-note-field input { width: 100%; }
+.intimacy-desire { min-width: 8.5em; }
+.intimacy-desire input[type="range"] { accent-color: var(--soul-accent, #8E7CC3); margin-top: 6px; }
+.intimacy-desire-val { font-weight: 700; color: var(--ink, #2E2A24); }
+.intimacy-note { color: var(--ink-soft); }
+.intimacy-list .you-log-what { white-space: normal; }
+
 /* Body workout paths (Stretching / Yoga / Exercises) */
 .move-paths { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
 .move-path { display: flex; align-items: center; gap: 14px; text-align: left; width: 100%;

@@ -30,6 +30,7 @@ import { usageGraphsHTML } from './usage-graph.js';
 import { composeCheckin } from './checkin.js';
 import { listMeals, addMeal, removeMeal } from './meals.js';
 import { cycleCardHTML, setEnabled as setCycleEnabled, addPeriod as addCyclePeriod, removePeriod as removeCyclePeriod } from './cycle.js';
+import { intimacyCardHTML, setEnabled as setIntimEnabled, addEntry as addIntimEntry, removeEntry as removeIntimEntry } from './intimacy.js';
 
 const app = document.getElementById('app');
 let avatar = null;        // lazy three.js instance, one at a time
@@ -1046,6 +1047,11 @@ function youScreen() {
         ${cycleCardHTML()}
       </section>
 
+      <section class="card" data-intimacy>
+        <h2>Intimacy</h2>
+        ${intimacyCardHTML()}
+      </section>
+
       <section class="card">
         <h2>Birthday</h2>
         <p class="hint">Set it and we will throw you a little party on the day. It stays on this device.</p>
@@ -1112,6 +1118,29 @@ function youScreen() {
     if (s) { addCyclePeriod(s, e); youScreen(); }
   });
   app.querySelectorAll('.cycle-del').forEach((b) => b.addEventListener('click', () => { removeCyclePeriod(b.dataset.id); youScreen(); }));
+  const intimEnable = document.getElementById('you-intim-enable');
+  if (intimEnable) intimEnable.addEventListener('click', () => { setIntimEnabled(true); youScreen(); });
+  const intimDisable = document.getElementById('you-intim-disable');
+  if (intimDisable) intimDisable.addEventListener('click', () => { setIntimEnabled(false); youScreen(); });
+  const intimDesire = document.getElementById('you-intim-desire');
+  const intimDesireVal = document.getElementById('you-intim-desire-val');
+  if (intimDesire && intimDesireVal) {
+    const sync = () => { intimDesireVal.textContent = intimDesire.value; };
+    intimDesire.addEventListener('input', sync);
+  }
+  const intimSave = document.getElementById('you-intim-save');
+  if (intimSave) intimSave.addEventListener('click', () => {
+    const date = document.getElementById('you-intim-date').value;
+    const count = document.getElementById('you-intim-count').value;
+    const orgasms = document.getElementById('you-intim-org').value;
+    const desireEl = document.getElementById('you-intim-desire');
+    // a slider always carries a value; only record desire if the user actually moved it
+    const desire = (desireEl && desireEl.dataset.touched === '1') ? desireEl.value : null;
+    const note = document.getElementById('you-intim-note').value;
+    if (date) { addIntimEntry({ date, count, orgasms, desire, note }); youScreen(); }
+  });
+  if (intimDesire) intimDesire.addEventListener('input', () => { intimDesire.dataset.touched = '1'; });
+  app.querySelectorAll('.intimacy-del').forEach((b) => b.addEventListener('click', () => { removeIntimEntry(b.dataset.id); youScreen(); }));
   const bsave = document.getElementById('you-bday-save');
   if (bsave) bsave.addEventListener('click', () => {
     const val = document.getElementById('you-bday-input').value;

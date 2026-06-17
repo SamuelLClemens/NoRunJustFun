@@ -2,7 +2,7 @@
 // ever leaves it. Schema migrations keep future updates from wiping progress.
 
 const KEY = 'nrjf.store';
-const CURRENT_VERSION = 5;
+const CURRENT_VERSION = 6;
 
 function defaults() {
   return {
@@ -69,6 +69,11 @@ function defaults() {
       journal: [],              // { id, ts(ISO datetime), kind:'text'|'voice', text, audioKey?, durationSec?, prompt? } — audio blobs live in IndexedDB (js/idb.js), keyed by audioKey
       meals: [],                // { id, ts(ISO datetime), note } — gentle timestamped notes; no calories/macros/targets/streak
       cycle: { enabled: false, periods: [], symptoms: [], avgCycleLen: null }, // opt-in (default OFF) menstrual log; descriptive only, never a medical/fertility prediction
+      // --- v6 addition: opt-in (default OFF) intimacy log. Its OWN ledger, like cycle —
+      // never touches sessions[]/garden/streak. Private, descriptive, non-judgmental; it
+      // is NOT medical, fertility, or contraception guidance. entries[]:
+      // { id, ts(ISO), date('YYYY-MM-DD'), count(int>=0), orgasms(int>=0), desire(0-10|null), note }
+      intimacy: { enabled: false, entries: [] },
     },
   };
 }
@@ -149,6 +154,18 @@ function migrate(data) {
       if (!Array.isArray(c.periods)) c.periods = [];
       if (!Array.isArray(c.symptoms)) c.symptoms = [];
       if (!('avgCycleLen' in c)) c.avgCycleLen = null;
+    }
+  }
+  // v5 -> v6: opt-in intimacy log. progress.intimacy is a NESTED object, so backfill it
+  // explicitly (the shallow progress spread takes a stored parent wholesale). Default OFF.
+  // Never touches sessions[]/garden/streak — same isolation guarantee as cycle above.
+  if ((data.version || 1) < 6) {
+    const it = out.progress.intimacy;
+    if (!it || typeof it !== 'object' || Array.isArray(it)) {
+      out.progress.intimacy = { enabled: false, entries: [] };
+    } else {
+      if (typeof it.enabled !== 'boolean') it.enabled = false;
+      if (!Array.isArray(it.entries)) it.entries = [];
     }
   }
   // Retired-roster remap: the original four coach ids were replaced by the
