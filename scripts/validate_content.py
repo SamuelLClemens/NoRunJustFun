@@ -448,6 +448,21 @@ if sx:
     ok('#move-sexercise' in main_src, 'main.js missing the #move-sexercise path')
     ok('js/data/movements-sexercise.js' in sw, 'sw.js PRECACHE missing js/data/movements-sexercise.js')
 
+# 21c) Playful · for the bedroom — tasteful, opt-in Soul section of intimacy games +
+#      bedroom tips. CONSENTING-ADULTS, PG-13 wellness framing only (no explicit/medical
+#      advice); lazy-loaded at #bedroom so it stays off the boot path.
+bd = read('js/bedroom-screen.js') if exists('js/bedroom-screen.js') else ''
+ok(bool(bd), 'js/bedroom-screen.js is missing')
+if bd:
+    ok('export function bedroomScreen' in bd, 'bedroom-screen.js missing bedroomScreen()')
+    ok('consenting adults' in bd.lower(), 'bedroom-screen.js missing the consenting-adults framing')
+    ok('not medical' in bd.lower() or 'not medical or explicit' in bd.lower(), 'bedroom-screen.js missing the non-medical/non-explicit framing')
+    ok('consent' in bd.lower(), 'bedroom-screen.js must center consent')
+    ok('SPARKS' in bd and 'TRUTHS' in bd and 'DARES' in bd and 'TIPS' in bd, 'bedroom-screen.js missing the games/tips content')
+    ok("import('./bedroom-screen.js')" in main_src and "h === '#bedroom'" in main_src, 'main.js router does not lazy-load #bedroom')
+    ok('#bedroom' in main_src and 'soul-bedroom' in main_src, 'soulScreen missing the Playful/bedroom card linking to #bedroom')
+    ok("'js/bedroom-screen.js'" in sw, 'sw.js PRECACHE missing js/bedroom-screen.js')
+
 # 22) Soul sections — Crystal energy + Dream interpretation. Belief-flagged,
 #     lessons-only learning tracks: every lesson cites >=5 sources, over-claim phrases
 #     are absent, honest disclaimers are present, and they register under the Soul

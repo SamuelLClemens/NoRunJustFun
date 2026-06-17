@@ -263,6 +263,11 @@ function soulScreen() {
           <div class="med-lib" id="soul-library">${libHTML}</div>
         </details>
       </section>
+      <section class="card soul-bedroom">
+        <h2>🔥 Playful · for the bedroom</h2>
+        <p class="hint">For consenting adults — tasteful intimacy games and bedroom tips. Consent, comfort, and communication always come first.</p>
+        <a class="btn btn-primary" href="#bedroom">Open</a>
+      </section>
       <p class="start-note">Looking for Crystal energy or Dream interpretation? They now live in <a href="#mind">Mind · Learn</a>.</p>
     </main>`;
   document.querySelectorAll('#soul-durations .duration-btn').forEach((b) =>
@@ -1553,6 +1558,7 @@ async function routeTo(h, seq) {
   // Journal: loaded on demand so its IndexedDB/recorder code never touches the boot path.
   if (h === '#journal') { import('./journal-screen.js').then((m) => m.journalScreen()).catch((e) => console.warn('journal load failed', e)); return; }
   if (h === '#calendar' || h === '#intimacy') { import('./intimacy-screen.js').then((m) => m.intimacyScreen()).catch((e) => console.warn('calendar load failed', e)); return; }
+  if (h === '#bedroom') { import('./bedroom-screen.js').then((m) => m.bedroomScreen()).catch((e) => console.warn('bedroom load failed', e)); return; }
   // Help screens: loaded on demand — static copy that never needs to ride the boot path.
   if (h === '#tutorial') { import('./help-screens.js').then((m) => m.tutorialScreen()).catch((e) => console.warn('tutorial load failed', e)); return; }
   if (h === '#faq') { import('./help-screens.js').then((m) => m.faqScreen()).catch((e) => console.warn('faq load failed', e)); return; }
