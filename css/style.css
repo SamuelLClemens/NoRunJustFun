@@ -664,7 +664,14 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 .badge-cell.dreams strong { color: #3C3196; }
 .badge-cell.dreams .badge-date { color: #3C3196; }
 
-/* live reflective cards on the Soul screen (replaced the old .soul-soon stubs) */
+/* Belief & reflection section — Crystals/Dreams now live under Mind · Learn but in a
+   visually distinct (soul-purple) card so they read as a different kind of learning. */
+.reflective-section { background: var(--soul-tint); border: 2px solid var(--soul-border); }
+.reflective-section > h2 { color: var(--soul-ink); }
+.reflective-section > .hint { color: var(--soul-ink); opacity: 0.85; }
+.reflective-section .soul-reflective { background: #fff; }
+
+/* live reflective cards (Crystals/Dreams) */
 .soul-reflectives { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
 .soul-reflective { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
   padding: 12px 14px; border: 2px solid var(--soul-border); border-radius: var(--radius-sm);
@@ -677,6 +684,16 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 .soul-reflective .pillar-txt strong { color: var(--soul-ink); }
 .soul-reflective .pillar-txt small { color: var(--soul-ink); opacity: 0.82; }
 .soul-reflective .soul-go { font-size: 1.2rem; color: var(--soul-accent); flex: 0 0 auto; }
+
+/* Playful · for the bedroom (tasteful intimacy games + tips) */
+.soul-bedroom h2 { margin-bottom: 4px; }
+.bedroom-btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.bedroom-result { margin-top: 10px; font-size: 1.05rem; min-height: 1.4em; color: var(--ink); }
+.bedroom-result:empty { display: none; }
+.bedroom-tips { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-direction: column; gap: 10px; }
+.bedroom-tips li { display: flex; flex-direction: column; gap: 2px; }
+.bedroom-tips li strong { color: var(--ink); }
+.bedroom-tips li span { color: var(--ink-soft); font-size: 0.92rem; }
 
 /* games — quick, tap-based memory practice */
 .game { display: flex; flex-direction: column; align-items: center; gap: 12px; }
@@ -822,8 +839,8 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 .intimacy-note { color: var(--ink-soft); }
 .topbar-action { margin-left: auto; background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 4px 8px; }
 /* stats strip */
-.intim-stats { display: flex; gap: 6px; justify-content: space-between; margin-bottom: 12px; }
-.intim-stats > div { flex: 1; text-align: center; background: var(--soul-tint, #F3F0FA); border-radius: var(--radius-sm); padding: 8px 4px; }
+.intim-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); gap: 6px; margin-bottom: 12px; }
+.intim-stats > div { text-align: center; background: var(--soul-tint, #F3F0FA); border-radius: var(--radius-sm); padding: 8px 4px; }
 .intim-stats strong { display: block; font-size: 1.1rem; }
 .intim-stats span { font-size: 0.7rem; color: var(--ink-soft); }
 /* layer toggles */
@@ -904,3 +921,38 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 .bday-age { color: var(--green-700); font-weight: 700; margin: 4px 0 10px; }
 .bday-affirm { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 8px; text-align: left; }
 .bday-affirm li { background: var(--sun-200, #FBF3D6); border-radius: var(--radius-sm); padding: 9px 12px; line-height: 1.4; }
+
+/* ===== Ship-readiness polish (audit: a11y + mobile touch targets) — additive only ===== */
+
+/* Visually hidden, screen-reader available (e.g. move-change announcements) */
+.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
+
+/* Non-color emphasis for genuine safety cautions (the .safety-note class was undefined) */
+.safety-note { border-left: 4px solid #C2731B; background: rgba(194, 115, 27, 0.09); color: var(--ink, #2E2A24); padding: 8px 12px; border-radius: var(--radius-sm, 10px); margin: 8px 0; }
+
+/* Color-independent quiz/sort/order feedback (WCAG 1.4.1 — meaning not by color alone) */
+.quiz-opt.correct, .sort-bucket.correct, .order-pick.correct { border-width: 2px; }
+.quiz-opt.wrong, .order-pick.wrong { border-width: 2px; border-style: dashed; }
+.quiz-opt.correct::after, .sort-bucket.correct::after, .order-pick.correct::after { content: " ✓"; font-weight: 800; }
+.quiz-opt.wrong::after, .order-pick.wrong::after { content: " ✗"; font-weight: 800; }
+
+/* Mobile touch-target floors — WCAG 2.5.5. Button-only, so text links are unaffected. */
+.intim-layer-chip, .intim-sym-chip { min-height: 40px; display: inline-flex; align-items: center; }
+.intim-pick-btn, .intim-desire-btn, .intim-face-btn { min-height: 44px; justify-content: center; }
+.btn-level { min-height: 44px; }
+.cal-prev, .cal-next { min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; }
+.you-meal-del, .intim-enc-del, .intim-prem { min-width: 44px; min-height: 44px; display: inline-grid; place-items: center; padding: 6px; }
+.topnav a, .back { min-height: 44px; display: inline-flex; align-items: center; }
+
+/* Realistic-coach loading state — never open the flagship feature to a blank stage */
+.stage.is-loading::after {
+  content: "Your coach is getting ready…";
+  position: absolute; inset: 0; z-index: 1;
+  display: flex; align-items: center; justify-content: center; text-align: center; padding: 16px;
+  color: var(--green-700, #2f6b3f); font-weight: 700;
+  background: linear-gradient(180deg, #e1f0e6, #cfe8d6);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .stage.is-loading::after { animation: stage-loading-pulse 1.6s ease-in-out infinite; }
+  @keyframes stage-loading-pulse { 0%, 100% { opacity: 0.72; } 50% { opacity: 1; } }
+}

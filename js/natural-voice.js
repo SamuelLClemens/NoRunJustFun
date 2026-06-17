@@ -32,8 +32,25 @@ export const naturalVoice = {
   _src: null,
   _gen: 0,                // bumped ONLY by cancel(); kills queued + playing speech
   _queue: Promise.resolve(),
+  _analyser: null,        // inline tap on playback for audio-aligned lip-sync
+  _levelBuf: null,
 
   get available() { return this.state === 'ready'; },
+
+  // Real-time loudness of the speech playing RIGHT NOW (0..1), or 0 when silent.
+  // The avatar reads this each frame so the mouth tracks the actual audio — open
+  // on loud syllables, closed in the gaps — which reads as aligned and fluid,
+  // never a robotic loop. The analyser sits inline (src -> analyser -> output) so
+  // it only observes; it never changes what the user hears.
+  getLevel() {
+    const a = this._analyser;
+    if (!a || !this._src) return 0;
+    const buf = this._levelBuf || (this._levelBuf = new Uint8Array(a.fftSize));
+    a.getByteTimeDomainData(buf);
+    let sum = 0;
+    for (let i = 0; i < buf.length; i++) { const v = (buf[i] - 128) / 128; sum += v * v; }
+    return Math.min(1, Math.sqrt(sum / buf.length) * 3.0);   // scale speech RMS into a usable range
+  },
 
   // reprobe: true re-measures device speed (explicit user toggle);
   // false trusts the persisted verdict from a previous launch.
@@ -150,7 +167,16 @@ export const naturalVoice = {
       await new Promise((resolve) => {
         const src = ctx.createBufferSource();
         src.buffer = buf;
-        src.connect(ctx.destination);
+        // inline analyser tap (created once) so the avatar can read live loudness
+        if (!this._analyser) {
+          try {
+            const an = ctx.createAnalyser();
+            an.fftSize = 1024; an.smoothingTimeConstant = 0.6;
+            an.connect(ctx.destination);
+            this._analyser = an;
+          } catch { this._analyser = null; }
+        }
+        src.connect(this._analyser || ctx.destination);
         let settled = false;
         const done = () => { if (!settled) { settled = true; if (this._src === src) this._src = null; resolve(); } };
         src.onended = done;

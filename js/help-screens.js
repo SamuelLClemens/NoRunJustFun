@@ -47,7 +47,7 @@ export function tutorialScreen() {
     },
     {
       ic: '💚', title: 'Your coach and voice',
-      body: `Choose your coach and voice in <a href="#settings">Settings</a>. On capable devices a warm, lifelike voice turns on by itself — entirely on this device. Captions always stay on, and you can mute the voice whenever you like.`,
+      body: `Choose your coach and voice in <a href="#settings">Settings</a>. You can switch on a warm, lifelike voice there (a one-time download that then runs entirely on this device). Captions always stay on, and you can mute the voice whenever you like.`,
     },
     {
       ic: '🪴', title: 'Grow your garden',
@@ -91,9 +91,9 @@ export function tutorialScreen() {
 export function faqScreen() {
   const privacy = [
     `Everything you do — your progress, journal entries, voice recordings, meal notes, and cycle logs — is stored only on this device, inside your browser. There is no account and no server holding any of it.`,
-    `No analytics, no trackers, no ads, and no third-party scripts. The app never measures, profiles, or reports what you do.`,
+    `No analytics, no trackers, and no ads. The app never measures, profiles, or reports what you do.`,
     `The lifelike coach voice and the journal’s voice-to-text both run <strong>on your device</strong>. Your recordings and words are processed locally and are never uploaded.`,
-    `The only thing the app ever fetches from the internet is the optional voice and transcription model files, and only if your device opts in. That download pulls files toward you — it sends nothing about you — and once cached, the feature works offline.`,
+    `The only things the app ever fetches from the internet are optional features you choose to turn on: the lifelike-voice and transcription models (from a public model host) and the realistic 3D coaches. Those downloads pull files toward you — they send nothing about you — and once cached, the features work offline.`,
     `You can erase everything in one tap: <a href="#settings">Settings → Reset my data</a> clears both the on-device storage and the recordings store.`,
     `Once it has loaded, the app works fully offline, and it honors your device’s Data Saver and reduced-motion settings.`,
   ];

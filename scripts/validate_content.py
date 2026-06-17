@@ -266,7 +266,7 @@ for orphan in ['js/finance.js', 'js/finance-screen.js']:
 # works offline; the ~1.9 MB GLB is warmed best-effort in install (cannot reject addAll).
 for dep in ['lib/jsm/loaders/GLTFLoader.js', 'lib/jsm/utils/BufferGeometryUtils.js', 'lib/jsm/environments/RoomEnvironment.js']:
     ok(f"'{dep}'" in sw, f"sw.js PRECACHE missing avatar dependency {dep}")
-ok('models/vera.glb' in sw, "sw.js install does not warm the photoreal model models/vera.glb")
+ok("RUNTIME_CACHE" in sw and ".glb" in sw, "sw.js must route immutable coach GLBs to a stable runtime cache (cache-on-use, not precached)")
 # The realistic avatar gained a human "presence" layer: image-based lighting (RoomEnvironment
 # + ACES) and real lip-sync (viseme morph targets) driven by the coach's actual voice. The
 # face layer is morph-gated, so it stays inert (no breakage) on a viseme-less Mixamo body and
@@ -281,6 +281,21 @@ if ra_src:
        'realistic-avatar.js must morph-gate the face layer (graceful on viseme-less rigs)')
     ok('onSpeechStart' in read('js/tts.js') and 'onSpeechEnd' in read('js/tts.js'),
        'tts.js missing the lip-sync speech hooks (onSpeechStart/onSpeechEnd)')
+    # The realistic host GLB (built free in Blender/MPFB, full ARKit visemes) is the
+    # fallback model + check-in greeter; the file must ship and be wired as fallback.
+    ok("FALLBACK_MODEL = 'coach-host.glb'" in ra_src,
+       'realistic-avatar.js FALLBACK_MODEL must be the realistic host (coach-host.glb)')
+    ok(exists('models/coach-host.glb'),
+       'models/coach-host.glb (the realistic talking host) is missing from the repo')
+    # The four identity-matched coach GLBs (built free in Blender/MPFB) ship + are wired
+    # in COACH_MODELS so each coach renders as a distinct realistic human with lip-sync.
+    for _c in ['jasmine', 'nokeke', 'abednego', 'aguibou']:
+        ok(exists(f'models/coach-{_c}.glb'), f'models/coach-{_c}.glb is missing from the repo')
+        ok(f"{_c}:" in ra_src and f"coach-{_c}.glb" in ra_src,
+           f'realistic-avatar.js COACH_MODELS missing the {_c} mapping')
+    main_src = read('js/main.js')
+    ok('setFraming' in main_src and "contentFraming" in main_src,
+       'main.js must frame the host waist-up for the check-in/meditation and full-body for workouts')
 for sid, cfg in LEARN_SUBJECTS.items():
     for f in [cfg['badges'], cfg['lessons']]:
         if exists(f):
@@ -419,6 +434,51 @@ for go in ['#move-face', '#move-baby']:
     ok(go in main_src, f'main.js missing the {go} path')
 ok('safety' in main_src, 'main.js MOVE_META missing the baby safety note')
 
+# 21b) Sexercise — the sixth Body path: gentle, body-positive fitness (strength, stamina,
+#      hip mobility, pelvic floor) for a more active intimate life. CONSENTING-ADULTS,
+#      fitness framing only (no explicit/medical advice); stays in the gentle, postpartum-
+#      aware envelope (no banned high-impact/diastasis-risk moves). Category-gated like the
+#      other paths; its own data file so the ext2/ext3 checks above are untouched.
+sx = read('js/data/movements-sexercise.js') if exists('js/data/movements-sexercise.js') else ''
+ok(bool(sx), 'js/data/movements-sexercise.js is missing')
+if sx:
+    ok('export const SEXERCISE_MOVES' in sx and 'export const SEXERCISE_CATEGORY' in sx,
+       'movements-sexercise.js missing SEXERCISE_MOVES / SEXERCISE_CATEGORY')
+    sx_block = sx.split('export const SEXERCISE_MOVES')[1].split('export const SEXERCISE_CATEGORY')[0]
+    sx_ids = re.findall(r"id:\s*'([^']+)'", sx_block)
+    ok(len(sx_ids) >= 24, f'expected >=24 sexercise moves, found {len(sx_ids)}')
+    ok(all(re.fullmatch(r'[a-z0-9-]+', i) for i in sx_ids), 'a sexercise move id is not kebab-case')
+    ok(not (set(sx_ids) & set(FROZEN)) and not (set(sx_ids) & set(new_ids)) and not (set(sx_ids) & set(extra_ids)) and not (set(sx_ids) & set(ext3_ids)),
+       'a sexercise move id collides with an existing id')
+    for i in sx_ids:
+        for b in BANNED:
+            ok(b not in i.lower(), f"banned high-impact pattern '{b}' in sexercise move '{i}'")
+    # consent + non-medical framing must be present (in the data file and the path note)
+    ok('consenting adults' in (sx + main_src).lower(), 'sexercise missing the consenting-adults framing')
+    ok('not medical' in (sx + main_src).lower() or 'not medical or explicit' in (sx + main_src).lower(),
+       'sexercise missing the non-medical/non-explicit framing')
+    ok("'sexercise'" in tiers and 'WORKOUT_PATHS' in tiers, 'tiers.js missing the sexercise session type')
+    ok("sexercise: ['sexercise'" in seng, 'sessionEngine.js CATEGORY_POOLS missing sexercise')
+    ok("tier === 'sexercise'" in seng, 'sessionEngine.js tierAllows must bypass intensity for sexercise (category-gated)')
+    ok('#move-sexercise' in main_src, 'main.js missing the #move-sexercise path')
+    ok('js/data/movements-sexercise.js' in sw, 'sw.js PRECACHE missing js/data/movements-sexercise.js')
+
+# 21c) Playful · for the bedroom — tasteful, opt-in Soul section of intimacy games +
+#      bedroom tips. CONSENTING-ADULTS, PG-13 wellness framing only (no explicit/medical
+#      advice); lazy-loaded at #bedroom so it stays off the boot path.
+bd = read('js/bedroom-screen.js') if exists('js/bedroom-screen.js') else ''
+ok(bool(bd), 'js/bedroom-screen.js is missing')
+if bd:
+    ok('export function bedroomScreen' in bd, 'bedroom-screen.js missing bedroomScreen()')
+    ok('consenting adults' in bd.lower(), 'bedroom-screen.js missing the consenting-adults framing')
+    ok('not medical' in bd.lower() or 'not medical or explicit' in bd.lower(), 'bedroom-screen.js missing the non-medical/non-explicit framing')
+    ok('consent' in bd.lower(), 'bedroom-screen.js must center consent')
+    ok('SPARKS' in bd and 'TRUTHS' in bd and 'DARES' in bd and 'TIPS' in bd, 'bedroom-screen.js missing the games/tips content')
+    ok('DICE_ACTIONS' in bd and 'POSITIONS' in bd and 'WYR' in bd and 'SENSES' in bd, 'bedroom-screen.js missing the expanded games (dice/positions/would-you-rather/senses)')
+    ok("import('./bedroom-screen.js')" in main_src and "h === '#bedroom'" in main_src, 'main.js router does not lazy-load #bedroom')
+    ok('#bedroom' in main_src and 'soul-bedroom' in main_src, 'soulScreen missing the Playful/bedroom card linking to #bedroom')
+    ok("'js/bedroom-screen.js'" in sw, 'sw.js PRECACHE missing js/bedroom-screen.js')
+
 # 22) Soul sections — Crystal energy + Dream interpretation. Belief-flagged,
 #     lessons-only learning tracks: every lesson cites >=5 sources, over-claim phrases
 #     are absent, honest disclaimers are present, and they register under the Soul
@@ -518,12 +578,13 @@ learn_screen_src = read('js/learning-screen.js')
 ok('Read what your coach said' in learn_screen_src and 'it.ex.why' in learn_screen_src,
    'learning-screen.js transcript regressed (lesson transcript must stay intact)')
 
-# 25) Lifelike voice, automatic: capable devices load the natural voice in the
-#     background (system voice covers slow ones), honoring an explicit choice + Data Saver.
-ok("voicePref: 'auto'" in st, "state.js profile missing the voicePref:'auto' default")
-ok('maybeAutoEnableNaturalVoice' in main_src, 'main.js missing the lifelike-voice auto-enable')
+# 25) Lifelike voice — STRICTLY OPT-IN (privacy): the ~90 MB model downloads only when the
+#     user has explicitly turned it on (voicePref 'on' / naturalOn), never silently at first
+#     launch. System voice is the default. Honors Data Saver. Matches the FAQ opt-in promise.
+ok("voicePref:" in st, "state.js profile missing the voicePref default")
+ok('maybeAutoEnableNaturalVoice' in main_src, 'main.js missing the lifelike-voice enable hook')
 ok(main_src.count('maybeAutoEnableNaturalVoice') >= 2, 'maybeAutoEnableNaturalVoice is defined but never called at boot')
-ok("p.voicePref === 'off'" in main_src, 'auto-enable must respect an explicit voicePref off')
+ok("p.voicePref === 'on' || p.naturalOn" in main_src, 'lifelike voice must be OPT-IN (no auto-download unless explicitly enabled)')
 ok('saveData' in main_src, 'auto-enable must honor Data Saver (navigator.connection.saveData)')
 ok("p.voicePref = e.target.checked ? 'on' : 'off'" in main_src, 'settings toggle must record an explicit voicePref')
 
@@ -701,6 +762,17 @@ if intim_src:
        'intimacy.js missing the merged period/cycle functions (setPeriod/isPeriod/cycleStats)')
     if intim_scr:
         ok('intim-period' in intim_scr, 'personal calendar day editor missing the period-day toggle')
+        # Toggleable layers now include the meals / journal / weight ledgers (read-only).
+        for _lay in ['meals', 'journal', 'weight']:
+            ok(f"'{_lay}'" in intim_src, f"personal calendar LAYER_KEYS missing the '{_lay}' layer")
+        ok('mealsMap' in intim_scr and 'journalMap' in intim_scr and 'weightMap' in intim_scr,
+           'personal calendar missing read-only meal/journal/weight day maps')
+        # Rich, pattern-naming stats engine (orgasm distribution + % of month + cross-ledger).
+        ok('richInsights' in intim_src and 'orgPct' in intim_src and 'pctDaysWithSex' in intim_src,
+           'intimacy.js missing the rich stats engine (richInsights / orgasm distribution / % of month)')
+        # The stats engine reads sibling ledgers but must never WRITE them (isolation).
+        for _w in ['sessions.push', 'journal.push', 'meals.push', 'weights.push']:
+            ok(_w not in intim_src, f"intimacy.js must not write sibling ledgers ({_w})")
     ok('data-intimacy' in main_src and 'intimacyCardHTML' in main_src, 'You page does not render the personal calendar card')
     ok('Personal calendar' in main_src, 'You page card should be titled "Personal calendar"')
     ok("#calendar" in main_src and 'intimacy-screen.js' in main_src, 'router does not lazy-load the personal calendar screen at #calendar')

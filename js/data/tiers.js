@@ -23,11 +23,12 @@ export const TIER_META = {
   yoga:            { id: 'yoga',            label: 'Yoga',            blurb: 'mindful poses · breath-linked flow' },
   face:            { id: 'face',            label: 'Face Yoga',       blurb: 'gentle facial release · relaxation' },
   baby:            { id: 'baby',            label: 'With Your Baby',  blurb: 'move and bond together · gentle' },
+  sexercise:       { id: 'sexercise',       label: 'Sexercise',       blurb: 'strength · stamina · hip mobility · pelvic floor' },
 };
 
 // Workout categories — the three Body paths. Stretching + Yoga gate the pool to
 // their category; Exercises uses the strength/cardio category with intensity tiers.
-export const WORKOUT_PATHS = ['stretch', 'yoga', 'exercise', 'face', 'baby'];
+export const WORKOUT_PATHS = ['stretch', 'yoga', 'exercise', 'face', 'baby', 'sexercise'];
 
 // Per-tier knobs the assembler/player read. holdMult is clamped so timed poses
 // stay inside the 40-90s schema envelope. restAdd stacks on TRANSITION_SECS (6).
@@ -43,6 +44,9 @@ export const TIER_PROFILES = {
   face:            { strengthDensity: 0.00, rpe: '1-2, fully at ease',       holdMult: 1.00, restAdd: 8, repeatsFromMins: 20, requiresGate: false },
   // With Your Baby: gentle full-body movement holding baby; a light strength thread.
   baby:            { strengthDensity: 0.30, rpe: '2-4, can chat to baby',    holdMult: 1.00, restAdd: 6, repeatsFromMins: 25, requiresGate: false },
+  // Sexercise: a moderate strength + mobility thread (glutes, core, hips, pelvic floor);
+  // never high-impact, no screening gate — gentle, postpartum-aware like the rest.
+  sexercise:       { strengthDensity: 0.50, rpe: '3-5, can still talk',      holdMult: 1.00, restAdd: 4, repeatsFromMins: 25, requiresGate: false },
 };
 
 // The vigorous tier never adds impact. This is the safe ceiling, in data.

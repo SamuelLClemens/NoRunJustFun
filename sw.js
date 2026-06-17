@@ -1,7 +1,7 @@
 // Offline support: precache the whole app on install, serve cache-first.
 // Bump CACHE_VERSION with every release so updates roll out cleanly.
 
-const CACHE_VERSION = 'ygt-v4.29.0';
+const CACHE_VERSION = 'ygt-v4.39.0';
 
 const PRECACHE = [
   './',
@@ -38,9 +38,9 @@ const PRECACHE = [
   'js/journal-screen.js',
   'js/help-screens.js',
   'js/meals.js',
-  'js/cycle.js',
   'js/intimacy.js',
   'js/intimacy-screen.js',
+  'js/bedroom-screen.js',
   'js/stt.js',
   'js/stt-worker.js',
   'js/data/tracks.js',
@@ -69,6 +69,7 @@ const PRECACHE = [
   'js/data/movements-ext.js',
   'js/data/movements-ext2.js',
   'js/data/movements-ext3.js',
+  'js/data/movements-sexercise.js',
   'js/data/tiers.js',
   'js/data/meditation.js',
   'js/data/profiles.js',
@@ -90,24 +91,25 @@ const PRECACHE = [
   'icons/favicon-16.png',
 ];
 
+// Large immutable binaries (the opt-in coach GLBs) live in a STABLE runtime cache so a
+// CACHE_VERSION bump (which re-installs the app shell) never re-downloads ~26 MB of models.
+// The realistic coach is opt-in, so models are cached lazily on first use — never warmed at
+// install (that would cost every user the download even if they never enable the feature).
+const RUNTIME_CACHE = 'ygt-runtime';
+const isImmutableBinary = (url) => /\.glb($|\?)/i.test(url);
+
 self.addEventListener('install', (e) => {
   e.waitUntil(
-    caches.open(CACHE_VERSION).then((c) =>
-      // Atomic: every PRECACHE path must resolve or the whole install fails.
-      c.addAll(PRECACHE).then(() =>
-        // Warm the large photoreal-coach model separately, as a best-effort add,
-        // so the opt-in coach works offline — its failure must never reject the
-        // atomic addAll() above (a missing/oversize GLB should not break install).
-        c.add('models/vera.glb').catch(() => {}),
-      ),
-    ).then(() => self.skipWaiting()),
+    // Atomic: every PRECACHE path must resolve or the whole install fails.
+    caches.open(CACHE_VERSION).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting()),
   );
 });
 
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE_VERSION).map((k) => caches.delete(k))))
+      // keep the current app-shell cache AND the stable runtime (model) cache
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE_VERSION && k !== RUNTIME_CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });
@@ -120,8 +122,9 @@ self.addEventListener('fetch', (e) => {
       if (hit) return hit;
       return fetch(req).then((res) => {
         if (res.ok) {
+          const bucket = isImmutableBinary(req.url) ? RUNTIME_CACHE : CACHE_VERSION;
           const copy = res.clone();
-          caches.open(CACHE_VERSION).then((c) => c.put(req, copy));
+          caches.open(bucket).then((c) => c.put(req, copy));
         }
         return res;
       }).catch(() => {

@@ -305,15 +305,16 @@ export const TRACKS = {
 
   // ---- Soul sections (belief-flagged, lessons-only) ----
   // Registered here so the shared engine + #learn-<track> route serve them, but they
-  // live under the Soul pillar (SOUL_TRACK_LIST), NOT the Mind TRACK_LIST. No games,
+  // stay in their own SOUL_TRACK_LIST registry, NOT the Mind TRACK_LIST. No games,
   // no quiz, no mastery badge (which requires a game win) — these are reflective
-  // reading sections. hubBack sends the hub's "Back" link to #soul, not #mind.
+  // reading sections. They now surface under Mind · Learn as a visually distinct
+  // belief-and-reflection section, so hubBack returns to #mind, not #soul.
   crystals: {
     id: 'crystals',
     name: 'Crystal energy',
     homeLabel: 'Crystals',
     blurb: 'A respectful, honest look at crystals: the minerals, the traditions, and what the evidence shows.',
-    hubBack: '#soul',
+    hubBack: '#mind',
     badgePrefix: 'cry-',
     badges: CRYSTALS_BADGES,
     disclaimer: CRYSTALS_DISCLAIMER,
@@ -342,7 +343,7 @@ export const TRACKS = {
     name: 'Dream interpretation',
     homeLabel: 'Dreams',
     blurb: 'The science of sleep and dreaming alongside the history of dream interpretation — honestly framed.',
-    hubBack: '#soul',
+    hubBack: '#mind',
     badgePrefix: 'drm-',
     badges: DREAMS_BADGES,
     disclaimer: DREAMS_DISCLAIMER,

@@ -94,6 +94,16 @@ export const coach = {
   _startSpeech() { if (this.onSpeechStart) { try { this.onSpeechStart(); } catch { /* lip-sync is best-effort */ } } },
   _endSpeech() { if (this.onSpeechEnd) { try { this.onSpeechEnd(); } catch { /* lip-sync is best-effort */ } } },
 
+  // Mouth-openness target (0..1) for the avatar, or null when there is no
+  // authoritative audio to track. The natural (Kokoro) voice plays through Web
+  // Audio, so we return its live amplitude and the mouth tracks the real speech
+  // (word-aligned, fluid). The system voice gives no audio access, so we return
+  // null and the avatar falls back to an organic talking motion.
+  getMouthLevel() {
+    if (this.naturalOn && naturalVoice.available) return naturalVoice.getLevel();
+    return null;
+  },
+
   // Speak text (string or array of strings). Captions render even when audio is
   // off (accessibility). When audio plays, the caption advances sentence-by-sentence
   // in sync with playback. Resolves when finished or cancelled.

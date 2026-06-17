@@ -19,9 +19,10 @@ import { POSES } from './data/poses.js';
 import { NEW_EXERCISES, TIER_ELIGIBILITY } from './data/movements-ext.js';
 import { EXTRA_EXERCISES, EXTRA_TIER_ELIGIBILITY, WORKOUT_CATEGORY } from './data/movements-ext2.js';
 import { EXTRA_EXERCISES2, EXTRA_TIER_ELIGIBILITY2, WORKOUT_CATEGORY2 } from './data/movements-ext3.js';
+import { SEXERCISE_MOVES, SEXERCISE_CATEGORY } from './data/movements-sexercise.js';
 import { MODES, TIER_META, DURATIONS } from './data/tiers.js';
 import { buildMeditation, buildMeditationById, MEDITATION_LIBRARY } from './data/meditation.js';
-import { availableTiers, gateMessage, routeTrack, filterPool, evaluateScreening,
+import { availableTiers, gateMessage, filterPool,
   PARQ_GENERAL, PARQ_POSTPARTUM, LIFE_STAGES, SEX_OPTIONS, AGE_BANDS, INJURY_FLAGS, SPACE_OPTIONS } from './data/profiles.js';
 import { PROGRAMS, getProgram, programSuggestion, advanceProgram } from './data/programs.js';
 import { getTrack, TRACK_LIST, SOUL_TRACK_LIST } from './data/tracks.js';
@@ -42,9 +43,9 @@ const DEV_QA = new URLSearchParams(location.search).has('dev');
 
 // The full movement pool = frozen 29 + appended new movements. exercises.js stays
 // byte-stable; tier metadata and new moves live in movements-ext.js.
-const ALL_EXERCISES = [...EXERCISES, ...NEW_EXERCISES, ...EXTRA_EXERCISES, ...EXTRA_EXERCISES2];
+const ALL_EXERCISES = [...EXERCISES, ...NEW_EXERCISES, ...EXTRA_EXERCISES, ...EXTRA_EXERCISES2, ...SEXERCISE_MOVES];
 const ALL_TIER_ELIGIBILITY = { ...TIER_ELIGIBILITY, ...EXTRA_TIER_ELIGIBILITY, ...EXTRA_TIER_ELIGIBILITY2 };
-const ALL_WORKOUT_CATEGORY = { ...WORKOUT_CATEGORY, ...WORKOUT_CATEGORY2 };
+const ALL_WORKOUT_CATEGORY = { ...WORKOUT_CATEGORY, ...WORKOUT_CATEGORY2, ...SEXERCISE_CATEGORY };
 
 // Honor the reduced-motion preference override (auto | on | off) on every render.
 function applyMotionPref() {
@@ -175,6 +176,7 @@ function bodyScreen() {
     { go: '#move-exercise', ic: '💪', title: 'Exercises', blurb: 'Build strength and gentle cardio — choose your intensity' },
     { go: '#move-face', ic: '😌', title: 'Face yoga', blurb: 'Gentle facial release and relaxation — sit anywhere' },
     { go: '#move-baby', ic: '🍼', title: 'With your baby', blurb: 'Gentle movement you can do holding your little one' },
+    { go: '#move-sexercise', ic: '🔥', title: 'Sexercise', blurb: 'Playful strength, stamina and mobility for a more active, joyful intimate life' },
   ];
   app.innerHTML = `
     <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Body · Move</h1></header>
@@ -201,6 +203,8 @@ const MOVE_META = {
   face: { label: 'Face yoga', note: 'gentle facial release and relaxation' },
   baby: { label: 'With your baby', note: 'gentle movement holding your baby',
     safety: 'Always support the head and neck, hold your baby securely, and never bounce. Begin only once your doctor has cleared you after birth, and stop if your baby is unsettled.' },
+  sexercise: { label: 'Sexercise', note: 'playful strength, stamina and mobility for a more active, joyful intimate life',
+    safety: 'For consenting adults. This is gentle fitness — strength, stamina, hip mobility and pelvic-floor work — not medical or explicit sex advice. Move within your comfort, communicate with any partner, keep everything consensual, and stop if anything hurts.' },
 };
 
 function moveScreen(category) {
@@ -242,18 +246,6 @@ function soulScreen() {
     `<button class="duration-btn" data-mins="${m}"><span class="d-num">${m}</span><span class="d-label">min</span></button>`).join('');
   const libHTML = MEDITATION_LIBRARY.map((m) =>
     `<button class="med-lib-btn" data-med="${m.id}"><span>${esc(m.theme)}</span><small>${m.minutes} min</small></button>`).join('');
-  // Reflective Soul sections (belief-flagged, lessons-only) — driven by the registry
-  // (SOUL_TRACK_LIST) so they stay in sync with tracks.js. Each opens the shared
-  // learning hub at #learn-<track>; its "Back" link returns here via track.hubBack.
-  const reflectiveHTML = SOUL_TRACK_LIST.map((id) => {
-    const t = getTrack(id);
-    if (!t) return '';
-    return `<button class="soul-reflective" data-track="${esc(id)}">
-        <span class="pillar-ic" aria-hidden="true">${(t.theme && t.theme.badgeEmoji) || '🌙'}</span>
-        <span class="pillar-txt"><strong>${esc(t.name)}</strong><small>${esc(t.blurb)}</small></span>
-        <span class="soul-go" aria-hidden="true">→</span>
-      </button>`;
-  }).join('');
   app.innerHTML = `
     <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Soul · Be still</h1></header>
     <main class="narrow soul-screen">
@@ -263,21 +255,25 @@ function soulScreen() {
         <div class="duration-grid" id="soul-durations">${durationBtns}</div>
       </section>
       <section class="card">
-        <strong>Or browse a theme</strong>
-        <div class="med-lib" id="soul-library">${libHTML}</div>
+        <details class="fin-lib-details">
+          <summary class="fin-lib-summary">
+            <span class="fin-lib-summary-txt"><strong>Or browse a theme</strong><small>Browse all ${MEDITATION_LIBRARY.length} meditations — open it when you want, tuck it away when you don't</small></span>
+            <span class="fin-lib-chevron" aria-hidden="true">▾</span>
+          </summary>
+          <div class="med-lib" id="soul-library">${libHTML}</div>
+        </details>
       </section>
-      <section class="card soul-future">
-        <h2>More for the soul</h2>
-        <p class="hint">Calm, honest, well-sourced reflections — belief and evidence held side by side.</p>
-        <div class="soul-reflectives" id="soul-reflectives">${reflectiveHTML}</div>
+      <section class="card soul-bedroom">
+        <h2>🔥 Playful · for the bedroom</h2>
+        <p class="hint">For consenting adults — frank, spicy intimacy games and bold bedroom tips. Consent, comfort, and communication always come first.</p>
+        <a class="btn btn-primary" href="#bedroom">Open</a>
       </section>
+      <p class="start-note">Looking for Crystal energy or Dream interpretation? They now live in <a href="#mind">Mind · Learn</a>.</p>
     </main>`;
   document.querySelectorAll('#soul-durations .duration-btn').forEach((b) =>
     b.addEventListener('click', () => { sound.unlock(); go('#play-' + b.dataset.mins + '-meditation'); }));
   document.querySelectorAll('#soul-library .med-lib-btn').forEach((b) =>
     b.addEventListener('click', () => { sound.unlock(); go('#play-lib-' + b.dataset.med); }));
-  document.querySelectorAll('#soul-reflectives .soul-reflective').forEach((b) =>
-    b.addEventListener('click', () => { go('#learn-' + b.dataset.track); }));
 }
 
 // ---------------------------------------------------------------- Mind pillar (learning)
@@ -301,6 +297,18 @@ function mindScreen() {
       : `<button class="fin-lib-btn mind-subject locked" disabled>${inner}
         <span class="fin-lib-meta"><span class="soon-tag">Coming soon</span></span></button>`;
   }).join('');
+  // Belief-flagged reflective sections (Crystal energy, Dream interpretation). They live
+  // under their own SOUL_TRACK_LIST registry (never the Mind TRACK_LIST, so they get no
+  // quiz/games/mastery), and now appear here in Learn as a visually distinct section.
+  const reflectiveHTML = SOUL_TRACK_LIST.map((id) => {
+    const t = getTrack(id);
+    if (!t) return '';
+    return `<button class="soul-reflective" data-track="${esc(id)}">
+        <span class="pillar-ic" aria-hidden="true">${(t.theme && t.theme.badgeEmoji) || '🌙'}</span>
+        <span class="pillar-txt"><strong>${esc(t.name)}</strong><small>${esc(t.blurb)}</small></span>
+        <span class="soul-go" aria-hidden="true">→</span>
+      </button>`;
+  }).join('');
   app.innerHTML = `
     <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Mind · Learn</h1></header>
     <main class="narrow finance-section">
@@ -310,9 +318,16 @@ function mindScreen() {
         <p class="hint">Your coach teaches you, scaled to the time you have. Each subject grows the same garden.</p>
         <div class="fin-lib" id="mind-subjects">${cards}</div>
       </section>
+      ${reflectiveHTML ? `<section class="card reflective-section">
+        <h2>Belief &amp; reflection</h2>
+        <p class="hint">A different kind of learning — honest, well-sourced explorations where belief and evidence sit side by side. Read at your own pace.</p>
+        <div class="soul-reflectives" id="soul-reflectives">${reflectiveHTML}</div>
+      </section>` : ''}
     </main>`;
   document.querySelectorAll('#mind-subjects .mind-subject[data-track]').forEach((b) =>
     b.addEventListener('click', () => { location.hash = '#learn-' + b.dataset.track; }));
+  document.querySelectorAll('#soul-reflectives .soul-reflective').forEach((b) =>
+    b.addEventListener('click', () => { go('#learn-' + b.dataset.track); }));
 }
 
 // Optional guided-program card: today's suggestion if enrolled, else a soft invite.
@@ -529,6 +544,22 @@ function safetyHTML() {
     <p>All moves here are low-impact and chosen to be kind to postpartum bodies: no crunches, no sit-ups, no full planks.</p>`;
 }
 
+// The boot welcome. A first-timer may open straight into Mind, Soul, or the You page,
+// so the launch overlay leads with a warm, neutral welcome + privacy and frames the
+// exercise caution in context ("the Body sessions…") rather than greeting everyone with
+// a workout warning. The full, detailed safety notice still lives on the #safety screen.
+function welcomeHTML() {
+  return `
+    <h2>Welcome to Garden Moves 💚</h2>
+    <p>A calm space to move, learn, and reflect — Mind, Body, and Soul. Everything you do stays private, on this device.</p>
+    <ul>
+      <li>Go at your own pace. Every activity can be paused or skipped — that is self-care, not failure.</li>
+      <li>The Body sessions are gentle, low-impact guidance, <strong>not medical advice</strong>. If a move hurts, stop — and check with your doctor before a new exercise program, especially within 12 weeks of giving birth or with any health concern.</li>
+      <li>Be kind to yourself here. It grows by consistency, never intensity.</li>
+    </ul>
+    <p>You can reread the full safety notice and the privacy details any time from the menu.</p>`;
+}
+
 // The launch disclaimer. The card is a flex column: the notice text scrolls, while the
 // dismiss button stays PINNED and visible at the bottom on every viewport — including
 // short / landscape phones, where the old centered card pushed the button below the
@@ -540,9 +571,9 @@ function showSafetyOverlay() {
   ov.className = 'overlay safety';
   ov.setAttribute('role', 'dialog');
   ov.setAttribute('aria-modal', 'true');
-  ov.setAttribute('aria-label', 'Safety notice');
+  ov.setAttribute('aria-label', 'Welcome');
   ov.innerHTML = `<div class="overlay-card overlay-card--gated">
-    <div class="overlay-scroll">${safetyHTML()}</div>
+    <div class="overlay-scroll">${welcomeHTML()}</div>
     <div class="overlay-actions">
       <button class="btn btn-primary" id="safety-ok">I understand — let's go</button>
       <p class="overlay-once">You will only see this once.</p>
@@ -590,6 +621,7 @@ function sessionScreen(plan) {
           <div>
             <span class="chip chip-block" id="block-chip"></span>
             <h2 id="move-name">Get ready…</h2>
+            <span id="move-live" class="sr-only" role="status" aria-live="polite"></span>
           </div>
           <div class="ring-wrap">
             <svg viewBox="0 0 120 120" class="ring" aria-hidden="true">
@@ -613,6 +645,10 @@ function sessionScreen(plan) {
     </main>`;
 
   const captionEl = document.getElementById('caption');
+  // Screen readers: when the coach voice is ON it already speaks each line, so a live
+  // caption would double-announce. Keep the caption live ONLY when the voice is muted
+  // (so Deaf/HoH users still get it announced); silence it for assistive tech otherwise.
+  captionEl.setAttribute('aria-live', profile.voiceOn ? 'off' : 'polite');
   coach.onCaption = (t) => { captionEl.textContent = t; };
   coach.resetTranscript();   // fresh "Read what your coach said" log for this session
   coach.enabled = profile.voiceOn;
@@ -631,9 +667,15 @@ function sessionScreen(plan) {
   try {
     if (wantReal) {
       avatar = new RealisticAvatar(canvas, char);
+      // show a calm "coach is getting ready" state while the 5–7 MB model loads,
+      // so the flagship feature never opens to a blank stage (cleared on ready/error)
+      const stageEl = canvas.closest('.stage');
+      if (stageEl) stageEl.classList.add('is-loading');
+      const clearLoading = () => { if (stageEl) stageEl.classList.remove('is-loading'); };
+      avatar.onReady = clearLoading;
       avatar.start();
-      // if she fails to load, quietly swap to the lean coach for this session
-      avatar.onError = () => swapToLeanAvatar(canvas, char);
+      // if she fails to load, clear the loader and quietly swap to the lean coach
+      avatar.onError = () => { clearLoading(); swapToLeanAvatar(canvas, char); };
       // if the device renders her too slowly, note it so the NEXT session uses
       // the light coach — but let her finish this one (no jarring mid-session swap)
       avatar.watchPerformance((fps) => {
@@ -655,6 +697,17 @@ function sessionScreen(plan) {
   // a disposed avatar.
   coach.onSpeechStart = () => { if (avatar && avatar.setTalking) try { avatar.setTalking(true); } catch { /* ok */ } };
   coach.onSpeechEnd = () => { if (avatar && avatar.setTalking) try { avatar.setTalking(false); } catch { /* ok */ } };
+  // Audio-aligned lip-sync: let the avatar read the coach's live speech loudness
+  // so the mouth tracks the actual words (natural voice). No-op on the lean coach.
+  if (avatar && avatar.setLevelProvider) { try { avatar.setLevelProvider(() => coach.getMouthLevel()); } catch { /* ok */ } }
+
+  // Camera framing for the realistic host: a waist-up portrait while she speaks
+  // (the check-in greeting, and all of meditation), and the whole body for
+  // workouts so form is visible. A no-op on the lean coach, so it is safe to wire
+  // unconditionally. `contentFraming` is what we settle into once content begins.
+  const isMeditation = !!(plan.isMeditation || plan.kind === 'meditation');
+  const contentFraming = isMeditation ? 'talk' : 'full';
+  const setFraming = (mode) => { if (avatar && avatar.setFraming) { try { avatar.setFraming(mode); } catch { /* ok */ } } };
 
   const dots = document.getElementById('dots');
   dots.innerHTML = plan.items.map((it, i) =>
@@ -676,6 +729,9 @@ function sessionScreen(plan) {
     durationKey: plan.durationKey || 0,
   });
 
+  // Greet waist-up if a check-in will speak first; otherwise frame for content now.
+  setFraming(checkinText ? 'talk' : contentFraming);
+
   player = new Player({
     plan,
     phrases: PHRASES,
@@ -686,8 +742,11 @@ function sessionScreen(plan) {
     hooks: {
       moveStart(item, idx) {
         document.getElementById('move-name').textContent = item.ex.name;
-        document.getElementById('block-chip').textContent =
-          { arrive: 'arrive', warmup: 'warm-up', main: 'main', winddown: 'wind-down', close: 'breathe', meditation: 'meditate', lesson: 'learn' }[item.block] || '';
+        const blockLabel = { arrive: 'arrive', warmup: 'warm-up', main: 'main', winddown: 'wind-down', close: 'breathe', meditation: 'meditate', lesson: 'learn' }[item.block] || '';
+        document.getElementById('block-chip').textContent = blockLabel;
+        // announce the move change to screen readers (the visual <h2> swap is silent to AT)
+        const ml = document.getElementById('move-live');
+        if (ml) ml.textContent = `${item.ex.name}${blockLabel ? ' — ' + blockLabel : ''}`;
         dots.setAttribute('aria-label', `Move ${idx + 1} of ${plan.items.length}: ${item.ex.name}`);
         dots.querySelectorAll('.dot').forEach((d, i) => {
           d.classList.toggle('done', i < idx);
@@ -747,6 +806,7 @@ function sessionScreen(plan) {
     let begun = false;
     const begin = () => {
       if (begun) return; begun = true;
+      setFraming(contentFraming);   // settle from the waist-up greeting into the content framing
       if (player === thisPlayer && thisPlayer.phase === 'idle') thisPlayer.start();
     };
     coach.speak(checkinText, { interrupt: true }).then(begin, begin);
@@ -759,6 +819,9 @@ function sessionScreen(plan) {
 // Quietly replace the photoreal coach with the lean one mid-session. A fresh
 // canvas is used because a disposed WebGL context cannot be re-bound.
 function swapToLeanAvatar(oldCanvas, char) {
+  // If the session was already torn down (canvas detached), a late load-error must
+  // NOT spawn a zombie avatar with a live render loop that nothing will dispose.
+  if (!oldCanvas || !oldCanvas.isConnected) return;
   try { if (avatar && avatar.dispose) avatar.dispose(); } catch { /* ok */ }
   const fresh = oldCanvas.cloneNode(false); // copies id/class, not the GL context
   if (oldCanvas.parentNode) oldCanvas.replaceWith(fresh);
@@ -1203,7 +1266,7 @@ function settingsScreen() {
 
       <section class="card">
         <strong>Lifelike voice <span class="beta-chip">beta</span></strong>
-        <p class="hint">Each coach gets their own warm, human-sounding voice that runs entirely on this device. On capable devices it turns on by itself — a one-time download of about 90 MB, in the background — and nothing about you is ever sent anywhere. On slower devices, or if you switch it off here, the regular voice takes over automatically.</p>
+        <p class="hint">Each coach gets their own warm, human-sounding voice that runs entirely on this device. It is off until you switch it on here: turning it on downloads the voice model once (about 90 MB) in the background — nothing about you is ever sent anywhere. Until then, and on slower devices, the regular on-device voice is used.</p>
         <label class="toggle"><input type="checkbox" id="set-natural" ${p.naturalOn ? 'checked' : ''}> Use the lifelike voice</label>
         <div class="nv-progress" id="nv-progress" hidden>
           <div class="nv-track"><div class="nv-bar" id="nv-bar"></div></div>
@@ -1213,7 +1276,7 @@ function settingsScreen() {
 
       <section class="card">
         <strong>Full instructor <span class="beta-chip">beta</span></strong>
-        <p class="hint">A photoreal coach who breathes and stands with you, instead of the friendly stick-figure. She downloads once (about 2 MB) and then works offline. She is a preview — detailed movement for each exercise is still on the way, and the light coach keeps doing the moves in the meantime. On slower phones the app uses the light coach automatically.</p>
+        <p class="hint">A realistic coach who breathes, stands, and talks with you, instead of the friendly stick-figure. Each coach downloads once (about 6 MB) the first time they appear, then works offline. They are a preview — detailed movement for each exercise is still on the way, and the light coach keeps doing the moves in the meantime. On slower phones the app uses the light coach automatically.</p>
         <label class="toggle"><input type="checkbox" id="set-fullinstructor" ${p.fullInstructorOn ? 'checked' : ''}> Use the full instructor</label>
         <small class="hint" id="fi-status" role="status"></small>
       </section>
@@ -1421,7 +1484,7 @@ function planFor(mins, tier) {
   if (tier === 'meditation') return buildMeditation(mins);
   // The Body paths: Stretching / Yoga scope the pool by category (always available);
   // Exercises uses the intensity tiers, which the screening can gate.
-  const category = ['stretch', 'yoga', 'face', 'baby'].includes(tier) ? tier : 'exercise';
+  const category = ['stretch', 'yoga', 'face', 'baby', 'sexercise'].includes(tier) ? tier : 'exercise';
   if (category === 'exercise' && !availableTiers(store.profile).includes(tier)) return null;
   const pool = filterPool(ALL_EXERCISES, store.profile);
   return buildSession(mins, pool, {
@@ -1543,6 +1606,7 @@ async function routeTo(h, seq) {
   // Journal: loaded on demand so its IndexedDB/recorder code never touches the boot path.
   if (h === '#journal') { import('./journal-screen.js').then((m) => m.journalScreen()).catch((e) => console.warn('journal load failed', e)); return; }
   if (h === '#calendar' || h === '#intimacy') { import('./intimacy-screen.js').then((m) => m.intimacyScreen()).catch((e) => console.warn('calendar load failed', e)); return; }
+  if (h === '#bedroom') { import('./bedroom-screen.js').then((m) => m.bedroomScreen()).catch((e) => console.warn('bedroom load failed', e)); return; }
   // Help screens: loaded on demand — static copy that never needs to ride the boot path.
   if (h === '#tutorial') { import('./help-screens.js').then((m) => m.tutorialScreen()).catch((e) => console.warn('tutorial load failed', e)); return; }
   if (h === '#faq') { import('./help-screens.js').then((m) => m.faqScreen()).catch((e) => console.warn('faq load failed', e)); return; }
@@ -1554,25 +1618,25 @@ async function routeTo(h, seq) {
 
 window.addEventListener('hashchange', render);
 
-// Lifelike voice, automatic: give every user the most human voice their DEVICE can
-// handle, without ever hurting smoothness. On 'auto' (the default) we warm the natural
-// voice in the BACKGROUND — first paint and the system voice are never blocked, the
-// in-engine speed probe keeps weak devices on the lighter system voice, and it upgrades
-// the live coach the moment the model is ready. The ~90 MB model is cached by the
-// browser, so it downloads at most once per device. Honors an explicit on/off choice and
-// Data Saver / very slow links. Nothing about the user is ever transmitted.
+// Lifelike voice — STRICTLY OPT-IN (privacy). The natural voice is a ~90 MB model
+// fetched from a CDN, so we download it ONLY when the user has explicitly turned on
+// "Use the lifelike voice" in Settings — never automatically at first launch. This
+// keeps the code honest with the opt-in promise in the FAQ and never spends a new
+// user's (possibly metered) data without consent. The default experience is the
+// on-device system voice (good quality, zero download). Once opted in, this warms the
+// model in the background — first paint and the system voice are never blocked, the
+// speed probe keeps weak devices on the system voice, and it upgrades the live coach
+// when ready. Nothing about the user is ever transmitted. Honors Data Saver / slow links.
 function maybeAutoEnableNaturalVoice() {
   const p = store.profile;
-  if (p.voicePref === 'off') return;                       // user opted out — respect it
+  if (!(p.voicePref === 'on' || p.naturalOn)) return;      // opt-in only — no silent download
   if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
   const conn = (typeof navigator !== 'undefined' && navigator.connection) || {};
   if (conn.saveData) return;                               // honor Data Saver
   if (/2g$/.test(conn.effectiveType || '')) return;        // skip 2g / slow-2g links
-  const explicit = p.voicePref === 'on' || p.naturalOn;    // user already chose it
   naturalVoice.enable().then((ready) => {
     if (!ready) return;                                    // slow device / failed -> system voice
     coach.naturalOn = true;                                // upgrade the live coach now
-    if (!explicit) { p.naturalOn = true; save(); }         // remember for auto users
   }).catch(() => { /* system voice already covers it */ });
 }
 
