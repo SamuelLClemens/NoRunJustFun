@@ -74,6 +74,42 @@ if (typeof document !== 'undefined') {
   });
 }
 
+// Persistent bottom tab bar — the primary destinations (Mind/Body/Soul + Home + You).
+// Additive (the top-nav links stay); built once and reused across screens so it never
+// flickers on navigation. Hidden during an active session for an immersive workout.
+const TABS = [
+  { hash: '#home', label: 'Home', ic: '🏡' },
+  { hash: '#body', label: 'Move', ic: '🤸' },
+  { hash: '#mind', label: 'Learn', ic: '📖' },
+  { hash: '#soul', label: 'Soul', ic: '🌿' },
+  { hash: '#you',  label: 'You',  ic: '🌼' },
+];
+let _tabbarEl = null;
+function buildTabbar() {
+  if (_tabbarEl || typeof document === 'undefined') return;
+  const nav = document.createElement('nav');
+  nav.className = 'tabbar';
+  nav.setAttribute('aria-label', 'Primary');
+  nav.innerHTML = TABS.map((t) =>
+    `<a href="${t.hash}" data-tab="${t.hash}"><span class="tab-ic" aria-hidden="true">${t.ic}</span>${t.label}</a>`).join('');
+  document.body.appendChild(nav);
+  _tabbarEl = nav;
+}
+function updateTabbar() {
+  if (!_tabbarEl) return;
+  const h = location.hash || '#home';
+  const inSession = h.startsWith('#play-') || h.startsWith('#tier-');   // immersive — hide
+  _tabbarEl.hidden = inSession;
+  document.body.classList.toggle('has-tabbar', !inSession);
+  const active = (h === '#home' || h === '#' || h === '') ? '#home'
+    : (h.startsWith('#body') || h.startsWith('#move-')) ? '#body'
+    : (h.startsWith('#mind') || h.startsWith('#learn') || h === '#money' || h.startsWith('#fin-')) ? '#mind'
+    : (h.startsWith('#soul')) ? '#soul'
+    : (h === '#you' || h === '#journal' || h === '#calendar' || h === '#intimacy' || h === '#bedroom') ? '#you'
+    : '';
+  _tabbarEl.querySelectorAll('a').forEach((a) => a.classList.toggle('active', a.dataset.tab === active));
+}
+
 // Logo lockup — the veronica flower forms the exclamation mark.
 // Keep in sync with the static copy in index.html (.hello-logo).
 function logoSVG() {
@@ -1541,6 +1577,7 @@ async function render() {
   teardownSession();
   applyMotionPref();
   applyThemePref();
+  updateTabbar();
   window.scrollTo(0, 0);
   maybeBirthdayParty();   // once per year, on the day — self-guards against re-showing
   await routeTo(location.hash || '#', seq);
@@ -1691,6 +1728,7 @@ function maybeAutoEnableNaturalVoice() {
 // apply the saved chime volume + theme globally, before first paint
 sound.setVolume(store.profile.sfxVol);
 applyThemePref();
+buildTabbar();
 
 // dev visual QA: ?dev=poses or ?dev=garden
 const devMode = new URLSearchParams(location.search).get('dev');
