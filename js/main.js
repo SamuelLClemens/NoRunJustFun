@@ -228,7 +228,9 @@ function moveScreen(category) {
         ${meta.safety ? `<p class="start-note safety-note">⚠️ ${esc(meta.safety)}</p>` : ''}
         <p class="start-note start-links">
           ${category === 'exercise' ? '<a href="#intake">Personalize your sessions</a>' : ''}
-          <label class="inline-toggle"><input type="checkbox" id="home-chair" ${store.profile.chairMode ? 'checked' : ''}> Chair mode</label>
+          ${['stretch', 'yoga', 'exercise'].includes(category)
+            ? `<label class="inline-toggle"><input type="checkbox" id="home-chair" ${store.profile.chairMode ? 'checked' : ''}> Chair mode</label>`
+            : ''}
         </p>
       </section>
     </main>`;
