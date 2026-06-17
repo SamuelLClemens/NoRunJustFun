@@ -265,7 +265,7 @@ function soulScreen() {
       </section>
       <section class="card soul-bedroom">
         <h2>🔥 Playful · for the bedroom</h2>
-        <p class="hint">For consenting adults — tasteful intimacy games and bedroom tips. Consent, comfort, and communication always come first.</p>
+        <p class="hint">For consenting adults — frank, spicy intimacy games and bold bedroom tips. Consent, comfort, and communication always come first.</p>
         <a class="btn btn-primary" href="#bedroom">Open</a>
       </section>
       <p class="start-note">Looking for Crystal energy or Dream interpretation? They now live in <a href="#mind">Mind · Learn</a>.</p>

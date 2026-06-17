@@ -36,6 +36,15 @@ const SPARKS = [
   'Keep one hand always touching, wherever you both move.',
   'Let one person keep their eyes closed the whole time.',
   'Pick an outfit you know they love.',
+  'Tell them, in detail, exactly what you want to do to them.',
+  'Tease everywhere except where they want it most — make them ask.',
+  'Use your mouth to explore somewhere new, slowly.',
+  'One of you stays fully dressed while the other is not.',
+  'Try edging: build them right to the brink, back off, repeat.',
+  'Talk dirty in their ear and watch what it does to them.',
+  'Pin their hands gently above their head and make them wait.',
+  'Blindfold them and keep them guessing where your touch lands next.',
+  'Set a rule: they are not allowed to touch you until you say so.',
 ];
 
 // Truth or Dare, bedroom edition — connection first, all tasteful and optional.
@@ -56,6 +65,13 @@ const TRUTHS = [
   'What is a sound or word you love to hear in the moment?',
   'Where is somewhere you have always wanted to be kissed?',
   'What is a slow, non-physical thing that really turns you on?',
+  'What is the boldest fantasy you would actually want to act out?',
+  'What is the dirtiest thought you have had about me lately?',
+  'Where on your body do you most want my mouth right now?',
+  'Do you like being in control, or handing it over?',
+  'What is the most turned on I have ever made you — and how?',
+  'What is one thing you want more of, in detail?',
+  'What word or sound from me drives you wild?',
 ];
 const DARES = [
   'Give a sixty-second kiss with no rush to anything else.',
@@ -74,6 +90,14 @@ const DARES = [
   'Give a one-minute foot or hand rub.',
   'Take ten slow breaths together, foreheads touching.',
   'Say one thing you cannot wait to do later.',
+  'Use only your mouth on their neck and shoulders for two minutes.',
+  'Strip off one item — their choice which.',
+  'Whisper exactly what you want to do next, leaving nothing out.',
+  'Tease with your fingertips and refuse to go where they ask, for one minute.',
+  'Kiss your way slowly downward — they say where to stop.',
+  'Take the lead and direct them completely for two minutes.',
+  'Show them, hands-on, exactly how you like to be touched.',
+  'Keep your hands behind your back and use only your lips.',
 ];
 
 // Yes / No / Maybe — a calm, consent-forward way to explore together.
@@ -92,45 +116,59 @@ const EXPLORE = [
   'A "you are not allowed to touch yet" teasing game.',
   'Keeping the lights on instead of off (or the reverse).',
   'Leaving a playful note or surprise for later.',
+  'Using a blindfold or light restraints.',
+  'Oral — giving or receiving — as the main event.',
+  'Bringing a toy or two into the mix.',
+  'Talking dirty out loud the whole time.',
+  'Edging and teasing for a long build before letting go.',
+  'Role-playing a scenario you both find hot.',
+  'A fast, urgent quickie with clothes mostly on.',
+  'One of you watching while the other puts on a show.',
 ];
 
-// Desire dice — roll an action + a place for a playful, tasteful combo.
-const DICE_ACTIONS = ['Kiss', 'Caress', 'Massage', 'Trace a fingertip along', 'Lightly graze', 'Breathe softly against', 'Whisper into', 'Plant slow kisses down'];
-const DICE_SPOTS = ['the neck', 'the collarbone', 'the shoulders', 'the lower back', 'the inner wrist', 'behind the ear', 'the jawline', 'wherever they guide you'];
+// Desire dice — roll an action + a place for a playful, spicy combo.
+const DICE_ACTIONS = ['Kiss', 'Caress', 'Massage', 'Lick', 'Nibble', 'Tease with your tongue', 'Grip', 'Trace a fingertip along', 'Breathe hotly against', 'Slowly undress to reveal', 'Plant slow kisses down'];
+const DICE_SPOTS = ['the neck', 'the collarbone', 'the inner thigh', 'the lower back', 'the chest', 'the stomach', 'the hips', 'behind the ear', 'the jawline', 'wherever they guide you', 'somewhere they have to ask for'];
 
-// Position play — PG-13 ideas to try or adapt; comfort and consent first.
+// Position play — bold but PG-13 ideas to try or adapt; comfort and consent first.
 const POSITIONS = [
   'Face to face, wrapped close',
   'One partner on top, setting the pace',
-  'Spooning, slow and close',
+  'From behind, slow and close',
+  'Spooning, slow and deep',
+  'One bent over the edge of the bed',
   'Seated, one in the other\'s lap',
-  'Side by side, facing each other',
-  'Standing, in a close embrace',
-  'One leaning back, fully supported by pillows',
-  'Switch who is leading halfway through',
+  'Standing, one lifted against the wall',
+  'On hands and knees',
+  'Reverse — facing away, on top',
+  'Side by side, legs tangled',
+  'One leaning back over a stack of pillows',
+  'Switch who is in charge halfway through',
 ];
 
-// Would you rather — playful, low-stakes bedroom either/ors to talk through.
+// Would you rather — playful, spicy bedroom either/ors to talk through.
 const WYR = [
-  'Would you rather a slow morning or a spontaneous midnight?',
-  'Would you rather give a massage or receive one first?',
+  'Would you rather a slow tease or a spontaneous quickie?',
+  'Would you rather give oral or receive it first?',
+  'Would you rather be tied up or do the tying?',
   'Would you rather candlelight or full daylight?',
   'Would you rather lead tonight or be led?',
-  'Would you rather tease for ages or dive right in?',
-  'Would you rather silence or your favorite playlist?',
-  'Would you rather a new spot in the house or the classic one?',
-  'Would you rather lots of words or mostly touch?',
+  'Would you rather edge for ages or dive right in?',
+  'Would you rather dirty talk or be kept quiet?',
+  'Would you rather use toys or just hands and mouths?',
+  'Would you rather a new spot in the house or the bed?',
+  'Would you rather put on a show or be the audience?',
 ];
 
-// Sensory focus — pick one sense and a tasteful way to play with it.
+// Sensory focus — pick one sense and a spicy way to play with it.
 const SENSES = [
-  '👀 Sight: keep the lights soft and really look at each other.',
-  '👂 Sound: put on a slow song and move to its rhythm.',
-  '✋ Touch: use only fingertips for the first few minutes.',
-  '👅 Taste: share a square of chocolate or a sip of something cold.',
-  '👃 Scent: light a favorite candle or wear a scent they love.',
-  '🌡️ Temperature: try something cool, then something warm.',
-  '🪶 Texture: bring in silk, a feather, or a soft blindfold.',
+  '👀 Sight: keep the lights on and make them watch.',
+  '👂 Sound: narrate what you are doing, low and slow.',
+  '✋ Touch: blindfold them and let every move land by surprise.',
+  '👅 Taste: explore somewhere new with just your mouth.',
+  '👃 Scent: wear something they cannot resist on you.',
+  '🌡️ Temperature: trail an ice cube, then warm breath, over the skin.',
+  '🪶 Texture: silk, a feather, or restraints — pick your tool.',
 ];
 
 // Tasteful, body-positive, consent-forward tips — wellness, never explicit or medical.
@@ -147,9 +185,16 @@ const TIPS = [
   { t: 'Presence beats performance', b: 'Confidence comes from attention, not from a checklist. Being fully with your partner (or yourself) is the most attractive thing there is.' },
   { t: 'Care for your health', b: 'Contraception and STI care are simple acts of self-respect and mutual respect, with zero shame attached. A clinician can answer anything specific.' },
   { t: 'Laugh when it is funny', b: 'Bodies make sounds, plans go sideways, things get silly. Sharing a laugh is intimacy too — it keeps the whole thing warm and human.' },
+  { t: 'Oral, generously', b: 'Ask what they like, start soft and slow, stay consistent once you find what works, and keep your attention on their reactions. Enthusiasm is the secret ingredient.' },
+  { t: 'Most people need direct attention', b: 'For many bodies, especially with a clitoris, the climax route is direct, steady stimulation — not guesswork. Ask, watch, and follow their guidance.' },
+  { t: 'Toys are teammates', b: 'A small vibrator or two can add a lot, for any body and any pairing. Bring them in together with zero ego — they are a bonus, not a replacement.' },
+  { t: 'Learn to talk dirty', b: 'Start simple — "I love when you..." or "tell me what you want" — and follow the heat. Saying it out loud is often hotter than anything else.' },
+  { t: 'Edge for a bigger finish', b: 'Build right to the brink, ease off, and repeat. Drawing it out a few times can make the release dramatically more intense.' },
+  { t: 'Tease before you please', b: 'Anticipation is its own pleasure. Touch everywhere except the obvious, make them wait and ask — the build-up does half the work.' },
+  { t: 'Negotiate the bold stuff sober and clothed', b: 'Restraints, role-play, anything new — agree on a yes/no/maybe and a safe word beforehand. Planning makes the wild parts safe and even hotter.' },
 ];
 
-const DISCLAIMER = 'For consenting adults. Everything here is optional and tasteful — ideas to talk about and try together or adapt solo, never pressure. Consent, comfort, and communication always come first. This is playful wellbeing, not medical or explicit advice, and it is for anyone, any relationship, any orientation.';
+const DISCLAIMER = 'For consenting adults — frank, playful, and as spicy as you like. Everything here is optional: ideas to talk about and try together, or adapt solo, never pressure. Consent, comfort, and communication always come first, and any "no" is honored instantly. This is playful wellbeing, not medical advice — for any body, any relationship, any orientation.';
 
 function gamesHTML() {
   return `
