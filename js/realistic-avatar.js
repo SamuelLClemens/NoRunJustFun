@@ -275,10 +275,18 @@ export class RealisticAvatar {
           // alpha-BLEND, which washes the model out and breaks depth sorting. Convert
           // any blended material to alpha-TEST cutout: solid materials (alpha≈1) then
           // render fully opaque, while hair/eyelash cards still cut out correctly.
+          const hairy = /hair|ponytail|afro|beard|brow|lash|short0|loose|fro/i.test(o.name);
           const mats = Array.isArray(o.material) ? o.material : (o.material ? [o.material] : []);
           for (const m of mats) {
-            if (m && m.transparent && (m.opacity == null || m.opacity >= 1)) {
-              m.alphaTest = 0.5; m.transparent = false; m.depthWrite = true; m.needsUpdate = true;
+            if (m && (m.transparent || m.alphaMap || hairy)) {
+              // Render alpha as a CUTOUT, never alpha-blend: blended hair/lashes flicker
+              // (depth-sort), and a high cutoff drops thin hair strands at distance / mip
+              // levels so the hair "appears and disappears". A lower cutoff on hairy meshes
+              // keeps the strands; depthWrite keeps the sort stable.
+              m.alphaTest = hairy ? 0.2 : 0.5;
+              m.transparent = false;
+              m.depthWrite = true;
+              m.needsUpdate = true;
             }
           }
         }
@@ -460,10 +468,12 @@ export class RealisticAvatar {
   // pose for the re-posed bones so the gesture layer animates on top of the new rest.
   _aimArmsRest() {
     if (!this.ready) return;
-    this._aimBone(this._bone('lArm'), this._bone('lFore'), [0, -1, 0.05]);
-    this._aimBone(this._bone('rArm'), this._bone('rFore'), [0, -1, 0.05]);
-    this._aimBone(this._bone('lFore'), this._bone('lHand'), [0, -1, 0.10]);
-    this._aimBone(this._bone('rFore'), this._bone('rHand'), [0, -1, 0.10]);
+    // Hang the arms slightly FORWARD of the torso (+z) so the hands rest clear of the
+    // hips/thighs instead of clipping in and out of them as the body breathes.
+    this._aimBone(this._bone('lArm'), this._bone('lFore'), [0, -1, 0.13]);
+    this._aimBone(this._bone('rArm'), this._bone('rFore'), [0, -1, 0.13]);
+    this._aimBone(this._bone('lFore'), this._bone('lHand'), [0, -1, 0.17]);
+    this._aimBone(this._bone('rFore'), this._bone('rHand'), [0, -1, 0.17]);
     for (const k of ['lArm', 'rArm', 'lFore', 'rFore']) {
       const b = this._bone(k);
       if (b) this.rest.set(b.name, b.quaternion.clone());
@@ -586,10 +596,10 @@ export class RealisticAvatar {
     // arms: subtle asymmetric idle sway always; a livelier swing while explaining.
     // Amplitudes are deliberately small (a few degrees) since the delta rides on the
     // aimed-down rest pose and the bone-local axis varies by rig.
-    const aL = 0.7 * Math.sin(t * 0.92) + 2.6 * talk * Math.sin(t * 1.70 + 0.4);
-    const aR = 0.7 * Math.sin(t * 0.85 + 1.9) + 2.6 * talk * Math.sin(t * 1.60 + 2.2);
-    const fL = 0.9 * Math.sin(t * 0.70 + 0.3) + 3.4 * talk * Math.sin(t * 2.35 + 0.9);
-    const fR = 0.9 * Math.sin(t * 0.65 + 2.4) + 3.4 * talk * Math.sin(t * 2.20 + 2.6);
+    const aL = 0.4 * Math.sin(t * 0.92) + 1.3 * talk * Math.sin(t * 1.70 + 0.4);
+    const aR = 0.4 * Math.sin(t * 0.85 + 1.9) + 1.3 * talk * Math.sin(t * 1.60 + 2.2);
+    const fL = 0.5 * Math.sin(t * 0.70 + 0.3) + 1.7 * talk * Math.sin(t * 2.35 + 0.9);
+    const fR = 0.5 * Math.sin(t * 0.65 + 2.4) + 1.7 * talk * Math.sin(t * 2.20 + 2.6);
     this._poseBone('lArm', [aL, 0, 0]);
     this._poseBone('rArm', [aR, 0, 0]);
     this._poseBone('lFore', [fL, 0, 0]);
