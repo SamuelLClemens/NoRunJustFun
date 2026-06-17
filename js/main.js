@@ -79,8 +79,8 @@ if (typeof document !== 'undefined') {
 // flickers on navigation. Hidden during an active session for an immersive workout.
 const TABS = [
   { hash: '#home', label: 'Home', ic: '🏡' },
-  { hash: '#body', label: 'Move', ic: '🤸' },
-  { hash: '#mind', label: 'Learn', ic: '📖' },
+  { hash: '#body', label: 'Body', ic: '🤸' },
+  { hash: '#mind', label: 'Mind', ic: '🧠' },
   { hash: '#soul', label: 'Soul', ic: '🌿' },
   { hash: '#you',  label: 'You',  ic: '🌼' },
 ];
