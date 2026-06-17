@@ -27,6 +27,7 @@ import { availableTiers, gateMessage, filterPool,
 import { PROGRAMS, getProgram, programSuggestion, advanceProgram } from './data/programs.js';
 import { getTrack, TRACK_LIST, SOUL_TRACK_LIST } from './data/tracks.js';
 import { ensureVariants } from './data/lessons.shared.js';
+import { confirmDialog, alertDialog } from './ui-dialog.js';
 import { trackHubScreen, learningDone, gameScreen, quizScreen } from './learning-screen.js';
 import { usageGraphsHTML } from './usage-graph.js';
 import { composeCheckin } from './checkin.js';
@@ -387,7 +388,7 @@ function tierScreen(mins) {
     const t = b.dataset.tier;
     if (!avail.has(t)) {
       // Gated: surface the consult-a-clinician copy and offer the gentler path.
-      alert(gateMessage(store.profile, t) || 'Complete the readiness questions in Personalize to unlock this.');
+      alertDialog(gateMessage(store.profile, t) || 'Complete the readiness questions in Personalize to unlock this.');
       return;
     }
     sound.unlock();
@@ -795,8 +796,8 @@ function sessionScreen(plan) {
     const it = player.plan.items[player.idx];
     if (it && it.ex.deeper) player.speakVariant(it.ex.deeper);
   });
-  document.getElementById('btn-end').addEventListener('click', () => {
-    if (confirm('End this session?')) player.endEarly();
+  document.getElementById('btn-end').addEventListener('click', async () => {
+    if (await confirmDialog('End this session?', { okText: 'End session', cancelText: 'Keep going' })) player.endEarly();
   });
 
   // Hold the session (and its timer) until the check-in finishes, then begin. A safety
@@ -1420,8 +1421,8 @@ function settingsScreen() {
     music.setVolume(p.musicVol);
     save();
   });
-  document.getElementById('btn-reset').addEventListener('click', () => {
-    if (confirm('Reset everything? Your garden, streak, badges and settings will start over. This cannot be undone.')) {
+  document.getElementById('btn-reset').addEventListener('click', async () => {
+    if (await confirmDialog('Reset everything? Your garden, streak, badges and settings will start over. This cannot be undone.', { okText: 'Reset everything', cancelText: 'Cancel', danger: true })) {
       resetAll();
       // resetAll clears localStorage; also wipe the journal audio in IndexedDB (loaded on demand).
       import('./idb.js').then((m) => m.clearAllAudio()).catch(() => {});

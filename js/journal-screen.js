@@ -9,6 +9,7 @@ import { coach } from './tts.js';
 import { getCharacter } from './characters.js';
 import { listEntries, bookOrder, addTextEntry, addVoiceEntry, getEntryAudio, removeEntry, setEntryText } from './journal.js';
 import { speechToText } from './stt.js';
+import { confirmDialog, alertDialog } from './ui-dialog.js';
 
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => (
@@ -172,21 +173,21 @@ export function journalScreen() {
   if (recBtn) recBtn.addEventListener('click', async () => {
     if (_rec) { stopRecorder(); return; } // tapping again stops + saves (via onstop)
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === 'undefined') {
-      alert('Recording is not supported on this device. You can still write your entry.');
+      alertDialog('Recording is not supported on this device. You can still write your entry.');
       return;
     }
     let stream;
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     } catch {
-      alert('Microphone access was not granted. You can still write your entry.');
+      alertDialog('Microphone access was not granted. You can still write your entry.');
       return;
     }
     const chunks = [];
     let mr;
     try { mr = new MediaRecorder(stream); } catch {
       try { (stream.getTracks() || []).forEach((t) => t.stop()); } catch { /* ok */ }
-      alert('Recording could not start on this device. You can still write your entry.');
+      alertDialog('Recording could not start on this device. You can still write your entry.');
       return;
     }
     const startMs = Date.now();
@@ -237,7 +238,7 @@ export function journalScreen() {
   app.querySelectorAll('.journal-transcribe').forEach((b) => b.addEventListener('click', () => { transcribeEntry(b.dataset.id); }));
 
   app.querySelectorAll('.journal-del').forEach((b) => b.addEventListener('click', async () => {
-    if (!confirm('Delete this entry? This cannot be undone.')) return;
+    if (!await confirmDialog('Delete this entry? This cannot be undone.', { okText: 'Delete', cancelText: 'Keep', danger: true })) return;
     await removeEntry(b.dataset.id);
     journalScreen();
   }));

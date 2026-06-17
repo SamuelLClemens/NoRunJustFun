@@ -276,6 +276,13 @@ input[type='range'] { accent-color: var(--green-500); }
 .overlay-card--gated .overlay-actions { flex: none; padding: 12px 22px 18px; border-top: 1px solid var(--line, #E3E0D8); background: var(--card); }
 .overlay-card--gated .overlay-actions .btn { width: 100%; margin-top: 0; }
 .overlay-once { text-align: center; color: var(--ink-soft); font-size: 0.8rem; margin: 8px 0 0; }
+/* Styled confirm/alert dialogs (js/ui-dialog.js) — reuse .overlay / .overlay-card. */
+.dialog-card { max-width: 360px; }
+.dialog-msg { margin: 0 0 16px; color: var(--ink); line-height: 1.45; }
+.dialog-actions { display: flex; gap: 10px; }
+.dialog-actions .btn { width: auto; flex: 1; margin-top: 0; min-height: 44px; }
+.btn-danger { background: #C0392B; color: #fff; }
+.btn-danger:hover, .btn-danger:focus-visible { background: #A93226; }
 
 /* ---- tutorial + FAQ (help screens) ---- */
 .help-intro { margin: 2px 2px 4px; }
@@ -949,6 +956,11 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
 .cal-prev, .cal-next { min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; }
 .you-meal-del, .intim-enc-del, .intim-prem { min-width: 44px; min-height: 44px; display: inline-grid; place-items: center; padding: 6px; }
 .topnav a, .back { min-height: 44px; display: inline-flex; align-items: center; }
+/* Remaining tap targets: cycle/quick-log inputs, layer + symptom chips, and the
+   collapsible summaries all meet the 44px floor on touch screens. */
+.cycle-field input, .cycle-field select { min-height: 44px; }
+.intim-layer-chip, .intim-sym-chip { min-height: 44px; }
+.intim-add summary, .intim-quicklog summary, details.intim-add > summary { min-height: 44px; display: flex; align-items: center; }
 
 /* Realistic-coach loading state — never open the flagship feature to a blank stage */
 .stage.is-loading::after {

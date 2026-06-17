@@ -1,7 +1,7 @@
 // Offline support: precache the whole app on install, serve cache-first.
 // Bump CACHE_VERSION with every release so updates roll out cleanly.
 
-const CACHE_VERSION = 'ygt-v4.44.0';
+const CACHE_VERSION = 'ygt-v4.45.0';
 
 const PRECACHE = [
   './',
@@ -16,7 +16,9 @@ const PRECACHE = [
   'lib/jsm/loaders/GLTFLoader.js',
   'lib/jsm/utils/BufferGeometryUtils.js',
   'lib/jsm/environments/RoomEnvironment.js',
+  'js/boot-watchdog.js',
   'js/main.js',
+  'js/ui-dialog.js',
   'js/state.js',
   'js/characters.js',
   'js/tts.js',
