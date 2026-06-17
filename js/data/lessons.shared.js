@@ -25,6 +25,24 @@ export function pickLevel(seg, level) {
   return seg.say;
 }
 
+// The reading-level variant text (every lesson's simpler/deeper rewrite) is by far the
+// largest data file (~0.7 MB) and is only needed once a lesson actually plays — never on
+// the home screen or the boot path. So it is loaded ON DEMAND via dynamic import and
+// cached, instead of being statically imported by every lessons.*.js (which would force
+// the whole 0.7 MB onto the cold-start parse). Call `await ensureVariants()` before
+// building a playable lesson; the builders then read merged variants via variantsFor().
+// Until it resolves, variantsFor() returns {} and lessons simply show no difficulty
+// buttons — purely additive, never an error.
+let _LV = null;
+export async function ensureVariants() {
+  if (!_LV) {
+    try { const m = await import('./lesson-variants.js'); _LV = m.LESSON_VARIANTS || {}; }
+    catch { _LV = {}; }
+  }
+  return _LV;
+}
+export function variantsFor(key) { return (_LV && _LV[key]) || {}; }
+
 // Merge on-demand reading-level variants from a companion map onto a segment, WITHOUT
 // touching the vetted lesson source files. `lessonVariants` is a lesson's map of
 // segmentId -> { simpler?, deeper? } (see js/data/lesson-variants.js, authored
@@ -86,8 +104,10 @@ function planFromSegments(segs, meta, kind) {
 // Build a track's catalog library + its two player-compatible plan builders from its
 // lessons map. config = { LESSONS, CURRICULUM, welcomeId, disclaimerSeg, sessionTitle,
 // kind }. Mirrors the money builders in js/data/lessons.js.
-export function makeLessonModule({ LESSONS, CURRICULUM, welcomeId, disclaimerSeg, sessionTitle, kind, variants }) {
-  const V = variants || {};   // { lessonId: { segId: { simpler?, deeper? } } } — additive, optional
+export function makeLessonModule({ LESSONS, CURRICULUM, welcomeId, disclaimerSeg, sessionTitle, kind, variantsKey }) {
+  // variantsKey names this track's subtree in the lazily-loaded LESSON_VARIANTS map.
+  // Read live via variantsFor() so the merge picks up the variants once they load
+  // (after `await ensureVariants()`); before that it is simply {} (no buttons).
   const LESSON_LIBRARY = CURRICULUM
     .filter((id) => LESSONS[id])
     .map((id) => {
@@ -102,7 +122,7 @@ export function makeLessonModule({ LESSONS, CURRICULUM, welcomeId, disclaimerSeg
   function buildLessonById(id) {
     const L = LESSONS[id];
     if (!L || id === welcomeId) return null;
-    const segs = [disclaimerSeg, ...L.segments].map((s) => withVariants(s, V[id]));
+    const segs = [disclaimerSeg, ...L.segments].map((s) => withVariants(s, variantsFor(variantsKey)[id]));
     return planFromSegments(segs, {
       durationKey: Math.max(1, Math.round(lessonSecs(segs) / 60)),
       lessonIds: [id],
@@ -129,7 +149,7 @@ export function makeLessonModule({ LESSONS, CURRICULUM, welcomeId, disclaimerSeg
     let used = 0;
 
     const add = (id, chosen) => {
-      segs.push(...chosen.map((s) => withVariants(s, V[id])));
+      segs.push(...chosen.map((s) => withVariants(s, variantsFor(variantsKey)[id])));
       used += chosen.reduce((t, s) => t + segDur(s), 0);
       if (id !== welcomeId) {
         const L = LESSONS[id];

@@ -10,7 +10,7 @@
 // (js/data/lessons.shared.js) so the duration-scaling logic lives in one place.
 
 import { makeDisclaimerSeg, makeLessonModule } from './lessons.shared.js';
-import { LESSON_VARIANTS } from './lesson-variants.js';
+// Reading-level variants load lazily via ensureVariants() in lessons.shared.js.
 
 export const MEMORY_DISCLAIMER = "This is general educational information about memory and learning, not medical advice, and not a substitute for a doctor. The games here are for fun and practice, not a proven way to raise intelligence or prevent cognitive decline. If you are worried about your memory, please talk to a qualified professional.";
 
@@ -453,7 +453,7 @@ const mod = makeLessonModule({
   disclaimerSeg: DISCLAIMER_SEG,
   sessionTitle: "Memory basics",
   kind: "memory",
-  variants: LESSON_VARIANTS.memory,
+  variantsKey: 'memory',
 });
 
 export const LESSON_LIBRARY = mod.LESSON_LIBRARY;

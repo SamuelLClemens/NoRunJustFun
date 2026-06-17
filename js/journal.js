@@ -31,10 +31,13 @@ export function bookOrder() {
   return ledger().slice().sort((a, b) => (a.ts > b.ts ? 1 : (a.ts < b.ts ? -1 : 0)));
 }
 
-export function addTextEntry(text) {
+// dateStr (optional 'YYYY-MM-DD') stamps the entry ON that calendar day (used by the
+// calendar's quick-log); omit it for "now".
+export function addTextEntry(text, dateStr) {
   const t = (text || '').trim();
   if (!t) return null;
-  const entry = { id: uid(), ts: new Date().toISOString(), kind: 'text', text: t };
+  const ts = (dateStr && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) ? `${dateStr}T12:00:00.000Z` : new Date().toISOString();
+  const entry = { id: uid(), ts, kind: 'text', text: t };
   ledger().push(entry);
   save();
   return entry;

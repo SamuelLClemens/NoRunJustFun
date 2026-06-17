@@ -22,10 +22,14 @@ export function listMeals() {
   return ledger().slice().sort((a, b) => (a.ts < b.ts ? 1 : (a.ts > b.ts ? -1 : 0)));
 }
 
-export function addMeal(note) {
+// dateStr (optional 'YYYY-MM-DD') logs the note ON that calendar day (used by the
+// calendar's quick-log); omit it for "now". The ts always begins with the day so the
+// calendar's date-keyed markers land correctly.
+export function addMeal(note, dateStr) {
   const t = (note || '').trim();
   if (!t) return null;
-  const entry = { id: uid(), ts: new Date().toISOString(), note: t };
+  const ts = (dateStr && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) ? `${dateStr}T12:00:00.000Z` : new Date().toISOString();
+  const entry = { id: uid(), ts, note: t };
   ledger().push(entry);
   save();
   return entry;

@@ -6,7 +6,9 @@
 // Everything stays on this device. Re-renders the whole screen on each action (simple and
 // robust at this scale); view state lives at module scope so month + selection persist.
 
-import { store } from './state.js';
+import { store, save } from './state.js';
+import { addMeal } from './meals.js';
+import { addTextEntry } from './journal.js';
 import {
   isEnabled, hasPin, isUnlocked, verifyPin, setPin, clearPin, lock,
   getLayers, setLayer, LAYER_KEYS,
@@ -23,6 +25,8 @@ const DOW = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 let _vy = null, _vm = null;   // displayed year / month
 let _sel = null;              // selected 'YYYY-MM-DD' or null
 let _showSettings = false;
+let _qlOpen = false;          // keep the day's quick-log panel open across tap-rerenders
+let _justExpanded = false;    // a day was just expanded — focus its drawer once (not on taps)
 let _pinErr = '';
 let _importMsg = '';
 
@@ -121,8 +125,8 @@ function calendarHTML() {
   const wm = L.weight ? weightMap() : {};
   const bMD = L.birthday ? birthdayMD() : '';
   const aMD = L.anniversary ? anniversaryMD() : '';
-  let cells = '';
-  for (let i = 0; i < startDow; i++) cells += '<div class="cal-cell cal-empty" aria-hidden="true"></div>';
+  const cellArr = [];
+  for (let i = 0; i < startDow; i++) cellArr.push('<div class="cal-cell cal-empty" aria-hidden="true"></div>');
   for (let d = 1; d <= daysInMonth; d++) {
     const date = mk(_vy, _vm, d);
     const g = dayGlyphs(date);
@@ -157,10 +161,20 @@ function calendarHTML() {
       + (isBday ? ', birthday' : '')
       + (isAnniv ? ', app anniversary' : '');
     const logged = g.count || dd.desire != null || dd.period || dd.mood != null || dd.energy != null || (dd.symptoms && dd.symptoms.length) || (u && u.total) || mm[date] || jm[date] || wm[date] != null || isBday || isAnniv;
-    cells += `<button type="button" class="cal-cell${isToday ? ' is-today' : ''}${isSel ? ' is-sel' : ''}${logged ? ' has-log' : ''}" data-date="${date}" aria-label="${esc(label)}">
+    cellArr.push(`<button type="button" class="cal-cell${isToday ? ' is-today' : ''}${isSel ? ' is-sel' : ''}${logged ? ' has-log' : ''}" data-date="${date}" aria-expanded="${isSel ? 'true' : 'false'}" aria-label="${esc(label)}">
         <span class="cal-num">${d}</span>${faceHTML}
         <span class="cal-marks">${marks.join(' ')}</span>
-      </button>`;
+      </button>`);
+  }
+  // The selected day expands IN PLACE: its detail drawer is injected as a full-width row
+  // directly beneath the week that holds it. Tapping the day again clears _sel (see bind),
+  // collapsing back to the plain month grid.
+  const selInMonth = _sel && _sel.slice(0, 7) === mk(_vy, _vm, 1).slice(0, 7);
+  const selCellIdx = selInMonth ? (startDow + parseInt(_sel.slice(8, 10), 10) - 1) : -1;
+  let grid = '';
+  for (let r = 0; r * 7 < cellArr.length; r++) {
+    grid += cellArr.slice(r * 7, r * 7 + 7).join('');
+    if (selCellIdx >= r * 7 && selCellIdx < r * 7 + 7) grid += `<div class="cal-daydetail">${dayEditorHTML(_sel)}</div>`;
   }
   return `
     <div class="intim-layers">${LAYER_LABELS.map(([k, lbl]) => `<button type="button" class="intim-layer-chip${L[k] ? ' is-sel' : ''}" data-layer="${k}" aria-pressed="${L[k] ? 'true' : 'false'}">${lbl}</button>`).join('')}</div>
@@ -170,7 +184,7 @@ function calendarHTML() {
       <button class="btn cal-next" id="intim-next" aria-label="Next month">›</button>
     </div>
     <div class="cal-dow">${DOW.map((x) => `<span>${x}</span>`).join('')}</div>
-    <div class="cal-grid">${cells}</div>`;
+    <div class="cal-grid">${grid}</div>`;
 }
 
 // ---- day editor ---------------------------------------------------------
@@ -207,7 +221,7 @@ function dayEditorHTML(date) {
   const ps = listPartners();
   return `
     <section class="card intim-day">
-      <h2>${MONTHS[parseInt(date.slice(5, 7), 10) - 1]} ${parseInt(date.slice(8, 10), 10)}, ${date.slice(0, 4)}</h2>
+      <h2 id="intim-day-h" tabindex="-1">${MONTHS[parseInt(date.slice(5, 7), 10) - 1]} ${parseInt(date.slice(8, 10), 10)}, ${date.slice(0, 4)} <button type="button" class="intim-day-close" aria-label="Close this day">✕</button></h2>
       ${(() => {
         const u = usageMap()[date];
         const meals = mealsMap()[date] || 0;
@@ -265,6 +279,17 @@ function dayEditorHTML(date) {
       <label class="cycle-field intim-note-field">Day note
         <input type="text" id="intim-daynote" maxlength="280" value="${esc(d.note || '')}" data-date="${esc(date)}" placeholder="optional">
       </label>
+      <details class="intim-add intim-quicklog" id="intim-quicklog" ${_qlOpen ? 'open' : ''}>
+        <summary>+ Quick-log meal · journal · weight for this day</summary>
+        <div class="intim-enc-form">
+          <label class="cycle-field intim-note-field">🍽️ Meal <input type="text" id="intim-ql-meal" maxlength="200" placeholder="what you ate"></label>
+          <button class="btn" id="intim-ql-meal-add" data-date="${esc(date)}">Add meal note</button>
+          <label class="cycle-field intim-note-field">📔 Journal <input type="text" id="intim-ql-journal" maxlength="280" placeholder="a thought for this day"></label>
+          <button class="btn" id="intim-ql-journal-add" data-date="${esc(date)}">Add journal entry</button>
+          <label class="cycle-field">⚖️ Weight (${esc((store.profile && store.profile.weightUnit) || 'lb')}) <input type="number" id="intim-ql-weight" min="0" max="999" step="0.1" inputmode="decimal" value="${weightMap()[date] != null ? weightMap()[date] : ''}" placeholder="optional"></label>
+          <button class="btn" id="intim-ql-weight-save" data-date="${esc(date)}">Save weight</button>
+        </div>
+      </details>
     </section>`;
 }
 
@@ -386,7 +411,6 @@ export function intimacyScreen(opts = {}) {
   if (!isEnabled()) { location.hash = '#you'; return; }
   if (hasPin() && !isUnlocked()) { renderPinGate(app); return; }
   initView();
-  if (!_sel) _sel = todayStr();
 
   app.innerHTML = `
     <header class="topbar"><a class="back" href="#you">← You</a><h1 class="page-title" tabindex="-1">Personal calendar</h1>
@@ -396,7 +420,6 @@ export function intimacyScreen(opts = {}) {
         <p class="cal-legend">🔥 times · 💥 orgasms · 💞 partner · 🌙 solo · 💭 wanted to · 🩸 period · 🌱 activity · 🍽️ meals · 📔 journal · ⚖️ weight · 🎂 birthday · 🎉 anniversary · tap a day for details</p>
         ${cycleLineHTML()}
       </section>
-      ${_sel ? dayEditorHTML(_sel) : ''}
       ${insightsHTML()}
       ${graphsHTML()}
       ${_showSettings ? settingsHTML() : ''}
@@ -406,11 +429,19 @@ export function intimacyScreen(opts = {}) {
   // which would yank the viewport back to the top on each desire/mood/symptom tap.
   const h1 = app.querySelector('.page-title'); if (h1 && !opts.rerender) try { h1.focus(); } catch { /* ok */ }
   bind(app);
+
+  // When a day was just expanded, move focus to its detail heading and bring the drawer into
+  // view so keyboard/screen-reader users land on it. Not on in-panel taps (mood/desire/etc).
+  if (_justExpanded) {
+    _justExpanded = false;
+    const dh = app.querySelector('#intim-day-h');
+    if (dh) { try { dh.focus(); dh.scrollIntoView({ block: 'nearest' }); } catch { /* ok */ } }
+  }
 }
 
 // Tap-driven updates rebuild the whole screen; preserve the user's in-progress, not-yet-
 // saved text (encounter entry + day note) across that rebuild so a tap never wipes typing.
-const TRANSIENT_FIELDS = ['intim-org', 'intim-sat', 'intim-note', 'intim-daynote'];
+const TRANSIENT_FIELDS = ['intim-org', 'intim-sat', 'intim-note', 'intim-daynote', 'intim-ql-meal', 'intim-ql-journal', 'intim-ql-weight'];
 function rerender() {
   const keep = {};
   TRANSIENT_FIELDS.forEach((id) => { const el = document.getElementById(id); if (el) keep[id] = el.value; });
@@ -424,7 +455,14 @@ function bind(app) {
   const next = document.getElementById('intim-next');
   if (next) next.addEventListener('click', () => { _vm++; if (_vm > 11) { _vm = 0; _vy++; } rerender(); });
 
-  app.querySelectorAll('.cal-cell[data-date]').forEach((c) => c.addEventListener('click', () => { _sel = c.dataset.date; rerender(); }));
+  app.querySelectorAll('.cal-cell[data-date]').forEach((c) => c.addEventListener('click', () => {
+    // Toggle: tapping the already-open day collapses it back to the full month grid.
+    _sel = (_sel === c.dataset.date) ? null : c.dataset.date;
+    _justExpanded = !!_sel;
+    rerender();
+  }));
+  const dayClose = app.querySelector('.intim-day-close');
+  if (dayClose) dayClose.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); _sel = null; rerender(); });
 
   app.querySelectorAll('.intim-layer-chip').forEach((b) => b.addEventListener('click', () => { const k = b.dataset.layer; setLayer(k, !getLayers()[k]); rerender(); }));
 
@@ -478,6 +516,34 @@ function bind(app) {
 
   const dayNote = document.getElementById('intim-daynote');
   if (dayNote) dayNote.addEventListener('change', () => { setDayNote(dayNote.dataset.date, dayNote.value); });
+
+  // Quick-log meal / journal / weight straight onto the calendar for the selected day.
+  // Writes to the SAME shared ledgers the You page uses (progress.meals/journal/weights) —
+  // never sessions[] — so the markers + day summary update at once and stay isolated from
+  // garden/streak. The panel stays open (_qlOpen) so several entries can be added fast.
+  const ql = document.getElementById('intim-quicklog');
+  if (ql) ql.addEventListener('toggle', () => { _qlOpen = ql.open; });
+  const qlMeal = document.getElementById('intim-ql-meal-add');
+  if (qlMeal) qlMeal.addEventListener('click', () => {
+    const inp = document.getElementById('intim-ql-meal'); const v = ((inp && inp.value) || '').trim();
+    if (!v) return; addMeal(v, qlMeal.dataset.date); if (inp) inp.value = ''; _qlOpen = true; rerender();
+  });
+  const qlJrnl = document.getElementById('intim-ql-journal-add');
+  if (qlJrnl) qlJrnl.addEventListener('click', () => {
+    const inp = document.getElementById('intim-ql-journal'); const v = ((inp && inp.value) || '').trim();
+    if (!v) return; addTextEntry(v, qlJrnl.dataset.date); if (inp) inp.value = ''; _qlOpen = true; rerender();
+  });
+  const qlWt = document.getElementById('intim-ql-weight-save');
+  if (qlWt) qlWt.addEventListener('click', () => {
+    const inp = document.getElementById('intim-ql-weight'); const raw = ((inp && inp.value) || '').trim();
+    const date = qlWt.dataset.date;
+    if (!Array.isArray(store.progress.weights)) store.progress.weights = [];
+    const arr = store.progress.weights;
+    const i = arr.findIndex((w) => w.date === date);
+    if (raw === '') { if (i >= 0) arr.splice(i, 1); }                 // clear this day's weight
+    else { const val = parseFloat(raw); if (!isNaN(val) && val >= 0) { if (i >= 0) arr[i].value = val; else arr.push({ date, value: val }); } }
+    save(); _qlOpen = true; rerender();
+  });
 
   const settingsToggle = document.getElementById('intim-toggle-settings');
   if (settingsToggle) settingsToggle.addEventListener('click', () => { _showSettings = !_showSettings; rerender(); });
