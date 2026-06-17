@@ -91,16 +91,26 @@ export const coach = {
     this._endSpeech();
   },
 
-  _startSpeech() { if (this.onSpeechStart) { try { this.onSpeechStart(); } catch { /* lip-sync is best-effort */ } } },
-  _endSpeech() { if (this.onSpeechEnd) { try { this.onSpeechEnd(); } catch { /* lip-sync is best-effort */ } } },
+  _startSpeech() { this._speaking = true; if (this.onSpeechStart) { try { this.onSpeechStart(); } catch { /* lip-sync is best-effort */ } } },
+  _endSpeech() { this._speaking = false; if (this.onSpeechEnd) { try { this.onSpeechEnd(); } catch { /* lip-sync is best-effort */ } } },
 
-  // Mouth-openness target (0..1) for the avatar, or null when there is no
-  // authoritative audio to track. The natural (Kokoro) voice plays through Web
-  // Audio, so we return its live amplitude and the mouth tracks the real speech
-  // (word-aligned, fluid). The system voice gives no audio access, so we return
-  // null and the avatar falls back to an organic talking motion.
+  // Mouth-openness target (0..1) for the avatar, or null when there is no authoritative
+  // signal to track. Priority:
+  //   1. Natural (Kokoro) voice → live Web-Audio amplitude (true word-aligned lip-sync).
+  //   2. System voice WITH SpeechSynthesis word-boundary events → open the mouth at each
+  //      word onset and let it fall before the next word, so the lips track the actual
+  //      words instead of a free-running buzz. (_wordAt/_wordGap come from _webSpeak.)
+  //   3. Otherwise null → the avatar uses its own organic talking fallback.
   getMouthLevel() {
     if (this.naturalOn && naturalVoice.available) return naturalVoice.getLevel();
+    if (this._boundaryOK && this._speaking) {
+      const now = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+      const since = (now - (this._wordAt || 0)) / 1000;
+      const win = Math.min(0.5, Math.max(0.12, this._wordGap || 0.26));
+      const env = Math.max(0, 1 - since / win);          // 1 at word onset → 0 by next word
+      const wiggle = 0.55 + 0.45 * Math.abs(Math.sin(now * 0.018));
+      return Math.min(0.9, env * wiggle);
+    }
     return null;
   },
 
@@ -187,6 +197,16 @@ export const coach = {
         u.rate = rate;
         u.pitch = pitch;
         u.onstart = () => { if (onChunk) onChunk(line); };
+        // Word-boundary events drive word-level lip-sync (see getMouthLevel). Not every
+        // platform voice fires them; until one does, _boundaryOK stays false and the
+        // avatar keeps its organic fallback — so this is a pure upgrade where supported.
+        u.onboundary = (ev) => {
+          if (ev && ev.name && ev.name !== 'word') return;   // ignore sentence boundaries
+          const now = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+          if (this._wordAt) this._wordGap = Math.min(0.5, Math.max(0.12, (now - this._wordAt) / 1000));
+          this._wordAt = now;
+          this._boundaryOK = true;
+        };
         u.onend = next;
         u.onerror = next;
         synth.speak(u);

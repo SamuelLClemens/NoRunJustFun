@@ -49,7 +49,11 @@ function modelUrlFor(character) {
   if (typeof window !== 'undefined' && window.__AVATAR_MODEL__) {
     return new URL('../' + window.__AVATAR_MODEL__, import.meta.url).href;
   }
-  return modelFileUrl(COACH_MODELS[character] || FALLBACK_MODEL);
+  // `character` may be the id string OR the full character object — COACH_MODELS is keyed
+  // by id, so normalize first. (Passing the object made every lookup miss and silently
+  // fall back to the host, so the four distinct coach GLBs never loaded.)
+  const id = (character && typeof character === 'object') ? character.id : character;
+  return modelFileUrl(COACH_MODELS[id] || FALLBACK_MODEL);
 }
 
 // --- device gate + persisted verdict (mirrors the natural-voice approach) ---
@@ -98,6 +102,23 @@ const BREATH = {
   'mixamorigSpine1': [-1.0, 0, 0],
   'mixamorigSpine2': [-1.4, 0, 0],
   'mixamorigNeck': [0.7, 0, 0],
+};
+
+// Logical bone → candidate names across the rigs we ship: TalkingHead/Mixamo
+// ('LeftArm', 'Spine2', 'Head'), the namespaced Mixamo form ('mixamorigLeftArm'), and
+// MPFB/MakeHuman ('upperarm01L', 'spine03', 'head'). The coach GLBs are MPFB-rigged and
+// the host is Mixamo-rigged, so the animation layer MUST resolve through this map — the
+// old hard-coded Mixamo names silently no-op'd on the coaches, leaving their arms stuck
+// in the exported pose. First name that exists on the loaded skeleton wins.
+const RIG = {
+  lArm:  ['LeftArm', 'mixamorigLeftArm', 'upperarm01L'],
+  rArm:  ['RightArm', 'mixamorigRightArm', 'upperarm01R'],
+  lFore: ['LeftForeArm', 'mixamorigLeftForeArm', 'lowerarm01L'],
+  rFore: ['RightForeArm', 'mixamorigRightForeArm', 'lowerarm01R'],
+  lHand: ['LeftHand', 'mixamorigLeftHand', 'wristL'],
+  rHand: ['RightHand', 'mixamorigRightHand', 'wristR'],
+  chest: ['Spine2', 'mixamorigSpine2', 'spine03', 'Spine1', 'spine02', 'Spine', 'spine01'],
+  head:  ['Head', 'mixamorigHead', 'head'],
 };
 
 // Morph-target name candidates per facial action, tried in order. Covers both the
@@ -246,6 +267,7 @@ export class RealisticAvatar {
       this.rest.clear();
       this.morphs.clear();
       this._resolved = {};
+      this._rig = {};
       root.traverse((o) => {
         if (o.isMesh) {
           o.frustumCulled = false; o.castShadow = false;
@@ -295,7 +317,9 @@ export class RealisticAvatar {
       root.updateMatrixWorld(true);
       this.ready = true;
       this.failed = false;
-      this._applyPosture(POSTURE_STAND);
+      this._aimArmsRest();
+      // Coach GLBs export bulging eyeballs; seat them. The host is already fitted.
+      if (this._modelUrl.includes('coach-') && !this._modelUrl.includes('coach-host')) this._seatEyes(0.72);
       this._frameCamera();
       this._renderOnce();
       if (this._pendingStart) this._resume();
@@ -395,6 +419,69 @@ export class RealisticAvatar {
     for (const [name, deg] of Object.entries(posture)) this._setBone(name, deg);
   }
 
+  // Resolve a logical bone (see RIG) to the actual bone on the loaded skeleton, cached.
+  _bone(key) {
+    if (!this._rig) this._rig = {};
+    if (key in this._rig) return this._rig[key];
+    let found = null;
+    for (const n of (RIG[key] || [])) { const b = this.bones.get(n); if (b) { found = b; break; } }
+    return (this._rig[key] = found);
+  }
+
+  // Pose a resolved bone to rest × delta(euler degrees). Safe no-op if absent.
+  _poseBone(key, deg) {
+    const b = this._bone(key);
+    if (!b) return;
+    const rest = this.rest.get(b.name);
+    if (!rest) return;
+    const q = rest.clone().multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(deg[0] * D2R, deg[1] * D2R, deg[2] * D2R, 'XYZ')));
+    b.quaternion.copy(q);
+  }
+
+  // Rotate `bone` so its direction toward `tip` points along the WORLD vector `want`.
+  // World-space aim, so it is independent of the rig's bone-local axis conventions.
+  _aimBone(bone, tip, want) {
+    if (!bone || !tip) return;
+    const wp = (o) => { o.updateWorldMatrix(true, false); return new THREE.Vector3().setFromMatrixPosition(o.matrixWorld); };
+    const wq = (o) => { o.updateWorldMatrix(true, false); const q = new THREE.Quaternion(); o.matrixWorld.decompose(new THREE.Vector3(), q, new THREE.Vector3()); return q; };
+    const cur = wp(tip).sub(wp(bone)).normalize();
+    const w = new THREE.Vector3(want[0], want[1], want[2]).normalize();
+    const dq = new THREE.Quaternion().setFromUnitVectors(cur, w);
+    const nw = dq.multiply(wq(bone));
+    const pq = bone.parent ? wq(bone.parent) : new THREE.Quaternion();
+    bone.quaternion.copy(pq.invert().multiply(nw));
+    bone.updateWorldMatrix(true, true);
+  }
+
+  // Bring the arms to a natural resting pose REGARDLESS of how the GLB was exported:
+  // aim each upper arm + forearm straight down (a touch forward). Because it uses world
+  // directions it works identically on the Mixamo host and the MPFB coaches, where the
+  // exported pose otherwise leaves the arms splayed out stiffly. Re-snapshots the rest
+  // pose for the re-posed bones so the gesture layer animates on top of the new rest.
+  _aimArmsRest() {
+    if (!this.ready) return;
+    this._aimBone(this._bone('lArm'), this._bone('lFore'), [0, -1, 0.05]);
+    this._aimBone(this._bone('rArm'), this._bone('rFore'), [0, -1, 0.05]);
+    this._aimBone(this._bone('lFore'), this._bone('lHand'), [0, -1, 0.10]);
+    this._aimBone(this._bone('rFore'), this._bone('rHand'), [0, -1, 0.10]);
+    for (const k of ['lArm', 'rArm', 'lFore', 'rFore']) {
+      const b = this._bone(k);
+      if (b) this.rest.set(b.name, b.quaternion.clone());
+    }
+  }
+
+  // Seat the eyeballs into their sockets. The MPFB-built coach GLBs export the eyes
+  // slightly oversized so they protrude/bulge (reading as misplaced "goggles"); the
+  // eyeballs are weighted to the eyeL/eyeR bones, so scaling those bones in shrinks the
+  // eyeballs around their centre. No-op on rigs without those bones (e.g. the host,
+  // whose eyes are already fitted).
+  _seatEyes(scale) {
+    for (const n of ['eyeL', 'eyeR']) {
+      const b = this.bones.get(n);
+      if (b) { b.scale.setScalar(scale); b.updateMatrix(); }
+    }
+  }
+
   // ---- public API (mirrors Avatar) ----
   setCharacter(character) {
     if (character === this.character) return;
@@ -460,12 +547,7 @@ export class RealisticAvatar {
   _tick(dt) {
     this.time += dt * this.speed;
     if (this._breathe) {
-      const breath = Math.sin(this.time * (Math.PI * 2) / 3.8);
-      for (const [name, amp] of Object.entries(BREATH)) {
-        const base = POSTURE_STAND[name] || [0, 0, 0];
-        this._setBone(name, base, [amp[0] * breath, amp[1] * breath, amp[2] * breath]);
-      }
-      // very soft weight-shift sway
+      // very soft whole-body weight-shift sway
       this.pivot.rotation.y = (14 + 1.4 * Math.sin(this.time * (Math.PI * 2) / 7.5)) * D2R;
       this._gesture(dt);
     }
@@ -495,24 +577,27 @@ export class RealisticAvatar {
 
     const t = this.time, g = this._gestureGain, e = this._emphasis;
     const talk = g * (0.45 + 0.55 * e);   // 0..~1 talking drive, pulsing with speech
+    const breath = Math.sin(t * (Math.PI * 2) / 3.8);
 
-    // arms: subtle asymmetric idle sway always; a livelier lift while explaining
-    const aL = 0.9 * Math.sin(t * 0.92) + 3.4 * talk * Math.sin(t * 1.70 + 0.4);
-    const aR = 0.9 * Math.sin(t * 0.85 + 1.9) + 3.4 * talk * Math.sin(t * 1.60 + 2.2);
-    const fL = 1.2 * Math.sin(t * 0.70 + 0.3) + 5.0 * talk * Math.sin(t * 2.35 + 0.9);
-    const fR = 1.2 * Math.sin(t * 0.65 + 2.4) + 5.0 * talk * Math.sin(t * 2.20 + 2.6);
-    this._setBone('mixamorigLeftArm', POSTURE_STAND['mixamorigLeftArm'], [aL, 0, -0.5 * aL]);
-    this._setBone('mixamorigRightArm', POSTURE_STAND['mixamorigRightArm'], [aR, 0, 0.5 * aR]);
-    this._setBone('mixamorigLeftForeArm', POSTURE_STAND['mixamorigLeftForeArm'], [0.5 * fL, fL, 0]);
-    this._setBone('mixamorigRightForeArm', POSTURE_STAND['mixamorigRightForeArm'], [0.5 * fR, -fR, 0]);
+    // chest: gentle breathing rise + a slow talking lean (resolved spine bone)
+    const lean = 0.6 * Math.sin(t * 0.55) + 1.2 * talk * Math.sin(t * 1.05 + 0.5);
+    this._poseBone('chest', [-1.1 * breath, 0.5 * lean, 0.3 * lean]);
 
-    // torso: a slow lean, a little more engaged while talking
-    const lean = 0.7 * Math.sin(t * 0.55) + 1.6 * talk * Math.sin(t * 1.05 + 0.5);
-    this._setBone('mixamorigSpine', POSTURE_STAND['mixamorigSpine'], [0, 0.7 * lean, 0.4 * lean]);
+    // arms: subtle asymmetric idle sway always; a livelier swing while explaining.
+    // Amplitudes are deliberately small (a few degrees) since the delta rides on the
+    // aimed-down rest pose and the bone-local axis varies by rig.
+    const aL = 0.7 * Math.sin(t * 0.92) + 2.6 * talk * Math.sin(t * 1.70 + 0.4);
+    const aR = 0.7 * Math.sin(t * 0.85 + 1.9) + 2.6 * talk * Math.sin(t * 1.60 + 2.2);
+    const fL = 0.9 * Math.sin(t * 0.70 + 0.3) + 3.4 * talk * Math.sin(t * 2.35 + 0.9);
+    const fR = 0.9 * Math.sin(t * 0.65 + 2.4) + 3.4 * talk * Math.sin(t * 2.20 + 2.6);
+    this._poseBone('lArm', [aL, 0, 0]);
+    this._poseBone('rArm', [aR, 0, 0]);
+    this._poseBone('lFore', [fL, 0, 0]);
+    this._poseBone('rFore', [fR, 0, 0]);
 
     // head nod/tilt for emphasis — folded into the head quaternion alongside gaze
-    this._headNod = 0.5 * Math.sin(t * 0.70) + 2.6 * talk * Math.sin(t * 2.60 + 0.2);
-    this._headTilt = 0.5 * Math.sin(t * 0.48 + 1.1) + 1.6 * talk * Math.sin(t * 1.30 + 0.8);
+    this._headNod = 0.5 * Math.sin(t * 0.70) + 2.4 * talk * Math.sin(t * 2.60 + 0.2);
+    this._headTilt = 0.5 * Math.sin(t * 0.48 + 1.1) + 1.4 * talk * Math.sin(t * 1.30 + 0.8);
   }
 
   // Blink, gaze, resting micro-smile, and speech-driven lip-sync. All gated on the
@@ -581,7 +666,7 @@ export class RealisticAvatar {
     }
     this._gazeX += (this._gazeTarget[0] - this._gazeX) * Math.min(1, dt * 6);
     this._gazeY += (this._gazeTarget[1] - this._gazeY) * Math.min(1, dt * 6);
-    const head = this.bones.get('mixamorigHead') || this.bones.get('Head');
+    const head = this._bone('head');
     const rest = head && this.rest.get(head.name);
     if (head && rest) {
       // gaze (eye-follow) + gesture nod/tilt, composed so the head moves naturally

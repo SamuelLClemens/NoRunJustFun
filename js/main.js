@@ -1449,7 +1449,10 @@ async function ensureAvatarClass() {
 // and model stay out of the default path entirely.
 async function ensureRealisticClass() {
   if (!RealisticAvatar) {
-    const mod = await import('./realistic-avatar.js');
+    // ?v bust: bump on every realistic-avatar.js change so browsers fetch the new
+    // module instead of a cached copy (the SW matches with ignoreSearch, so the
+    // precached file still serves offline regardless of the query).
+    const mod = await import('./realistic-avatar.js?v=rig4');
     RealisticAvatar = mod.RealisticAvatar;
     realisticHelpers = mod;
   }
