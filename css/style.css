@@ -659,21 +659,6 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
   .fin-lib { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* glasses transition — the coach "puts on" reading glasses to signal the shift
-   from a fitness session to a finance lesson. A 2D overlay on the stage (not 3D
-   geometry), so it works for both the stick-figure and full-instructor coaches,
-   survives the mid-session avatar swap, and adds no per-frame cost. Honors
-   reduced motion via the global override (the slide just becomes instant). */
-.stage .fin-glasses {
-  position: absolute; top: 39%; left: 50%; width: 40%; max-width: 168px;
-  transform: translateX(-50%) translateY(-46px) rotate(-7deg);
-  opacity: 0; pointer-events: none; z-index: 3;
-  transition: opacity 0.45s ease, transform 0.6s cubic-bezier(0.2, 0.85, 0.3, 1.15);
-  filter: drop-shadow(0 3px 4px rgba(31, 77, 46, 0.25));
-}
-.stage .fin-glasses svg { width: 100%; height: auto; display: block; }
-.stage.glasses-on .fin-glasses { opacity: 1; transform: translateX(-50%) translateY(0) rotate(0deg); }
-
 /* finance: surface the existing on-device natural voice (best free quality) */
 .fin-voice p { margin: 0 0 10px; }
 .fin-voice-on { text-align: center; color: var(--green-600); font-weight: 700; font-size: 0.9rem; }

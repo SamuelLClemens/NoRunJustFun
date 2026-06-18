@@ -1070,7 +1070,7 @@ async function mountGardenCoach(slotEl, nameEl) {
 // Shared celebration card: a garden stage (Ginuana + greenery), a headline, affirmations,
 // and layered confetti. Used by both the birthday and the anniversary parties.
 function celebrationParty({ cls, ariaLabel, emoji, headingHTML, lead, okLabel }) {
-  if (document.querySelector('.overlay.party')) return;
+  if (document.querySelector('.overlay.party')) return false;   // a celebration is already on screen
   const ov = document.createElement('div');
   ov.className = 'overlay party ' + cls;
   ov.setAttribute('role', 'dialog');
@@ -1088,17 +1088,33 @@ function celebrationParty({ cls, ariaLabel, emoji, headingHTML, lead, okLabel })
     <ul class="bday-affirm">${AFFIRMATIONS.map((a) => `<li>${esc(a)}</li>`).join('')}</ul>
     <button class="btn btn-primary" id="party-ok">${esc(okLabel)}</button>
   </div>`;
+  const prevFocus = document.activeElement;
   document.body.appendChild(ov);
   const btn = ov.querySelector('#party-ok');
+  let coach = null, closed = false;
+  // Dispose Ginuana + remove the card on ANY exit — the button, Escape, or navigating
+  // away. The overlay lives on <body>, so a route re-render would otherwise leave it (and
+  // her live WebGL context) orphaned; binding to hashchange closes it on navigation.
+  // Idempotent, and restores focus to wherever it was.
+  const close = () => {
+    if (closed) return;
+    closed = true;
+    window.removeEventListener('hashchange', close);
+    if (coach) { try { coach.dispose(); } catch { /* ok */ } coach = null; }
+    ov.remove();
+    try { if (prevFocus && prevFocus.focus) prevFocus.focus(); } catch { /* ok */ }
+  };
   btn.focus();
-  ov.addEventListener('keydown', (e) => { if (e.key === 'Tab') { e.preventDefault(); btn.focus(); } });
-  let coach = null;
-  const close = () => { if (coach) { try { coach.dispose(); } catch { /* ok */ } coach = null; } ov.remove(); };
+  ov.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') { e.preventDefault(); btn.focus(); }
+    else if (e.key === 'Escape') close();
+  });
   btn.addEventListener('click', close);
+  window.addEventListener('hashchange', close);
   // Ginuana arrives in the garden; if the card is already gone by the time she loads,
   // dispose her immediately so nothing leaks.
   mountGardenCoach(ov.querySelector('.party-coach-slot'), ov.querySelector('.party-coach-name')).then((av) => {
-    if (!document.body.contains(ov)) { if (av) { try { av.dispose(); } catch { /* ok */ } } return; }
+    if (closed || !document.body.contains(ov)) { if (av) { try { av.dispose(); } catch { /* ok */ } } return; }
     coach = av;
   });
   // a big, layered confetti party
@@ -1106,6 +1122,7 @@ function celebrationParty({ cls, ariaLabel, emoji, headingHTML, lead, okLabel })
   setTimeout(() => celebrate(2800), 500);
   setTimeout(() => celebrate(2200), 1100);
   try { sound.sparkle(); } catch { /* sfx optional */ }
+  return true;
 }
 
 // On the user's birthday (and once per year), throw a gentle, affirming party.
@@ -1118,15 +1135,17 @@ function maybeBirthdayParty() {
   const yr = String(now.getFullYear());
   if (now.getMonth() + 1 !== bm || now.getDate() !== bd) return;
   if (store.profile.lastBirthdayParty === yr) return;
-  store.profile.lastBirthdayParty = yr; save();
   const name = store.profile.name;
   const age = ageFromBirthday(b);
-  celebrationParty({
+  const shown = celebrationParty({
     cls: 'birthday', ariaLabel: 'Birthday celebration', emoji: '🎂🎉',
     headingHTML: `Happy birthday${name ? ', ' + esc(name) : ''}!`,
     lead: age != null ? `${age} years of you — and the world is better for it.` : 'Today is all about you.',
     okLabel: 'Thank you 💛',
   });
+  // Only burn the once-a-year guard if the party actually showed (it won't if another
+  // celebration is already up — e.g. a same-day birthday + anniversary).
+  if (shown) { store.profile.lastBirthdayParty = yr; save(); }
 }
 
 // On the anniversary of the day this person started (once per year, never on day zero),
@@ -1141,15 +1160,15 @@ function maybeAnniversaryParty() {
   if (now.getMonth() + 1 !== sm || now.getDate() !== sd) return;
   if (now.getFullYear() <= sy) return;                 // not on the very first day
   if (store.profile.lastAnniversaryParty === yr) return;
-  store.profile.lastAnniversaryParty = yr; save();
   const name = store.profile.name;
   const years = now.getFullYear() - sy;
-  celebrationParty({
+  const shown = celebrationParty({
     cls: 'anniversary', ariaLabel: 'Anniversary celebration', emoji: '🌱🎉',
     headingHTML: `Happy anniversary${name ? ', ' + esc(name) : ''}!`,
     lead: years === 1 ? 'One year of growing with Garden Moves.' : `${years} years of growing with Garden Moves.`,
     okLabel: 'Here’s to more 🌼',
   });
+  if (shown) { store.profile.lastAnniversaryParty = yr; save(); }
 }
 
 function youScreen() {
@@ -1607,7 +1626,7 @@ async function ensureRealisticClass() {
     // ?v bust: bump on every realistic-avatar.js change so browsers fetch the new
     // module instead of a cached copy (the SW matches with ignoreSearch, so the
     // precached file still serves offline regardless of the query).
-    const mod = await import('./realistic-avatar.js?v=rig13');
+    const mod = await import('./realistic-avatar.js?v=rig14');
     RealisticAvatar = mod.RealisticAvatar;
     realisticHelpers = mod;
   }

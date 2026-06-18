@@ -1216,6 +1216,7 @@ export class RealisticAvatar {
   }
 
   dispose() {
+    if (this._disposed) return;          // idempotent — safe to call from multiple teardown paths
     this._disposed = true;               // neutralize any in-flight GLB load / fallback callback
     this.onError = null;
     this.stop();
