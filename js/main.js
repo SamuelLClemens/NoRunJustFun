@@ -240,6 +240,9 @@ function bodyScreen() {
     { go: '#move-baby', ic: '🍼', title: 'With your baby', blurb: 'Gentle movement holding your little one — for babies 6 months and above' },
     { go: '#move-sexercise', ic: '🔥', title: 'Sexercise', blurb: 'Playful strength, stamina and mobility for a more active, joyful intimate life' },
   ];
+  const mc = store.progress.moveCounts || {};
+  const catOf = (id) => ALL_WORKOUT_CATEGORY[id];
+  const movesIn = (cat) => ALL_EXERCISES.filter((e) => cat === 'exercise' ? (!catOf(e.id) || catOf(e.id) === 'exercise') : catOf(e.id) === cat);
   app.innerHTML = `
     <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">Body · Move</h1></header>
     <main class="narrow body-screen">
@@ -247,10 +250,14 @@ function bodyScreen() {
         <h2>How do you want to move?</h2>
         <p class="hint">No equipment — just you, the floor, a wall, and maybe a chair. Coached by ${esc(getCharacter(store.profile.character).name)}.</p>
         <div class="move-paths">
-          ${paths.map((p) => `<button class="move-path" data-go="${p.go}">
+          ${paths.map((p) => {
+            const moves = movesIn(p.go.replace('#move-', ''));
+            const done = moves.filter((e) => (mc[e.id] || 0) > 0).length;
+            return `<button class="move-path" data-go="${p.go}">
             <span class="move-path-ic" aria-hidden="true">${p.ic}</span>
-            <span class="move-path-txt"><strong>${esc(p.title)}</strong><small>${esc(p.blurb)}</small></span>
-          </button>`).join('')}
+            <span class="move-path-txt"><strong>${esc(p.title)} <span class="you-count">${done}/${moves.length}</span></strong><small>${esc(p.blurb)}</small></span>
+          </button>`;
+          }).join('')}
         </div>
       </section>
     </main>`;
@@ -351,15 +358,21 @@ function mindScreen() {
     { id: 'communication', ic: '💬', title: 'Communication', blurb: 'Nonviolent Communication — needs, requests, empathy' },
     { id: 'memory', ic: '🧠', title: 'Memory', blurb: 'How memory works, evidence-based techniques, and games to practice' },
   ];
+  const lessonsDoneFor = (id) => {
+    const t = store.progress.learning[id] || {};
+    return new Set((t.lessons || []).filter((l) => l && !l.game && !l.quiz).map((l) => l.id)).size;
+  };
   const cards = subjects.map((s) => {
     const live = !!getTrack(s.id);
     const inner = `<span class="fin-lib-ic" aria-hidden="true">${s.ic}</span>
         <span class="fin-lib-txt"><strong>${esc(s.title)}</strong><small>${esc(s.blurb)}</small></span>`;
-    return live
-      ? `<button class="fin-lib-btn mind-subject" data-track="${esc(s.id)}">${inner}
-        <span class="fin-lib-meta"><span class="fin-mins">Learn →</span></span></button>`
-      : `<button class="fin-lib-btn mind-subject locked" disabled>${inner}
+    if (!live) return `<button class="fin-lib-btn mind-subject locked" disabled>${inner}
         <span class="fin-lib-meta"><span class="soon-tag">Coming soon</span></span></button>`;
+    const total = getTrack(s.id).lessons.LESSON_LIBRARY.length;
+    const done = lessonsDoneFor(s.id);
+    const complete = (store.progress.learning[s.id] || {}).completedAt;
+    return `<button class="fin-lib-btn mind-subject" data-track="${esc(s.id)}">${inner}
+        <span class="fin-lib-meta"><span class="fin-mins">${done}/${total} lessons</span>${complete ? '<span class="fin-done-tag">✓</span>' : ''}</span></button>`;
   }).join('');
   // Belief-flagged reflective sections (Crystal energy, Dream interpretation). They live
   // under their own SOUL_TRACK_LIST registry (never the Mind TRACK_LIST, so they get no
@@ -367,10 +380,12 @@ function mindScreen() {
   const reflectiveHTML = SOUL_TRACK_LIST.map((id) => {
     const t = getTrack(id);
     if (!t) return '';
+    const total = t.lessons.LESSON_LIBRARY.length;
+    const done = lessonsDoneFor(id);
     return `<button class="soul-reflective" data-track="${esc(id)}">
         <span class="pillar-ic" aria-hidden="true">${(t.theme && t.theme.badgeEmoji) || '🌙'}</span>
         <span class="pillar-txt"><strong>${esc(t.name)}</strong><small>${esc(t.blurb)}</small></span>
-        <span class="soul-go" aria-hidden="true">→</span>
+        <span class="soul-go"><span class="fin-mins">${done}/${total}</span> <span aria-hidden="true">→</span></span>
       </button>`;
   }).join('');
   app.innerHTML = `
