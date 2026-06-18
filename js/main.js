@@ -28,7 +28,7 @@ import { PROGRAMS, getProgram, programSuggestion, advanceProgram } from './data/
 import { getTrack, TRACK_LIST, SOUL_TRACK_LIST } from './data/tracks.js';
 import { ensureVariants } from './data/lessons.shared.js';
 import { confirmDialog, alertDialog } from './ui-dialog.js';
-import { trackHubScreen, learningDone, gameScreen, quizScreen } from './learning-screen.js';
+import { trackHubScreen, learningDone, gameScreen, quizScreen, conceptQuizScreen } from './learning-screen.js';
 import { usageGraphsHTML } from './usage-graph.js';
 import { composeCheckin } from './checkin.js';
 import { listMeals, addMeal, removeMeal } from './meals.js';
@@ -1787,6 +1787,7 @@ async function routeTo(h, seq) {
     const tail = dash === -1 ? '' : rest.slice(dash + 1);
     if (tail === '') return trackHubScreen(trackId);
     if (tail === 'quiz') return quizScreen(trackId);
+    if (tail.startsWith('cquiz-')) return conceptQuizScreen(trackId, tail.slice('cquiz-'.length));
     if (tail.startsWith('game-')) return gameScreen(trackId, tail.slice('game-'.length));
 
     let plan = null;

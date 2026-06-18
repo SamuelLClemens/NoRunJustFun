@@ -33,8 +33,20 @@ export function ensureTrack(store, trackId) {
   if (typeof t.lessonsCompleted !== 'number') t.lessonsCompleted = 0;
   if (typeof t.gamesWon !== 'number') t.gamesWon = 0;
   if (typeof t.quizBest !== 'number') t.quizBest = 0;
+  if (!t.conceptQuiz || typeof t.conceptQuiz !== 'object') t.conceptQuiz = {}; // {lessonId: bestPct}
   if (!('completedAt' in t)) t.completedAt = null;
   return t;
+}
+
+// Per-concept (per-lesson) quiz best score, kept in a {lessonId: pct} map. Unlike the
+// subject quiz this is a lightweight self-check: it records a best score (so the hub can
+// show a ✓ at 100%) but does NOT grow the garden or award badges.
+export function recordConceptQuiz(store, trackId, lessonId, { score = 0, total = 0 } = {}) {
+  const t = ensureTrack(store, trackId);
+  const pct = total > 0 ? Math.round((score / total) * 100) : 0;
+  t.conceptQuiz[lessonId] = Math.max(t.conceptQuiz[lessonId] || 0, pct);
+  save();
+  return { pct, best: t.conceptQuiz[lessonId] };
 }
 
 // A track streak counts days on which a lesson or game in THAT subject was
