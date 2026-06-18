@@ -75,6 +75,19 @@ function weightMap() {
   ((store.progress && store.progress.weights) || []).forEach((w) => { if (w && w.date) m[w.date] = w.value; });
   return m;
 }
+// The journal entries logged ON a given calendar day (oldest first), keyed the same way
+// journalMap counts them (ts date portion). Used to surface the day's entries in the
+// day detail, each opening that page of the book.
+function journalEntriesFor(date) {
+  return ((store.progress && store.progress.journal) || [])
+    .filter((e) => e && e.ts && e.ts.slice(0, 10) === date)
+    .sort((a, b) => (a.ts < b.ts ? -1 : (a.ts > b.ts ? 1 : 0)));
+}
+function jSnippet(e) {
+  if (e.text && e.text.trim()) { const t = e.text.trim().replace(/\s+/g, ' '); return t.length > 56 ? t.slice(0, 55) + '…' : t; }
+  if (e.audioKey) return '🎙 Voice note';
+  return '(empty)';
+}
 // App anniversary: the month-day the user started using the app, marked every year (🎉).
 function anniversaryMD() { const a = (store.profile && store.profile.startedAt) || ''; return (typeof a === 'string' && a.length >= 10) ? a.slice(5) : ''; }
 function anniversaryYears(date) {
@@ -243,6 +256,12 @@ function dayEditorHTML(date) {
             : '🎉 You started Garden Moves on this day. ';
         }
         return `<p class="hint intim-onday">${isBday ? '🎂 Your birthday! ' : ''}${anniv}${parts.length ? `In the app this day: ${parts.join(', ')}${u && u.mins ? ` · ${u.mins} min` : ''}.` : ''}</p>`;
+      })()}
+      ${(() => {
+        const jes = journalEntriesFor(date);
+        if (!jes.length) return '';
+        return `<div class="intim-journal-day"><p class="hint">📔 Journal this day — tap to open in your book</p>
+          <ul class="intim-journal-list">${jes.map((e) => `<li><button type="button" class="intim-journal-open" data-id="${esc(e.id)}"><span class="ij-time">${esc(new Date(e.ts).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }))}</span> <span class="ij-snip">${esc(jSnippet(e))}</span></button></li>`).join('')}</ul></div>`;
       })()}
       <label class="intim-check intim-period-toggle"><input type="checkbox" id="intim-period" data-date="${esc(date)}" ${isPeriod(date) ? 'checked' : ''}> 🩸 Period day</label>
       <p class="hint">How much did you want to today?</p>
@@ -465,6 +484,12 @@ function bind(app) {
   if (dayClose) dayClose.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); _sel = null; rerender(); });
 
   app.querySelectorAll('.intim-layer-chip').forEach((b) => b.addEventListener('click', () => { const k = b.dataset.layer; setLayer(k, !getLayers()[k]); rerender(); }));
+
+  // Open one of this day's journal entries in the book (lazy-import the journal screen).
+  app.querySelectorAll('.intim-journal-open').forEach((b) => b.addEventListener('click', () => {
+    const id = b.dataset.id;
+    import('./journal-screen.js').then((m) => m.openJournalEntry(id)).catch(() => { location.hash = '#journal'; });
+  }));
 
   app.querySelectorAll('.intim-desire-btn').forEach((b) => b.addEventListener('click', () => { setDesire(b.dataset.date, parseInt(b.dataset.desire, 10)); rerender(); }));
 

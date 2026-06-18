@@ -15,7 +15,7 @@ import { EXERCISES } from './data/exercises.js';
 import { PHRASES } from './data/phrases.js';
 import { BADGES } from './data/badges.js';
 import { gardenSVG, GARDEN_STAGE_SESSIONS } from './data/garden.js';
-import { POSES } from './data/poses.js';
+import { POSES, poseForExercise } from './data/poses.js';
 import { NEW_EXERCISES, TIER_ELIGIBILITY } from './data/movements-ext.js';
 import { EXTRA_EXERCISES, EXTRA_TIER_ELIGIBILITY, WORKOUT_CATEGORY } from './data/movements-ext2.js';
 import { EXTRA_EXERCISES2, EXTRA_TIER_ELIGIBILITY2, WORKOUT_CATEGORY2 } from './data/movements-ext3.js';
@@ -53,6 +53,61 @@ const ALL_WORKOUT_CATEGORY = { ...WORKOUT_CATEGORY, ...WORKOUT_CATEGORY2, ...SEX
 function applyMotionPref() {
   const m = store.profile.reducedMotion || 'auto';
   document.documentElement.dataset.reducedMotion = m;
+}
+
+// Apply the light/dark theme (CSS reskins via html[data-theme="dark"]). On-device only.
+function applyThemePref() {
+  document.documentElement.dataset.theme = store.profile.theme === 'dark' ? 'dark' : 'light';
+}
+
+// Flip light <-> dark. Bound once via delegation so the moon/sun button works on any screen.
+function toggleTheme(btn) {
+  store.profile.theme = store.profile.theme === 'dark' ? 'light' : 'dark';
+  save();
+  applyThemePref();
+  if (btn) btn.textContent = store.profile.theme === 'dark' ? '☀️' : '🌙';
+}
+if (typeof document !== 'undefined') {
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest && e.target.closest('#theme-toggle');
+    if (t) toggleTheme(t);
+  });
+}
+
+// Persistent bottom tab bar — the primary destinations (Mind/Body/Soul + Home + You).
+// Additive (the top-nav links stay); built once and reused across screens so it never
+// flickers on navigation. Hidden during an active session for an immersive workout.
+const TABS = [
+  { hash: '#home', label: 'Home', ic: '🏡' },
+  { hash: '#body', label: 'Body', ic: '🤸' },
+  { hash: '#mind', label: 'Mind', ic: '🧠' },
+  { hash: '#soul', label: 'Soul', ic: '🌿' },
+  { hash: '#you',  label: 'You',  ic: '🌼' },
+];
+let _tabbarEl = null;
+function buildTabbar() {
+  if (_tabbarEl || typeof document === 'undefined') return;
+  const nav = document.createElement('nav');
+  nav.className = 'tabbar';
+  nav.setAttribute('aria-label', 'Primary');
+  nav.innerHTML = TABS.map((t) =>
+    `<a href="${t.hash}" data-tab="${t.hash}"><span class="tab-ic" aria-hidden="true">${t.ic}</span>${t.label}</a>`).join('');
+  document.body.appendChild(nav);
+  _tabbarEl = nav;
+}
+function updateTabbar() {
+  if (!_tabbarEl) return;
+  const h = location.hash || '#home';
+  const inSession = h.startsWith('#play-') || h.startsWith('#tier-');   // immersive — hide
+  _tabbarEl.hidden = inSession;
+  document.body.classList.toggle('has-tabbar', !inSession);
+  const active = (h === '#home' || h === '#' || h === '') ? '#home'
+    : (h.startsWith('#body') || h.startsWith('#move-')) ? '#body'
+    : (h.startsWith('#mind') || h.startsWith('#learn') || h === '#money' || h.startsWith('#fin-')) ? '#mind'
+    : (h.startsWith('#soul')) ? '#soul'
+    : (h === '#you' || h === '#journal' || h === '#calendar' || h === '#intimacy' || h === '#bedroom') ? '#you'
+    : '';
+  _tabbarEl.querySelectorAll('a').forEach((a) => a.classList.toggle('active', a.dataset.tab === active));
 }
 
 // Logo lockup — the veronica flower forms the exclamation mark.
@@ -103,6 +158,7 @@ function homeScreen() {
     <header class="topbar">
       <div class="brand">${logoSVG()}</div>
       <nav class="topnav">
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch between light and dark" title="Light / dark">${store.profile.theme === 'dark' ? '☀️' : '🌙'}</button>
         <a href="#you">You</a>
         <a href="#badges">Badges</a>
         <a href="#settings" aria-label="Settings">Settings</a>
@@ -228,7 +284,9 @@ function moveScreen(category) {
         ${meta.safety ? `<p class="start-note safety-note">⚠️ ${esc(meta.safety)}</p>` : ''}
         <p class="start-note start-links">
           ${category === 'exercise' ? '<a href="#intake">Personalize your sessions</a>' : ''}
-          <label class="inline-toggle"><input type="checkbox" id="home-chair" ${store.profile.chairMode ? 'checked' : ''}> Chair mode</label>
+          ${['stretch', 'yoga', 'exercise'].includes(category)
+            ? `<label class="inline-toggle"><input type="checkbox" id="home-chair" ${store.profile.chairMode ? 'checked' : ''}> Chair mode</label>`
+            : ''}
         </p>
       </section>
     </main>`;
@@ -658,6 +716,7 @@ function sessionScreen(plan) {
   coach.naturalOn = profile.naturalOn;
   if (profile.naturalOn && naturalVoice.state === 'off') naturalVoice.enable(); // warms up in the background; system voice covers until ready
   sound.sfxOn = profile.sfxOn;
+  sound.setVolume(profile.sfxVol);
   music.volume = profile.musicVol;
 
   // avatar (graceful fallback if WebGL is unavailable)
@@ -669,6 +728,7 @@ function sessionScreen(plan) {
   try {
     if (wantReal) {
       avatar = new RealisticAvatar(canvas, char);
+      avatar.isRealistic = true;   // GLB coach: renders upright choreography (standing analogs)
       // show a calm "coach is getting ready" state while the 5–7 MB model loads,
       // so the flagship feature never opens to a blank stage (cleared on ready/error)
       const stageEl = canvas.closest('.stage');
@@ -754,7 +814,14 @@ function sessionScreen(plan) {
           d.classList.toggle('done', i < idx);
           d.classList.toggle('now', i === idx);
         });
-        if (avatar) avatar.setPose(POSES[item.ex.id] || null);
+        // Perform the exercise so the user can mirror the coach. The lean primitive
+        // coach is the native rig for POSES and renders the exact choreography (incl.
+        // floor/seated moves); the realistic GLB coach renders upright moves, so it
+        // gets the standing-resolved pose. Either way the coach performs every move.
+        if (avatar) {
+          const raw = POSES[item.ex.id] || null;
+          avatar.setPose(avatar.isRealistic ? poseForExercise(item.ex) : (raw || poseForExercise(item.ex)));
+        }
         // Lesson difficulty controls: show "Explain it simpler" / "Go deeper" only on
         // lesson segments that actually provide that variant (graceful when absent).
         const levels = document.getElementById('lesson-levels');
@@ -779,12 +846,21 @@ function sessionScreen(plan) {
     },
   });
 
-  if (DEV_QA) window.__nrjf = { player, store, avatar };   // dev-only QA handle (?dev=…)
+  if (DEV_QA) window.__nrjf = { player, store, avatar, POSES, poseForExercise };   // dev-only QA handle (?dev=…)
 
-  document.getElementById('btn-pause').addEventListener('click', () => {
+  // One pause/resume action, shared by every control that triggers it.
+  const togglePause = () => {
     if (player.phase === 'paused') player.resume();
     else player.pause();
-  });
+  };
+  document.getElementById('btn-pause').addEventListener('click', togglePause);
+  // Tapping the coach or the timer ring pauses/resumes too — the same action as the
+  // Pause button. These are progressive enhancements layered over the real button, so
+  // they stay mouse/touch only and do not alter the timer's assistive-tech semantics.
+  const stageEl = document.querySelector('.session .stage');
+  if (stageEl) { stageEl.style.cursor = 'pointer'; stageEl.title = 'Tap to pause or resume'; stageEl.addEventListener('click', togglePause); }
+  const ringWrap = document.querySelector('.session .ring-wrap');
+  if (ringWrap) { ringWrap.style.cursor = 'pointer'; ringWrap.title = 'Tap to pause or resume'; ringWrap.addEventListener('click', togglePause); }
   document.getElementById('btn-skip').addEventListener('click', () => player.skip());
   const btnSimpler = document.getElementById('btn-simpler');
   if (btnSimpler) btnSimpler.addEventListener('click', () => {
@@ -832,7 +908,7 @@ function swapToLeanAvatar(oldCanvas, char) {
     avatar.start();
     if (DEV_QA && window.__nrjf) window.__nrjf.avatar = avatar;
     const it = player && player.plan && player.plan.items[player.idx];
-    if (it) avatar.setPose(POSES[it.ex.id] || null);
+    if (it) avatar.setPose((POSES[it.ex.id] || null) || poseForExercise(it.ex));   // lean coach: native pose
   } catch (e) {
     console.warn('lean fallback failed:', e);
     fresh.closest('.stage')?.classList.add('no-webgl');
@@ -1268,8 +1344,8 @@ function settingsScreen() {
 
       <section class="card">
         <strong>Lifelike voice <span class="beta-chip">beta</span></strong>
-        <p class="hint">Each coach gets their own warm, human-sounding voice that runs entirely on this device. It is off until you switch it on here: turning it on downloads the voice model once (about 90 MB) in the background — nothing about you is ever sent anywhere. Until then, and on slower devices, the regular on-device voice is used.</p>
-        <label class="toggle"><input type="checkbox" id="set-natural" ${p.naturalOn ? 'checked' : ''}> Use the lifelike voice</label>
+        <p class="hint">Each coach gets their own warm, human-sounding voice that runs entirely on this device. It is on by default: on capable devices the voice model downloads once (about 90 MB) in the background — nothing about you is ever sent anywhere. Data Saver, a slow connection, or a slower device keeps the regular on-device voice instead. Turn it off here any time.</p>
+        <label class="toggle"><input type="checkbox" id="set-natural" ${(p.naturalOn || p.voicePref === 'on') ? 'checked' : ''}> Use the lifelike voice</label>
         <div class="nv-progress" id="nv-progress" hidden>
           <div class="nv-track"><div class="nv-bar" id="nv-bar"></div></div>
           <small id="nv-status" role="status"></small>
@@ -1297,6 +1373,8 @@ function settingsScreen() {
       <section class="card">
         <strong>Sound</strong>
         <label class="toggle"><input type="checkbox" id="set-sfx" ${p.sfxOn ? 'checked' : ''}> Gentle chimes</label>
+        <label for="set-chimevol" class="vol-label">Chime volume</label>
+        <input type="range" id="set-chimevol" min="0" max="1" step="0.05" value="${p.sfxVol}" aria-label="Chime volume">
         <label class="toggle"><input type="checkbox" id="set-music" ${p.musicOn ? 'checked' : ''}> Background music <small>(soft generated ambience)</small></label>
         <label for="set-vol" class="vol-label">Music volume</label>
         <input type="range" id="set-vol" min="0" max="1" step="0.05" value="${p.musicVol}">
@@ -1411,6 +1489,11 @@ function settingsScreen() {
     p.sfxOn = e.target.checked; sound.sfxOn = p.sfxOn; save();
     if (p.sfxOn) { sound.unlock(); sound.chime(); }
   });
+  document.getElementById('set-chimevol').addEventListener('input', (e) => {
+    p.sfxVol = parseFloat(e.target.value);
+    sound.setVolume(p.sfxVol); save();
+    if (p.sfxOn) { sound.unlock(); sound.chime(); }   // preview the new level
+  });
   document.getElementById('set-music').addEventListener('change', (e) => {
     p.musicOn = e.target.checked; save();
     if (p.musicOn) { sound.unlock(); music.volume = p.musicVol; music.start(); }
@@ -1449,7 +1532,10 @@ async function ensureAvatarClass() {
 // and model stay out of the default path entirely.
 async function ensureRealisticClass() {
   if (!RealisticAvatar) {
-    const mod = await import('./realistic-avatar.js');
+    // ?v bust: bump on every realistic-avatar.js change so browsers fetch the new
+    // module instead of a cached copy (the SW matches with ignoreSearch, so the
+    // precached file still serves offline regardless of the query).
+    const mod = await import('./realistic-avatar.js?v=rig10');
     RealisticAvatar = mod.RealisticAvatar;
     realisticHelpers = mod;
   }
@@ -1499,6 +1585,8 @@ async function render() {
   const seq = ++renderSeq;
   teardownSession();
   applyMotionPref();
+  applyThemePref();
+  updateTabbar();
   window.scrollTo(0, 0);
   maybeBirthdayParty();   // once per year, on the day — self-guards against re-showing
   await routeTo(location.hash || '#', seq);
@@ -1645,6 +1733,11 @@ function maybeAutoEnableNaturalVoice() {
     coach.naturalOn = true;                                // upgrade the live coach now
   }).catch(() => { /* system voice already covers it */ });
 }
+
+// apply the saved chime volume + theme globally, before first paint
+sound.setVolume(store.profile.sfxVol);
+applyThemePref();
+buildTabbar();
 
 // dev visual QA: ?dev=poses or ?dev=garden
 const devMode = new URLSearchParams(location.search).get('dev');

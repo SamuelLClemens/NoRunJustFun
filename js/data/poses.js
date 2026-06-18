@@ -4626,3 +4626,100 @@ export const POSES = {
   ]
  }
 };
+
+// --- Standing analogs --------------------------------------------------------
+// The realistic GLB coach renders STANDING choreography robustly (joint rotations
+// + per-frame re-grounding), but floor/seated/quadruped postures need full inverse
+// kinematics to look right. So floor moves are demonstrated by an upright analog
+// that captures the essence of the move (a twist, a fold, a march, a breath) while
+// the captions carry the specifics. All authored in the same body-space format as
+// POSES (rig-spec): base 'stand', no root tilt. Angles kept gentle and loopable.
+export const STAND_POSES = {
+  // calm standing presence — hands resting softly in front, slow breath
+  'stand-breath': {
+    base: 'stand', loopSecs: 12, mirrorHalfway: false,
+    frames: [
+      { t: 0.0, joints: { chest: [2, 0, 0], shoulderL: [-12, 0, 8], shoulderR: [-12, 0, -8], elbowL: [-70, 0, 0], elbowR: [-70, 0, 0] } },
+      { t: 0.5, joints: { chest: [-3, 0, 0], shoulderL: [-15, 0, 8], shoulderR: [-15, 0, -8], elbowL: [-74, 0, 0], elbowR: [-74, 0, 0], head: [-3, 0, 0] } },
+      { t: 1.0, joints: { chest: [2, 0, 0], shoulderL: [-12, 0, 8], shoulderR: [-12, 0, -8], elbowL: [-70, 0, 0], elbowR: [-70, 0, 0] } },
+    ],
+  },
+  // gentle standing spinal twist, both sides, arms in a soft guard so it reads
+  'stand-twist': {
+    base: 'stand', loopSecs: 8, mirrorHalfway: false,
+    frames: [
+      { t: 0.0,  joints: { spine: [0, 0, 0], chest: [0, 0, 0], head: [0, 0, 0], shoulderL: [-28, 0, 8], shoulderR: [-28, 0, -8], elbowL: [-85, 0, 0], elbowR: [-85, 0, 0] } },
+      { t: 0.25, joints: { spine: [0, 16, 0], chest: [0, 26, 0], head: [0, 20, 0], shoulderL: [-28, 0, 8], shoulderR: [-28, 0, -8], elbowL: [-85, 0, 0], elbowR: [-85, 0, 0] } },
+      { t: 0.5,  joints: { spine: [0, 0, 0], chest: [0, 0, 0], head: [0, 0, 0], shoulderL: [-28, 0, 8], shoulderR: [-28, 0, -8], elbowL: [-85, 0, 0], elbowR: [-85, 0, 0] } },
+      { t: 0.75, joints: { spine: [0, -16, 0], chest: [0, -26, 0], head: [0, -20, 0], shoulderL: [-28, 0, 8], shoulderR: [-28, 0, -8], elbowL: [-85, 0, 0], elbowR: [-85, 0, 0] } },
+      { t: 1.0,  joints: { spine: [0, 0, 0], chest: [0, 0, 0], head: [0, 0, 0], shoulderL: [-28, 0, 8], shoulderR: [-28, 0, -8], elbowL: [-85, 0, 0], elbowR: [-85, 0, 0] } },
+    ],
+  },
+  // marching in place — alternate knee raise with opposite-arm swing
+  'stand-march': {
+    base: 'stand', loopSecs: 2.4, mirrorHalfway: false,
+    frames: [
+      { t: 0.0, joints: { hipL: [-70, 0, 0], kneeL: [80, 0, 0], shoulderL: [12, 0, 8], elbowL: [-30, 0, 0], shoulderR: [-38, 0, -8], elbowR: [-65, 0, 0] } },
+      { t: 0.5, joints: { hipR: [-70, 0, 0], kneeR: [80, 0, 0], shoulderR: [12, 0, -8], elbowR: [-30, 0, 0], shoulderL: [-38, 0, 8], elbowL: [-65, 0, 0] } },
+      { t: 1.0, joints: { hipL: [-70, 0, 0], kneeL: [80, 0, 0], shoulderL: [12, 0, 8], elbowL: [-30, 0, 0], shoulderR: [-38, 0, -8], elbowR: [-65, 0, 0] } },
+    ],
+  },
+  // sweep the arms overhead and open — a generic mobility/stretch demonstration
+  'stand-reach': {
+    base: 'stand', loopSecs: 9, mirrorHalfway: false,
+    frames: [
+      { t: 0.0, joints: { shoulderL: [-16, 0, 10], shoulderR: [-16, 0, -10] } },
+      { t: 0.5, joints: { shoulderL: [-165, 0, 8], shoulderR: [-165, 0, -8], chest: [-4, 0, 0], head: [-8, 0, 0] } },
+      { t: 1.0, joints: { shoulderL: [-16, 0, 10], shoulderR: [-16, 0, -10] } },
+    ],
+  },
+  // minimal calm sway — the safe default (face yoga, breathwork, anything unmatched)
+  'stand-sway': {
+    base: 'stand', loopSecs: 6, mirrorHalfway: false,
+    frames: [
+      { t: 0.0, joints: { chest: [2, 0, 3], shoulderL: [-10, 0, 8], shoulderR: [-10, 0, -8] } },
+      { t: 0.5, joints: { chest: [2, 0, -3], shoulderL: [-10, 0, 8], shoulderR: [-10, 0, -8] } },
+      { t: 1.0, joints: { chest: [2, 0, 3], shoulderL: [-10, 0, 8], shoulderR: [-10, 0, -8] } },
+    ],
+  },
+};
+
+// Authored POSES that render cleanly on the upright GLB coach (no root tilt / both
+// feet near the floor). Floor, seated, prone and quadruped poses are intentionally
+// excluded and demonstrated via STAND_POSES analogs instead.
+const STANDING_OK = new Set([
+  'neck-rolls', 'shoulder-rolls', 'side-reach', 'hip-circles', 'arm-sweeps',
+  'squats', 'chair-pose', 'warrior2', 'tree-pose', 'goddess', 'forward-fold',
+]);
+
+// Choose the pose the coach performs for an exercise. Prefers the exact authored
+// choreography when it is upright-renderable, then keyword/tag-matches to an authored
+// standing pose, then to a standing analog, with a calm sway as the safe default.
+// Always returns an upright, GLB-renderable pose object (never a floor pose).
+export function poseForExercise(ex) {
+  if (!ex) return STAND_POSES['stand-sway'];
+  const id = ex.id || '';
+  if (STANDING_OK.has(id)) return POSES[id];
+  const hay = (id + ' ' + (ex.name || '')).toLowerCase();
+  const tags = ex.tags || [];
+  // keyword → authored standing pose
+  if (/squat/.test(hay)) return POSES['squats'];
+  if (/warrior/.test(hay)) return POSES['warrior2'];
+  if (/\bchair\b/.test(hay)) return POSES['chair-pose'];
+  if (/\btree\b/.test(hay)) return POSES['tree-pose'];
+  if (/goddess/.test(hay)) return POSES['goddess'];
+  if (/side.?(reach|bend|stretch)|triangle|\bgate\b|side.?body/.test(hay)) return POSES['side-reach'];
+  if (/shoulder.?roll/.test(hay)) return POSES['shoulder-rolls'];
+  if (/neck|head.?roll/.test(hay)) return POSES['neck-rolls'];
+  if (/hip.?(circle|open|sway)/.test(hay)) return POSES['hip-circles'];
+  if (/arm.?(sweep|circle|swing|raise)|halo|\bsweep\b|\bswim\b/.test(hay)) return POSES['arm-sweeps'];
+  if (/fold|hinge|hamstring|forward.?bend|rag.?doll|toe.?(touch|reach)/.test(hay)) return POSES['forward-fold'];
+  // keyword → standing analog
+  if (/twist|thread|rotat|spiral|wring/.test(hay)) return STAND_POSES['stand-twist'];
+  if (/march|knee.?(lift|raise|up)|cardio|\bjog\b|\bstep\b|bounce|jack|\bkick\b/.test(hay)) return STAND_POSES['stand-march'];
+  if (/breath|belly|\bbox\b|pelvic|calm|\brest\b|savasana|medita|settle|ground|center/.test(hay) || tags.includes('breath')) return STAND_POSES['stand-breath'];
+  if (/reach|overhead|sky|\bsun\b|salute|cactus|mountain|press/.test(hay)) return STAND_POSES['stand-reach'];
+  if (tags.includes('mobility') || tags.includes('stretch')) return STAND_POSES['stand-reach'];
+  if (tags.includes('cardio') || tags.includes('strength')) return STAND_POSES['stand-march'];
+  return STAND_POSES['stand-sway'];
+}
