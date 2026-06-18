@@ -198,6 +198,81 @@ export const EXTRA_EXERCISES2 = [
     ]
   },
   {
+    "id": "fish-face",
+    "name": "Fish Face",
+    "tags": ["face"],
+    "blocks": ["main"],
+    "sided": false,
+    "secs": 35,
+    "why": "Drawing the cheeks in to make a playful fish face gently works the muscles along the cheeks and lips. It is a light, toning move, and a little bit silly, which helps the whole face relax. Keep it soft and never strain.",
+    "cues": [
+      "Gently draw your cheeks in against your teeth",
+      "Let your lips press into a soft fish shape",
+      "Hold for a few easy seconds, breathing through your nose",
+      "Release into a soft smile and relax"
+    ]
+  },
+  {
+    "id": "under-eye-softener",
+    "name": "Under-Eye Softener",
+    "tags": ["face"],
+    "blocks": ["main"],
+    "sided": false,
+    "secs": 35,
+    "why": "A gentle way to ease the small muscles around the lower eyelids, which tire from screens and squinting. This is about relaxation and circulation, not erasing lines. Move lightly and stop if you feel any strain.",
+    "cues": [
+      "Rest two fingers lightly at the outer corners of your eyes",
+      "Make the softest squint, lifting the lower lids a touch",
+      "Hold for a breath, then release completely",
+      "Keep the touch feather-light — never pull the skin"
+    ]
+  },
+  {
+    "id": "brow-furrow-release",
+    "name": "Brow-Furrow Release",
+    "tags": ["face"],
+    "blocks": ["main"],
+    "sided": false,
+    "secs": 35,
+    "why": "Many of us frown without realising it, bunching the muscle between the brows. Gently smoothing it outward helps you notice and release that grip. Think relaxation, not anti-aging.",
+    "cues": [
+      "Place a fingertip from each hand between your brows",
+      "Slowly smooth outward toward each temple",
+      "Let the space between your brows go soft and wide",
+      "Breathe out and feel the frown melt away"
+    ]
+  },
+  {
+    "id": "cheek-puff-pass",
+    "name": "Cheek Puff & Pass",
+    "tags": ["face"],
+    "blocks": ["main"],
+    "sided": false,
+    "secs": 35,
+    "why": "Puffing a little air and passing it gently from cheek to cheek wakes up the muscles around the mouth and cheeks. Keep the puff soft and comfortable — there is no need to push hard.",
+    "cues": [
+      "Take a gentle breath and lightly puff your cheeks",
+      "Slowly pass the air from one cheek to the other",
+      "Keep your shoulders and jaw relaxed",
+      "Release the air softly and let the face rest"
+    ]
+  },
+  {
+    "id": "temple-soother",
+    "name": "Temple Soother",
+    "tags": ["face"],
+    "blocks": ["winddown"],
+    "sided": false,
+    "secs": 35,
+    "why": "A tight jaw and tension often show up at the temples. Slow, light circles there release that grip and feel calming — a soothing way to ease toward the end of your practice.",
+    "cues": [
+      "Rest two fingers gently on each temple",
+      "Make slow, light circles, barely moving the skin",
+      "Unclench your jaw and let your lips part",
+      "Breathe out slowly and feel the tension ease"
+    ]
+  },
+  {
     "id": "baby-cuddle-breath",
     "name": "Cuddle & Breathe",
     "tags": [
@@ -425,6 +500,21 @@ export const EXTRA_SPACE_FLAGS2 = {
   "face-tapping-finish": {
     "chairOk": true
   },
+  "fish-face": {
+    "chairOk": true
+  },
+  "under-eye-softener": {
+    "chairOk": true
+  },
+  "brow-furrow-release": {
+    "chairOk": true
+  },
+  "cheek-puff-pass": {
+    "chairOk": true
+  },
+  "temple-soother": {
+    "chairOk": true
+  },
   "baby-cuddle-breath": {
     "chairOk": true
   },
@@ -468,6 +558,11 @@ export const WORKOUT_CATEGORY2 = {
   "lions-breath": "face",
   "tongue-to-palate": "face",
   "face-tapping-finish": "face",
+  "fish-face": "face",
+  "under-eye-softener": "face",
+  "brow-furrow-release": "face",
+  "cheek-puff-pass": "face",
+  "temple-soother": "face",
   "baby-cuddle-breath": "baby",
   "baby-cuddle-squats": "baby",
   "baby-sway-lunges": "baby",
