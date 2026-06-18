@@ -77,5 +77,26 @@ export const DREAMS_BADGES = [
     "name": "Dream Scholar",
     "desc": "Every dream lesson, finished — the science, the history, and the honest limits of meaning. You can explore your nights with real understanding.",
     "icon": "<svg viewBox='0 0 48 48'><path d='M32 6a17 17 0 1 0 9 30A13 13 0 0 1 32 6z' fill='#8B7FE8' stroke='#4B3FB0' stroke-width='2.2' stroke-linejoin='round'/><path d='M16 20l3 3 6-7' fill='none' stroke='#FFE9A8' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/><circle cx='13' cy='12' r='1.8' fill='#FFE9A8'/></svg>"
+  },
+  {
+    "id": "drm-gamer",
+    "category": "dreams",
+    "name": "Dream Player",
+    "desc": "Your first dream game, won — playful practice with what the science actually shows.",
+    "icon": "<svg viewBox='0 0 48 48'><path d='M32 6a17 17 0 1 0 9 30A13 13 0 0 1 32 6z' fill='#8B7FE8' stroke='#4B3FB0' stroke-width='2.2' stroke-linejoin='round'/><path d='M19 18l9 6-9 6z' fill='#FFE9A8'/></svg>"
+  },
+  {
+    "id": "drm-sharp",
+    "category": "dreams",
+    "name": "Lucid Mind",
+    "desc": "Five dream games won. You can separate a good story from a tested fact.",
+    "icon": "<svg viewBox='0 0 48 48'><path d='M32 6a17 17 0 1 0 9 30A13 13 0 0 1 32 6z' fill='#8B7FE8' stroke='#4B3FB0' stroke-width='2.2' stroke-linejoin='round'/><path d='M24 16l-6 10h5l-3 7 8-11h-5z' fill='#FFE9A8'/></svg>"
+  },
+  {
+    "id": "drm-master",
+    "category": "dreams",
+    "name": "Dream Master",
+    "desc": "Every lesson done, the final exam passed, and a game won — the science, the history, and the honest limits, all in hand.",
+    "icon": "<svg viewBox='0 0 48 48'><path d='M32 6a17 17 0 1 0 9 30A13 13 0 0 1 32 6z' fill='#8B7FE8' stroke='#4B3FB0' stroke-width='2.2' stroke-linejoin='round'/><path d='M14 14l4 4 6-6 6 6 4-4-2 9H16z' fill='#FFE9A8'/></svg>"
   }
 ];

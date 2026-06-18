@@ -8,6 +8,8 @@
 
 import { makeDisclaimerSeg, makeLessonModule } from './lessons.shared.js';
 // Reading-level variants load lazily via ensureVariants() in lessons.shared.js.
+// Extension lessons (expansion to 36) are authored separately and merged below.
+import { EXTRA_LESSONS_DREAMS, EXTRA_CURRICULUM_DREAMS } from './lessons.dreams.ext.js';
 
 export const DREAMS_DISCLAIMER = "This section blends the science of sleep and dreaming with the cultural history of dream interpretation. It is educational only — not medical or psychological advice, and not a substitute for professional care. Popular dream-symbol meanings are not scientifically validated, though reflecting on your dreams can still be a meaningful personal practice. If distressing dreams persist, please reach out to a qualified professional.";
 
@@ -270,6 +272,11 @@ const LESSONS = {
 
 // Curriculum order for the duration-scaled session (welcome is the intro).
 const CURRICULUM = ["dreams-overview", "the-science-of-sleep-and-dreams", "why-we-dream-theories", "common-dreams-and-their-claims", "history-of-dream-interpretation", "what-science-says-about-meaning", "nightmares-and-when-to-seek-help", "dream-journaling-for-reflection", "lucid-dreaming-evidence", "dreams-sleep-and-wellbeing"];
+
+// Merge the extension lessons (10 -> 36). Must run BEFORE makeLessonModule, which
+// reads LESSONS + CURRICULUM at build time.
+Object.assign(LESSONS, EXTRA_LESSONS_DREAMS);
+CURRICULUM.push(...EXTRA_CURRICULUM_DREAMS);
 
 const mod = makeLessonModule({
   LESSONS, CURRICULUM,
