@@ -92,7 +92,7 @@ export const MEMORY_BADGES = [
     "id": "mem-master",
     "category": "memory",
     "name": "Memory Master",
-    "desc": "All lessons done, a perfect quiz, and a game won. You have a genuine, evidence-based toolkit — and the practice to match.",
+    "desc": "All lessons done, the final exam passed, and a game won. You have a genuine, evidence-based toolkit — and the practice to match.",
     "icon": "<svg viewBox='0 0 48 48'><path d='M14 10h20v6a10 10 0 0 1-20 0z' fill='#D77FB6' stroke='#B5478B' stroke-width='2'/><path d='M14 12H9a5 5 0 0 0 5 6M34 12h5a5 5 0 0 1-5 6' fill='none' stroke='#B5478B' stroke-width='2'/><rect x='21' y='26' width='6' height='7' fill='#B5478B'/><rect x='15' y='33' width='18' height='5' rx='2' fill='#B5478B'/><path d='M20 13a4 4 0 0 1 8 0c0 1.6-1 2.2-1.6 2.8h-4.8C21 15.2 20 14.6 20 13z' fill='#FBE9A0'/></svg>"
   }
 ];

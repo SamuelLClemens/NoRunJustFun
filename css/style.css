@@ -109,6 +109,21 @@ html[data-theme="dark"] .duration-btn:hover { background: #B3C47B; }
 html[data-theme="dark"] .quiz-opt.wrong,
 html[data-theme="dark"] .sort-bucket.wrong,
 html[data-theme="dark"] .order-pick.wrong { background: #3A2620; }
+/* Surfaces that hardcode white in light mode would render near-white text on white in dark
+   mode — remap them to the themed card colour so cards, inputs and chips stay legible. */
+html[data-theme="dark"] .you-subject,
+html[data-theme="dark"] .you-weight-form input,
+html[data-theme="dark"] .you-weight-form select,
+html[data-theme="dark"] .you-bday-form input,
+html[data-theme="dark"] .you-name-form input,
+html[data-theme="dark"] .you-meal-form input,
+html[data-theme="dark"] .journal-compose,
+html[data-theme="dark"] .journal-entry,
+html[data-theme="dark"] .cycle-field input,
+html[data-theme="dark"] .cal-cell,
+html[data-theme="dark"] .intim-desire-btn,
+html[data-theme="dark"] .intim-pick-btn,
+html[data-theme="dark"] .intim-sym-chip { background: var(--card); color: var(--ink); }
 
 /* moon/sun theme toggle in the top nav */
 .theme-toggle {
@@ -134,6 +149,7 @@ html[data-theme="dark"] .order-pick.wrong { background: #3A2620; }
   transition: color var(--dur-2) var(--ease-settle), background-color var(--dur-2) var(--ease-settle);
 }
 .tabbar a .tab-ic { font-size: 1.25rem; line-height: 1; }
+.tabbar a .tab-ic .tab-veronica { width: 1.3em; height: 1.3em; display: block; }
 .tabbar a.active { color: var(--green-700); background: var(--green-100); }
 .tabbar[hidden] { display: none; }
 .has-tabbar #app { padding-bottom: calc(78px + env(safe-area-inset-bottom)); }
@@ -285,6 +301,11 @@ button {
 .is-collapsed > :nth-child(n+2) { display: none; }
 .collapsible-head:focus-visible { outline: 2px solid var(--green-600, #3E8E4F); outline-offset: 3px; border-radius: 4px; }
 @media (prefers-reduced-motion: reduce) { .collapsible-head::after { transition: none; } }
+
+/* Per-section count chip ("how many there are") shown after a section title. */
+.you-count { display: inline-block; min-width: 1.5em; padding: 0 0.45em; margin-left: 6px; border-radius: 999px;
+  background: var(--green-100, #E3EFE0); color: var(--green-700, #2E6B3D); font-size: 0.66em; font-weight: 800;
+  line-height: 1.7; text-align: center; vertical-align: middle; }
 
 .btn {
   border: 0; border-radius: var(--radius-pill); padding: var(--sp-3) var(--sp-5);

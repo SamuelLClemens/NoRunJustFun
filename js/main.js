@@ -82,7 +82,7 @@ const TABS = [
   { hash: '#body', label: 'Body', ic: '🤸' },
   { hash: '#mind', label: 'Mind', ic: '🧠' },
   { hash: '#soul', label: 'Soul', ic: '🍃' },
-  { hash: '#you',  label: 'You',  ic: '🌼' },
+  { hash: '#you',  label: 'You',  ic: '<svg class="tab-veronica" viewBox="-16 -16 32 32" aria-hidden="true"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></svg>' },
 ];
 let _tabbarEl = null;
 function buildTabbar() {
@@ -110,28 +110,15 @@ function updateTabbar() {
   _tabbarEl.querySelectorAll('a').forEach((a) => a.classList.toggle('active', a.dataset.tab === active));
 }
 
-// Logo lockup — "Gardenoosh" with the brand veronica flowers growing on green stems
-// out of the letters, plus a couple of leaf sprouts (no exclamation mark).
+// Logo lockup — the wordmark "Gardenoosh" with a single brand veronica flower blooming at
+// the top of the 'd' and 'h' ascenders, so each ascender reads as the flower's stem.
 // Keep in sync with the static copy in index.html (.hello-logo).
 function logoSVG() {
   return `<svg class="logo-svg" viewBox="0 0 432 104" role="img" aria-label="Gardenoosh" xmlns="http://www.w3.org/2000/svg">
     <title>Gardenoosh</title>
-    <g fill="none" stroke="var(--green-600, #3E8E4F)" stroke-width="4.5" stroke-linecap="round">
-      <path d="M150 46 C146 32 152 22 156 14"/>
-      <path d="M292 46 C288 30 296 20 300 12"/>
-      <path d="M396 44 C392 30 400 20 404 13"/>
-    </g>
-    <g fill="var(--green-500, #5BA869)">
-      <ellipse cx="142" cy="32" rx="8" ry="4" transform="rotate(-32 142 32)"/>
-      <ellipse cx="304" cy="30" rx="8" ry="4" transform="rotate(30 304 30)"/>
-      <ellipse cx="388" cy="32" rx="7.5" ry="3.8" transform="rotate(-30 388 32)"/>
-      <path d="M92 90 q-11 -5 -17 -15 q12 -3 17 7 z"/>
-      <path d="M250 90 q11 -5 17 -15 q-12 -3 -17 7 z"/>
-    </g>
     <text x="14" y="88" font-family="Fredoka, 'Avenir Next Rounded', system-ui, sans-serif" font-weight="600" font-size="66" fill="var(--ink, #1F4D2E)" textLength="404" lengthAdjust="spacingAndGlyphs">Gardenoosh</text>
-    <g transform="translate(156 12) scale(0.5)"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></g>
-    <g transform="translate(300 10) scale(0.56)"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></g>
-    <g transform="translate(404 11) scale(0.48)"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></g>
+    <g transform="translate(165 44) scale(0.46)"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></g>
+    <g transform="translate(388 44) scale(0.46)"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></g>
   </svg>`;
 }
 
@@ -179,7 +166,12 @@ function homeScreen() {
         ${grace}
         <p class="garden-caption">${p.sessions.length === 0
           ? `Hi${name ? ' ' + esc(name) : ''}! Every session you finish grows this garden. Consistency makes it bloom — never intensity.`
-          : `${p.sessions.length} session${p.sessions.length === 1 ? '' : 's'} grown so far. Keep watering.`}</p>
+          : (() => {
+              const next = GARDEN_STAGE_SESSIONS.find((n) => n > p.sessions.length);
+              const toNext = next != null ? next - p.sessions.length : null;
+              const grown = `${p.sessions.length} session${p.sessions.length === 1 ? '' : 's'} grown so far.`;
+              return toNext ? `${grown} <strong>${toNext}</strong> more to your garden's next bloom.` : `${grown} Your garden is in full bloom. 🌼`;
+            })()}</p>
       </section>
 
       <section class="level-card" aria-label="Your level">
@@ -241,7 +233,7 @@ function bodyScreen() {
     { go: '#move-yoga', ic: '🧘', title: 'Yoga', blurb: 'Mindful, breath-linked poses and simple flows' },
     { go: '#move-exercise', ic: '💪', title: 'Exercises', blurb: 'Build strength and gentle cardio — choose your intensity' },
     { go: '#move-face', ic: '😌', title: 'Face yoga', blurb: 'Gentle facial release and relaxation — sit anywhere' },
-    { go: '#move-baby', ic: '🍼', title: 'With your baby', blurb: 'Gentle movement you can do holding your little one' },
+    { go: '#move-baby', ic: '🍼', title: 'With your baby', blurb: 'Gentle movement holding your little one — for babies 6 months and above' },
     { go: '#move-sexercise', ic: '🔥', title: 'Sexercise', blurb: 'Playful strength, stamina and mobility for a more active, joyful intimate life' },
   ];
   app.innerHTML = `
@@ -267,8 +259,8 @@ const MOVE_META = {
   yoga: { label: 'Yoga', note: 'breath-linked poses and flow' },
   exercise: { label: 'Exercises', note: 'strength and gentle cardio' },
   face: { label: 'Face yoga', note: 'gentle facial release and relaxation' },
-  baby: { label: 'With your baby', note: 'gentle movement holding your baby',
-    safety: 'Always support the head and neck, hold your baby securely, and never bounce. Begin only once your doctor has cleared you after birth, and stop if your baby is unsettled.' },
+  baby: { label: 'With your baby', note: 'gentle movement holding your baby — for babies 6 months and above',
+    safety: 'For babies 6 months and above. Always support the head and neck, hold your baby securely, and never bounce. Begin only once your doctor has cleared you after birth, and stop if your baby is unsettled.' },
   sexercise: { label: 'Sexercise', note: 'playful strength, stamina and mobility for a more active, joyful intimate life',
     safety: 'For consenting adults. This is gentle fitness — strength, stamina, hip mobility and pelvic-floor work — not medical or explicit sex advice. Move within your comfort, communicate with any partner, keep everything consensual, and stop if anything hurts.' },
 };
@@ -722,6 +714,8 @@ function sessionScreen(plan) {
   coach.enabled = profile.voiceOn;
   coach.voiceURI = profile.voiceURI;
   coach.naturalOn = profile.naturalOn;
+  coach.voiceVol = profile.voiceVol;                 // spoken-coach volume (system voice path)
+  try { naturalVoice.setVolume(profile.voiceVol); } catch { /* ok */ }
   if (profile.naturalOn && naturalVoice.state === 'off') naturalVoice.enable(); // warms up in the background; system voice covers until ready
   sound.sfxOn = profile.sfxOn;
   sound.setVolume(profile.sfxVol);
@@ -1077,7 +1071,7 @@ async function mountGardenCoach(slotEl, nameEl) {
 
 // Shared celebration card: a garden stage (Ginuana + greenery), a headline, affirmations,
 // and layered confetti. Used by both the birthday and the anniversary parties.
-function celebrationParty({ cls, ariaLabel, emoji, headingHTML, lead, okLabel }) {
+function celebrationParty({ cls, ariaLabel, emoji, headingHTML, lead, okLabel, song }) {
   if (document.querySelector('.overlay.party')) return false;   // a celebration is already on screen
   const ov = document.createElement('div');
   ov.className = 'overlay party ' + cls;
@@ -1129,7 +1123,7 @@ function celebrationParty({ cls, ariaLabel, emoji, headingHTML, lead, okLabel })
   celebrate(3600);
   setTimeout(() => celebrate(2800), 500);
   setTimeout(() => celebrate(2200), 1100);
-  try { sound.sparkle(); } catch { /* sfx optional */ }
+  try { if (song) sound.birthdaySong(); else sound.sparkle(); } catch { /* sfx optional */ }
   return true;
 }
 
@@ -1146,7 +1140,7 @@ function maybeBirthdayParty() {
   const name = store.profile.name;
   const age = ageFromBirthday(b);
   const shown = celebrationParty({
-    cls: 'birthday', ariaLabel: 'Birthday celebration', emoji: '🎂🎉',
+    cls: 'birthday', ariaLabel: 'Birthday celebration', emoji: '🎂🎉', song: true,
     headingHTML: `Happy birthday${name ? ', ' + esc(name) : ''}!`,
     lead: age != null ? `${age} years of you — and the world is better for it.` : 'Today is all about you.',
     okLabel: 'Thank you 💛',
@@ -1197,11 +1191,13 @@ function youScreen() {
     const t = p.learning[id] || {};
     const total = tk.lessons.LESSON_LIBRARY.length;
     const done = new Set((t.lessons || []).filter((l) => l && !l.game && !l.quiz).map((l) => l.id)).size;
+    const cqMap = t.conceptQuiz || {};
+    const quizzesPassed = tk.lessons.LESSON_LIBRARY.filter((L) => (cqMap[L.id] || 0) >= 60).length;
     return `<button class="you-subject" data-go="#learn-${id}">
       <span class="you-subj-ic" aria-hidden="true">${tk.theme.lessonIcon}</span>
       <span class="you-subj-body">
         <span class="you-subj-head"><strong>${esc(tk.homeLabel)}</strong>${t.completedAt ? `<span class="fin-done-tag">✓ ${esc(fmtDateL(t.completedAt))}</span>` : ''}</span>
-        <span class="you-subj-stats">${done}/${total} lessons · ${t.gamesWon || 0} game win${(t.gamesWon || 0) === 1 ? '' : 's'} · quiz ${t.quizBest || 0}%</span>
+        <span class="you-subj-stats">${done}/${total} lessons · ${quizzesPassed}/${total} quizzes passed · exam ${t.quizBest || 0}%</span>
       </span>
     </button>`;
   }).join('');
@@ -1225,13 +1221,17 @@ function youScreen() {
     : '<p class="hint">Finish a lesson, game, or quiz and it will show up here.</p>';
 
   const recentWeights = weights.slice(-6).reverse();
-  const recentMeals = listMeals().slice(0, 8).map((m) => ({
+  const allMeals = listMeals();
+  const recentMeals = allMeals.slice(0, 8).map((m) => ({
     id: m.id, note: m.note,
     stamp: (() => { try { return new Date(m.ts).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); } catch { return m.ts; } })(),
   }));
+  // Section counts — "how many there are" in each section (a small chip after the title).
+  const journalCount = (Array.isArray(p.journal) ? p.journal : []).length;
+  const cnt = (n) => `<span class="you-count" aria-hidden="true">${n}</span>`;
 
   app.innerHTML = `
-    <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">You</h1></header>
+    <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">${name ? esc(name) + '’s garden' : 'You'}</h1></header>
     <main class="narrow you-screen">
       <section class="card center">
         <div class="garden-svg small">${gardenSVG(stage)}</div>
@@ -1253,23 +1253,28 @@ function youScreen() {
       </section>
 
       <section class="card">
-        <h2>Your rhythm</h2>
-        ${usageGraphsHTML(p)}
-      </section>
-
-      <section class="card">
-        <h2>Your journal</h2>
+        <h2>Your journal ${cnt(journalCount)}</h2>
         <p class="hint">A private place to write or speak your thoughts — kept as a book you can read, or hear read back in your coach's voice.</p>
         <a class="btn btn-primary you-journal-open" href="#journal">Open your journal</a>
       </section>
 
-      <section class="card">
-        <h2>Your subjects</h2>
-        <div class="you-subjects">${subjectCards}</div>
+      <section class="card" data-intimacy>
+        <h2>Personal calendar</h2>
+        ${intimacyCardHTML()}
       </section>
 
       <section class="card">
-        <h2>Weight tracker</h2>
+        <h2>Meals ${cnt(allMeals.length)}</h2>
+        <p class="hint">A gentle place to note what you ate, if it helps you notice patterns. No calories, no targets, no scores — just your own notes, on this device.</p>
+        <div class="you-meal-form">
+          <input type="text" id="you-meal-input" maxlength="200" placeholder="e.g. oatmeal and berries" aria-label="Meal note">
+          <button class="btn btn-primary" id="you-meal-save">Add</button>
+        </div>
+        ${recentMeals.length ? `<ul class="you-log you-meal-list">${recentMeals.map((m) => `<li><span class="you-log-what">${esc(m.note)}</span><span class="you-log-date">${esc(m.stamp)}</span> <button class="linkish you-meal-del" data-id="${esc(m.id)}" aria-label="Delete meal note">✕</button></li>`).join('')}</ul>` : '<p class="hint">No notes yet.</p>'}
+      </section>
+
+      <section class="card">
+        <h2>Weight ${cnt(weights.length)}</h2>
         <p class="hint">Private to this device. No goal here — just your own trend over time, if you want it.</p>
         ${lastW ? `<p class="you-weight-now">Latest: <strong>${esc(String(lastW.value))} ${unit}</strong> <span class="you-log-date">${esc(lastW.date)}</span></p>` : ''}
         ${weightSpark(weights)}
@@ -1282,33 +1287,28 @@ function youScreen() {
       </section>
 
       <section class="card">
-        <h2>Meals</h2>
-        <p class="hint">A gentle place to note what you ate, if it helps you notice patterns. No calories, no targets, no scores — just your own notes, on this device.</p>
-        <div class="you-meal-form">
-          <input type="text" id="you-meal-input" maxlength="200" placeholder="e.g. oatmeal and berries" aria-label="Meal note">
-          <button class="btn btn-primary" id="you-meal-save">Add</button>
-        </div>
-        ${recentMeals.length ? `<ul class="you-log you-meal-list">${recentMeals.map((m) => `<li><span class="you-log-what">${esc(m.note)}</span><span class="you-log-date">${esc(m.stamp)}</span> <button class="linkish you-meal-del" data-id="${esc(m.id)}" aria-label="Delete meal note">✕</button></li>`).join('')}</ul>` : '<p class="hint">No notes yet.</p>'}
+        <h2>Your rhythm</h2>
+        ${usageGraphsHTML(p)}
       </section>
 
-      <section class="card" data-intimacy>
-        <h2>Personal calendar</h2>
-        ${intimacyCardHTML()}
+      <section class="card">
+        <h2>Your subjects ${cnt(subjectCards ? TRACK_LIST.length : 0)}</h2>
+        <div class="you-subjects">${subjectCards}</div>
+      </section>
+
+      <section class="card">
+        <h2>Recent activity ${cnt(entries.length)}</h2>
+        ${logHTML}
       </section>
 
       <section class="card">
         <h2>Birthday</h2>
-        <p class="hint">Set it and we will throw you a little party on the day. It stays on this device.</p>
+        <p class="hint">Set it and we will throw you a little party on the day, with a birthday song. It stays on this device.</p>
         <div class="you-bday-form">
           <input type="date" id="you-bday-input" value="${esc(prof.birthday || '')}" aria-label="Your birthday">
           <button class="btn" id="you-bday-save">Save</button>
         </div>
         ${prof.birthday ? `<p class="hint">${daysToBirthday(prof.birthday) === 0 ? '🎉 It is your birthday today!' : 'Next birthday in <strong>' + daysToBirthday(prof.birthday) + '</strong> day' + (daysToBirthday(prof.birthday) === 1 ? '' : 's') + '.'}</p>` : ''}
-      </section>
-
-      <section class="card">
-        <h2>Recent activity</h2>
-        ${logHTML}
       </section>
 
       <footer class="privacy-note"><p>🌱 <strong>Private by design.</strong> Everything here — including your weight and birthday — lives only on this device and never leaves it.</p></footer>
@@ -1442,8 +1442,8 @@ function settingsScreen() {
       </section>
 
       <section class="card">
-        <strong>Lifelike voice <span class="beta-chip">beta</span></strong>
-        <p class="hint">Each coach gets their own warm, human-sounding voice that runs entirely on this device. It is on by default: on capable devices the voice model downloads once (about 90 MB) in the background — nothing about you is ever sent anywhere. Data Saver, a slow connection, or a slower device keeps the regular on-device voice instead. Turn it off here any time.</p>
+        <strong>Lifelike voice</strong>
+        <p class="hint">Each coach has their own warm, human-sounding voice that runs entirely on this device, on by default. On capable devices the voice model downloads once (about 90 MB) in the background — nothing about you is ever sent anywhere. Data Saver, a slow connection, or a slower device keeps the regular on-device voice instead. You can turn it off here any time.</p>
         <label class="toggle"><input type="checkbox" id="set-natural" ${(p.naturalOn || p.voicePref === 'on') ? 'checked' : ''}> Use the lifelike voice</label>
         <div class="nv-progress" id="nv-progress" hidden>
           <div class="nv-track"><div class="nv-bar" id="nv-bar"></div></div>
@@ -1471,6 +1471,8 @@ function settingsScreen() {
 
       <section class="card">
         <strong>Sound</strong>
+        <label for="set-voicevol" class="vol-label">Voice volume <small>(your coach)</small></label>
+        <input type="range" id="set-voicevol" min="0" max="1" step="0.05" value="${p.voiceVol == null ? 0.95 : p.voiceVol}" aria-label="Voice volume">
         <label class="toggle"><input type="checkbox" id="set-sfx" ${p.sfxOn ? 'checked' : ''}> Gentle chimes</label>
         <label for="set-chimevol" class="vol-label">Chime volume</label>
         <input type="range" id="set-chimevol" min="0" max="1" step="0.05" value="${p.sfxVol}" aria-label="Chime volume">
@@ -1537,7 +1539,7 @@ function settingsScreen() {
     } else if (state === 'ready') {
       nvWrap.hidden = false;
       nvBar.style.width = '100%';
-      nvStatus.textContent = 'Natural voice ready. Tap "Hear it" above to try her out.';
+      nvStatus.textContent = 'Natural voice ready. Tap "Hear it" above to hear your coach.';
     } else if (state === 'slow') {
       nvWrap.hidden = false;
       nvBar.style.width = '100%';
@@ -1593,6 +1595,13 @@ function settingsScreen() {
     sound.setVolume(p.sfxVol); save();
     if (p.sfxOn) { sound.unlock(); sound.chime(); }   // preview the new level
   });
+  const voiceVolEl = document.getElementById('set-voicevol');
+  if (voiceVolEl) voiceVolEl.addEventListener('input', (e) => {
+    p.voiceVol = parseFloat(e.target.value);
+    coach.voiceVol = p.voiceVol;
+    try { naturalVoice.setVolume(p.voiceVol); } catch { /* ok */ }
+    save();
+  });
   document.getElementById('set-music').addEventListener('change', (e) => {
     p.musicOn = e.target.checked; save();
     if (p.musicOn) { sound.unlock(); music.volume = p.musicVol; music.start(); }
@@ -1634,7 +1643,7 @@ async function ensureRealisticClass() {
     // ?v bust: bump on every realistic-avatar.js change so browsers fetch the new
     // module instead of a cached copy (the SW matches with ignoreSearch, so the
     // precached file still serves offline regardless of the query).
-    const mod = await import('./realistic-avatar.js?v=rig14');
+    const mod = await import('./realistic-avatar.js?v=rig15');
     RealisticAvatar = mod.RealisticAvatar;
     realisticHelpers = mod;
   }
@@ -1704,6 +1713,7 @@ function makeSectionsCollapsible() {
     if (!card || card.children.length < 2) return;  // nothing to hide beneath the title
     h.dataset.collapsible = '1';
     h.setAttribute('role', 'button');
+    h.setAttribute('aria-level', h.tagName === 'H3' ? '3' : '2');  // keep heading semantics under role=button
     h.setAttribute('tabindex', '0');
     h.setAttribute('aria-expanded', 'true');
     h.classList.add('collapsible-head');
@@ -1859,6 +1869,7 @@ function maybeAutoEnableNaturalVoice() {
 
 // apply the saved chime volume + theme globally, before first paint
 sound.setVolume(store.profile.sfxVol);
+try { naturalVoice.setVolume(store.profile.voiceVol); } catch { /* ok */ }
 applyThemePref();
 buildTabbar();
 
