@@ -373,13 +373,14 @@ export class RealisticAvatar {
           for (const m of mats) {
             if (!m) continue;
             if (hairProper) {
-              // hair: opaque cutout (no transparency sort → no flicker) but a LOW threshold so
-              // the soft scalp/hairline strands are kept, not cut away (the bald look at 0.2).
-              m.alphaTest = 0.05; m.transparent = false; m.depthWrite = true;
+              // hair: opaque cutout (no transparency sort → no flicker). 0.1 keeps the scalp/
+              // hairline covered (bald at 0.2) while trimming the ragged faint fringe that a
+              // very low threshold (0.05) leaves around the temple.
+              m.alphaTest = 0.1; m.transparent = false; m.depthWrite = true;
             } else if (lashBrow) {
               // lashes/brows: crisp cutout AND single-sided, so the card back-faces do not
               // splay out around the eyes as dark "wings".
-              m.alphaTest = 0.4; m.transparent = false; m.depthWrite = true; m.side = THREE.FrontSide;
+              m.alphaTest = 0.5; m.transparent = false; m.depthWrite = true; m.side = THREE.FrontSide;
             } else if (isCloth) {
               // clothing: fully opaque + a polygon-offset bias toward the camera so it wins the
               // depth tie against coincident skin even under motion. Keep the exported DoubleSide
@@ -832,7 +833,10 @@ export class RealisticAvatar {
     // driving the (blended) move pose; only once it has fully eased to rest do we hand the
     // body back to the idle gesture layer.
     const blendTarget = moving ? 1 : 0;
-    this._poseBlend += (blendTarget - this._poseBlend) * Math.min(1, dt * 7);
+    // Ease the cross-fade for normal users; under prefers-reduced-motion snap straight to the
+    // target so we add no decorative animation (the pose itself is held statically below).
+    if (this._breathe) this._poseBlend += (blendTarget - this._poseBlend) * Math.min(1, dt * 7);
+    else this._poseBlend = blendTarget;
     if (moving && this._poseBlend > 0.999) this._poseBlend = 1;
     if (!moving && this._poseBlend < 0.002) this._poseBlend = 0;
     if (moving || this._poseBlend > 0) {
