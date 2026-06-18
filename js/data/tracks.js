@@ -82,14 +82,8 @@ const moneyCoin = `<svg viewBox="0 0 40 40" width="26" height="26" aria-hidden="
 
 // The coach "puts on reading glasses" to mark the shift into a finance lesson — a 2D
 // overlay injected onto the .stage by main.js's startLessonFor (criterion 3).
-const glassesProp = `<div class="fin-glasses" aria-hidden="true"><svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
-  <g fill="rgba(123,143,232,0.20)" stroke="#2E3A8C" stroke-width="6" stroke-linecap="round">
-    <rect x="10" y="20" width="74" height="48" rx="22"/>
-    <rect x="116" y="20" width="74" height="48" rx="22"/>
-    <path d="M84 36 q16 -9 32 0" fill="none"/>
-    <path d="M10 30 L1 21" fill="none"/>
-    <path d="M190 30 L199 21" fill="none"/>
-  </g></svg></div>`;
+// (The flat finance glasses overlay was removed — the realistic coach wears real 3D glasses
+// while teaching now, so a 2D prop would double up. See RealisticAvatar.setGlasses.)
 
 // Parenting assets — a warm coral bloom + heart, and a storybook the coach opens.
 function parentingBloom(cls = 'veronica') {
@@ -173,8 +167,8 @@ export const TRACKS = {
       buildLessonById: moneyBuildById,
       buildLessonSession: moneyBuildSession,
     },
-    // instructor cue — the prop the coach "puts on" a beat after arriving
-    prop: { className: 'fin-glasses', svg: glassesProp, onClass: 'glasses-on', delayMs: 450 },
+    // No 2D glasses overlay: the realistic coach now puts on actual 3D glasses while teaching
+    // (see RealisticAvatar.setGlasses / sessionScreen), so the flat prop would double up.
     coachCue: 'puts on their reading glasses',
     // visual identity (money reuses the shipped --finance-* token family)
     theme: { token: 'finance', flowerSVG: veronicaSVG, lessonIcon: moneyCoin, badgeEmoji: '🌸' },
