@@ -19,6 +19,10 @@ import { streakInfo, checkBadges, gardenStage } from './gamify.js';
 import { GARDEN_STAGE_SESSIONS } from './data/garden.js';
 import { getTrack } from './data/tracks.js';
 
+// Pass mark for the per-concept quizzes AND the per-subject final exam: 60% or above.
+export const QUIZ_PASS = 60;
+export const EXAM_PASS = 60;
+
 const blankTrack = () => ({ lessons: [], lessonsCompleted: 0, gamesWon: 0, quizBest: 0, completedAt: null });
 
 // Defensive backfill (mirrors the old ensureFinance). state.js defaults()/migrate()
@@ -194,10 +198,10 @@ export function recordQuiz(store, trackId, { score = 0, total = 0 } = {}) {
   const pct = total > 0 ? Math.round((score / total) * 100) : 0;
   const best = Math.max(t.quizBest || 0, pct);
   t.quizBest = best;
-  const justCompleted = pct >= 100 && !t.completedAt;
+  const justCompleted = pct >= EXAM_PASS && !t.completedAt;   // pass the final exam at 60%+
   if (justCompleted) t.completedAt = new Date().toISOString();
   // ledger entry (quiz:true keeps it out of the topic-badge "done" set and lessonsCompleted)
-  t.lessons.push({ id: trackId + '-quiz', date: todayKey(), quiz: true, score: pct });
+  t.lessons.push({ id: trackId + '-exam', date: todayKey(), quiz: true, score: pct });
 
   const stageBefore = gardenStage(store.progress.sessions.length, GARDEN_STAGE_SESSIONS);
   store.progress.sessions.push({

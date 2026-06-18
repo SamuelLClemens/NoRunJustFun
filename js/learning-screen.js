@@ -8,7 +8,7 @@
 
 import { store, save } from './state.js';
 import { naturalVoice } from './natural-voice.js';
-import { finishLearning, trackStreak, recordQuiz, recordConceptQuiz } from './learning.js';
+import { finishLearning, trackStreak, recordQuiz, recordConceptQuiz, QUIZ_PASS, EXAM_PASS } from './learning.js';
 import { gardenStage } from './gamify.js';
 import { gardenSVG, GARDEN_STAGE_SESSIONS } from './data/garden.js';
 import { BADGES } from './data/badges.js';
@@ -82,24 +82,27 @@ export function trackHubScreen(trackId) {
     </button>`).join('') : '';
 
   const tk = store.progress.learning[trackId] || {};
-  const quizBest = tk.quizBest || 0;
+  const examBest = tk.quizBest || 0;
   const completedAt = tk.completedAt || null;
-  const quizHTML = track.quiz ? `
+  const quizHTML = `
       <section class="card fin-quiz${completedAt ? ' is-complete' : ''}">
-        <h2>${completedAt ? '✓ Subject completed' : 'Test your understanding'}</h2>
+        <h2>${completedAt ? '✓ Subject completed' : 'Final exam'}</h2>
         <p class="hint">${completedAt
-          ? 'You completed ' + label + ' by scoring 100% on the quiz. Review or retake it anytime.'
-          : 'A short quiz across the lessons. Score 100% to mark this subject completed.'}</p>
-        <p class="fin-quiz-status">${quizBest > 0 ? 'Best score: <strong>' + quizBest + '%</strong>' : 'Not attempted yet.'}${completedAt ? ' · <span class="fin-done-tag">✓ Completed ' + esc(fmtDate(completedAt)) + '</span>' : ''}</p>
-        <button class="btn btn-primary" id="fin-quiz-btn">${completedAt ? 'Retake the quiz' : 'Take the quiz'}</button>
-      </section>` : '';
+          ? 'You passed the ' + label + ' final exam. Review or retake it anytime.'
+          : 'A longer test across every lesson in this subject. Score ' + EXAM_PASS + '% or above to pass and complete the subject.'}</p>
+        <p class="fin-quiz-status">${examBest > 0 ? 'Best score: <strong>' + examBest + '%</strong>' : 'Not attempted yet.'}${completedAt ? ' · <span class="fin-done-tag">✓ Completed ' + esc(fmtDate(completedAt)) + '</span>' : ''}</p>
+        <button class="btn btn-primary" id="fin-quiz-btn">${completedAt ? 'Retake the final exam' : 'Take the final exam'}</button>
+      </section>`;
 
-  // Per-concept quizzes — one short quiz per lesson, with a ✓ once it has been aced.
+  // Per-concept quizzes — one short quiz per lesson, passed at 60%+ (✓ at 100%).
   const cq = tk.conceptQuiz || {};
+  const cqTotal = track.lessons.LESSON_LIBRARY.length;
+  const cqPassed = track.lessons.LESSON_LIBRARY.filter((L) => (cq[L.id] || 0) >= QUIZ_PASS).length;
   const conceptQuizCards = track.lessons.LESSON_LIBRARY.map((L) => {
     const best = cq[L.id] || 0;
     const meta = best >= 100 ? '<span class="fin-done-tag">✓ 100%</span>'
-      : (best > 0 ? '<span class="fin-mins">best ' + best + '%</span>' : '<span class="fin-mins">Quiz →</span>');
+      : (best >= QUIZ_PASS ? '<span class="fin-done-tag">✓ ' + best + '%</span>'
+      : (best > 0 ? '<span class="fin-mins">best ' + best + '%</span>' : '<span class="fin-mins">Quiz →</span>'));
     return `<button class="fin-lib-btn" data-cquiz="${esc(L.id)}">
       <span class="fin-lib-ic" aria-hidden="true">📝</span>
       <span class="fin-lib-txt"><strong>${esc(L.title)}</strong><small>Quiz the key ideas of this lesson</small></span>
@@ -110,7 +113,7 @@ export function trackHubScreen(trackId) {
       <section class="card">
         <details class="fin-lib-details">
           <summary class="fin-lib-summary">
-            <span class="fin-lib-summary-txt"><strong>Quiz each concept</strong><small>A short quiz for every lesson — test one idea at a time, not just the whole subject.</small></span>
+            <span class="fin-lib-summary-txt"><strong>Quiz each concept</strong><small><strong>${cqPassed}/${cqTotal} quizzes passed</strong> · one short quiz per lesson, pass at ${QUIZ_PASS}%.</small></span>
             <span class="fin-lib-chevron" aria-hidden="true">▾</span>
           </summary>
           <div class="fin-lib" id="fin-cquiz">${conceptQuizCards}</div>
@@ -342,44 +345,81 @@ function gameDone(trackId, game, result) {
 
 // ---------------------------------------------------------------- quiz
 
-// The per-subject completion quiz. Reuses the quiz game engine, but on finish it
-// records the score: the best % is tracked, and the FIRST 100% stamps completedAt
-// (the subject is "completed" — reviewable and retakeable, but the date sticks).
+// Build the per-subject FINAL EXAM — one longer test across the WHOLE subject. It is
+// grounded the same way as the concept quizzes (each question's correct answer is a real
+// lesson takeaway; distractors come from other lessons), with one question per lesson,
+// PLUS any hand-authored subject-quiz questions for extra depth. Capped so it stays a
+// focused exam, but it is always longer than a single per-concept quiz. Works for every
+// subject, including Crystals and Dreams (which carry no authored quiz).
+function allLessonTakeaways(track) {
+  const out = [];
+  for (const L of track.lessons.LESSON_LIBRARY) {
+    const pts = lessonTakeaways(track, L.id);
+    if (pts.length) out.push({ title: L.title, points: pts });
+  }
+  return out;
+}
+function buildFinalExam(track) {
+  const entries = allLessonTakeaways(track);
+  if (!entries.length) return track.quiz || null;
+  const allPoints = entries.flatMap((e) => e.points);
+  const grounded = [];
+  for (const e of entries) {
+    const distractors = pickDistinct(allPoints, 3, e.points);
+    if (distractors.length < 2) continue;
+    grounded.push({
+      prompt: 'Which idea does “' + e.title + '” teach?',
+      options: [{ text: e.points[0], correct: true, feedback: 'Correct — a key idea from “' + e.title + '.”' }]
+        .concat(distractors.map((d) => ({ text: d, correct: false, feedback: 'That belongs to a different lesson.' }))),
+    });
+  }
+  const authored = (track.quiz && track.quiz.rounds) || [];
+  let rounds = authored.concat(grounded);
+  const MAX = 20;                                  // long enough to test the whole subject, not endless
+  if (rounds.length > MAX) rounds = rounds.slice(0, MAX);
+  return { intro: 'Final exam — a longer test across everything in ' + track.homeLabel + '. Pass at ' + EXAM_PASS + '%.',
+    rounds, winThreshold: Math.max(1, Math.ceil(rounds.length * EXAM_PASS / 100)) };
+}
+
+// The per-subject FINAL EXAM screen. Reuses the quiz game engine; on finish it records the
+// score (best % tracked) and the FIRST pass (60%+) stamps completedAt — the subject is
+// "completed", reviewable and retakeable, but the date sticks.
 export function quizScreen(trackId) {
   const track = getTrack(trackId);
-  if (!track || !track.quiz) { location.hash = '#learn-' + trackId; return; }
+  if (!track || !track.lessons) { location.hash = '#learn-' + trackId; return; }
+  const exam = buildFinalExam(track);
+  if (!exam || !exam.rounds || !exam.rounds.length) { location.hash = '#learn-' + trackId; return; }
   app.innerHTML = `
     <header class="topbar">
       <a class="back" href="#learn-${esc(trackId)}">← Back</a>
-      <h1 class="page-title finance-hero">${esc(track.homeLabel)} quiz</h1>
+      <h1 class="page-title finance-hero">${esc(track.homeLabel)} final exam</h1>
     </header>
     <main class="narrow finance-section game-screen" data-track="${esc(trackId)}">
       <div id="game-mount"></div>
     </main>`;
   const mount = document.getElementById('game-mount');
   let finished = false;
-  const el = buildQuiz(track.quiz, (result) => {
+  const el = buildQuiz(exam, (result) => {
     if (finished) return;
     finished = true;
-    quizDone(trackId, result || {});
+    quizDone(trackId, exam.rounds.length, result || {});
   });
   mount.appendChild(el);
 }
 
-function quizDone(trackId, result) {
+function quizDone(trackId, total, result) {
   const track = getTrack(trackId);
   const allBadges = [...BADGES, ...allTrackBadges()];
-  const total = (track && track.quiz && track.quiz.rounds.length) || 0;
   const score = result.score || 0;
   const r = recordQuiz(store, trackId, { score, total });
+  const passed = r.pct >= EXAM_PASS;
 
-  // Tiered celebration: a perfect score (subject completed) is the biggest party.
-  const tier = r.pct >= 100 ? 2 : (r.pct >= 70 ? 1 : 0);
-  party(tier);
+  // Tiered celebration: passing (subject completed) is the biggest party.
+  party(r.justCompleted ? 2 : (passed ? 1 : 0));
 
-  const heading = r.pct >= 100
-    ? (r.justCompleted ? '🎉 ' + esc(track.homeLabel) + ' completed!' : 'Perfect score! 🎉')
-    : (r.pct >= 70 ? 'Nicely done!' : 'Good effort — review and try again.');
+  const heading = passed
+    ? (r.justCompleted ? '🎉 ' + esc(track.homeLabel) + ' completed!' : 'Passed! 🎉')
+    : 'Not quite — review and try again.';
 
   const badgeCards = r.earned.map((id) => {
     const b = allBadges.find((x) => x.id === id);
@@ -393,12 +433,12 @@ function quizDone(trackId, result) {
         <div class="garden-svg small">${gardenSVG(r.stageAfter)}</div>
         <h2>${heading}</h2>
         <p class="done-stats">You scored <strong>${r.pct}%</strong> · ${score} of ${total} · best <strong>${r.best}%</strong></p>
-        ${r.pct >= 100 ? '' : '<p class="hint">Score 100% to complete this subject — you can retake it as many times as you like.</p>'}
+        ${passed ? '' : '<p class="hint">Score ' + EXAM_PASS + '% or above to pass the final exam — you can retake it as many times as you like.</p>'}
         ${completedAt ? `<p class="grew">✓ ${esc(track.homeLabel)} completed ${esc(fmtDate(completedAt))}.</p>` : ''}
         ${r.grew ? '<p class="grew">Your garden just grew. Go look at it.</p>' : ''}
         ${badgeCards ? `<div class="badge-pops"><h3>New badge${r.earned.length > 1 ? 's' : ''}!</h3>${badgeCards}</div>` : ''}
         <div class="game-done-btns">
-          <button class="btn btn-primary" id="btn-quiz-again">${r.pct >= 100 ? 'Take it again' : 'Try again'}</button>
+          <button class="btn btn-primary" id="btn-quiz-again">${passed ? 'Take it again' : 'Try again'}</button>
           <button class="btn" id="btn-quiz-home">Back to ${esc(track.homeLabel.toLowerCase())}</button>
         </div>
       </section>
@@ -458,7 +498,7 @@ function conceptQuizConfig({ title, correct, pool }) {
       .concat(distractors.map((d) => ({ text: d, correct: false, feedback: 'That idea belongs to a different lesson. The point here: “' + pt + '”' })));
     return { prompt: 'Which of these is a key takeaway from “' + title + '”?', options };
   });
-  return { intro: 'A quick check on “' + title + '” — pick the idea this lesson actually teaches.', rounds, winThreshold: rounds.length };
+  return { intro: 'A quick check on “' + title + '” — pick the idea this lesson actually teaches. Pass at ' + QUIZ_PASS + '%.', rounds, winThreshold: Math.max(1, Math.ceil(rounds.length * QUIZ_PASS / 100)) };
 }
 
 export function conceptQuizScreen(trackId, lessonId) {
@@ -490,8 +530,9 @@ function conceptQuizDone(trackId, lessonId, title, total, result) {
   const track = getTrack(trackId);
   const score = result.score || 0;
   const r = recordConceptQuiz(store, trackId, lessonId, { score, total });
-  party(r.pct >= 100 ? 2 : (r.pct >= 70 ? 1 : 0));
-  const heading = r.pct >= 100 ? 'Perfect — concept locked in! 🎉' : (r.pct >= 70 ? 'Nicely done!' : 'Good effort — review and try again.');
+  const passed = r.pct >= QUIZ_PASS;
+  party(r.pct >= 100 ? 2 : (passed ? 1 : 0));
+  const heading = r.pct >= 100 ? 'Perfect — concept locked in! 🎉' : (passed ? 'Passed! 🎉' : 'Not quite — review and try again.');
   app.innerHTML = `
     <main class="narrow done-screen" data-track="${esc(trackId)}">
       <section class="card center">

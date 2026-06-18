@@ -1184,11 +1184,13 @@ function youScreen() {
     const t = p.learning[id] || {};
     const total = tk.lessons.LESSON_LIBRARY.length;
     const done = new Set((t.lessons || []).filter((l) => l && !l.game && !l.quiz).map((l) => l.id)).size;
+    const cqMap = t.conceptQuiz || {};
+    const quizzesPassed = tk.lessons.LESSON_LIBRARY.filter((L) => (cqMap[L.id] || 0) >= 60).length;
     return `<button class="you-subject" data-go="#learn-${id}">
       <span class="you-subj-ic" aria-hidden="true">${tk.theme.lessonIcon}</span>
       <span class="you-subj-body">
         <span class="you-subj-head"><strong>${esc(tk.homeLabel)}</strong>${t.completedAt ? `<span class="fin-done-tag">✓ ${esc(fmtDateL(t.completedAt))}</span>` : ''}</span>
-        <span class="you-subj-stats">${done}/${total} lessons · ${t.gamesWon || 0} game win${(t.gamesWon || 0) === 1 ? '' : 's'} · quiz ${t.quizBest || 0}%</span>
+        <span class="you-subj-stats">${done}/${total} lessons · ${quizzesPassed}/${total} quizzes passed · exam ${t.quizBest || 0}%</span>
       </span>
     </button>`;
   }).join('');
@@ -1212,13 +1214,17 @@ function youScreen() {
     : '<p class="hint">Finish a lesson, game, or quiz and it will show up here.</p>';
 
   const recentWeights = weights.slice(-6).reverse();
-  const recentMeals = listMeals().slice(0, 8).map((m) => ({
+  const allMeals = listMeals();
+  const recentMeals = allMeals.slice(0, 8).map((m) => ({
     id: m.id, note: m.note,
     stamp: (() => { try { return new Date(m.ts).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); } catch { return m.ts; } })(),
   }));
+  // Section counts — "how many there are" in each section (a small chip after the title).
+  const journalCount = (Array.isArray(p.journal) ? p.journal : []).length;
+  const cnt = (n) => `<span class="you-count" aria-hidden="true">${n}</span>`;
 
   app.innerHTML = `
-    <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">You</h1></header>
+    <header class="topbar"><a class="back" href="#">← Back</a><h1 class="page-title">${name ? esc(name) + '’s garden' : 'You'}</h1></header>
     <main class="narrow you-screen">
       <section class="card center">
         <div class="garden-svg small">${gardenSVG(stage)}</div>
@@ -1240,23 +1246,28 @@ function youScreen() {
       </section>
 
       <section class="card">
-        <h2>Your rhythm</h2>
-        ${usageGraphsHTML(p)}
-      </section>
-
-      <section class="card">
-        <h2>Your journal</h2>
+        <h2>Your journal ${cnt(journalCount)}</h2>
         <p class="hint">A private place to write or speak your thoughts — kept as a book you can read, or hear read back in your coach's voice.</p>
         <a class="btn btn-primary you-journal-open" href="#journal">Open your journal</a>
       </section>
 
-      <section class="card">
-        <h2>Your subjects</h2>
-        <div class="you-subjects">${subjectCards}</div>
+      <section class="card" data-intimacy>
+        <h2>Personal calendar</h2>
+        ${intimacyCardHTML()}
       </section>
 
       <section class="card">
-        <h2>Weight tracker</h2>
+        <h2>Meals ${cnt(allMeals.length)}</h2>
+        <p class="hint">A gentle place to note what you ate, if it helps you notice patterns. No calories, no targets, no scores — just your own notes, on this device.</p>
+        <div class="you-meal-form">
+          <input type="text" id="you-meal-input" maxlength="200" placeholder="e.g. oatmeal and berries" aria-label="Meal note">
+          <button class="btn btn-primary" id="you-meal-save">Add</button>
+        </div>
+        ${recentMeals.length ? `<ul class="you-log you-meal-list">${recentMeals.map((m) => `<li><span class="you-log-what">${esc(m.note)}</span><span class="you-log-date">${esc(m.stamp)}</span> <button class="linkish you-meal-del" data-id="${esc(m.id)}" aria-label="Delete meal note">✕</button></li>`).join('')}</ul>` : '<p class="hint">No notes yet.</p>'}
+      </section>
+
+      <section class="card">
+        <h2>Weight ${cnt(weights.length)}</h2>
         <p class="hint">Private to this device. No goal here — just your own trend over time, if you want it.</p>
         ${lastW ? `<p class="you-weight-now">Latest: <strong>${esc(String(lastW.value))} ${unit}</strong> <span class="you-log-date">${esc(lastW.date)}</span></p>` : ''}
         ${weightSpark(weights)}
@@ -1269,33 +1280,28 @@ function youScreen() {
       </section>
 
       <section class="card">
-        <h2>Meals</h2>
-        <p class="hint">A gentle place to note what you ate, if it helps you notice patterns. No calories, no targets, no scores — just your own notes, on this device.</p>
-        <div class="you-meal-form">
-          <input type="text" id="you-meal-input" maxlength="200" placeholder="e.g. oatmeal and berries" aria-label="Meal note">
-          <button class="btn btn-primary" id="you-meal-save">Add</button>
-        </div>
-        ${recentMeals.length ? `<ul class="you-log you-meal-list">${recentMeals.map((m) => `<li><span class="you-log-what">${esc(m.note)}</span><span class="you-log-date">${esc(m.stamp)}</span> <button class="linkish you-meal-del" data-id="${esc(m.id)}" aria-label="Delete meal note">✕</button></li>`).join('')}</ul>` : '<p class="hint">No notes yet.</p>'}
+        <h2>Your rhythm</h2>
+        ${usageGraphsHTML(p)}
       </section>
 
-      <section class="card" data-intimacy>
-        <h2>Personal calendar</h2>
-        ${intimacyCardHTML()}
+      <section class="card">
+        <h2>Your subjects ${cnt(subjectCards ? TRACK_LIST.length : 0)}</h2>
+        <div class="you-subjects">${subjectCards}</div>
+      </section>
+
+      <section class="card">
+        <h2>Recent activity ${cnt(entries.length)}</h2>
+        ${logHTML}
       </section>
 
       <section class="card">
         <h2>Birthday</h2>
-        <p class="hint">Set it and we will throw you a little party on the day. It stays on this device.</p>
+        <p class="hint">Set it and we will throw you a little party on the day, with a birthday song. It stays on this device.</p>
         <div class="you-bday-form">
           <input type="date" id="you-bday-input" value="${esc(prof.birthday || '')}" aria-label="Your birthday">
           <button class="btn" id="you-bday-save">Save</button>
         </div>
         ${prof.birthday ? `<p class="hint">${daysToBirthday(prof.birthday) === 0 ? '🎉 It is your birthday today!' : 'Next birthday in <strong>' + daysToBirthday(prof.birthday) + '</strong> day' + (daysToBirthday(prof.birthday) === 1 ? '' : 's') + '.'}</p>` : ''}
-      </section>
-
-      <section class="card">
-        <h2>Recent activity</h2>
-        ${logHTML}
       </section>
 
       <footer class="privacy-note"><p>🌱 <strong>Private by design.</strong> Everything here — including your weight and birthday — lives only on this device and never leaves it.</p></footer>
