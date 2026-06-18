@@ -109,6 +109,21 @@ html[data-theme="dark"] .duration-btn:hover { background: #B3C47B; }
 html[data-theme="dark"] .quiz-opt.wrong,
 html[data-theme="dark"] .sort-bucket.wrong,
 html[data-theme="dark"] .order-pick.wrong { background: #3A2620; }
+/* Surfaces that hardcode white in light mode would render near-white text on white in dark
+   mode — remap them to the themed card colour so cards, inputs and chips stay legible. */
+html[data-theme="dark"] .you-subject,
+html[data-theme="dark"] .you-weight-form input,
+html[data-theme="dark"] .you-weight-form select,
+html[data-theme="dark"] .you-bday-form input,
+html[data-theme="dark"] .you-name-form input,
+html[data-theme="dark"] .you-meal-form input,
+html[data-theme="dark"] .journal-compose,
+html[data-theme="dark"] .journal-entry,
+html[data-theme="dark"] .cycle-field input,
+html[data-theme="dark"] .cal-cell,
+html[data-theme="dark"] .intim-desire-btn,
+html[data-theme="dark"] .intim-pick-btn,
+html[data-theme="dark"] .intim-sym-chip { background: var(--card); color: var(--ink); }
 
 /* moon/sun theme toggle in the top nav */
 .theme-toggle {

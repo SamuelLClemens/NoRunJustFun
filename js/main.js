@@ -166,7 +166,12 @@ function homeScreen() {
         ${grace}
         <p class="garden-caption">${p.sessions.length === 0
           ? `Hi${name ? ' ' + esc(name) : ''}! Every session you finish grows this garden. Consistency makes it bloom — never intensity.`
-          : `${p.sessions.length} session${p.sessions.length === 1 ? '' : 's'} grown so far. Keep watering.`}</p>
+          : (() => {
+              const next = GARDEN_STAGE_SESSIONS.find((n) => n > p.sessions.length);
+              const toNext = next != null ? next - p.sessions.length : null;
+              const grown = `${p.sessions.length} session${p.sessions.length === 1 ? '' : 's'} grown so far.`;
+              return toNext ? `${grown} <strong>${toNext}</strong> more to your garden's next bloom.` : `${grown} Your garden is in full bloom. 🌼`;
+            })()}</p>
       </section>
 
       <section class="level-card" aria-label="Your level">
@@ -1437,8 +1442,8 @@ function settingsScreen() {
       </section>
 
       <section class="card">
-        <strong>Lifelike voice <span class="beta-chip">beta</span></strong>
-        <p class="hint">Each coach gets their own warm, human-sounding voice that runs entirely on this device. It is on by default: on capable devices the voice model downloads once (about 90 MB) in the background — nothing about you is ever sent anywhere. Data Saver, a slow connection, or a slower device keeps the regular on-device voice instead. Turn it off here any time.</p>
+        <strong>Lifelike voice</strong>
+        <p class="hint">Each coach has their own warm, human-sounding voice that runs entirely on this device, on by default. On capable devices the voice model downloads once (about 90 MB) in the background — nothing about you is ever sent anywhere. Data Saver, a slow connection, or a slower device keeps the regular on-device voice instead. You can turn it off here any time.</p>
         <label class="toggle"><input type="checkbox" id="set-natural" ${(p.naturalOn || p.voicePref === 'on') ? 'checked' : ''}> Use the lifelike voice</label>
         <div class="nv-progress" id="nv-progress" hidden>
           <div class="nv-track"><div class="nv-bar" id="nv-bar"></div></div>
@@ -1534,7 +1539,7 @@ function settingsScreen() {
     } else if (state === 'ready') {
       nvWrap.hidden = false;
       nvBar.style.width = '100%';
-      nvStatus.textContent = 'Natural voice ready. Tap "Hear it" above to try her out.';
+      nvStatus.textContent = 'Natural voice ready. Tap "Hear it" above to hear your coach.';
     } else if (state === 'slow') {
       nvWrap.hidden = false;
       nvBar.style.width = '100%';
@@ -1708,6 +1713,7 @@ function makeSectionsCollapsible() {
     if (!card || card.children.length < 2) return;  // nothing to hide beneath the title
     h.dataset.collapsible = '1';
     h.setAttribute('role', 'button');
+    h.setAttribute('aria-level', h.tagName === 'H3' ? '3' : '2');  // keep heading semantics under role=button
     h.setAttribute('tabindex', '0');
     h.setAttribute('aria-expanded', 'true');
     h.classList.add('collapsible-head');

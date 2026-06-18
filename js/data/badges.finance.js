@@ -94,7 +94,7 @@ export const FINANCE_BADGES = [
     "id": "fin-master",
     "category": "finance",
     "name": "Money Garden Master",
-    "desc": "All lessons done, a perfect quiz, and a game won. You have truly mastered the Money Garden — and it shows.",
+    "desc": "All lessons done, the final exam passed, and a game won. You have truly mastered the Money Garden — and it shows.",
     "icon": "<svg viewBox='0 0 48 48'><path d='M14 10h20v6a10 10 0 0 1-20 0z' fill='#FFD45C' stroke='#F4A300' stroke-width='2'/><path d='M14 12H9a5 5 0 0 0 5 6M34 12h5a5 5 0 0 1-5 6' fill='none' stroke='#F4A300' stroke-width='2'/><rect x='21' y='26' width='6' height='7' fill='#5B6BD0'/><rect x='15' y='33' width='18' height='5' rx='2' fill='#5B6BD0'/><path d='M20 14l2.4 2.4L28 12' fill='none' stroke='#9A6500' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>"
   }
 ];

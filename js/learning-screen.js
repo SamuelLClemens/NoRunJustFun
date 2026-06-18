@@ -539,11 +539,14 @@ function conceptQuizDone(trackId, lessonId, title, total, result) {
         <h2>${heading}</h2>
         <p class="done-stats">“${esc(title)}” · you scored <strong>${r.pct}%</strong> · ${score} of ${total} · best <strong>${r.best}%</strong></p>
         <div class="game-done-btns">
-          <button class="btn btn-primary" id="btn-cq-again">Try again</button>
+          ${passed ? '' : '<button class="btn btn-primary" id="btn-cq-review">Review the lesson</button>'}
+          <button class="btn${passed ? ' btn-primary' : ''}" id="btn-cq-again">Try again</button>
           <button class="btn" id="btn-cq-home">Back to ${esc(track.homeLabel.toLowerCase())}</button>
         </div>
       </section>
     </main>`;
+  const reviewBtn = document.getElementById('btn-cq-review');
+  if (reviewBtn) reviewBtn.addEventListener('click', () => { location.hash = '#learn-' + trackId + '-lib-' + lessonId; });
   document.getElementById('btn-cq-again').addEventListener('click', () => conceptQuizScreen(trackId, lessonId));
   document.getElementById('btn-cq-home').addEventListener('click', () => { location.hash = '#learn-' + trackId; });
 }

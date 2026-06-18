@@ -92,7 +92,7 @@ export const PARENTING_BADGES = [
     "id": "par-master",
     "category": "parenting",
     "name": "Parenting Path Master",
-    "desc": "All lessons done, a perfect quiz, and a game won. You have made this wisdom your own — warmly and firmly.",
+    "desc": "All lessons done, the final exam passed, and a game won. You have made this wisdom your own — warmly and firmly.",
     "icon": "<svg viewBox='0 0 48 48'><path d='M14 10h20v6a10 10 0 0 1-20 0z' fill='#F08A66' stroke='#E07856' stroke-width='2'/><path d='M14 12H9a5 5 0 0 0 5 6M34 12h5a5 5 0 0 1-5 6' fill='none' stroke='#E07856' stroke-width='2'/><rect x='21' y='26' width='6' height='7' fill='#E07856'/><rect x='15' y='33' width='18' height='5' rx='2' fill='#E07856'/><path d='M24 30c-4-2.6-6-5-4-7.2 1.3-1.4 3.6-.8 4 1 .4-1.8 2.7-2.4 4-1 2 2.2 0 4.6-4 7.2z' fill='#fff'/></svg>"
   }
 ];
