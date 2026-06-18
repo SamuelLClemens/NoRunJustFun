@@ -82,7 +82,7 @@ const TABS = [
   { hash: '#body', label: 'Body', ic: '🤸' },
   { hash: '#mind', label: 'Mind', ic: '🧠' },
   { hash: '#soul', label: 'Soul', ic: '🍃' },
-  { hash: '#you',  label: 'You',  ic: '🌼' },
+  { hash: '#you',  label: 'You',  ic: '<svg class="tab-veronica" viewBox="-16 -16 32 32" aria-hidden="true"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></svg>' },
 ];
 let _tabbarEl = null;
 function buildTabbar() {
@@ -110,28 +110,15 @@ function updateTabbar() {
   _tabbarEl.querySelectorAll('a').forEach((a) => a.classList.toggle('active', a.dataset.tab === active));
 }
 
-// Logo lockup — "Gardenoosh" with the brand veronica flowers growing on green stems
-// out of the letters, plus a couple of leaf sprouts (no exclamation mark).
+// Logo lockup — the wordmark "Gardenoosh" with a single brand veronica flower blooming at
+// the top of the 'd' and 'h' ascenders, so each ascender reads as the flower's stem.
 // Keep in sync with the static copy in index.html (.hello-logo).
 function logoSVG() {
   return `<svg class="logo-svg" viewBox="0 0 432 104" role="img" aria-label="Gardenoosh" xmlns="http://www.w3.org/2000/svg">
     <title>Gardenoosh</title>
-    <g fill="none" stroke="var(--green-600, #3E8E4F)" stroke-width="4.5" stroke-linecap="round">
-      <path d="M150 46 C146 32 152 22 156 14"/>
-      <path d="M292 46 C288 30 296 20 300 12"/>
-      <path d="M396 44 C392 30 400 20 404 13"/>
-    </g>
-    <g fill="var(--green-500, #5BA869)">
-      <ellipse cx="142" cy="32" rx="8" ry="4" transform="rotate(-32 142 32)"/>
-      <ellipse cx="304" cy="30" rx="8" ry="4" transform="rotate(30 304 30)"/>
-      <ellipse cx="388" cy="32" rx="7.5" ry="3.8" transform="rotate(-30 388 32)"/>
-      <path d="M92 90 q-11 -5 -17 -15 q12 -3 17 7 z"/>
-      <path d="M250 90 q11 -5 17 -15 q-12 -3 -17 7 z"/>
-    </g>
     <text x="14" y="88" font-family="Fredoka, 'Avenir Next Rounded', system-ui, sans-serif" font-weight="600" font-size="66" fill="var(--ink, #1F4D2E)" textLength="404" lengthAdjust="spacingAndGlyphs">Gardenoosh</text>
-    <g transform="translate(156 12) scale(0.5)"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></g>
-    <g transform="translate(300 10) scale(0.56)"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></g>
-    <g transform="translate(404 11) scale(0.48)"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></g>
+    <g transform="translate(165 44) scale(0.46)"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></g>
+    <g transform="translate(388 44) scale(0.46)"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></g>
   </svg>`;
 }
 
@@ -241,7 +228,7 @@ function bodyScreen() {
     { go: '#move-yoga', ic: '🧘', title: 'Yoga', blurb: 'Mindful, breath-linked poses and simple flows' },
     { go: '#move-exercise', ic: '💪', title: 'Exercises', blurb: 'Build strength and gentle cardio — choose your intensity' },
     { go: '#move-face', ic: '😌', title: 'Face yoga', blurb: 'Gentle facial release and relaxation — sit anywhere' },
-    { go: '#move-baby', ic: '🍼', title: 'With your baby', blurb: 'Gentle movement you can do holding your little one' },
+    { go: '#move-baby', ic: '🍼', title: 'With your baby', blurb: 'Gentle movement holding your little one — for babies 6 months and above' },
     { go: '#move-sexercise', ic: '🔥', title: 'Sexercise', blurb: 'Playful strength, stamina and mobility for a more active, joyful intimate life' },
   ];
   app.innerHTML = `
@@ -267,8 +254,8 @@ const MOVE_META = {
   yoga: { label: 'Yoga', note: 'breath-linked poses and flow' },
   exercise: { label: 'Exercises', note: 'strength and gentle cardio' },
   face: { label: 'Face yoga', note: 'gentle facial release and relaxation' },
-  baby: { label: 'With your baby', note: 'gentle movement holding your baby',
-    safety: 'Always support the head and neck, hold your baby securely, and never bounce. Begin only once your doctor has cleared you after birth, and stop if your baby is unsettled.' },
+  baby: { label: 'With your baby', note: 'gentle movement holding your baby — for babies 6 months and above',
+    safety: 'For babies 6 months and above. Always support the head and neck, hold your baby securely, and never bounce. Begin only once your doctor has cleared you after birth, and stop if your baby is unsettled.' },
   sexercise: { label: 'Sexercise', note: 'playful strength, stamina and mobility for a more active, joyful intimate life',
     safety: 'For consenting adults. This is gentle fitness — strength, stamina, hip mobility and pelvic-floor work — not medical or explicit sex advice. Move within your comfort, communicate with any partner, keep everything consensual, and stop if anything hurts.' },
 };

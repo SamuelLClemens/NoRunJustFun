@@ -13,8 +13,10 @@ function defaults() {
       voiceURI: '',
       style: 'gentle',          // gentle | cheerleader | funny
       voiceOn: true,
-      naturalOn: false,         // is the in-browser natural (lifelike) voice currently active
-                                // (flips true once the model loads — see maybeAutoEnableNaturalVoice)
+      naturalOn: true,          // lifelike on-device voice ON by default — the user should not have
+                                // to choose it. Device-gated: maybeAutoEnableNaturalVoice + enable()
+                                // skip the download on Data Saver / 2g / slow devices (system voice
+                                // covers those). The Settings toggle remains as an opt-OUT.
       voicePref: 'on',          // 'auto' | 'on' | 'off'. DEFAULT 'on': the lifelike on-device
                                 // voice loads in the background on capable devices (system voice
                                 // covers until ready; Data-Saver / 2g / slow devices stay on the

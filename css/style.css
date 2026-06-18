@@ -134,6 +134,7 @@ html[data-theme="dark"] .order-pick.wrong { background: #3A2620; }
   transition: color var(--dur-2) var(--ease-settle), background-color var(--dur-2) var(--ease-settle);
 }
 .tabbar a .tab-ic { font-size: 1.25rem; line-height: 1; }
+.tabbar a .tab-ic .tab-veronica { width: 1.3em; height: 1.3em; display: block; }
 .tabbar a.active { color: var(--green-700); background: var(--green-100); }
 .tabbar[hidden] { display: none; }
 .has-tabbar #app { padding-bottom: calc(78px + env(safe-area-inset-bottom)); }
