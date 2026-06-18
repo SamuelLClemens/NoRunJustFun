@@ -763,6 +763,10 @@ function sessionScreen(plan) {
   // so the mouth tracks the actual words (natural voice). No-op on the lean coach.
   if (avatar && avatar.setLevelProvider) { try { avatar.setLevelProvider(() => coach.getMouthLevel()); } catch { /* ok */ } }
 
+  // Teacher glasses: the coach wears them while teaching a lesson, never in a movement/body
+  // session. A no-op on the lean coach; applied on the realistic coach as soon as it loads.
+  if (avatar && avatar.setGlasses) { try { avatar.setGlasses(!!plan.teaching); } catch { /* ok */ } }
+
   // Camera framing for the realistic host: a waist-up portrait while she speaks
   // (the check-in greeting, and all of meditation), and the whole body for
   // workouts so form is visible. A no-op on the lean coach, so it is safe to wire
@@ -1535,7 +1539,7 @@ async function ensureRealisticClass() {
     // ?v bust: bump on every realistic-avatar.js change so browsers fetch the new
     // module instead of a cached copy (the SW matches with ignoreSearch, so the
     // precached file still serves offline regardless of the query).
-    const mod = await import('./realistic-avatar.js?v=rig10');
+    const mod = await import('./realistic-avatar.js?v=rig11');
     RealisticAvatar = mod.RealisticAvatar;
     realisticHelpers = mod;
   }
@@ -1551,6 +1555,7 @@ async function ensureRealisticClass() {
 function startLessonFor(trackId, plan) {
   const track = getTrack(trackId);
   const hub = '#learn-' + trackId;
+  plan.teaching = true;   // lessons = teaching → the coach wears glasses (set in sessionScreen)
   plan.onDone = (stats) => {
     if (avatar) { avatar.dispose(); avatar = null; }
     player = null;

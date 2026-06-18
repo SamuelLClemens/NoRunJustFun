@@ -451,6 +451,8 @@ export class RealisticAvatar {
       this._basePos = root.position.clone();
       this._snapshotPoseBasis();
       this._restFootY = this._minFootWorldY();
+      this._glasses = null;                  // rebuilt per model; re-apply teaching glasses if wanted
+      if (this._wantGlasses) this.setGlasses(true);
       this._frameCamera();
       this._renderOnce();
       if (this._pendingStart) this._resume();
@@ -616,6 +618,69 @@ export class RealisticAvatar {
       const b = this.bones.get(n);
       if (b) { b.scale.setScalar(scale); b.updateMatrix(); }
     }
+  }
+
+  // Show/hide a pair of teacher glasses on the coach. No GLB ships a glasses mesh, so we
+  // build a simple parametric pair (two lens rings + bridge + temples), fit it to the eye
+  // spacing, and PARENT it to the head bone so it rides every head turn and pose. Wired ON
+  // only while the coach is teaching a lesson (see main.js), never in movement sessions.
+  setGlasses(on) {
+    this._wantGlasses = !!on;
+    if (!this.ready) return;                 // re-applied from _load once the model is in
+    if (on && !this._glasses) this._buildGlasses();
+    if (this._glasses) this._glasses.visible = !!on;
+    this._renderOnce();
+  }
+
+  _buildGlasses() {
+    const head = this._bone('head');
+    if (!head || !this.model) return;
+    this.model.updateMatrixWorld(true);
+    const eL = this.bones.get('eyeL') || this.bones.get('LeftEye');
+    const eR = this.bones.get('eyeR') || this.bones.get('RightEye');
+    const pL = new THREE.Vector3(), pR = new THREE.Vector3(), cW = new THREE.Vector3(), hp = new THREE.Vector3();
+    head.getWorldPosition(hp);
+    let sep = 0.062;
+    if (eL && eR) {
+      eL.getWorldPosition(pL); eR.getWorldPosition(pR);
+      cW.addVectors(pL, pR).multiplyScalar(0.5);
+      sep = Math.max(0.045, Math.min(0.085, pL.distanceTo(pR)));
+    } else {
+      cW.copy(hp); cW.y += 0.09;              // no eye bones: sit a touch above the head bone
+    }
+    // face frame: forward = horizontal head→eyes, up = world up, right = up × forward
+    const fwd = new THREE.Vector3().subVectors(cW, hp); fwd.y = 0;
+    if (fwd.lengthSq() < 1e-6) { this.model.getWorldDirection(fwd); fwd.y = 0; }
+    if (fwd.lengthSq() < 1e-6) fwd.set(0, 0, 1);
+    fwd.normalize();
+    const up = new THREE.Vector3(0, 1, 0);
+    const right = new THREE.Vector3().crossVectors(up, fwd).normalize();
+    const trueUp = new THREE.Vector3().crossVectors(fwd, right).normalize();
+    const quat = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(right, trueUp, fwd));
+
+    const frameMat = new THREE.MeshStandardMaterial({ color: 0x16161a, roughness: 0.42, metalness: 0.35 });
+    const lensMat = new THREE.MeshStandardMaterial({ color: 0x2a3340, roughness: 0.08, metalness: 0.1, transparent: true, opacity: 0.16, depthWrite: false });
+    const grp = new THREE.Group();
+    const lensR = sep * 0.4, tube = sep * 0.05;
+    for (const sx of [-1, 1]) {
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(lensR, tube, 10, 24), frameMat);
+      ring.position.x = sx * sep * 0.5; grp.add(ring);
+      const lens = new THREE.Mesh(new THREE.CircleGeometry(lensR - tube * 0.5, 24), lensMat);
+      lens.position.set(sx * sep * 0.5, 0, 0.001); grp.add(lens);
+      const temple = new THREE.Mesh(new THREE.BoxGeometry(tube * 1.1, tube * 1.1, sep * 1.5), frameMat);
+      temple.position.set(sx * (sep * 0.5 + lensR), lensR * 0.18, -sep * 0.78); grp.add(temple);
+    }
+    const bridge = new THREE.Mesh(new THREE.BoxGeometry(sep * 0.32, tube * 1.3, tube * 1.3), frameMat);
+    bridge.position.y = lensR * 0.55; grp.add(bridge);
+    grp.traverse((o) => { o.frustumCulled = false; o.castShadow = false; o.renderOrder = 3; });
+
+    // place at eye level, just in front of the face, oriented to look forward; then reparent
+    // to the head bone (attach preserves the world transform, so it rides the head).
+    grp.position.copy(cW).addScaledVector(fwd, lensR * 0.5 + 0.012);
+    grp.quaternion.copy(quat);
+    this.scene.add(grp);
+    head.attach(grp);
+    this._glasses = grp;
   }
 
   // ---- exercise pose player ----------------------------------------------------
@@ -1113,7 +1178,7 @@ export class RealisticAvatar {
     this.onReady = null; this._levelProvider = null; this._pose = null;
     this.bones.clear(); this.rest.clear(); this.morphs.clear();
     this._restBasis.clear(); this._rig = {};
-    this._basePos = null; this._restFootY = null;
+    this._basePos = null; this._restFootY = null; this._glasses = null;
     try { if (this._envRT) this._envRT.dispose(); if (this._pmrem) this._pmrem.dispose(); if (this._shadowTex) this._shadowTex.dispose(); } catch { /* ok */ }
     this.scene.environment = null;
     this.renderer.dispose();
