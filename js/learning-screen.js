@@ -83,6 +83,8 @@ export function trackHubScreen(trackId) {
 
   const tk = store.progress.learning[trackId] || {};
   const examBest = tk.quizBest || 0;
+  const lessonsTotal = track.lessons.LESSON_LIBRARY.length;
+  const lessonsDone = new Set((tk.lessons || []).filter((l) => l && !l.game && !l.quiz).map((l) => l.id)).size;
   const completedAt = tk.completedAt || null;
   const quizHTML = `
       <section class="card fin-quiz${completedAt ? ' is-complete' : ''}">
@@ -159,7 +161,7 @@ export function trackHubScreen(trackId) {
       <section class="card">
         <details class="fin-lib-details">
           <summary class="fin-lib-summary">
-            <span class="fin-lib-summary-txt"><strong>Or pick a topic</strong><small>Browse all ${track.lessons.LESSON_LIBRARY.length} lessons — open it when you want, tuck it away when you don't.</small></span>
+            <span class="fin-lib-summary-txt"><strong>Lessons <span class="you-count">${lessonsDone}/${lessonsTotal}</span></strong><small>${lessonsDone} of ${lessonsTotal} done — open any lesson when you want, tuck it away when you don't.</small></span>
             <span class="fin-lib-chevron" aria-hidden="true">▾</span>
           </summary>
           <div class="fin-lib" id="fin-library">${lessonCards}</div>
