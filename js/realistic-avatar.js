@@ -187,6 +187,23 @@ function disposeModel(root) {
   });
 }
 
+// A soft radial blob (dark centre → transparent rim) used as the ground contact shadow.
+// Built on a canvas so the edge is a smooth gradient rather than a hard polygon disc.
+function makeBlobShadowTexture() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 128;
+  const g = c.getContext('2d');
+  const grd = g.createRadialGradient(64, 64, 4, 64, 64, 62);
+  grd.addColorStop(0, 'rgba(20,40,28,0.85)');
+  grd.addColorStop(0.55, 'rgba(20,40,28,0.45)');
+  grd.addColorStop(1, 'rgba(20,40,28,0)');
+  g.fillStyle = grd;
+  g.beginPath(); g.arc(64, 64, 62, 0, Math.PI * 2); g.fill();
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export class RealisticAvatar {
   constructor(canvas, character) {
     this.canvas = canvas;
@@ -208,7 +225,19 @@ export class RealisticAvatar {
     // then add warmth and rim definition on top.
     try {
       this._pmrem = new THREE.PMREMGenerator(this.renderer);
-      this._envRT = this._pmrem.fromScene(new RoomEnvironment(), 0.04);
+      const roomEnv = new RoomEnvironment();
+      // One small, bright soft-box high and a touch camera-side, baked INTO the
+      // environment, so wet corneas (and glossy hair/skin) catch a real specular
+      // highlight — the single cheapest cue that reads as "alive". toneMapped:false
+      // keeps it bright through the PMREM bake.
+      const catchlight = new THREE.Mesh(
+        new THREE.SphereGeometry(0.34, 16, 12),
+        new THREE.MeshBasicMaterial({ color: 0xffffff }),
+      );
+      catchlight.material.toneMapped = false;
+      catchlight.position.set(0.7, 2.3, 1.8);
+      roomEnv.add(catchlight);
+      this._envRT = this._pmrem.fromScene(roomEnv, 0.04);
       this.scene.environment = this._envRT.texture;
     } catch { /* IBL is an enhancement; direct lights below still light her */ }
 
@@ -224,13 +253,16 @@ export class RealisticAvatar {
     rim.position.set(-1.2, 2.2, -2.6);
     this.scene.add(rim);
 
-    // soft blob shadow grounds her
+    // soft radial contact shadow grounds her — a gradient alpha (dark centre fading to
+    // transparent) reads as a soft-edged cast shadow, not a hard disc.
+    this._shadowTex = makeBlobShadowTexture();
     const shadow = new THREE.Mesh(
-      new THREE.CircleGeometry(0.42, 24),
-      new THREE.MeshBasicMaterial({ color: 0x1f4d2e, transparent: true, opacity: 0.16 }),
+      new THREE.PlaneGeometry(1.0, 1.0),
+      new THREE.MeshBasicMaterial({ map: this._shadowTex, transparent: true, opacity: 0.55, depthWrite: false }),
     );
     shadow.rotation.x = -Math.PI / 2;
     shadow.position.y = 0.002;
+    shadow.renderOrder = -1;
     this.scene.add(shadow);
 
     this.pivot = new THREE.Group();      // presentation turntable
@@ -270,6 +302,7 @@ export class RealisticAvatar {
     // coach performs each exercise for the user to mirror. See setPose/_applyMovePose.
     this._pose = null;               // active pose def (a POSES entry) | null
     this._poseT = 0;                 // pose phase clock (separate from this.time)
+    this._poseBlend = 0;             // 0..1 master weight: eases the whole body into a move and back to rest
     this._poseActive = false;        // true while a move is being performed (full framing)
     this._wasMoving = false;         // edge-detect leaving a pose to restore rest once
     this._restBasis = new Map();     // joint key -> { B, Binv } rest orientation in model frame
@@ -279,6 +312,7 @@ export class RealisticAvatar {
     this._sEuler = new THREE.Euler(0, 0, 0, 'XYZ');
     this._sQuatR = new THREE.Quaternion();
     this._sQuatRl = new THREE.Quaternion();
+    this._sQuatPosed = new THREE.Quaternion();
     this._sVec = new THREE.Vector3();
     // decorative breathing — honor reduced motion (in-app setting wins; OS fallback)
     this._breathe = !prefersReducedMotion();
@@ -323,36 +357,47 @@ export class RealisticAvatar {
           // fully OPAQUE, bias clothing toward the camera, and draw clothing last so it is
           // ALWAYS on top of the skin. Hair/lash cards keep the cutout that fixed flicker.
           const nm = o.name || '';
-          // Names cover BOTH the MPFB coaches (base/low-poly, cargo_pants, tank_keyhole…)
-          // AND Ready Player Me (Wolf3D_Body/Head/Teeth, EyeLeft/Right, Wolf3D_Outfit_*,
-          // Wolf3D_Hair/Beard) so clothing-over-skin holds on either asset family.
-          const hairy  = /hair|ponytail|afro|beard|brow|lash|short0|loose|fro/i.test(nm);
-          const isSkin = /^base|(^|\.)body|wolf3d_body|wolf3d_head|low-?poly|high-?poly|^skin|teeth|tongue|^eye(left|right)?$|eyeball/i.test(nm) && !hairy;
-          const isCloth = /cargo|pant|tank|keyhole|polo|shirt|suit|top|^bra|short(?!0)|outfit|bottom|footwear|glasses/i.test(nm) && !hairy;
+          // Names cover BOTH the MPFB coaches (base body = the un-suffixed collection name,
+          // low-poly, cargo_pants, tank_keyhole…) AND Ready Player Me (Wolf3D_Body/Head/Teeth,
+          // EyeLeft/Right, Wolf3D_Outfit_*, Wolf3D_Hair/Beard).
+          const hairy    = /hair|ponytail|afro|beard|brow|lash|short0|loose|fro/i.test(nm);
+          const lashBrow = hairy && /lash|brow/i.test(nm);
+          const hairProper = hairy && !lashBrow;
+          const isCloth  = !hairy && /cargo|pant|tank|keyhole|polo|shirt|suit|top|^bra|short(?!0)|outfit|bottom|footwear|glasses/i.test(nm);
+          // Everything that is neither cloth nor hair is treated as BODY SKIN — including the
+          // un-suffixed base body mesh (e.g. "Coach_jasmine"), which matches no skin keyword.
+          // The old code routed that mesh to a DoubleSide alpha-0.5 cutout, which drew the
+          // eye-socket back-faces as dark hollow eyes and cut edges; making it opaque +
+          // single-sided fixes both. (The hidden low-poly proxy is harmless either way.)
           const mats = Array.isArray(o.material) ? o.material : (o.material ? [o.material] : []);
           for (const m of mats) {
             if (!m) continue;
-            if (hairy) {
-              // unchanged hair-card behavior — preserves the hair-flicker fix exactly
-              m.alphaTest = 0.2; m.transparent = false; m.depthWrite = true;
-            } else if (isSkin) {
-              // skin/teeth/tongue: fully opaque, never a cutout (no holes), single-sided
-              m.alphaTest = 0; m.alphaMap = null; m.transparent = false;
-              m.depthWrite = true; m.depthTest = true; m.side = THREE.FrontSide;
+            if (hairProper) {
+              // hair: opaque cutout (no transparency sort → no flicker) but a LOW threshold so
+              // the soft scalp/hairline strands are kept, not cut away (the bald look at 0.2).
+              m.alphaTest = 0.05; m.transparent = false; m.depthWrite = true;
+            } else if (lashBrow) {
+              // lashes/brows: crisp cutout AND single-sided, so the card back-faces do not
+              // splay out around the eyes as dark "wings".
+              m.alphaTest = 0.4; m.transparent = false; m.depthWrite = true; m.side = THREE.FrontSide;
             } else if (isCloth) {
-              // clothing: fully opaque + a polygon-offset bias toward the camera so it wins
-              // the depth tie against coincident skin even under motion. Keep the exported
-              // DoubleSide so open shells (keyhole neck, armholes, cargo cuffs) do not vanish.
+              // clothing: fully opaque + a polygon-offset bias toward the camera so it wins the
+              // depth tie against coincident skin even under motion. Keep the exported DoubleSide
+              // so open shells (keyhole neck, armholes, cargo cuffs) do not vanish.
               m.alphaTest = 0; m.alphaMap = null; m.transparent = false;
               m.depthWrite = true; m.depthTest = true;
               m.polygonOffset = true; m.polygonOffsetFactor = -1; m.polygonOffsetUnits = -1;
-            } else if (m.transparent || m.alphaMap) {
-              // generic blended mesh fallback — same as the old non-hair branch
-              m.alphaTest = 0.5; m.transparent = false; m.depthWrite = true;
+            } else {
+              // body skin (incl. the base body, teeth, tongue, eyes): fully opaque, never a
+              // cutout, SINGLE-SIDED so no inside-out socket/back-faces show through.
+              m.alphaTest = 0; m.alphaMap = null; m.transparent = false;
+              m.depthWrite = true; m.depthTest = true; m.side = THREE.FrontSide;
             }
             m.needsUpdate = true;
           }
-          o.userData.isSkin = isSkin; o.userData.isCloth = isCloth;
+          o.userData.isCloth = isCloth;
+          o.userData.isHair = hairProper || lashBrow;
+          o.userData.isSkin = !isCloth && !o.userData.isHair;
         }
         if (o.isSkinnedMesh && o.skeleton) this.skeleton = o.skeleton;
         // collect morph targets (visemes + facial expressions) across every mesh
@@ -398,7 +443,7 @@ export class RealisticAvatar {
       this.failed = false;
       this._aimArmsRest();
       // Coach GLBs export bulging eyeballs; seat them. The host is already fitted.
-      if (this._modelUrl.includes('coach-') && !this._modelUrl.includes('coach-host')) this._seatEyes(0.72);
+      if (this._modelUrl.includes('coach-') && !this._modelUrl.includes('coach-host')) this._seatEyes(0.9);
       // Snapshot the rest pose for the exercise player: the grounded position to pose
       // from, the lowest foot height for per-frame re-grounding, and each joint's rest
       // orientation in the model frame (so spec body-space angles retarget to this rig).
@@ -547,10 +592,13 @@ export class RealisticAvatar {
     if (!this.ready) return;
     // Hang the arms slightly FORWARD of the torso (+z) so the hands rest clear of the
     // hips/thighs instead of clipping in and out of them as the body breathes.
-    this._aimBone(this._bone('lArm'), this._bone('lFore'), [0, -1, 0.13]);
-    this._aimBone(this._bone('rArm'), this._bone('rFore'), [0, -1, 0.13]);
-    this._aimBone(this._bone('lFore'), this._bone('lHand'), [0, -1, 0.17]);
-    this._aimBone(this._bone('rFore'), this._bone('rHand'), [0, -1, 0.17]);
+    // Upper arm near vertical but angled forward; forearm bent further forward (a soft
+    // elbow) so the hands rest IN FRONT OF the thighs, never sinking into the cloth/skin.
+    // The avatar has no collision, so clearance is bought with this forward bias.
+    this._aimBone(this._bone('lArm'), this._bone('lFore'), [0, -1, 0.26]);
+    this._aimBone(this._bone('rArm'), this._bone('rFore'), [0, -1, 0.26]);
+    this._aimBone(this._bone('lFore'), this._bone('lHand'), [0, -1, 0.5]);
+    this._aimBone(this._bone('rFore'), this._bone('rHand'), [0, -1, 0.5]);
     for (const k of ['lArm', 'rArm', 'lFore', 'rFore']) {
       const b = this._bone(k);
       if (b) this.rest.set(b.name, b.quaternion.clone());
@@ -644,6 +692,9 @@ export class RealisticAvatar {
     const sx = J.spine[0] + J.chest[0];
     if (sx > 60) { const k = 60 / sx; J.spine[0] *= k; J.chest[0] *= k; }
     if (sx < -40) { const k = -40 / sx; J.spine[0] *= k; J.chest[0] *= k; }   // and for back-bends
+    // (No hip-flexion clamp: the clothing is now skinned to the armature — see tools/clean_glb.py —
+    // so the cargo pants follow the legs through a full-depth squat/fold and the thigh no longer
+    // pokes out. Clamping would only shorten the move for a problem that no longer exists.)
     if (mirror) {
       for (const [l, r] of [['shoulderL', 'shoulderR'], ['elbowL', 'elbowR'], ['hipL', 'hipR'], ['kneeL', 'kneeR'], ['ankleL', 'ankleR']]) {
         const t = J[l]; J[l] = J[r]; J[r] = t;
@@ -661,11 +712,16 @@ export class RealisticAvatar {
       const basis = this._restBasis.get(key);
       if (!restLocal || !basis) continue;
       const d = J[key];
-      if (d[0] === 0 && d[1] === 0 && d[2] === 0) { bone.quaternion.copy(restLocal); continue; }
+      const blend = this._poseBlend;
+      if ((d[0] === 0 && d[1] === 0 && d[2] === 0) || blend <= 0) { bone.quaternion.copy(restLocal); continue; }
       this._sEuler.set(d[0] * D2R, d[1] * D2R, d[2] * D2R);
       this._sQuatR.setFromEuler(this._sEuler);
       this._sQuatRl.copy(basis.Binv).multiply(this._sQuatR).multiply(basis.B);   // body-space → bone-local
-      bone.quaternion.copy(restLocal).multiply(this._sQuatRl);
+      this._sQuatPosed.copy(restLocal).multiply(this._sQuatRl);
+      // ease rest → full pose by the master weight via quaternion slerp (shortest-path,
+      // so even large-angle joints never pop on entry, exit, or loop wrap)
+      if (blend >= 0.999) bone.quaternion.copy(this._sQuatPosed);
+      else bone.quaternion.copy(restLocal).slerp(this._sQuatPosed, blend);
     }
 
     // re-ground: shift the whole body so the lowest foot returns to its rest height,
@@ -771,9 +827,17 @@ export class RealisticAvatar {
       // very soft whole-body weight-shift sway (presentation turntable)
       this.pivot.rotation.y = (14 + 1.4 * Math.sin(this.time * (Math.PI * 2) / 7.5)) * D2R;
     }
-    if (moving) {
-      if (this._breathe) this._poseT += dt * this.speed;   // reduced motion holds a static apex
-      this._applyMovePose();
+    // Master pose-blend: ease the whole body INTO a move and back OUT to rest over ~0.4s,
+    // so entering or leaving a move never snaps. While the weight is non-zero we keep
+    // driving the (blended) move pose; only once it has fully eased to rest do we hand the
+    // body back to the idle gesture layer.
+    const blendTarget = moving ? 1 : 0;
+    this._poseBlend += (blendTarget - this._poseBlend) * Math.min(1, dt * 7);
+    if (moving && this._poseBlend > 0.999) this._poseBlend = 1;
+    if (!moving && this._poseBlend < 0.002) this._poseBlend = 0;
+    if (moving || this._poseBlend > 0) {
+      if (moving && this._breathe) this._poseT += dt * this.speed;   // reduced motion holds a static apex
+      this._applyMovePose();                                          // blends rest<->pose by this._poseBlend
       this._wasMoving = true;
     } else {
       if (this._wasMoving) { this._clearPose(); this._wasMoving = false; }
@@ -938,6 +1002,100 @@ export class RealisticAvatar {
 
   showPose(/* def, phase */) { this._applyPosture(POSTURE_STAND); this._renderOnce(); }
 
+  // ---- dev-only Stage-0 load self-check -----------------------------------------
+  // Compact per-coach capability report computed against the ACTUALLY loaded skeleton
+  // and morph dictionary (not raw GLB names) — so it reflects what the engine can drive
+  // after GLTFLoader name-sanitization. Pure read; no scene mutation. Surfaced via
+  // ?dev=avatar. Where a capability is absent the matching rule falls back automatically.
+  selfCheck() {
+    const file = (this._modelUrl.split('/').pop() || '').split('?')[0];
+    const resolveLogical = (key) => { for (const n of (RIG[key] || [])) if (this.bones.has(n)) return n; return null; };
+    const skeleton = {};
+    for (const k of ['lArm', 'rArm', 'lFore', 'rFore', 'hipL', 'hipR', 'kneeL', 'kneeR', 'ankleL', 'ankleR', 'head', 'neck', 'spine', 'chest']) skeleton[k] = resolveLogical(k);
+    const armChain = !!(skeleton.lArm && skeleton.rArm && skeleton.lFore && skeleton.rFore);
+    const legChain = !!(skeleton.hipL && skeleton.hipR && skeleton.kneeL && skeleton.kneeR);
+    const jawBone = ['Jaw', 'jaw', 'mixamorigJaw'].find((n) => this.bones.has(n)) || null;
+    const jawMorph = this._resolve('jaw');
+    const visemes = ['viseme_aa', 'viseme_E', 'viseme_I', 'viseme_O', 'viseme_U', 'viseme_PP', 'viseme_CH', 'viseme_FF', 'viseme_SS', 'viseme_TH'].filter((n) => this.morphs.has(n));
+    const blink = !!(this._resolve('blinkL') || this._resolve('blink'));
+    const eyeBones = ['eyeL', 'eyeR', 'LeftEye', 'RightEye'].filter((n) => this.bones.has(n));
+    const meshes = { skin: [], cloth: [], hair: [], other: [] };
+    const glasses = [];
+    if (this.model) this.model.traverse((o) => {
+      if (!o.isMesh) return;
+      const nm = o.name || '';
+      if (/glass|spectacle|eyewear|frame/i.test(nm)) glasses.push(nm);
+      if (o.userData.isSkin) meshes.skin.push(nm);
+      else if (o.userData.isCloth) meshes.cloth.push(nm);
+      else if (/hair|ponytail|afro|beard|brow|lash|fro|loose|short0/i.test(nm)) meshes.hair.push(nm);
+      else meshes.other.push(nm);
+    });
+    return {
+      file,
+      skeleton: { armChain, legChain, head: skeleton.head, neck: skeleton.neck, spine: skeleton.spine, chest: skeleton.chest, names: skeleton },
+      face: { jawBone, jawMorph, visemes, blink, morphCount: this.morphs.size },
+      eyes: { eyeBones, seatable: this.bones.has('eyeL') || this.bones.has('eyeR') },
+      clothing: { skin: meshes.skin, cloth: meshes.cloth, hair: meshes.hair, other: meshes.other, separable: meshes.cloth.length > 0 && meshes.skin.length > 0 },
+      glasses,
+    };
+  }
+
+  // Dev-only: render the loaded coach at a single, static keyframe phase of a move
+  // (or idle) from an arbitrary turntable yaw, then restore all state. Used by the
+  // ?dev=avatar montage to capture deepest-phase poses for the Rule 1 acceptance grid
+  // without spinning up a full session. No-op until ready.
+  devShowPose(def, phase = 0.5, yawDeg = 14, blend = 1) {
+    if (!this.ready) return;
+    const prev = { pose: this._pose, t: this._poseT, breathe: this._breathe, yaw: this.pivot.rotation.y, active: this._poseActive, blend: this._poseBlend };
+    this.pivot.rotation.y = yawDeg * D2R;
+    if (def && def.frames && def.frames.length) {
+      this._pose = def;
+      this._breathe = true;                 // honor the explicit phase (reduced-motion would pin the apex)
+      this._poseT = phase * (def.loopSecs || 8);
+      this._poseActive = true;
+      this._poseBlend = blend;              // 0..1 master weight, to visualize the cross-fade
+      this._applyMovePose();
+    } else {
+      this._clearPose();
+      this._aimArmsRest();
+    }
+    this.renderer.render(this.scene, this.camera);
+    this._pose = prev.pose; this._poseT = prev.t; this._breathe = prev.breathe; this._poseActive = prev.active; this._poseBlend = prev.blend; this.pivot.rotation.y = prev.yaw;
+  }
+
+  // Dev-only: a tight head-and-shoulders shot from an arbitrary yaw, for inspecting eyes
+  // and hair detail. Restores the normal framing afterward.
+  devHeadshot(yawDeg = 0) {
+    if (!this.model) return;
+    const prevYaw = this.pivot.rotation.y;
+    this.pivot.rotation.y = yawDeg * D2R;
+    this.model.updateMatrixWorld(true);
+    const head = this._bone('head');
+    const t = new THREE.Vector3();
+    if (head) head.getWorldPosition(t);
+    else { const b = new THREE.Box3().setFromObject(this.model); b.getCenter(t); t.y = b.max.y - 0.12; }
+    const aimY = t.y + 0.04;                 // frame the whole head (incl. a tied-back ponytail)
+    this.camera.position.set(t.x, aimY, t.z + 0.82);
+    this.camera.lookAt(t.x, aimY, t.z);
+    this.camera.updateProjectionMatrix();
+    this.renderer.render(this.scene, this.camera);
+    this.pivot.rotation.y = prevYaw;
+    this._frameCamera();
+  }
+
+  // Dev-only: drive the mouth to a static openness (0..1) and render a talk-framed close-up,
+  // proving the viseme/jaw morphs actually move the visible mouth (the rendering half of
+  // speech-driven lip-sync; the signal half is coach.getMouthLevel in tts.js).
+  devShowMouth(open) {
+    if (!this.ready) return;
+    this.setFraming('talk');
+    this._setMorph('jaw', open);
+    this._setMorph('round', open > 0.01 ? open * 0.5 : 0);
+    this._setMorph('wide', open > 0.01 ? open * 0.3 : 0);
+    this._setMorph('smileL', 0.1); this._setMorph('smileR', 0.1);
+    this.renderer.render(this.scene, this.camera);
+  }
+
   dispose() {
     this._disposed = true;               // neutralize any in-flight GLB load / fallback callback
     this.onError = null;
@@ -952,7 +1110,7 @@ export class RealisticAvatar {
     this.bones.clear(); this.rest.clear(); this.morphs.clear();
     this._restBasis.clear(); this._rig = {};
     this._basePos = null; this._restFootY = null;
-    try { if (this._envRT) this._envRT.dispose(); if (this._pmrem) this._pmrem.dispose(); } catch { /* ok */ }
+    try { if (this._envRT) this._envRT.dispose(); if (this._pmrem) this._pmrem.dispose(); if (this._shadowTex) this._shadowTex.dispose(); } catch { /* ok */ }
     this.scene.environment = null;
     this.renderer.dispose();
   }

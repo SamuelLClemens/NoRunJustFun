@@ -1,7 +1,7 @@
 // Offline support: precache the whole app on install, serve cache-first.
 // Bump CACHE_VERSION with every release so updates roll out cleanly.
 
-const CACHE_VERSION = 'ygt-v4.56.0';
+const CACHE_VERSION = 'ygt-v4.57.0';
 
 const PRECACHE = [
   './',
@@ -97,7 +97,9 @@ const PRECACHE = [
 // CACHE_VERSION bump (which re-installs the app shell) never re-downloads ~26 MB of models.
 // The realistic coach is opt-in, so models are cached lazily on first use — never warmed at
 // install (that would cost every user the download even if they never enable the feature).
-const RUNTIME_CACHE = 'ygt-runtime';
+// Bump when the coach GLB binaries change (filenames stay the same, and the fetch handler
+// matches with ignoreSearch, so a new cache name is what forces the updated models to download).
+const RUNTIME_CACHE = 'ygt-runtime-v2';
 const isImmutableBinary = (url) => /\.glb($|\?)/i.test(url);
 
 self.addEventListener('install', (e) => {
