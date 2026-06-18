@@ -274,6 +274,18 @@ button {
   padding: 18px;
 }
 
+/* Collapsible section cards — click the title to minimize/expand (js makeSectionsCollapsible).
+   A right-pointing chevron means collapsed; down means open. Tap target stays the full title. */
+.collapsible-head { cursor: pointer; position: relative; user-select: none; padding-right: 30px; min-height: 28px; }
+.collapsible-head::after {
+  content: '▾'; position: absolute; right: 2px; top: 0.15em;
+  font-size: 0.8em; color: var(--ink-soft); transition: transform var(--dur-2, 0.18s) var(--ease-settle, ease);
+}
+.is-collapsed > .collapsible-head::after { transform: rotate(-90deg); }
+.is-collapsed > :nth-child(n+2) { display: none; }
+.collapsible-head:focus-visible { outline: 2px solid var(--green-600, #3E8E4F); outline-offset: 3px; border-radius: 4px; }
+@media (prefers-reduced-motion: reduce) { .collapsible-head::after { transition: none; } }
+
 .btn {
   border: 0; border-radius: var(--radius-pill); padding: var(--sp-3) var(--sp-5);
   background: var(--green-100); color: var(--ink);
@@ -1132,3 +1144,27 @@ html[data-reduced-motion="on"] *, html[data-reduced-motion="on"] *::before, html
   .stage.is-loading::after { animation: stage-loading-pulse 1.6s ease-in-out infinite; }
   @keyframes stage-loading-pulse { 0%, 100% { opacity: 0.72; } 50% { opacity: 1; } }
 }
+
+/* ====================================================================
+   Mobile optimizations (phone-first). Additive — desktop is unaffected.
+   ==================================================================== */
+/* No long word or wide token forces a horizontal scroll on a narrow phone. */
+.narrow, .card, .hint, .page-title, h1, h2, h3, p, li { overflow-wrap: break-word; }
+html, body { overflow-x: hidden; }
+/* Respect landscape notches: pad the app by the larger of 14px or the safe-area inset. */
+#app { padding-left: max(14px, env(safe-area-inset-left)); padding-right: max(14px, env(safe-area-inset-right)); }
+/* iOS zooms the page when focusing a control whose text is < 16px. Keep form text at
+   16px on phones so focus never triggers that jarring zoom. */
+@media (max-width: 480px) {
+  input, select, textarea, button { font-size: max(16px, 1rem); }
+}
+/* Very small phones (< 380px): give cramped 3-up grids room by dropping to 2 columns,
+   and tighten the page gutter a touch. */
+@media (max-width: 380px) {
+  #app { padding-left: max(10px, env(safe-area-inset-left)); padding-right: max(10px, env(safe-area-inset-right)); }
+  .duration-grid { grid-template-columns: repeat(2, 1fr); }
+  .card, .garden-card, .level-card, .start-card { padding: 15px; }
+  .pillar-card { padding: 14px 10px; }
+}
+/* Keep the session stage from eating a tall phone's whole screen. */
+@media (max-height: 720px) { .stage { max-height: 46vh; } }

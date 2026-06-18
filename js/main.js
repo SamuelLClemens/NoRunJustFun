@@ -1687,7 +1687,35 @@ async function render() {
   // Move focus to the new screen's primary heading so keyboard and screen-reader
   // users land on the fresh content instead of being silently dropped to <body>
   // on every route change (WCAG 2.4.3). Skip if a newer render superseded us.
-  if (seq === renderSeq) focusScreenHeading();
+  if (seq === renderSeq) { focusScreenHeading(); makeSectionsCollapsible(); }
+}
+
+// Make every section card collapsible by its title. A card whose FIRST child is a
+// heading (h2/h3) gets that heading wired as a toggle: click — or Enter/Space — minimizes
+// the card to just its title; click again expands it. Re-run on each route change (cards
+// re-render expanded). Cards that lead with non-title content, or that use a native
+// <details> for their own collapse, are left untouched. Modals live on <body>, outside
+// #app, so they are never affected.
+function makeSectionsCollapsible() {
+  const heads = app.querySelectorAll('.card > h2:first-child, .card > h3:first-child, .reflective-section > h2:first-child');
+  heads.forEach((h) => {
+    if (h.dataset.collapsible) return;              // already wired
+    const card = h.parentElement;
+    if (!card || card.children.length < 2) return;  // nothing to hide beneath the title
+    h.dataset.collapsible = '1';
+    h.setAttribute('role', 'button');
+    h.setAttribute('tabindex', '0');
+    h.setAttribute('aria-expanded', 'true');
+    h.classList.add('collapsible-head');
+    const toggle = () => {
+      const collapsed = card.classList.toggle('is-collapsed');
+      h.setAttribute('aria-expanded', String(!collapsed));
+    };
+    h.addEventListener('click', toggle);
+    h.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+    });
+  });
 }
 
 // Centralized focus move for route changes (see render()). The primary heading is
