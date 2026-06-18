@@ -443,8 +443,10 @@ export class RealisticAvatar {
       this.ready = true;
       this.failed = false;
       this._aimArmsRest();
-      // Coach GLBs export bulging eyeballs; seat them. The host is already fitted.
-      if (this._modelUrl.includes('coach-') && !this._modelUrl.includes('coach-host')) this._seatEyes(0.78);
+      // Coach GLBs export bulging eyeballs; seat them. The host's high-poly cornea eyes
+      // render blank in our opaque pipeline, so paint a parametric iris over them instead.
+      if (this._modelUrl.includes('coach-host')) this._buildHostIris();
+      else if (this._modelUrl.includes('coach-')) this._seatEyes(0.78);
       // Snapshot the rest pose for the exercise player: the grounded position to pose
       // from, the lowest foot height for per-frame re-grounding, and each joint's rest
       // orientation in the model frame (so spec body-space angles retarget to this rig).
@@ -617,6 +619,53 @@ export class RealisticAvatar {
     for (const n of ['eyeL', 'eyeR']) {
       const b = this.bones.get(n);
       if (b) { b.scale.setScalar(scale); b.updateMatrix(); }
+    }
+  }
+
+  // The shared host GLB ships MakeHuman HIGH-POLY eyes: a clear cornea dome over a
+  // recessed iris and a red inner wall. In our opaque (no-transparency) pipeline the
+  // cornea front-faces win the depth test, so the iris never shows and the eyes read as
+  // blank pale orbs. Rather than re-author the asset, paint a small parametric iris
+  // (brown disc + pupil + catchlight) onto the front of each eye and PARENT it to the
+  // eye bone so it rides head turns and saccades. Drawn decal-style (depthTest off) so
+  // the cornea can never occlude it. Host-only: the MPFB coaches use low-poly eyes that
+  // render their iris correctly and need none of this. Geometry rides this.model (parented
+  // under the eye bones), so disposeModel() frees it on swap/dispose — no extra teardown.
+  _buildHostIris() {
+    const eL = this.bones.get('LeftEye') || this.bones.get('eyeL');
+    const eR = this.bones.get('RightEye') || this.bones.get('eyeR');
+    const head = this._bone('head');
+    if (!eL || !eR || !head || !this.model) return;
+    this.model.updateMatrixWorld(true);
+    const pL = new THREE.Vector3(), pR = new THREE.Vector3(), hp = new THREE.Vector3();
+    eL.getWorldPosition(pL); eR.getWorldPosition(pR); head.getWorldPosition(hp);
+    const rEye = pL.distanceTo(pR) * 0.205;          // per-eye radius from the inter-pupil gap
+    // face frame: forward = horizontal head→eyes, up = world up, right = up × forward
+    const cW = new THREE.Vector3().addVectors(pL, pR).multiplyScalar(0.5);
+    const fwd = new THREE.Vector3().subVectors(cW, hp); fwd.y = 0;
+    if (fwd.lengthSq() < 1e-6) { this.model.getWorldDirection(fwd); fwd.y = 0; }
+    if (fwd.lengthSq() < 1e-6) fwd.set(0, 0, 1);
+    fwd.normalize();
+    const up = new THREE.Vector3(0, 1, 0);
+    const right = new THREE.Vector3().crossVectors(up, fwd).normalize();
+    const trueUp = new THREE.Vector3().crossVectors(fwd, right).normalize();
+    const quat = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(right, trueUp, fwd));
+
+    const rIris = rEye * 0.58, rPupil = rIris * 0.5;
+    const irisMat = new THREE.MeshStandardMaterial({ color: 0x6b4423, roughness: 0.4, metalness: 0, depthTest: false, depthWrite: false });
+    const pupilMat = new THREE.MeshStandardMaterial({ color: 0x070708, roughness: 0.25, depthTest: false, depthWrite: false });
+    const glintMat = new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: false, depthWrite: false });
+    for (const [bone, pos] of [[eL, pL], [eR, pR]]) {
+      const grp = new THREE.Group();
+      const iris = new THREE.Mesh(new THREE.CircleGeometry(rIris, 28), irisMat); iris.renderOrder = 5; grp.add(iris);
+      const pupil = new THREE.Mesh(new THREE.CircleGeometry(rPupil, 22), pupilMat); pupil.position.z = 0.0004; pupil.renderOrder = 6; grp.add(pupil);
+      const glint = new THREE.Mesh(new THREE.CircleGeometry(rIris * 0.2, 10), glintMat);
+      glint.position.set(-rIris * 0.3, rIris * 0.32, 0.0008); glint.renderOrder = 7; grp.add(glint);
+      grp.traverse((o) => { o.frustumCulled = false; o.castShadow = false; });
+      grp.position.copy(pos).addScaledVector(fwd, rEye * 1.05);   // just in front of the cornea apex
+      grp.quaternion.copy(quat);
+      this.scene.add(grp);
+      bone.attach(grp);                                          // reparent under the eye bone (keeps world xform)
     }
   }
 

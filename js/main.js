@@ -1539,7 +1539,7 @@ async function ensureRealisticClass() {
     // ?v bust: bump on every realistic-avatar.js change so browsers fetch the new
     // module instead of a cached copy (the SW matches with ignoreSearch, so the
     // precached file still serves offline regardless of the query).
-    const mod = await import('./realistic-avatar.js?v=rig11');
+    const mod = await import('./realistic-avatar.js?v=rig12');
     RealisticAvatar = mod.RealisticAvatar;
     realisticHelpers = mod;
   }
@@ -1548,12 +1548,11 @@ async function ensureRealisticClass() {
 // Learning lessons reuse the session player. On completion we tear down the
 // avatar/Player (as finishSession does) then hand off to the track's completion
 // screen, which records the result and celebrates. An early exit records nothing
-// and just returns to the subject hub. The coach's instructor "prop" (finance =
-// reading glasses; other subjects get their own) is injected from the registry a
-// beat after arriving, to mark the shift into a lesson (criterion 3). Additive:
-// only the learning path runs this.
+// and just returns to the subject hub. The shift into a lesson is marked by the
+// coach putting on real 3D reading glasses (plan.teaching → setGlasses in
+// sessionScreen); the old 2D per-subject stage props were retired in favour of it.
+// Additive: only the learning path runs this.
 function startLessonFor(trackId, plan) {
-  const track = getTrack(trackId);
   const hub = '#learn-' + trackId;
   plan.teaching = true;   // lessons = teaching → the coach wears glasses (set in sessionScreen)
   plan.onDone = (stats) => {
@@ -1564,12 +1563,6 @@ function startLessonFor(trackId, plan) {
     learningDone(trackId, plan);
   };
   sessionScreen(plan);
-  const prop = track && track.prop;
-  const stage = document.querySelector('.session .stage');
-  if (stage && prop && prop.svg && !stage.querySelector('.' + prop.className)) {
-    stage.insertAdjacentHTML('beforeend', prop.svg);
-    if (prop.onClass) setTimeout(() => stage.classList.add(prop.onClass), prop.delayMs || 450);
-  }
 }
 
 // Build a session plan for a play route, or null if it cannot/should not start.
