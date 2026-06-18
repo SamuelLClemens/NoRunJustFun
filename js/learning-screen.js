@@ -8,7 +8,7 @@
 
 import { store, save } from './state.js';
 import { naturalVoice } from './natural-voice.js';
-import { finishLearning, trackStreak, recordQuiz } from './learning.js';
+import { finishLearning, trackStreak, recordQuiz, recordConceptQuiz } from './learning.js';
 import { gardenStage } from './gamify.js';
 import { gardenSVG, GARDEN_STAGE_SESSIONS } from './data/garden.js';
 import { BADGES } from './data/badges.js';
@@ -94,6 +94,29 @@ export function trackHubScreen(trackId) {
         <button class="btn btn-primary" id="fin-quiz-btn">${completedAt ? 'Retake the quiz' : 'Take the quiz'}</button>
       </section>` : '';
 
+  // Per-concept quizzes — one short quiz per lesson, with a ✓ once it has been aced.
+  const cq = tk.conceptQuiz || {};
+  const conceptQuizCards = track.lessons.LESSON_LIBRARY.map((L) => {
+    const best = cq[L.id] || 0;
+    const meta = best >= 100 ? '<span class="fin-done-tag">✓ 100%</span>'
+      : (best > 0 ? '<span class="fin-mins">best ' + best + '%</span>' : '<span class="fin-mins">Quiz →</span>');
+    return `<button class="fin-lib-btn" data-cquiz="${esc(L.id)}">
+      <span class="fin-lib-ic" aria-hidden="true">📝</span>
+      <span class="fin-lib-txt"><strong>${esc(L.title)}</strong><small>Quiz the key ideas of this lesson</small></span>
+      <span class="fin-lib-meta">${meta}</span>
+    </button>`;
+  }).join('');
+  const conceptQuizHTML = `
+      <section class="card">
+        <details class="fin-lib-details">
+          <summary class="fin-lib-summary">
+            <span class="fin-lib-summary-txt"><strong>Quiz each concept</strong><small>A short quiz for every lesson — test one idea at a time, not just the whole subject.</small></span>
+            <span class="fin-lib-chevron" aria-hidden="true">▾</span>
+          </summary>
+          <div class="fin-lib" id="fin-cquiz">${conceptQuizCards}</div>
+        </details>
+      </section>`;
+
   const tipsHTML = (track.expertTips && track.expertTips.length) ? `
       <section class="card fin-tips">
         <h2>Expert tips</h2>
@@ -140,6 +163,8 @@ export function trackHubScreen(trackId) {
         </details>
       </section>
 
+      ${conceptQuizHTML}
+
       ${quizHTML}
 
       ${gamesHTML ? `<section class="card">
@@ -158,6 +183,8 @@ export function trackHubScreen(trackId) {
     b.addEventListener('click', () => { location.hash = '#learn-' + trackId + '-' + b.dataset.mins; }));
   document.querySelectorAll('#fin-library .fin-lib-btn').forEach((b) =>
     b.addEventListener('click', () => { location.hash = '#learn-' + trackId + '-lib-' + b.dataset.lesson; }));
+  document.querySelectorAll('#fin-cquiz .fin-lib-btn').forEach((b) =>
+    b.addEventListener('click', () => { location.hash = '#learn-' + trackId + '-cquiz-' + b.dataset.cquiz; }));
   document.querySelectorAll('#fin-games .fin-lib-btn').forEach((b) =>
     b.addEventListener('click', () => { location.hash = '#learn-' + trackId + '-game-' + b.dataset.game; }));
   const qbtn = document.getElementById('fin-quiz-btn');
@@ -239,6 +266,7 @@ export function learningDone(trackId, plan) {
         ${result.grew ? '<p class="grew">Your garden just grew. Go look at it.</p>' : ''}
         ${badgeCards ? `<div class="badge-pops"><h3>New badge${result.earned.length > 1 ? 's' : ''}!</h3>${badgeCards}</div>` : ''}
         <button class="btn btn-primary" id="btn-learn-home">Back to ${label} lessons</button>
+        ${(plan.lessonIds && plan.lessonIds.length) ? '<button class="btn" id="btn-concept-quiz">Check what you learned</button>' : ''}
       </section>
       ${takeawaysHTML}
       ${sourcesHTML}
@@ -247,6 +275,8 @@ export function learningDone(trackId, plan) {
     </main>`;
 
   document.getElementById('btn-learn-home').addEventListener('click', () => { location.hash = '#learn-' + trackId; });
+  const cqBtn = document.getElementById('btn-concept-quiz');
+  if (cqBtn) cqBtn.addEventListener('click', () => { location.hash = '#learn-' + trackId + '-cquiz-' + plan.lessonIds[0]; });
 }
 
 // ---------------------------------------------------------------- games
@@ -375,4 +405,104 @@ function quizDone(trackId, result) {
     </main>`;
   document.getElementById('btn-quiz-again').addEventListener('click', () => quizScreen(trackId));
   document.getElementById('btn-quiz-home').addEventListener('click', () => { location.hash = '#learn-' + trackId; });
+}
+
+// ---------------------------------------------------------------- per-concept quizzes
+// Every lesson (a "concept" the subject teaches) gets its OWN short quiz — not just one
+// quiz for the whole subject. Each quiz is built ENTIRELY from vetted lesson content: the
+// correct answer of every question is one of that lesson's real takeaways, and the wrong
+// options are takeaways drawn from OTHER lessons in the same subject. Nothing is generated
+// or paraphrased, so a wrong "correct" answer is impossible. Works for every section —
+// including Crystals and Dreams, which have no subject-wide quiz of their own.
+
+function lessonTakeaways(track, lessonId) {
+  try {
+    const plan = track.lessons.buildLessonById(lessonId);
+    return ((plan && plan.takeawayGroups) || []).flatMap((g) => g.points || []);
+  } catch { return []; }
+}
+
+// A pool of takeaways from OTHER lessons in the subject, for plausible-but-wrong options.
+function siblingTakeawayPool(track, excludeIds) {
+  const pool = [];
+  const ex = new Set(excludeIds);
+  for (const L of track.lessons.LESSON_LIBRARY) {
+    if (ex.has(L.id)) continue;
+    for (const p of lessonTakeaways(track, L.id)) pool.push(p);
+    if (pool.length > 60) break;   // plenty for distractors; keep the build cheap
+  }
+  return pool;
+}
+
+function pickDistinct(pool, n, avoid) {
+  const seen = new Set(avoid.map((s) => (s || '').toLowerCase()));
+  const out = [];
+  const bag = pool.slice();
+  while (out.length < n && bag.length) {
+    const cand = bag.splice(Math.floor(Math.random() * bag.length), 1)[0];
+    const key = (cand || '').toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key); out.push(cand);
+  }
+  return out;
+}
+
+// Build a quiz config (the shape buildQuiz expects) — one round per takeaway (capped at 6):
+// the real takeaway vs up to 3 sibling-lesson distractors. buildQuiz shuffles the options.
+function conceptQuizConfig({ title, correct, pool }) {
+  const points = correct.slice(0, 6);
+  if (!points.length) return null;
+  const rounds = points.map((pt) => {
+    const distractors = pickDistinct(pool, 3, points);
+    const options = [{ text: pt, correct: true, feedback: 'Yes — that is a key point from this lesson.' }]
+      .concat(distractors.map((d) => ({ text: d, correct: false, feedback: 'That idea belongs to a different lesson. The point here: “' + pt + '”' })));
+    return { prompt: 'Which of these is a key takeaway from “' + title + '”?', options };
+  });
+  return { intro: 'A quick check on “' + title + '” — pick the idea this lesson actually teaches.', rounds, winThreshold: rounds.length };
+}
+
+export function conceptQuizScreen(trackId, lessonId) {
+  const track = getTrack(trackId);
+  if (!track || !track.lessons) { location.hash = '#learn-' + trackId; return; }
+  const meta = track.lessons.LESSON_LIBRARY.find((L) => L.id === lessonId);
+  const title = meta ? meta.title : 'this lesson';
+  const cfg = conceptQuizConfig({ title, correct: lessonTakeaways(track, lessonId), pool: siblingTakeawayPool(track, [lessonId]) });
+  if (!cfg) { location.hash = '#learn-' + trackId; return; }   // no takeaways to quiz
+  app.innerHTML = `
+    <header class="topbar">
+      <a class="back" href="#learn-${esc(trackId)}">← Back</a>
+      <h1 class="page-title finance-hero">Concept quiz</h1>
+    </header>
+    <main class="narrow finance-section game-screen" data-track="${esc(trackId)}">
+      <p class="hint" style="margin:0 0 10px">${esc(title)}</p>
+      <div id="game-mount"></div>
+    </main>`;
+  const mount = document.getElementById('game-mount');
+  let finished = false;
+  const el = buildQuiz(cfg, (result) => {
+    if (finished) return; finished = true;
+    conceptQuizDone(trackId, lessonId, title, cfg.rounds.length, result || {});
+  });
+  mount.appendChild(el);
+}
+
+function conceptQuizDone(trackId, lessonId, title, total, result) {
+  const track = getTrack(trackId);
+  const score = result.score || 0;
+  const r = recordConceptQuiz(store, trackId, lessonId, { score, total });
+  party(r.pct >= 100 ? 2 : (r.pct >= 70 ? 1 : 0));
+  const heading = r.pct >= 100 ? 'Perfect — concept locked in! 🎉' : (r.pct >= 70 ? 'Nicely done!' : 'Good effort — review and try again.');
+  app.innerHTML = `
+    <main class="narrow done-screen" data-track="${esc(trackId)}">
+      <section class="card center">
+        <h2>${heading}</h2>
+        <p class="done-stats">“${esc(title)}” · you scored <strong>${r.pct}%</strong> · ${score} of ${total} · best <strong>${r.best}%</strong></p>
+        <div class="game-done-btns">
+          <button class="btn btn-primary" id="btn-cq-again">Try again</button>
+          <button class="btn" id="btn-cq-home">Back to ${esc(track.homeLabel.toLowerCase())}</button>
+        </div>
+      </section>
+    </main>`;
+  document.getElementById('btn-cq-again').addEventListener('click', () => conceptQuizScreen(trackId, lessonId));
+  document.getElementById('btn-cq-home').addEventListener('click', () => { location.hash = '#learn-' + trackId; });
 }

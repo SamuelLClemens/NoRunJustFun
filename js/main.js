@@ -1,4 +1,4 @@
-// Garden Moves — app shell and screens.
+// Gardenoosh — app shell and screens.
 // Private by design: every byte of your data lives in localStorage on this
 // device. No accounts, no analytics, no tracking, no server. Ever.
 
@@ -28,7 +28,7 @@ import { PROGRAMS, getProgram, programSuggestion, advanceProgram } from './data/
 import { getTrack, TRACK_LIST, SOUL_TRACK_LIST } from './data/tracks.js';
 import { ensureVariants } from './data/lessons.shared.js';
 import { confirmDialog, alertDialog } from './ui-dialog.js';
-import { trackHubScreen, learningDone, gameScreen, quizScreen } from './learning-screen.js';
+import { trackHubScreen, learningDone, gameScreen, quizScreen, conceptQuizScreen } from './learning-screen.js';
 import { usageGraphsHTML } from './usage-graph.js';
 import { composeCheckin } from './checkin.js';
 import { listMeals, addMeal, removeMeal } from './meals.js';
@@ -81,7 +81,7 @@ const TABS = [
   { hash: '#home', label: 'Home', ic: '🏡' },
   { hash: '#body', label: 'Body', ic: '🤸' },
   { hash: '#mind', label: 'Mind', ic: '🧠' },
-  { hash: '#soul', label: 'Soul', ic: '🌿' },
+  { hash: '#soul', label: 'Soul', ic: '🍃' },
   { hash: '#you',  label: 'You',  ic: '🌼' },
 ];
 let _tabbarEl = null;
@@ -110,20 +110,28 @@ function updateTabbar() {
   _tabbarEl.querySelectorAll('a').forEach((a) => a.classList.toggle('active', a.dataset.tab === active));
 }
 
-// Logo lockup — the veronica flower forms the exclamation mark.
+// Logo lockup — "Gardenoosh" with the brand veronica flowers growing on green stems
+// out of the letters, plus a couple of leaf sprouts (no exclamation mark).
 // Keep in sync with the static copy in index.html (.hello-logo).
 function logoSVG() {
-  return `<svg class="logo-svg" viewBox="0 0 494 92" role="img" aria-label="Garden Moves" xmlns="http://www.w3.org/2000/svg">
-    <title>Garden Moves</title>
-    <text x="12" y="74" font-family="Fredoka, 'Avenir Next Rounded', system-ui, sans-serif" font-weight="600" font-size="74" fill="var(--ink, #1F4D2E)" textLength="421" lengthAdjust="spacingAndGlyphs">Garden Moves</text>
-    <path d="M 452.3 21.5 A 4.7 4.7 0 0 1 461.6 21.0 C 460.6 28.5 460.0 36 459.6 42.5 A 3.1 3.1 0 0 1 453.4 42.8 C 453.2 35.5 452.7 28.5 452.3 21.5 Z" fill="var(--green-700, #2E6B3D)"/>
-    <path d="M 452.8 30.5 C 448 26.5 441.8 27.2 438.4 31.4 C 442 35.6 448.6 35.2 452.8 30.5 Z" fill="var(--green-500, #5BA869)"/>
-    <g transform="translate(457 70) rotate(10) scale(0.88)">
-      <g fill="#5B6BD0"><ellipse cy="-10" rx="7.4" ry="10.6"/><ellipse cy="-10" rx="7.4" ry="10.6" transform="rotate(90)"/><ellipse cy="-10" rx="7.4" ry="10.6" transform="rotate(180)"/><ellipse cy="-10" rx="7.4" ry="10.6" transform="rotate(270)"/></g>
-      <g fill="#7B8FE8"><ellipse cy="-9.6" rx="5.8" ry="8.8"/><ellipse cy="-9.6" rx="5.8" ry="8.8" transform="rotate(90)"/><ellipse cy="-9.6" rx="5.8" ry="8.8" transform="rotate(180)"/><ellipse cy="-9.6" rx="5.8" ry="8.8" transform="rotate(270)"/></g>
-      <circle r="6.2" fill="#5B6BD0"/><circle r="4.6" fill="#FFFFFF"/>
-      <circle cx="-1.7" cy="0.6" r="1.7" fill="#2E3A8C"/><circle cx="1.8" cy="-0.8" r="1.7" fill="#2E3A8C"/>
+  return `<svg class="logo-svg" viewBox="0 0 432 104" role="img" aria-label="Gardenoosh" xmlns="http://www.w3.org/2000/svg">
+    <title>Gardenoosh</title>
+    <g fill="none" stroke="var(--green-600, #3E8E4F)" stroke-width="4.5" stroke-linecap="round">
+      <path d="M150 46 C146 32 152 22 156 14"/>
+      <path d="M292 46 C288 30 296 20 300 12"/>
+      <path d="M396 44 C392 30 400 20 404 13"/>
     </g>
+    <g fill="var(--green-500, #5BA869)">
+      <ellipse cx="142" cy="32" rx="8" ry="4" transform="rotate(-32 142 32)"/>
+      <ellipse cx="304" cy="30" rx="8" ry="4" transform="rotate(30 304 30)"/>
+      <ellipse cx="388" cy="32" rx="7.5" ry="3.8" transform="rotate(-30 388 32)"/>
+      <path d="M92 90 q-11 -5 -17 -15 q12 -3 17 7 z"/>
+      <path d="M250 90 q11 -5 17 -15 q-12 -3 -17 7 z"/>
+    </g>
+    <text x="14" y="88" font-family="Fredoka, 'Avenir Next Rounded', system-ui, sans-serif" font-weight="600" font-size="66" fill="var(--ink, #1F4D2E)" textLength="404" lengthAdjust="spacingAndGlyphs">Gardenoosh</text>
+    <g transform="translate(156 12) scale(0.5)"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></g>
+    <g transform="translate(300 10) scale(0.56)"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></g>
+    <g transform="translate(404 11) scale(0.48)"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></g>
   </svg>`;
 }
 
@@ -209,8 +217,8 @@ function pillarsHTML() {
   const mindSubjects = TRACK_LIST.map((id) => (getTrack(id) ? getTrack(id).homeLabel.toLowerCase() : null)).filter(Boolean).join(', ');
   const pillars = [
     { go: '#body', cls: 'body', ic: '🤸', title: 'Body', blurb: 'Move — gentle to vigorous, no equipment' },
-    { go: '#mind', cls: 'mind', ic: '📚', title: 'Mind', blurb: 'Learn — ' + mindSubjects },
-    { go: '#soul', cls: 'soul', ic: '🧘', title: 'Soul', blurb: 'Be still — meditation and calm' },
+    { go: '#mind', cls: 'mind', ic: '🧠', title: 'Mind', blurb: 'Learn — ' + mindSubjects },
+    { go: '#soul', cls: 'soul', ic: '🍃', title: 'Soul', blurb: 'Be still — meditation and calm' },
   ];
   return `<section class="pillars" aria-label="Choose how to grow today">
       <div class="pillar-grid">
@@ -323,7 +331,7 @@ function soulScreen() {
           <div class="med-lib" id="soul-library">${libHTML}</div>
         </details>
       </section>
-      <section class="card soul-bedroom">
+      <section class="card reflective-section soul-bedroom">
         <h2>🔥 Playful · for the bedroom</h2>
         <p class="hint">For consenting adults — frank, spicy intimacy games and bold bedroom tips. Consent, comfort, and communication always come first.</p>
         <a class="btn btn-primary" href="#bedroom">Open</a>
@@ -610,7 +618,7 @@ function safetyHTML() {
 // a workout warning. The full, detailed safety notice still lives on the #safety screen.
 function welcomeHTML() {
   return `
-    <h2>Welcome to Garden Moves 💚</h2>
+    <h2>Welcome to Gardenoosh 💚</h2>
     <p>A calm space to move, learn, and reflect — Mind, Body, and Soul. Everything you do stays private, on this device.</p>
     <ul>
       <li>Go at your own pace. Every activity can be paused or skipped — that is self-care, not failure.</li>
@@ -1045,6 +1053,86 @@ function weightSpark(weights) {
   return `<svg class="you-spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${coords}" fill="none" stroke="var(--green-600)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
 }
 
+// Ginuana — the blue-eyed host coach — steps into her garden to celebrate the user,
+// then leaves when the card is dismissed. The realistic 3D coach is mounted only when
+// the device can drive it; otherwise the card shows the garden alone (graceful, and no
+// model download is forced on a low-end device). She renders on a transparent canvas so
+// the garden backdrop shows through behind her.
+const GINUANA = { id: 'ginuana', name: 'Ginuana' };  // resolves to the host GLB (FALLBACK_MODEL)
+async function mountGardenCoach(slotEl, nameEl) {
+  try {
+    await ensureRealisticClass();
+    const ok = realisticHelpers && realisticHelpers.realisticInstructorSupported && realisticHelpers.realisticInstructorSupported();
+    if (!ok || !slotEl) return null;
+    const canvas = document.createElement('canvas');
+    canvas.className = 'celebrate-coach-canvas';
+    slotEl.appendChild(canvas);
+    const av = new RealisticAvatar(canvas, GINUANA);
+    av.onReady = () => { try { av.setFraming('talk'); } catch { /* default framing */ } };
+    av.start();
+    if (nameEl) nameEl.textContent = GINUANA.name;   // name her only once she is actually here
+    return av;
+  } catch { return null; }
+}
+
+// Shared celebration card: a garden stage (Ginuana + greenery), a headline, affirmations,
+// and layered confetti. Used by both the birthday and the anniversary parties.
+function celebrationParty({ cls, ariaLabel, emoji, headingHTML, lead, okLabel }) {
+  if (document.querySelector('.overlay.party')) return false;   // a celebration is already on screen
+  const ov = document.createElement('div');
+  ov.className = 'overlay party ' + cls;
+  ov.setAttribute('role', 'dialog');
+  ov.setAttribute('aria-modal', 'true');
+  ov.setAttribute('aria-label', ariaLabel);
+  ov.innerHTML = `<div class="overlay-card party-card center">
+    <div class="party-stage">
+      <div class="party-garden" aria-hidden="true">${gardenSVG(8)}</div>
+      <div class="party-coach-slot" aria-hidden="true"></div>
+      <figcaption class="party-coach-name"></figcaption>
+    </div>
+    <div class="bday-emoji" aria-hidden="true">${emoji}</div>
+    <h2>${headingHTML}</h2>
+    ${lead ? `<p class="bday-age">${esc(lead)}</p>` : ''}
+    <ul class="bday-affirm">${AFFIRMATIONS.map((a) => `<li>${esc(a)}</li>`).join('')}</ul>
+    <button class="btn btn-primary" id="party-ok">${esc(okLabel)}</button>
+  </div>`;
+  const prevFocus = document.activeElement;
+  document.body.appendChild(ov);
+  const btn = ov.querySelector('#party-ok');
+  let coach = null, closed = false;
+  // Dispose Ginuana + remove the card on ANY exit — the button, Escape, or navigating
+  // away. The overlay lives on <body>, so a route re-render would otherwise leave it (and
+  // her live WebGL context) orphaned; binding to hashchange closes it on navigation.
+  // Idempotent, and restores focus to wherever it was.
+  const close = () => {
+    if (closed) return;
+    closed = true;
+    window.removeEventListener('hashchange', close);
+    if (coach) { try { coach.dispose(); } catch { /* ok */ } coach = null; }
+    ov.remove();
+    try { if (prevFocus && prevFocus.focus) prevFocus.focus(); } catch { /* ok */ }
+  };
+  btn.focus();
+  ov.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') { e.preventDefault(); btn.focus(); }
+    else if (e.key === 'Escape') close();
+  });
+  btn.addEventListener('click', close);
+  window.addEventListener('hashchange', close);
+  // Ginuana arrives in the garden; if the card is already gone by the time she loads,
+  // dispose her immediately so nothing leaks.
+  mountGardenCoach(ov.querySelector('.party-coach-slot'), ov.querySelector('.party-coach-name')).then((av) => {
+    if (closed || !document.body.contains(ov)) { if (av) { try { av.dispose(); } catch { /* ok */ } } return; }
+    coach = av;
+  });
+  // a big, layered confetti party
+  celebrate(3600);
+  setTimeout(() => celebrate(2800), 500);
+  setTimeout(() => celebrate(2200), 1100);
+  try { sound.sparkle(); } catch { /* sfx optional */ }
+  return true;
+}
+
 // On the user's birthday (and once per year), throw a gentle, affirming party.
 function maybeBirthdayParty() {
   const b = store.profile.birthday;
@@ -1055,33 +1143,40 @@ function maybeBirthdayParty() {
   const yr = String(now.getFullYear());
   if (now.getMonth() + 1 !== bm || now.getDate() !== bd) return;
   if (store.profile.lastBirthdayParty === yr) return;
-  if (document.querySelector('.overlay.birthday')) return;
-  store.profile.lastBirthdayParty = yr; save();
-
   const name = store.profile.name;
   const age = ageFromBirthday(b);
-  const ov = document.createElement('div');
-  ov.className = 'overlay birthday';
-  ov.setAttribute('role', 'dialog');
-  ov.setAttribute('aria-modal', 'true');
-  ov.setAttribute('aria-label', 'Birthday celebration');
-  ov.innerHTML = `<div class="overlay-card birthday-card center">
-    <div class="bday-emoji" aria-hidden="true">🎂🎉</div>
-    <h2>Happy birthday${name ? ', ' + esc(name) : ''}!</h2>
-    ${age != null ? `<p class="bday-age">${age} years of you — and the world is better for it.</p>` : '<p class="bday-age">Today is all about you.</p>'}
-    <ul class="bday-affirm">${AFFIRMATIONS.map((a) => `<li>${esc(a)}</li>`).join('')}</ul>
-    <button class="btn btn-primary" id="bday-ok">Thank you 💛</button>
-  </div>`;
-  document.body.appendChild(ov);
-  const btn = ov.querySelector('#bday-ok');
-  btn.focus();
-  ov.addEventListener('keydown', (e) => { if (e.key === 'Tab') { e.preventDefault(); btn.focus(); } });
-  btn.addEventListener('click', () => ov.remove());
-  // a big, layered confetti party
-  celebrate(3600);
-  setTimeout(() => celebrate(2800), 500);
-  setTimeout(() => celebrate(2200), 1100);
-  try { sound.sparkle(); } catch { /* sfx optional */ }
+  const shown = celebrationParty({
+    cls: 'birthday', ariaLabel: 'Birthday celebration', emoji: '🎂🎉',
+    headingHTML: `Happy birthday${name ? ', ' + esc(name) : ''}!`,
+    lead: age != null ? `${age} years of you — and the world is better for it.` : 'Today is all about you.',
+    okLabel: 'Thank you 💛',
+  });
+  // Only burn the once-a-year guard if the party actually showed (it won't if another
+  // celebration is already up — e.g. a same-day birthday + anniversary).
+  if (shown) { store.profile.lastBirthdayParty = yr; save(); }
+}
+
+// On the anniversary of the day this person started (once per year, never on day zero),
+// Ginuana drops by the garden to mark how far they have come.
+function maybeAnniversaryParty() {
+  const s = store.profile.startedAt;
+  if (!s || typeof s !== 'string' || s.length < 10) return;
+  const [sy, sm, sd] = s.split('-').map(Number);
+  if (!sy || !sm || !sd) return;
+  const now = new Date();
+  const yr = String(now.getFullYear());
+  if (now.getMonth() + 1 !== sm || now.getDate() !== sd) return;
+  if (now.getFullYear() <= sy) return;                 // not on the very first day
+  if (store.profile.lastAnniversaryParty === yr) return;
+  const name = store.profile.name;
+  const years = now.getFullYear() - sy;
+  const shown = celebrationParty({
+    cls: 'anniversary', ariaLabel: 'Anniversary celebration', emoji: '🌱🎉',
+    headingHTML: `Happy anniversary${name ? ', ' + esc(name) : ''}!`,
+    lead: years === 1 ? 'One year of growing with Gardenoosh.' : `${years} years of growing with Gardenoosh.`,
+    okLabel: 'Here’s to more 🌼',
+  });
+  if (shown) { store.profile.lastAnniversaryParty = yr; save(); }
 }
 
 function youScreen() {
@@ -1539,7 +1634,7 @@ async function ensureRealisticClass() {
     // ?v bust: bump on every realistic-avatar.js change so browsers fetch the new
     // module instead of a cached copy (the SW matches with ignoreSearch, so the
     // precached file still serves offline regardless of the query).
-    const mod = await import('./realistic-avatar.js?v=rig12');
+    const mod = await import('./realistic-avatar.js?v=rig14');
     RealisticAvatar = mod.RealisticAvatar;
     realisticHelpers = mod;
   }
@@ -1586,12 +1681,41 @@ async function render() {
   applyThemePref();
   updateTabbar();
   window.scrollTo(0, 0);
-  maybeBirthdayParty();   // once per year, on the day — self-guards against re-showing
+  maybeBirthdayParty();     // once per year, on the day — self-guards against re-showing
+  maybeAnniversaryParty();  // once per year, on the start-date anniversary (never day zero)
   await routeTo(location.hash || '#', seq);
   // Move focus to the new screen's primary heading so keyboard and screen-reader
   // users land on the fresh content instead of being silently dropped to <body>
   // on every route change (WCAG 2.4.3). Skip if a newer render superseded us.
-  if (seq === renderSeq) focusScreenHeading();
+  if (seq === renderSeq) { focusScreenHeading(); makeSectionsCollapsible(); }
+}
+
+// Make every section card collapsible by its title. A card whose FIRST child is a
+// heading (h2/h3) gets that heading wired as a toggle: click — or Enter/Space — minimizes
+// the card to just its title; click again expands it. Re-run on each route change (cards
+// re-render expanded). Cards that lead with non-title content, or that use a native
+// <details> for their own collapse, are left untouched. Modals live on <body>, outside
+// #app, so they are never affected.
+function makeSectionsCollapsible() {
+  const heads = app.querySelectorAll('.card > h2:first-child, .card > h3:first-child, .reflective-section > h2:first-child');
+  heads.forEach((h) => {
+    if (h.dataset.collapsible) return;              // already wired
+    const card = h.parentElement;
+    if (!card || card.children.length < 2) return;  // nothing to hide beneath the title
+    h.dataset.collapsible = '1';
+    h.setAttribute('role', 'button');
+    h.setAttribute('tabindex', '0');
+    h.setAttribute('aria-expanded', 'true');
+    h.classList.add('collapsible-head');
+    const toggle = () => {
+      const collapsed = card.classList.toggle('is-collapsed');
+      h.setAttribute('aria-expanded', String(!collapsed));
+    };
+    h.addEventListener('click', toggle);
+    h.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+    });
+  });
 }
 
 // Centralized focus move for route changes (see render()). The primary heading is
@@ -1663,6 +1787,7 @@ async function routeTo(h, seq) {
     const tail = dash === -1 ? '' : rest.slice(dash + 1);
     if (tail === '') return trackHubScreen(trackId);
     if (tail === 'quiz') return quizScreen(trackId);
+    if (tail.startsWith('cquiz-')) return conceptQuizScreen(trackId, tail.slice('cquiz-'.length));
     if (tail.startsWith('game-')) return gameScreen(trackId, tail.slice('game-'.length));
 
     let plan = null;

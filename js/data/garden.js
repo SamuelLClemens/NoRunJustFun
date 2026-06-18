@@ -1,4 +1,4 @@
-// Garden Moves - garden.js
+// Gardenoosh - garden.js
 // A flat-illustration garden bed that grows with the user, stage 0 through 8.
 // Pure SVG strings, single-quoted attributes, palette colors only, no scripts,
 // no external references. Each stage accumulates everything from the stage

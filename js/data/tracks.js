@@ -342,7 +342,6 @@ export const TRACK_LIST = ['money', 'parenting', 'communication', 'memory'];
 // Soul pillar reflective sections (belief-flagged). Registered tracks, but a separate
 // list so they stay out of Mind.
 export const SOUL_TRACK_LIST = ['crystals', 'dreams'];
-export const DEFAULT_TRACK = 'money';
 
 export function getTrack(id) { return TRACKS[id] || null; }
 

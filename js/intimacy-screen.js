@@ -252,8 +252,8 @@ function dayEditorHTML(date) {
         if (isAnniv) {
           const yrs = anniversaryYears(date);
           anniv = (yrs && yrs >= 1)
-            ? `🎉 ${yrs} year${yrs === 1 ? '' : 's'} with Garden Moves! `
-            : '🎉 You started Garden Moves on this day. ';
+            ? `🎉 ${yrs} year${yrs === 1 ? '' : 's'} with Gardenoosh! `
+            : '🎉 You started Gardenoosh on this day. ';
         }
         return `<p class="hint intim-onday">${isBday ? '🎂 Your birthday! ' : ''}${anniv}${parts.length ? `In the app this day: ${parts.join(', ')}${u && u.mins ? ` · ${u.mins} min` : ''}.` : ''}</p>`;
       })()}

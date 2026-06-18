@@ -1,4 +1,4 @@
-# Garden Moves 🌷
+# Gardenoosh 🌷
 
 *Move, grow, bloom.*
 
@@ -21,7 +21,7 @@ nothing to install or sign up for.
 1. Open the link above in **Safari** on your iPhone.
 2. Tap the **Share** button (the square with the arrow).
 3. Scroll down and tap **"Add to Home Screen"**.
-4. Tap **Add**. You now have a "Garden Moves" app icon — it even works
+4. Tap **Add**. You now have a "Gardenoosh" app icon — it even works
    offline after the first visit.
 
 ### Share it with friends
