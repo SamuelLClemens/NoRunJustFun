@@ -83,6 +83,7 @@ const TABS = [
   { hash: '#mind', label: 'Mind', ic: '🧠' },
   { hash: '#soul', label: 'Soul', ic: '🍃' },
   { hash: '#you',  label: 'You',  ic: '<svg class="tab-veronica" viewBox="-16 -16 32 32" aria-hidden="true"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></svg>' },
+  { hash: '#settings', label: 'Settings', ic: '⚙️' },
 ];
 let _tabbarEl = null;
 function buildTabbar() {
@@ -106,8 +107,13 @@ function updateTabbar() {
     : (h.startsWith('#mind') || h.startsWith('#learn') || h === '#money' || h.startsWith('#fin-')) ? '#mind'
     : (h.startsWith('#soul')) ? '#soul'
     : (h === '#you' || h === '#journal' || h === '#calendar' || h === '#intimacy' || h === '#bedroom') ? '#you'
+    : (h.startsWith('#settings')) ? '#settings'
     : '';
-  _tabbarEl.querySelectorAll('a').forEach((a) => a.classList.toggle('active', a.dataset.tab === active));
+  _tabbarEl.querySelectorAll('a').forEach((a) => {
+    const on = a.dataset.tab === active;
+    a.classList.toggle('active', on);
+    if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+  });
 }
 
 // Logo lockup — the wordmark "Gardenoosh" with a single brand veronica flower blooming at
@@ -117,8 +123,8 @@ function logoSVG() {
   return `<svg class="logo-svg" viewBox="0 0 432 104" role="img" aria-label="Gardenoosh" xmlns="http://www.w3.org/2000/svg">
     <title>Gardenoosh</title>
     <text x="14" y="88" font-family="Fredoka, 'Avenir Next Rounded', system-ui, sans-serif" font-weight="600" font-size="66" fill="var(--ink, #1F4D2E)" textLength="404" lengthAdjust="spacingAndGlyphs">Gardenoosh</text>
-    <g transform="translate(165 44) scale(0.46)"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></g>
-    <g transform="translate(388 44) scale(0.46)"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></g>
+    <g transform="translate(165 38) scale(0.6)"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></g>
+    <g transform="translate(388 38) scale(0.6)"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></g>
   </svg>`;
 }
 
@@ -154,9 +160,7 @@ function homeScreen() {
       <div class="brand">${logoSVG()}</div>
       <nav class="topnav">
         <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch between light and dark" title="Light / dark">${store.profile.theme === 'dark' ? '☀️' : '🌙'}</button>
-        <a href="#you">You</a>
         <a href="#badges">Badges</a>
-        <a href="#settings" aria-label="Settings">Settings</a>
       </nav>
     </header>
     <main class="home">
@@ -1311,6 +1315,10 @@ function youScreen() {
         ${prof.birthday ? `<p class="hint">${daysToBirthday(prof.birthday) === 0 ? '🎉 It is your birthday today!' : 'Next birthday in <strong>' + daysToBirthday(prof.birthday) + '</strong> day' + (daysToBirthday(prof.birthday) === 1 ? '' : 's') + '.'}</p>` : ''}
       </section>
 
+      <section class="card">
+        <a class="btn you-settings-link" href="#settings">⚙️ Settings</a>
+      </section>
+
       <footer class="privacy-note"><p>🌱 <strong>Private by design.</strong> Everything here — including your weight and birthday — lives only on this device and never leaves it.</p></footer>
     </main>`;
 
@@ -1397,17 +1405,6 @@ function badgesScreen() {
 
 // ---------------------------------------------------------------- settings
 
-function portraitSVG(c) {
-  return `<svg viewBox="0 0 64 64" aria-hidden="true">
-    <circle cx="32" cy="36" r="17" fill="${c.skin}"/>
-    <path d="M14 34 a18 18 0 0 1 36 0 l-3 -10 a16 16 0 0 0 -30 0 z" fill="${c.hair}"/>
-    <circle cx="32" cy="20" r="11" fill="${c.hair}"/>
-    <circle cx="26" cy="36" r="2" fill="#27201b"/><circle cx="38" cy="36" r="2" fill="#27201b"/>
-    <path d="M27 43 q5 4 10 0" stroke="#27201b" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <rect x="20" y="52" width="24" height="10" rx="5" fill="${c.top}"/>
-  </svg>`;
-}
-
 function settingsScreen() {
   const p = store.profile;
   const voices = coach.listVoices();
@@ -1424,7 +1421,7 @@ function settingsScreen() {
         <div class="char-grid">
           ${CHARACTERS.map((c) => `
             <button class="char-card ${c.id === p.character ? 'selected' : ''}" data-id="${c.id}" aria-pressed="${c.id === p.character}">
-              ${portraitSVG(c)}<span>${c.name}</span><small>${c.blurb}</small>
+              <img class="char-face" src="icons/coach-${esc(c.id)}.jpg" alt="" width="72" height="72" onerror="this.style.display='none'"><span>${esc(c.name)}</span><small>${esc(c.blurb)}</small>
             </button>`).join('')}
         </div>
       </section>

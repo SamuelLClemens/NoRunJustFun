@@ -586,7 +586,7 @@ const MONTH_ABBR = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep
 
 // --- Export / backup (the user's own data, by their action) -------------
 export function exportData() {
-  return JSON.stringify({ app: 'garden-moves', type: 'personal-calendar', schema: 1, exported: todayStr(), data: im() }, null, 2);
+  return JSON.stringify({ app: 'gardenoosh', type: 'personal-calendar', schema: 1, exported: todayStr(), data: im() }, null, 2);
 }
 export function importData(text) {
   try {

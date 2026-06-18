@@ -1,7 +1,7 @@
 // Offline support: precache the whole app on install, serve cache-first.
 // Bump CACHE_VERSION with every release so updates roll out cleanly.
 
-const CACHE_VERSION = 'ygt-v4.71.0';
+const CACHE_VERSION = 'ygt-v4.74.0';
 
 const PRECACHE = [
   './',
@@ -91,6 +91,11 @@ const PRECACHE = [
   'icons/favicon-48.png',
   'icons/favicon-32.png',
   'icons/favicon-16.png',
+  // coach faces (rendered from the 3D avatars) for the coach picker
+  'icons/coach-jasmine.jpg',
+  'icons/coach-nokeke.jpg',
+  'icons/coach-abednego.jpg',
+  'icons/coach-aguibou.jpg',
 ];
 
 // Large immutable binaries (the opt-in coach GLBs) live in a STABLE runtime cache so a

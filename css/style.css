@@ -145,7 +145,7 @@ html[data-theme="dark"] .intim-sym-chip { background: var(--card); color: var(--
   flex: 1 1 0; min-height: 48px; display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 2px; text-decoration: none;
   color: var(--ink-soft); font: 800 0.64rem var(--font-body); letter-spacing: 0.02em;
-  border-radius: var(--radius-sm); padding: 4px 2px;
+  border-radius: var(--radius-sm); padding: 4px 2px; white-space: nowrap;
   transition: color var(--dur-2) var(--ease-settle), background-color var(--dur-2) var(--ease-settle);
 }
 .tabbar a .tab-ic { font-size: 1.25rem; line-height: 1; }
@@ -445,6 +445,7 @@ input[type='range'] { accent-color: var(--green-500); }
   padding: 10px; display: flex; flex-direction: column; align-items: center; gap: 2px;
 }
 .char-card svg { width: 64px; height: 64px; }
+.char-card .char-face { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; object-position: center top; background: var(--green-100); }
 .char-card.selected { border-color: var(--green-500); background: var(--green-100); }
 .char-card small { color: var(--ink-soft); font-size: 0.75rem; }
 .style-row { display: grid; grid-template-columns: 1fr; gap: 8px; }
