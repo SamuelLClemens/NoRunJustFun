@@ -448,7 +448,7 @@ export class RealisticAvatar {
       // Coach GLBs export bulging eyeballs; seat them. The host's high-poly cornea eyes
       // render blank in our opaque pipeline, so paint a parametric iris over them instead.
       if (this._modelUrl.includes('coach-host')) this._buildHostIris();
-      else if (this._modelUrl.includes('coach-')) this._seatEyes(0.70);
+      else if (this._modelUrl.includes('coach-')) this._seatEyes(0.60);
       // Snapshot the rest pose for the exercise player: the grounded position to pose
       // from, the lowest foot height for per-frame re-grounding, and each joint's rest
       // orientation in the model frame (so spec body-space angles retarget to this rig).
