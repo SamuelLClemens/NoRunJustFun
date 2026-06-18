@@ -107,8 +107,13 @@ function updateTabbar() {
     : (h.startsWith('#mind') || h.startsWith('#learn') || h === '#money' || h.startsWith('#fin-')) ? '#mind'
     : (h.startsWith('#soul')) ? '#soul'
     : (h === '#you' || h === '#journal' || h === '#calendar' || h === '#intimacy' || h === '#bedroom') ? '#you'
+    : (h.startsWith('#settings')) ? '#settings'
     : '';
-  _tabbarEl.querySelectorAll('a').forEach((a) => a.classList.toggle('active', a.dataset.tab === active));
+  _tabbarEl.querySelectorAll('a').forEach((a) => {
+    const on = a.dataset.tab === active;
+    a.classList.toggle('active', on);
+    if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+  });
 }
 
 // Logo lockup — the wordmark "Gardenoosh" with a single brand veronica flower blooming at
@@ -155,9 +160,7 @@ function homeScreen() {
       <div class="brand">${logoSVG()}</div>
       <nav class="topnav">
         <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch between light and dark" title="Light / dark">${store.profile.theme === 'dark' ? '☀️' : '🌙'}</button>
-        <a href="#you">You</a>
         <a href="#badges">Badges</a>
-        <a href="#settings" aria-label="Settings">Settings</a>
       </nav>
     </header>
     <main class="home">
@@ -1418,7 +1421,7 @@ function settingsScreen() {
         <div class="char-grid">
           ${CHARACTERS.map((c) => `
             <button class="char-card ${c.id === p.character ? 'selected' : ''}" data-id="${c.id}" aria-pressed="${c.id === p.character}">
-              <img class="char-face" src="icons/coach-${esc(c.id)}.jpg" alt="${esc(c.name)}" width="72" height="72" onerror="this.style.display='none'"><span>${c.name}</span><small>${c.blurb}</small>
+              <img class="char-face" src="icons/coach-${esc(c.id)}.jpg" alt="" width="72" height="72" onerror="this.style.display='none'"><span>${esc(c.name)}</span><small>${esc(c.blurb)}</small>
             </button>`).join('')}
         </div>
       </section>

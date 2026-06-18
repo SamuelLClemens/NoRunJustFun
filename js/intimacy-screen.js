@@ -587,7 +587,7 @@ function bind(app) {
       const blob = new Blob([exportData()], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = 'garden-moves-personal-calendar.json';
+      a.href = url; a.download = 'gardenoosh-personal-calendar.json';
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
       _importMsg = 'Exported. Keep that file somewhere safe — it is not encrypted.';
