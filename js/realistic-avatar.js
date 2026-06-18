@@ -269,6 +269,8 @@ export class RealisticAvatar {
     this.pivot.rotation.y = 14 * D2R;
     this.scene.add(this.pivot);
 
+    this._buildGarden();                 // the coach stands in a real-looking garden
+
     this.model = null;
     this.skeleton = null;
     this.rest = new Map();               // bone -> rest quaternion
@@ -620,6 +622,54 @@ export class RealisticAvatar {
       const b = this.bones.get(n);
       if (b) { b.scale.setScalar(scale); b.updateMatrix(); }
     }
+  }
+
+  // A soft "real garden" setting behind the coach: a sky→meadow gradient sky, a grassy
+  // ground disc, and a scattering of grass tufts + a few flowers set BACK and to the sides
+  // so they never obscure the coach demonstrating. Low-poly + static (cheap on mobile, and
+  // safe under reduced motion). Built once per scene; freed in dispose().
+  _buildGarden() {
+    try {
+      const sky = document.createElement('canvas'); sky.width = 8; sky.height = 256;
+      const g2 = sky.getContext('2d');
+      const grad = g2.createLinearGradient(0, 0, 0, 256);
+      grad.addColorStop(0.0, '#c7e3ec'); grad.addColorStop(0.5, '#dcecd6'); grad.addColorStop(1.0, '#a6c987');
+      g2.fillStyle = grad; g2.fillRect(0, 0, 8, 256);
+      const tex = new THREE.CanvasTexture(sky); tex.colorSpace = THREE.SRGBColorSpace;
+      this.scene.background = tex;
+    } catch { /* gradient sky is an enhancement */ }
+
+    const garden = new THREE.Group();
+    const ground = new THREE.Mesh(new THREE.CircleGeometry(7, 40),
+      new THREE.MeshStandardMaterial({ color: 0x6f9e57, roughness: 1, metalness: 0 }));
+    ground.rotation.x = -Math.PI / 2;
+    garden.add(ground);
+
+    const tuftGeo = new THREE.ConeGeometry(0.11, 0.4, 5);
+    const tuftMat = new THREE.MeshStandardMaterial({ color: 0x568f45, roughness: 0.95 });
+    const stemGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.34, 5);
+    const stemMat = new THREE.MeshStandardMaterial({ color: 0x4e8f4a, roughness: 0.9 });
+    const headGeo = new THREE.SphereGeometry(0.06, 10, 8);
+    const petals = [0xE07856, 0x7B8FE8, 0xFFD45C, 0xB5478B, 0xF0A98E];
+    // plants biased BEHIND (−z) and to the sides — never directly in front of the coach
+    const spots = [[-1.5, -0.6], [-1.9, -1.4], [-0.8, -1.6], [0.0, -1.9], [0.9, -1.6],
+      [1.7, -1.2], [1.5, -0.4], [-1.2, 0.5], [1.2, 0.6], [-2.1, -0.2], [2.1, -0.5]];
+    spots.forEach(([x, z], i) => {
+      const tuft = new THREE.Mesh(tuftGeo, tuftMat);
+      tuft.position.set(x, 0.2, z); tuft.scale.setScalar(0.8 + (i % 3) * 0.25);
+      garden.add(tuft);
+      if (i % 2 === 0) {
+        const fl = new THREE.Group();
+        const stem = new THREE.Mesh(stemGeo, stemMat); stem.position.y = 0.17; fl.add(stem);
+        const head = new THREE.Mesh(headGeo, new THREE.MeshStandardMaterial({ color: petals[i % petals.length], roughness: 0.65 }));
+        head.position.y = 0.36; fl.add(head);
+        fl.position.set(x + 0.18, 0, z + 0.12);
+        garden.add(fl);
+      }
+    });
+    garden.traverse((o) => { o.frustumCulled = false; o.castShadow = false; });
+    this.scene.add(garden);
+    this._garden = garden;
   }
 
   // The shared host GLB ships MakeHuman HIGH-POLY eyes: a clear cornea dome over a
@@ -1230,6 +1280,7 @@ export class RealisticAvatar {
     this.bones.clear(); this.rest.clear(); this.morphs.clear();
     this._restBasis.clear(); this._rig = {};
     this._basePos = null; this._restFootY = null; this._glasses = null;
+    try { if (this._garden) disposeModel(this._garden); if (this.scene && this.scene.background && this.scene.background.dispose) this.scene.background.dispose(); } catch { /* ok */ }
     try { if (this._envRT) this._envRT.dispose(); if (this._pmrem) this._pmrem.dispose(); if (this._shadowTex) this._shadowTex.dispose(); } catch { /* ok */ }
     this.scene.environment = null;
     this.renderer.dispose();
