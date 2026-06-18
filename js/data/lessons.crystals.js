@@ -8,6 +8,8 @@
 
 import { makeDisclaimerSeg, makeLessonModule } from './lessons.shared.js';
 // Reading-level variants load lazily via ensureVariants() in lessons.shared.js.
+// Extension lessons (expansion to 36) are authored separately and merged below.
+import { EXTRA_LESSONS_CRYSTALS, EXTRA_CURRICULUM_CRYSTALS } from './lessons.crystals.ext.js';
 
 export const CRYSTALS_DISCLAIMER = "This section explores crystal practices as a cultural and reflective tradition. It is educational only — not medical, psychological, or scientific advice, and not a substitute for professional care. There is no good scientific evidence that crystals emit energy or heal; any benefits people report are best explained by relaxation, ritual, and the placebo effect. Please never use crystals in place of medical or mental-health treatment.";
 
@@ -277,6 +279,11 @@ const LESSONS = {
 
 // Curriculum order for the duration-scaled session (welcome is the intro).
 const CURRICULUM = ["crystals-overview", "what-crystals-really-are", "history-of-crystal-lore", "the-energy-and-chakra-belief", "what-science-says-crystals", "the-placebo-and-ritual-effect", "popular-stones-and-their-lore", "crystals-as-a-mindfulness-anchor", "staying-safe-and-skeptical", "choosing-and-caring-for-stones"];
+
+// Merge the extension lessons (10 -> 36). Must run BEFORE makeLessonModule, which
+// reads LESSONS + CURRICULUM at build time.
+Object.assign(LESSONS, EXTRA_LESSONS_CRYSTALS);
+CURRICULUM.push(...EXTRA_CURRICULUM_CRYSTALS);
 
 const mod = makeLessonModule({
   LESSONS, CURRICULUM,

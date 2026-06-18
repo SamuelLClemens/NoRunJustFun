@@ -77,5 +77,26 @@ export const CRYSTALS_BADGES = [
     "name": "Crystal Scholar",
     "desc": "Every crystal lesson, finished — beauty, history, belief and evidence, all held together. You can speak about this with care and clarity.",
     "icon": "<svg viewBox='0 0 48 48'><path d='M24 6l12 9-12 27-12-27z' fill='#B79CE8' stroke='#7A57C2' stroke-width='2.2' stroke-linejoin='round'/><path d='M24 6l12 9-12 8-12-8z' fill='#E4DAF6'/><path d='M19 27l3.5 4 7-8' fill='none' stroke='#5E3FA6' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>"
+  },
+  {
+    "id": "cry-gamer",
+    "category": "crystals",
+    "name": "Curious Player",
+    "desc": "You won your first crystal game — testing what you have learned, the playful way.",
+    "icon": "<svg viewBox='0 0 48 48'><path d='M24 8l9 8-9 24-9-24z' fill='#B79CE8' stroke='#7A57C2' stroke-width='2' stroke-linejoin='round'/><path d='M21 18l8 5-8 5z' fill='#5E3FA6'/></svg>"
+  },
+  {
+    "id": "cry-sharp",
+    "category": "crystals",
+    "name": "Sharp Skeptic",
+    "desc": "Five crystal games won. You can tell the lore from the evidence at a glance — and enjoy both.",
+    "icon": "<svg viewBox='0 0 48 48'><path d='M24 8l9 8-9 24-9-24z' fill='#B79CE8' stroke='#7A57C2' stroke-width='2' stroke-linejoin='round'/><path d='M26 16l-8 10h5l-3 7 8-11h-5z' fill='#FFD45C' stroke='#C9A227' stroke-width='0.8' stroke-linejoin='round'/></svg>"
+  },
+  {
+    "id": "cry-master",
+    "category": "crystals",
+    "name": "Crystal Master",
+    "desc": "Every lesson done, the final exam passed, and a game won — you hold the beauty and the evidence with equal care.",
+    "icon": "<svg viewBox='0 0 48 48'><path d='M24 12l10 8-10 22-10-22z' fill='#B79CE8' stroke='#7A57C2' stroke-width='2.2' stroke-linejoin='round'/><path d='M15 8l4 5 5-6 5 6 4-5-2 9H17z' fill='#FFD45C' stroke='#C9A227' stroke-width='1' stroke-linejoin='round'/></svg>"
   }
 ];

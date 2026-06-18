@@ -1489,5 +1489,663 @@ export const LEARN_EXTRAS = {
         }
       ]
     }),
+  },
+  "crystals": {
+    quiz: {
+      "intro": "A final exam across the whole crystal section: real mineralogy, the traditions stated as belief, what the evidence shows, and staying safe.",
+      "rounds": [
+            {
+                  "prompt": "Quartz is piezoelectric — what does that genuinely mean?",
+                  "options": [
+                        {
+                              "text": "It generates a tiny voltage when squeezed (and vibrates precisely when voltage is applied), which is used in watches",
+                              "correct": true,
+                              "feedback": "Correct. This is real, measurable physics — the basis of quartz timekeeping — not evidence of a healing energy."
+                        },
+                        {
+                              "text": "It stores and releases human emotional energy",
+                              "correct": false,
+                              "feedback": "No. Piezoelectricity is an electrical effect; it does not store emotions."
+                        },
+                        {
+                              "text": "It heats up to soothe sore muscles on its own",
+                              "correct": false,
+                              "feedback": "No. Quartz does not self-heat; piezoelectricity is about charge, not warmth."
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Most inexpensive 'citrine' sold today is actually:",
+                  "options": [
+                        {
+                              "text": "Amethyst that has been heat-treated to turn orange",
+                              "correct": true,
+                              "feedback": "Correct. Heating amethyst is the common, real source of commercial citrine's colour."
+                        },
+                        {
+                              "text": "Natural citrine charged in moonlight",
+                              "correct": false,
+                              "feedback": "No. Moonlight changes nothing; the colour comes from heat treatment."
+                        },
+                        {
+                              "text": "Dyed glass with no mineral content",
+                              "correct": false,
+                              "feedback": "Usually not glass — it is genuine quartz (amethyst) that has been heated."
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Why should selenite be kept away from water?",
+                  "options": [
+                        {
+                              "text": "It is gypsum, a soft mineral that dissolves in water",
+                              "correct": true,
+                              "feedback": "Correct. Selenite is water-soluble gypsum; soaking it causes real, physical damage."
+                        },
+                        {
+                              "text": "Water erases the spirits stored inside it",
+                              "correct": false,
+                              "feedback": "No. The real reason is dissolution — selenite is gypsum."
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Which set of raw stones is genuinely toxic to grind, inhale, or make elixirs from?",
+                  "options": [
+                        {
+                              "text": "Malachite/azurite (copper), cinnabar (mercury), galena (lead), realgar/orpiment (arsenic)",
+                              "correct": true,
+                              "feedback": "Correct. These contain heavy metals or mercury/arsenic. Never make a gem elixir from unknown stones or inhale their dust."
+                        },
+                        {
+                              "text": "Clear quartz, amethyst, and rose quartz",
+                              "correct": false,
+                              "feedback": "Those are relatively inert. The dangerous ones contain copper, mercury, lead, or arsenic."
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Why handle obsidian with a little caution?",
+                  "options": [
+                        {
+                              "text": "It is natural volcanic glass with edges that can be razor-sharp",
+                              "correct": true,
+                              "feedback": "Correct. Obsidian is glass; broken edges can cut you."
+                        },
+                        {
+                              "text": "It can explode if held too long",
+                              "correct": false,
+                              "feedback": "No. The real risk is sharp edges, not explosions."
+                        }
+                  ]
+            },
+            {
+                  "prompt": "In the French and Williams study, people given imitation crystals:",
+                  "options": [
+                        {
+                              "text": "Reported 'feeling energy' about as often as with real crystals",
+                              "correct": true,
+                              "feedback": "Correct. Fakes produced the same reported sensations — a hallmark of expectation and placebo."
+                        },
+                        {
+                              "text": "Felt nothing at all, unlike with real crystals",
+                              "correct": false,
+                              "feedback": "No. Fakes worked just as well in reports, which is the key finding."
+                        }
+                  ]
+            },
+            {
+                  "prompt": "How do psychologists explain the genuine calm some people get from crystals?",
+                  "options": [
+                        {
+                              "text": "Placebo, ritual, focused attention, and magical thinking — the calm is real, the cause is not the stone",
+                              "correct": true,
+                              "feedback": "Correct. The benefit is real but comes from the practice around the stone, not a special energy."
+                        },
+                        {
+                              "text": "A documented healing field unique to minerals",
+                              "correct": false,
+                              "feedback": "No such field has been measured. The honest explanation is placebo and ritual."
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Where did the common modern birthstone list come from?",
+                  "options": [
+                        {
+                              "text": "It was largely standardised by jewelers around 1912",
+                              "correct": true,
+                              "feedback": "Correct. It is a relatively recent commercial convention, not ancient universal law."
+                        },
+                        {
+                              "text": "It was decreed by ancient astronomers and never changed",
+                              "correct": false,
+                              "feedback": "No. Lists vary widely; the familiar one is a 1912-era jewelers' standard."
+                        }
+                  ]
+            },
+            {
+                  "prompt": "A relative wants to stop their prescribed medication and use crystals instead. The responsible thing to say is:",
+                  "options": [
+                        {
+                              "text": "Crystals are not a substitute for medical care; keep following your doctor and use crystals only as a calming ritual if you enjoy them",
+                              "correct": true,
+                              "feedback": "Correct. There is no evidence crystals treat disease, and stopping real treatment can be harmful."
+                        },
+                        {
+                              "text": "Sure, the right stone makes medicine unnecessary",
+                              "correct": false,
+                              "feedback": "No. That is unsupported and potentially dangerous."
+                        }
+                  ]
+            },
+            {
+                  "prompt": "A question asks: 'In crystal tradition, what is amethyst associated with?' The best answer is:",
+                  "options": [
+                        {
+                              "text": "Calm and clarity — stated clearly as a traditional belief, not a validated effect",
+                              "correct": true,
+                              "feedback": "Correct. Describe the lore accurately as lore: amethyst's calm association is cultural, not scientifically demonstrated."
+                        },
+                        {
+                              "text": "Nothing — the tradition has no meaning for it",
+                              "correct": false,
+                              "feedback": "No. The tradition does associate amethyst with calm; the honest framing is that this is belief, not evidence."
+                        }
+                  ]
+            }
+      ]
+},
+    expertTips: [
+      {
+            "from": "Mineralogist",
+            "tip": "Treat crystals as the beautiful, well-understood minerals they are — quartz is silicon dioxide, and most cheap citrine is just heat-treated amethyst."
+      },
+      {
+            "from": "Toxicologist",
+            "tip": "Never make 'gem elixirs' from unknown stones or inhale rock dust, because cinnabar (mercury), galena (lead), malachite and azurite (copper), and realgar and orpiment (arsenic) are genuinely poisonous."
+      },
+      {
+            "from": "Clinical psychologist",
+            "tip": "If a crystal helps you slow down and breathe, enjoy it as a calming ritual, but recognise the benefit comes from the pause and your expectation, not from the stone."
+      },
+      {
+            "from": "Physician",
+            "tip": "Crystals are not a treatment for illness, so keep taking prescribed medicine and never delay real medical care in favour of stones."
+      },
+      {
+            "from": "Lapidary and rock-shop owner",
+            "tip": "Keep selenite away from water since it is soft gypsum that dissolves, and handle obsidian carefully because its glassy edges can be very sharp."
+      }
+],
+    topTakeaways: [
+      "Crystals are real, ordinary minerals; quartz's piezoelectricity is genuine physics used in watches, but that is not the same as a 'healing energy'.",
+      "There is no good evidence for crystal healing beyond relaxation, ritual, attention, and placebo — people 'felt energy' from fake crystals just as readily as real ones.",
+      "Traditions assign meanings to stones (amethyst-calm, rose quartz-love), and modern birthstone lists were largely set by jewelers around 1912 — these are beliefs, not validated facts.",
+      "Stay safe: some raw stones are toxic (mercury, lead, copper, arsenic), selenite dissolves in water, obsidian is sharp, and crystals are never a substitute for medical care."
+],
+    arcade: makeGame({
+      "id": "crystal-blitz",
+      "name": "Crystal Blitz",
+      "blurb": "Fast calls: fact or folklore, safe or risky.",
+      "icon": "✨",
+      "type": "blitz",
+      "win": "Lightning-fast and honest — gleaming work!",
+      "items": [
+            {
+                  "prompt": "Quartz watches use real physics.",
+                  "options": [
+                        {
+                              "text": "True",
+                              "correct": true
+                        },
+                        {
+                              "text": "False",
+                              "correct": false
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Crystals have a proven healing energy.",
+                  "options": [
+                        {
+                              "text": "True",
+                              "correct": false
+                        },
+                        {
+                              "text": "False",
+                              "correct": true
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Soak selenite in water to cleanse it?",
+                  "options": [
+                        {
+                              "text": "No — it dissolves",
+                              "correct": true
+                        },
+                        {
+                              "text": "Yes — it loves water",
+                              "correct": false
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Cinnabar contains a toxic metal.",
+                  "options": [
+                        {
+                              "text": "True (mercury)",
+                              "correct": true
+                        },
+                        {
+                              "text": "False",
+                              "correct": false
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Most cheap citrine is…",
+                  "options": [
+                        {
+                              "text": "Heat-treated amethyst",
+                              "correct": true
+                        },
+                        {
+                              "text": "Moon-charged crystal",
+                              "correct": false
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Fake crystals made people 'feel energy' too.",
+                  "options": [
+                        {
+                              "text": "True",
+                              "correct": true
+                        },
+                        {
+                              "text": "False",
+                              "correct": false
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Crystals can replace your medicine.",
+                  "options": [
+                        {
+                              "text": "No",
+                              "correct": true
+                        },
+                        {
+                              "text": "Yes",
+                              "correct": false
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Obsidian edges can be razor-sharp.",
+                  "options": [
+                        {
+                              "text": "True",
+                              "correct": true
+                        },
+                        {
+                              "text": "False",
+                              "correct": false
+                        }
+                  ]
+            }
+      ]
+}),
+  },
+  "dreams": {
+    quiz: {
+      "intro": "A final exam across the night: what sleep science shows, what dream traditions hold, and how to tell the two apart with care.",
+      "rounds": [
+            {
+                  "prompt": "About how long is a full NREM-REM sleep cycle?",
+                  "options": [
+                        {
+                              "text": "Roughly 90 minutes",
+                              "correct": true,
+                              "feedback": "Correct. Cycles repeat about every 90 minutes through the night."
+                        },
+                        {
+                              "text": "Roughly 5 minutes",
+                              "correct": false,
+                              "feedback": "Far too short; the cycle is around 90 minutes."
+                        },
+                        {
+                              "text": "Roughly 6 hours",
+                              "correct": false,
+                              "feedback": "That is most of a night; one cycle is about 90 minutes."
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Most vivid, story-like dreams occur during:",
+                  "options": [
+                        {
+                              "text": "REM sleep",
+                              "correct": true,
+                              "feedback": "Correct. REM is the home of most vivid dreaming."
+                        },
+                        {
+                              "text": "The first minute after lying down",
+                              "correct": false,
+                              "feedback": "Vivid dreams concentrate in REM, which comes later in each cycle."
+                        },
+                        {
+                              "text": "Only during night terrors",
+                              "correct": false,
+                              "feedback": "Night terrors are NREM; vivid dreams are REM."
+                        }
+                  ]
+            },
+            {
+                  "prompt": "What does the evidence say about a single universal meaning for each dream symbol?",
+                  "options": [
+                        {
+                              "text": "No scientifically validated universal dream dictionary exists",
+                              "correct": true,
+                              "feedback": "Correct. Fixed, universal symbol meanings are not supported by research."
+                        },
+                        {
+                              "text": "Science has confirmed one fixed meaning per symbol",
+                              "correct": false,
+                              "feedback": "No such universal key has been validated."
+                        },
+                        {
+                              "text": "Meanings are validated for animals but not objects",
+                              "correct": false,
+                              "feedback": "No category of symbol has a scientifically fixed meaning."
+                        }
+                  ]
+            },
+            {
+                  "prompt": "The continuity hypothesis holds that dreams mostly:",
+                  "options": [
+                        {
+                              "text": "Reflect our waking concerns",
+                              "correct": true,
+                              "feedback": "Correct. Domhoff's view links dream content to waking life."
+                        },
+                        {
+                              "text": "Reveal events that will happen",
+                              "correct": false,
+                              "feedback": "It concerns waking life, not foresight."
+                        },
+                        {
+                              "text": "Are random and unrelated to the dreamer",
+                              "correct": false,
+                              "feedback": "It says the opposite: dreams continue our waking preoccupations."
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Activation-synthesis (Hobson and McCarley, 1977) describes dreams as:",
+                  "options": [
+                        {
+                              "text": "The brain making a narrative from spontaneous sleep-time activity",
+                              "correct": true,
+                              "feedback": "Correct. The mind synthesises a story from internal signals."
+                        },
+                        {
+                              "text": "Messages delivered from outside the dreamer",
+                              "correct": false,
+                              "feedback": "The theory is about the brain's own activity."
+                        },
+                        {
+                              "text": "A perfect recording of the previous day",
+                              "correct": false,
+                              "feedback": "Dreams are reconstructions, not faithful recordings."
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Common themes such as falling, being chased, or teeth falling out usually:",
+                  "options": [
+                        {
+                              "text": "Track stress and are widely reported",
+                              "correct": true,
+                              "feedback": "Correct. They are common and tend to rise with stress."
+                        },
+                        {
+                              "text": "Each carry a single official meaning",
+                              "correct": false,
+                              "feedback": "There is no single official meaning; context and stress matter."
+                        },
+                        {
+                              "text": "Indicate a fixed future event",
+                              "correct": false,
+                              "feedback": "They reflect waking stress, not fixed events."
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Briefly being unable to move on waking is:",
+                  "options": [
+                        {
+                              "text": "Sleep paralysis — lingering REM atonia, brief and harmless",
+                              "correct": true,
+                              "feedback": "Correct. It is REM muscle atonia overlapping with waking."
+                        },
+                        {
+                              "text": "A paranormal attack",
+                              "correct": false,
+                              "feedback": "It is a known REM phenomenon, not paranormal."
+                        },
+                        {
+                              "text": "A permanent neurological condition",
+                              "correct": false,
+                              "feedback": "It is brief and benign, caused by REM atonia."
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Night terrors, compared with nightmares, are:",
+                  "options": [
+                        {
+                              "text": "NREM events, common in children, often poorly remembered",
+                              "correct": true,
+                              "feedback": "Correct. Night terrors arise in NREM, mostly in childhood."
+                        },
+                        {
+                              "text": "Vividly recalled REM dreams",
+                              "correct": false,
+                              "feedback": "That describes nightmares, which are REM events."
+                        },
+                        {
+                              "text": "Identical to lucid dreams",
+                              "correct": false,
+                              "feedback": "They are unrelated to lucid dreaming."
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Lucid dreaming was verified in the lab by:",
+                  "options": [
+                        {
+                              "text": "LaBerge's deliberate eye-movement signals during REM at Stanford",
+                              "correct": true,
+                              "feedback": "Correct. Pre-agreed eye signals proved awareness within the dream."
+                        },
+                        {
+                              "text": "A dream dictionary lookup",
+                              "correct": false,
+                              "feedback": "Dictionaries play no role; the eye-signal method verified it."
+                        },
+                        {
+                              "text": "Astrological timing",
+                              "correct": false,
+                              "feedback": "It was verified by measurable eye signals during REM."
+                        }
+                  ]
+            },
+            {
+                  "prompt": "If someone has chronic, distressing nightmares, the most honest and caring guidance is:",
+                  "options": [
+                        {
+                              "text": "They are treatable (e.g. Imagery Rehearsal Therapy); seeing a professional can help",
+                              "correct": true,
+                              "feedback": "Correct. Effective treatments exist and professional help is recommended."
+                        },
+                        {
+                              "text": "Reassure them the nightmares foretell good luck",
+                              "correct": false,
+                              "feedback": "That makes an unfounded claim instead of pointing to real help."
+                        },
+                        {
+                              "text": "Tell them nothing can be done",
+                              "correct": false,
+                              "feedback": "Much can be done; treatments like IRT are recommended."
+                        }
+                  ]
+            }
+      ]
+},
+    expertTips: [
+      {
+            "from": "Sleep scientist",
+            "tip": "Vivid dreams mostly happen in REM, and REM lengthens toward morning, so your longest dreams often come just before you wake."
+      },
+      {
+            "from": "Clinical psychologist",
+            "tip": "Treat a striking dream as a window onto your waking concerns rather than a coded message with one fixed meaning."
+      },
+      {
+            "from": "Sleep medicine physician",
+            "tip": "If nightmares are frequent and distressing, ask a clinician about Imagery Rehearsal Therapy, which has good evidence behind it."
+      },
+      {
+            "from": "Neuroscientist",
+            "tip": "Sleep paralysis is just REM muscle atonia overlapping with waking; it feels frightening but is brief and harmless."
+      },
+      {
+            "from": "Grief counsellor",
+            "tip": "Dreams of someone who has died are common and can be comforting; you can honour the feeling without treating it as literal contact."
+      }
+],
+    topTakeaways: [
+      "Sleep cycles about every 90 minutes, and most vivid dreams happen in REM, which grows longer toward morning.",
+      "Traditions assign meanings to dream symbols, but no universal dream dictionary is scientifically validated; dreams mostly reflect waking concerns.",
+      "Common themes like falling or being chased usually track stress rather than carrying one fixed meaning or signalling fixed events.",
+      "Chronic nightmares are treatable and grief dreams are normal, so seek professional help when sleep distress persists."
+],
+    arcade: makeGame({
+      "id": "dream-blitz",
+      "name": "Dream Blitz",
+      "blurb": "Fast calls: true sleep science versus dream myth.",
+      "icon": "🌙",
+      "type": "blitz",
+      "win": "Lightning-clear on the science of dreams!",
+      "items": [
+            {
+                  "prompt": "Most vivid dreams happen in REM.",
+                  "options": [
+                        {
+                              "text": "True",
+                              "correct": true
+                        },
+                        {
+                              "text": "False",
+                              "correct": false
+                        }
+                  ]
+            },
+            {
+                  "prompt": "A universal dream dictionary is scientifically proven.",
+                  "options": [
+                        {
+                              "text": "True",
+                              "correct": false
+                        },
+                        {
+                              "text": "False",
+                              "correct": true
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Sleep cycles repeat about every 90 minutes.",
+                  "options": [
+                        {
+                              "text": "True",
+                              "correct": true
+                        },
+                        {
+                              "text": "False",
+                              "correct": false
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Sleep paralysis is lingering REM muscle atonia.",
+                  "options": [
+                        {
+                              "text": "True",
+                              "correct": true
+                        },
+                        {
+                              "text": "False",
+                              "correct": false
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Night terrors are REM events.",
+                  "options": [
+                        {
+                              "text": "True",
+                              "correct": false
+                        },
+                        {
+                              "text": "False",
+                              "correct": true
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Lucid dreaming was verified with eye-movement signals.",
+                  "options": [
+                        {
+                              "text": "True",
+                              "correct": true
+                        },
+                        {
+                              "text": "False",
+                              "correct": false
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Chronic nightmares are treatable.",
+                  "options": [
+                        {
+                              "text": "True",
+                              "correct": true
+                        },
+                        {
+                              "text": "False",
+                              "correct": false
+                        }
+                  ]
+            },
+            {
+                  "prompt": "Grief dreams are literal contact with the dead.",
+                  "options": [
+                        {
+                              "text": "True",
+                              "correct": false
+                        },
+                        {
+                              "text": "False",
+                              "correct": true
+                        }
+                  ]
+            }
+      ]
+}),
   }
 };

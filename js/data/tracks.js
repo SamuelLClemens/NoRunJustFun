@@ -67,6 +67,8 @@ import {
   DREAMS_DISCLAIMER,
   DREAMS_DISCLAIMER_SHORT,
 } from './lessons.dreams.js';
+import { CRYSTALS_CONCEPT_GAMES } from './games.crystals.concept.js';
+import { DREAMS_CONCEPT_GAMES } from './games.dreams.concept.js';
 
 // ---- per-track SVG assets (kept byte-identical to the shipped finance visuals) ----
 
@@ -271,12 +273,14 @@ export const TRACKS = {
     topTakeaways: LEARN_EXTRAS.memory.topTakeaways,
   },
 
-  // ---- Soul sections (belief-flagged, lessons-only) ----
+  // ---- Soul sections (belief-flagged) ----
   // Registered here so the shared engine + #learn-<track> route serve them, but they
-  // stay in their own SOUL_TRACK_LIST registry, NOT the Mind TRACK_LIST. No games,
-  // no quiz, no mastery badge (which requires a game win) — these are reflective
-  // reading sections. They now surface under Mind · Learn as a visually distinct
-  // belief-and-reflection section, so hubBack returns to #mind, not #soul.
+  // stay in their own SOUL_TRACK_LIST registry, NOT the Mind TRACK_LIST. They now carry
+  // full parity with the Mind subjects — 36 lessons, honest concept games + a blitz
+  // arcade, a final exam, expert tips/takeaways, and game-win + mastery badges — while
+  // keeping the belief-flagged framing (every game/quiz answer pairs tradition with
+  // evidence). They surface under Mind · Learn as a visually distinct belief-and-
+  // reflection section, so hubBack returns to #mind, not #soul.
   crystals: {
     id: 'crystals',
     name: 'Crystal energy',
@@ -303,6 +307,16 @@ export const TRACKS = {
       'cry-skeptic': ['what-science-says-crystals'],
       'cry-grounded': ['crystals-as-a-mindfulness-anchor'],
     },
+    // Parity with the Mind subjects: honest concept games + a blitz arcade, a final
+    // exam (60% completes the section), expert tips + top takeaways, and game-win +
+    // mastery badges. Every game/quiz answer pairs the tradition with the evidence.
+    games: [...CRYSTALS_CONCEPT_GAMES, LEARN_EXTRAS.crystals.arcade],
+    gamesBlurb: 'A playful way to test what you have learned — telling the lore from the evidence, gently.',
+    gameBadges: { firstWin: 'cry-gamer', fiveWins: 'cry-sharp' },
+    masteryBadge: 'cry-master',
+    quiz: LEARN_EXTRAS.crystals.quiz,
+    expertTips: LEARN_EXTRAS.crystals.expertTips,
+    topTakeaways: LEARN_EXTRAS.crystals.topTakeaways,
   },
 
   dreams: {
@@ -331,6 +345,13 @@ export const TRACKS = {
       'drm-skeptic': ['what-science-says-about-meaning'],
       'drm-journaler': ['dream-journaling-for-reflection'],
     },
+    games: [...DREAMS_CONCEPT_GAMES, LEARN_EXTRAS.dreams.arcade],
+    gamesBlurb: 'A playful check on the sleep science and the honest limits of dream meaning.',
+    gameBadges: { firstWin: 'drm-gamer', fiveWins: 'drm-sharp' },
+    masteryBadge: 'drm-master',
+    quiz: LEARN_EXTRAS.dreams.quiz,
+    expertTips: LEARN_EXTRAS.dreams.expertTips,
+    topTakeaways: LEARN_EXTRAS.dreams.topTakeaways,
   },
 };
 
