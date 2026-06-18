@@ -652,7 +652,8 @@ export class RealisticAvatar {
     const quat = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(right, trueUp, fwd));
 
     const rIris = rEye * 0.58, rPupil = rIris * 0.5;
-    const irisMat = new THREE.MeshStandardMaterial({ color: 0x6b4423, roughness: 0.4, metalness: 0, depthTest: false, depthWrite: false });
+    // Blue-eyed host (Ginuana). A steel/sky blue reads as blue under the bluish PMREM env.
+    const irisMat = new THREE.MeshStandardMaterial({ color: 0x4a7fb0, roughness: 0.4, metalness: 0, depthTest: false, depthWrite: false });
     const pupilMat = new THREE.MeshStandardMaterial({ color: 0x070708, roughness: 0.25, depthTest: false, depthWrite: false });
     const glintMat = new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: false, depthWrite: false });
     for (const [bone, pos] of [[eL, pL], [eR, pR]]) {

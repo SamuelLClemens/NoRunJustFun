@@ -42,6 +42,7 @@ function defaults() {
       // today; existing stores backfill from their earliest activity (see migrate v6->v7).
       // Surfaced as an annual 🎉 anniversary marker on the personal calendar. On-device only.
       startedAt: todayKey(),    // ISO 'YYYY-MM-DD' — first-use date (app anniversary)
+      lastAnniversaryParty: '', // year (e.g. '2026') the anniversary party was last shown, so it shows once
     },
     progress: {
       sessions: [],             // { date, mins, durationKey, startHour, breathClose, completed:[], skipped:[], tier, kind }

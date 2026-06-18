@@ -81,7 +81,7 @@ const TABS = [
   { hash: '#home', label: 'Home', ic: '🏡' },
   { hash: '#body', label: 'Body', ic: '🤸' },
   { hash: '#mind', label: 'Mind', ic: '🧠' },
-  { hash: '#soul', label: 'Soul', ic: '🌿' },
+  { hash: '#soul', label: 'Soul', ic: '🍃' },
   { hash: '#you',  label: 'You',  ic: '🌼' },
 ];
 let _tabbarEl = null;
@@ -209,8 +209,8 @@ function pillarsHTML() {
   const mindSubjects = TRACK_LIST.map((id) => (getTrack(id) ? getTrack(id).homeLabel.toLowerCase() : null)).filter(Boolean).join(', ');
   const pillars = [
     { go: '#body', cls: 'body', ic: '🤸', title: 'Body', blurb: 'Move — gentle to vigorous, no equipment' },
-    { go: '#mind', cls: 'mind', ic: '📚', title: 'Mind', blurb: 'Learn — ' + mindSubjects },
-    { go: '#soul', cls: 'soul', ic: '🧘', title: 'Soul', blurb: 'Be still — meditation and calm' },
+    { go: '#mind', cls: 'mind', ic: '🧠', title: 'Mind', blurb: 'Learn — ' + mindSubjects },
+    { go: '#soul', cls: 'soul', ic: '🍃', title: 'Soul', blurb: 'Be still — meditation and calm' },
   ];
   return `<section class="pillars" aria-label="Choose how to grow today">
       <div class="pillar-grid">
@@ -1045,6 +1045,69 @@ function weightSpark(weights) {
   return `<svg class="you-spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${coords}" fill="none" stroke="var(--green-600)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
 }
 
+// Ginuana — the blue-eyed host coach — steps into her garden to celebrate the user,
+// then leaves when the card is dismissed. The realistic 3D coach is mounted only when
+// the device can drive it; otherwise the card shows the garden alone (graceful, and no
+// model download is forced on a low-end device). She renders on a transparent canvas so
+// the garden backdrop shows through behind her.
+const GINUANA = { id: 'ginuana', name: 'Ginuana' };  // resolves to the host GLB (FALLBACK_MODEL)
+async function mountGardenCoach(slotEl, nameEl) {
+  try {
+    await ensureRealisticClass();
+    const ok = realisticHelpers && realisticHelpers.realisticInstructorSupported && realisticHelpers.realisticInstructorSupported();
+    if (!ok || !slotEl) return null;
+    const canvas = document.createElement('canvas');
+    canvas.className = 'celebrate-coach-canvas';
+    slotEl.appendChild(canvas);
+    const av = new RealisticAvatar(canvas, GINUANA);
+    av.onReady = () => { try { av.setFraming('talk'); } catch { /* default framing */ } };
+    av.start();
+    if (nameEl) nameEl.textContent = GINUANA.name;   // name her only once she is actually here
+    return av;
+  } catch { return null; }
+}
+
+// Shared celebration card: a garden stage (Ginuana + greenery), a headline, affirmations,
+// and layered confetti. Used by both the birthday and the anniversary parties.
+function celebrationParty({ cls, ariaLabel, emoji, headingHTML, lead, okLabel }) {
+  if (document.querySelector('.overlay.party')) return;
+  const ov = document.createElement('div');
+  ov.className = 'overlay party ' + cls;
+  ov.setAttribute('role', 'dialog');
+  ov.setAttribute('aria-modal', 'true');
+  ov.setAttribute('aria-label', ariaLabel);
+  ov.innerHTML = `<div class="overlay-card party-card center">
+    <div class="party-stage">
+      <div class="party-garden" aria-hidden="true">${gardenSVG(8)}</div>
+      <div class="party-coach-slot" aria-hidden="true"></div>
+      <figcaption class="party-coach-name"></figcaption>
+    </div>
+    <div class="bday-emoji" aria-hidden="true">${emoji}</div>
+    <h2>${headingHTML}</h2>
+    ${lead ? `<p class="bday-age">${esc(lead)}</p>` : ''}
+    <ul class="bday-affirm">${AFFIRMATIONS.map((a) => `<li>${esc(a)}</li>`).join('')}</ul>
+    <button class="btn btn-primary" id="party-ok">${esc(okLabel)}</button>
+  </div>`;
+  document.body.appendChild(ov);
+  const btn = ov.querySelector('#party-ok');
+  btn.focus();
+  ov.addEventListener('keydown', (e) => { if (e.key === 'Tab') { e.preventDefault(); btn.focus(); } });
+  let coach = null;
+  const close = () => { if (coach) { try { coach.dispose(); } catch { /* ok */ } coach = null; } ov.remove(); };
+  btn.addEventListener('click', close);
+  // Ginuana arrives in the garden; if the card is already gone by the time she loads,
+  // dispose her immediately so nothing leaks.
+  mountGardenCoach(ov.querySelector('.party-coach-slot'), ov.querySelector('.party-coach-name')).then((av) => {
+    if (!document.body.contains(ov)) { if (av) { try { av.dispose(); } catch { /* ok */ } } return; }
+    coach = av;
+  });
+  // a big, layered confetti party
+  celebrate(3600);
+  setTimeout(() => celebrate(2800), 500);
+  setTimeout(() => celebrate(2200), 1100);
+  try { sound.sparkle(); } catch { /* sfx optional */ }
+}
+
 // On the user's birthday (and once per year), throw a gentle, affirming party.
 function maybeBirthdayParty() {
   const b = store.profile.birthday;
@@ -1055,33 +1118,38 @@ function maybeBirthdayParty() {
   const yr = String(now.getFullYear());
   if (now.getMonth() + 1 !== bm || now.getDate() !== bd) return;
   if (store.profile.lastBirthdayParty === yr) return;
-  if (document.querySelector('.overlay.birthday')) return;
   store.profile.lastBirthdayParty = yr; save();
-
   const name = store.profile.name;
   const age = ageFromBirthday(b);
-  const ov = document.createElement('div');
-  ov.className = 'overlay birthday';
-  ov.setAttribute('role', 'dialog');
-  ov.setAttribute('aria-modal', 'true');
-  ov.setAttribute('aria-label', 'Birthday celebration');
-  ov.innerHTML = `<div class="overlay-card birthday-card center">
-    <div class="bday-emoji" aria-hidden="true">🎂🎉</div>
-    <h2>Happy birthday${name ? ', ' + esc(name) : ''}!</h2>
-    ${age != null ? `<p class="bday-age">${age} years of you — and the world is better for it.</p>` : '<p class="bday-age">Today is all about you.</p>'}
-    <ul class="bday-affirm">${AFFIRMATIONS.map((a) => `<li>${esc(a)}</li>`).join('')}</ul>
-    <button class="btn btn-primary" id="bday-ok">Thank you 💛</button>
-  </div>`;
-  document.body.appendChild(ov);
-  const btn = ov.querySelector('#bday-ok');
-  btn.focus();
-  ov.addEventListener('keydown', (e) => { if (e.key === 'Tab') { e.preventDefault(); btn.focus(); } });
-  btn.addEventListener('click', () => ov.remove());
-  // a big, layered confetti party
-  celebrate(3600);
-  setTimeout(() => celebrate(2800), 500);
-  setTimeout(() => celebrate(2200), 1100);
-  try { sound.sparkle(); } catch { /* sfx optional */ }
+  celebrationParty({
+    cls: 'birthday', ariaLabel: 'Birthday celebration', emoji: '🎂🎉',
+    headingHTML: `Happy birthday${name ? ', ' + esc(name) : ''}!`,
+    lead: age != null ? `${age} years of you — and the world is better for it.` : 'Today is all about you.',
+    okLabel: 'Thank you 💛',
+  });
+}
+
+// On the anniversary of the day this person started (once per year, never on day zero),
+// Ginuana drops by the garden to mark how far they have come.
+function maybeAnniversaryParty() {
+  const s = store.profile.startedAt;
+  if (!s || typeof s !== 'string' || s.length < 10) return;
+  const [sy, sm, sd] = s.split('-').map(Number);
+  if (!sy || !sm || !sd) return;
+  const now = new Date();
+  const yr = String(now.getFullYear());
+  if (now.getMonth() + 1 !== sm || now.getDate() !== sd) return;
+  if (now.getFullYear() <= sy) return;                 // not on the very first day
+  if (store.profile.lastAnniversaryParty === yr) return;
+  store.profile.lastAnniversaryParty = yr; save();
+  const name = store.profile.name;
+  const years = now.getFullYear() - sy;
+  celebrationParty({
+    cls: 'anniversary', ariaLabel: 'Anniversary celebration', emoji: '🌱🎉',
+    headingHTML: `Happy anniversary${name ? ', ' + esc(name) : ''}!`,
+    lead: years === 1 ? 'One year of growing with Garden Moves.' : `${years} years of growing with Garden Moves.`,
+    okLabel: 'Here’s to more 🌼',
+  });
 }
 
 function youScreen() {
@@ -1539,7 +1607,7 @@ async function ensureRealisticClass() {
     // ?v bust: bump on every realistic-avatar.js change so browsers fetch the new
     // module instead of a cached copy (the SW matches with ignoreSearch, so the
     // precached file still serves offline regardless of the query).
-    const mod = await import('./realistic-avatar.js?v=rig12');
+    const mod = await import('./realistic-avatar.js?v=rig13');
     RealisticAvatar = mod.RealisticAvatar;
     realisticHelpers = mod;
   }
@@ -1586,7 +1654,8 @@ async function render() {
   applyThemePref();
   updateTabbar();
   window.scrollTo(0, 0);
-  maybeBirthdayParty();   // once per year, on the day — self-guards against re-showing
+  maybeBirthdayParty();     // once per year, on the day — self-guards against re-showing
+  maybeAnniversaryParty();  // once per year, on the start-date anniversary (never day zero)
   await routeTo(location.hash || '#', seq);
   // Move focus to the new screen's primary heading so keyboard and screen-reader
   // users land on the fresh content instead of being silently dropped to <body>
