@@ -373,13 +373,14 @@ export class RealisticAvatar {
           for (const m of mats) {
             if (!m) continue;
             if (hairProper) {
-              // hair: opaque cutout (no transparency sort → no flicker) but a LOW threshold so
-              // the soft scalp/hairline strands are kept, not cut away (the bald look at 0.2).
-              m.alphaTest = 0.05; m.transparent = false; m.depthWrite = true;
+              // hair: opaque cutout (no transparency sort → no flicker). 0.1 keeps the scalp/
+              // hairline covered (bald at 0.2) while trimming the ragged faint fringe that a
+              // very low threshold (0.05) leaves around the temple.
+              m.alphaTest = 0.1; m.transparent = false; m.depthWrite = true;
             } else if (lashBrow) {
               // lashes/brows: crisp cutout AND single-sided, so the card back-faces do not
               // splay out around the eyes as dark "wings".
-              m.alphaTest = 0.4; m.transparent = false; m.depthWrite = true; m.side = THREE.FrontSide;
+              m.alphaTest = 0.5; m.transparent = false; m.depthWrite = true; m.side = THREE.FrontSide;
             } else if (isCloth) {
               // clothing: fully opaque + a polygon-offset bias toward the camera so it wins the
               // depth tie against coincident skin even under motion. Keep the exported DoubleSide
@@ -442,14 +443,18 @@ export class RealisticAvatar {
       this.ready = true;
       this.failed = false;
       this._aimArmsRest();
-      // Coach GLBs export bulging eyeballs; seat them. The host is already fitted.
-      if (this._modelUrl.includes('coach-') && !this._modelUrl.includes('coach-host')) this._seatEyes(0.9);
+      // Coach GLBs export bulging eyeballs; seat them. The host's high-poly cornea eyes
+      // render blank in our opaque pipeline, so paint a parametric iris over them instead.
+      if (this._modelUrl.includes('coach-host')) this._buildHostIris();
+      else if (this._modelUrl.includes('coach-')) this._seatEyes(0.78);
       // Snapshot the rest pose for the exercise player: the grounded position to pose
       // from, the lowest foot height for per-frame re-grounding, and each joint's rest
       // orientation in the model frame (so spec body-space angles retarget to this rig).
       this._basePos = root.position.clone();
       this._snapshotPoseBasis();
       this._restFootY = this._minFootWorldY();
+      this._glasses = null;                  // rebuilt per model; re-apply teaching glasses if wanted
+      if (this._wantGlasses) this.setGlasses(true);
       this._frameCamera();
       this._renderOnce();
       if (this._pendingStart) this._resume();
@@ -615,6 +620,116 @@ export class RealisticAvatar {
       const b = this.bones.get(n);
       if (b) { b.scale.setScalar(scale); b.updateMatrix(); }
     }
+  }
+
+  // The shared host GLB ships MakeHuman HIGH-POLY eyes: a clear cornea dome over a
+  // recessed iris and a red inner wall. In our opaque (no-transparency) pipeline the
+  // cornea front-faces win the depth test, so the iris never shows and the eyes read as
+  // blank pale orbs. Rather than re-author the asset, paint a small parametric iris
+  // (brown disc + pupil + catchlight) onto the front of each eye and PARENT it to the
+  // eye bone so it rides head turns and saccades. Drawn decal-style (depthTest off) so
+  // the cornea can never occlude it. Host-only: the MPFB coaches use low-poly eyes that
+  // render their iris correctly and need none of this. Geometry rides this.model (parented
+  // under the eye bones), so disposeModel() frees it on swap/dispose — no extra teardown.
+  _buildHostIris() {
+    const eL = this.bones.get('LeftEye') || this.bones.get('eyeL');
+    const eR = this.bones.get('RightEye') || this.bones.get('eyeR');
+    const head = this._bone('head');
+    if (!eL || !eR || !head || !this.model) return;
+    this.model.updateMatrixWorld(true);
+    const pL = new THREE.Vector3(), pR = new THREE.Vector3(), hp = new THREE.Vector3();
+    eL.getWorldPosition(pL); eR.getWorldPosition(pR); head.getWorldPosition(hp);
+    const rEye = pL.distanceTo(pR) * 0.205;          // per-eye radius from the inter-pupil gap
+    // face frame: forward = horizontal head→eyes, up = world up, right = up × forward
+    const cW = new THREE.Vector3().addVectors(pL, pR).multiplyScalar(0.5);
+    const fwd = new THREE.Vector3().subVectors(cW, hp); fwd.y = 0;
+    if (fwd.lengthSq() < 1e-6) { this.model.getWorldDirection(fwd); fwd.y = 0; }
+    if (fwd.lengthSq() < 1e-6) fwd.set(0, 0, 1);
+    fwd.normalize();
+    const up = new THREE.Vector3(0, 1, 0);
+    const right = new THREE.Vector3().crossVectors(up, fwd).normalize();
+    const trueUp = new THREE.Vector3().crossVectors(fwd, right).normalize();
+    const quat = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(right, trueUp, fwd));
+
+    const rIris = rEye * 0.58, rPupil = rIris * 0.5;
+    const irisMat = new THREE.MeshStandardMaterial({ color: 0x6b4423, roughness: 0.4, metalness: 0, depthTest: false, depthWrite: false });
+    const pupilMat = new THREE.MeshStandardMaterial({ color: 0x070708, roughness: 0.25, depthTest: false, depthWrite: false });
+    const glintMat = new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: false, depthWrite: false });
+    for (const [bone, pos] of [[eL, pL], [eR, pR]]) {
+      const grp = new THREE.Group();
+      const iris = new THREE.Mesh(new THREE.CircleGeometry(rIris, 28), irisMat); iris.renderOrder = 5; grp.add(iris);
+      const pupil = new THREE.Mesh(new THREE.CircleGeometry(rPupil, 22), pupilMat); pupil.position.z = 0.0004; pupil.renderOrder = 6; grp.add(pupil);
+      const glint = new THREE.Mesh(new THREE.CircleGeometry(rIris * 0.2, 10), glintMat);
+      glint.position.set(-rIris * 0.3, rIris * 0.32, 0.0008); glint.renderOrder = 7; grp.add(glint);
+      grp.traverse((o) => { o.frustumCulled = false; o.castShadow = false; });
+      grp.position.copy(pos).addScaledVector(fwd, rEye * 1.05);   // just in front of the cornea apex
+      grp.quaternion.copy(quat);
+      this.scene.add(grp);
+      bone.attach(grp);                                          // reparent under the eye bone (keeps world xform)
+    }
+  }
+
+  // Show/hide a pair of teacher glasses on the coach. No GLB ships a glasses mesh, so we
+  // build a simple parametric pair (two lens rings + bridge + temples), fit it to the eye
+  // spacing, and PARENT it to the head bone so it rides every head turn and pose. Wired ON
+  // only while the coach is teaching a lesson (see main.js), never in movement sessions.
+  setGlasses(on) {
+    this._wantGlasses = !!on;
+    if (!this.ready) return;                 // re-applied from _load once the model is in
+    if (on && !this._glasses) this._buildGlasses();
+    if (this._glasses) this._glasses.visible = !!on;
+    this._renderOnce();
+  }
+
+  _buildGlasses() {
+    const head = this._bone('head');
+    if (!head || !this.model) return;
+    this.model.updateMatrixWorld(true);
+    const eL = this.bones.get('eyeL') || this.bones.get('LeftEye');
+    const eR = this.bones.get('eyeR') || this.bones.get('RightEye');
+    const pL = new THREE.Vector3(), pR = new THREE.Vector3(), cW = new THREE.Vector3(), hp = new THREE.Vector3();
+    head.getWorldPosition(hp);
+    let sep = 0.062;
+    if (eL && eR) {
+      eL.getWorldPosition(pL); eR.getWorldPosition(pR);
+      cW.addVectors(pL, pR).multiplyScalar(0.5);
+      sep = Math.max(0.045, Math.min(0.085, pL.distanceTo(pR)));
+    } else {
+      cW.copy(hp); cW.y += 0.09;              // no eye bones: sit a touch above the head bone
+    }
+    // face frame: forward = horizontal head→eyes, up = world up, right = up × forward
+    const fwd = new THREE.Vector3().subVectors(cW, hp); fwd.y = 0;
+    if (fwd.lengthSq() < 1e-6) { this.model.getWorldDirection(fwd); fwd.y = 0; }
+    if (fwd.lengthSq() < 1e-6) fwd.set(0, 0, 1);
+    fwd.normalize();
+    const up = new THREE.Vector3(0, 1, 0);
+    const right = new THREE.Vector3().crossVectors(up, fwd).normalize();
+    const trueUp = new THREE.Vector3().crossVectors(fwd, right).normalize();
+    const quat = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(right, trueUp, fwd));
+
+    const frameMat = new THREE.MeshStandardMaterial({ color: 0x16161a, roughness: 0.42, metalness: 0.35 });
+    const lensMat = new THREE.MeshStandardMaterial({ color: 0x2a3340, roughness: 0.08, metalness: 0.1, transparent: true, opacity: 0.16, depthWrite: false });
+    const grp = new THREE.Group();
+    const lensR = sep * 0.4, tube = sep * 0.05;
+    for (const sx of [-1, 1]) {
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(lensR, tube, 10, 24), frameMat);
+      ring.position.x = sx * sep * 0.5; grp.add(ring);
+      const lens = new THREE.Mesh(new THREE.CircleGeometry(lensR - tube * 0.5, 24), lensMat);
+      lens.position.set(sx * sep * 0.5, 0, 0.001); grp.add(lens);
+      const temple = new THREE.Mesh(new THREE.BoxGeometry(tube * 1.1, tube * 1.1, sep * 1.5), frameMat);
+      temple.position.set(sx * (sep * 0.5 + lensR), lensR * 0.18, -sep * 0.78); grp.add(temple);
+    }
+    const bridge = new THREE.Mesh(new THREE.BoxGeometry(sep * 0.32, tube * 1.3, tube * 1.3), frameMat);
+    bridge.position.y = lensR * 0.55; grp.add(bridge);
+    grp.traverse((o) => { o.frustumCulled = false; o.castShadow = false; o.renderOrder = 3; });
+
+    // place at eye level, just in front of the face, oriented to look forward; then reparent
+    // to the head bone (attach preserves the world transform, so it rides the head).
+    grp.position.copy(cW).addScaledVector(fwd, lensR * 0.5 + 0.012);
+    grp.quaternion.copy(quat);
+    this.scene.add(grp);
+    head.attach(grp);
+    this._glasses = grp;
   }
 
   // ---- exercise pose player ----------------------------------------------------
@@ -832,7 +947,10 @@ export class RealisticAvatar {
     // driving the (blended) move pose; only once it has fully eased to rest do we hand the
     // body back to the idle gesture layer.
     const blendTarget = moving ? 1 : 0;
-    this._poseBlend += (blendTarget - this._poseBlend) * Math.min(1, dt * 7);
+    // Ease the cross-fade for normal users; under prefers-reduced-motion snap straight to the
+    // target so we add no decorative animation (the pose itself is held statically below).
+    if (this._breathe) this._poseBlend += (blendTarget - this._poseBlend) * Math.min(1, dt * 7);
+    else this._poseBlend = blendTarget;
     if (moving && this._poseBlend > 0.999) this._poseBlend = 1;
     if (!moving && this._poseBlend < 0.002) this._poseBlend = 0;
     if (moving || this._poseBlend > 0) {
@@ -1109,7 +1227,7 @@ export class RealisticAvatar {
     this.onReady = null; this._levelProvider = null; this._pose = null;
     this.bones.clear(); this.rest.clear(); this.morphs.clear();
     this._restBasis.clear(); this._rig = {};
-    this._basePos = null; this._restFootY = null;
+    this._basePos = null; this._restFootY = null; this._glasses = null;
     try { if (this._envRT) this._envRT.dispose(); if (this._pmrem) this._pmrem.dispose(); if (this._shadowTex) this._shadowTex.dispose(); } catch { /* ok */ }
     this.scene.environment = null;
     this.renderer.dispose();

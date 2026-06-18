@@ -73,7 +73,7 @@ export async function runDev(mode) {
 // (resolved against the loaded skeleton/morphs), measures FPS idle + mid-move on the
 // reference coach, and renders deepest-phase pose shots front + 3/4 for visual review.
 async function runAvatarSelfCheck(app) {
-  const { RealisticAvatar } = await import('./realistic-avatar.js?v=rig10');
+  const { RealisticAvatar } = await import('./realistic-avatar.js?v=rig12');
   const COACHES = [
     { id: 'jasmine', file: 'coach-jasmine.glb', ref: true },
     { id: 'host', file: 'coach-host.glb' },
