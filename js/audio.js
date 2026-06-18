@@ -80,16 +80,40 @@ export const sound = {
     if (!this.sfxOn || !ensureCtx()) return;
     pluck(880, ctx.currentTime, 0.5, 0.08);
   },
+
+  // The "Happy Birthday" melody (public domain since 2016), played as soft warm bells for
+  // the birthday party. Plays regardless of the sfx on/off toggle (a birthday should always
+  // sing) but still honours the user's sfx volume.
+  birthdaySong() {
+    if (!ensureCtx()) return;
+    const t0 = ctx.currentTime + 0.2;
+    const G4 = 392, A4 = 440, B4 = 493.88, C5 = 523.25, D5 = 587.33, E5 = 659.25, F5 = 698.46, G5 = 783.99;
+    const beat = 0.42;   // seconds per beat
+    // [freq, startBeat, beats] — the classic dotted-rhythm tune in C
+    const mel = [
+      [G4, 0, 0.75], [G4, 0.75, 0.25], [A4, 1, 1], [G4, 2, 1], [C5, 3, 1], [B4, 4, 2],
+      [G4, 6, 0.75], [G4, 6.75, 0.25], [A4, 7, 1], [G4, 8, 1], [D5, 9, 1], [C5, 10, 2],
+      [G4, 12, 0.75], [G4, 12.75, 0.25], [G5, 13, 1], [E5, 14, 1], [C5, 15, 1], [B4, 16, 1], [A4, 17, 2],
+      [F5, 18, 0.75], [F5, 18.75, 0.25], [E5, 19, 1], [C5, 20, 1], [D5, 21, 1], [C5, 22, 2.5],
+    ];
+    for (const [f, b, dur] of mel) {
+      const t = t0 + b * beat;
+      pluck(f, t, dur * beat * 0.95, 0.16, 'triangle');
+      pluck(f * 2, t, dur * beat * 0.55, 0.035);
+    }
+  },
 };
 
-// ---- generative ambient music: slow detuned pad drifting through a
-// I–vi–IV–V progression, low-passed, very quiet. ----
+// ---- generative ambient music in the spirit of Sigur Rós: a low drone beneath lush,
+// airy major pads and a high shimmer, washed through a long feedback delay (reverb), with
+// the lowpass slowly breathing. Very slow chord drift, very quiet, user-controllable. ----
 
+// Lush, ethereal voicings [drone, root, third, fifth, shimmer] in Hz.
 const CHORDS = [
-  [261.63, 329.63, 392.0],   // C
-  [220.0, 261.63, 329.63],   // Am
-  [174.61, 220.0, 261.63],   // F
-  [196.0, 246.94, 293.66],   // G
+  [98.00, 196.00, 246.94, 392.00, 493.88],   // G major — open and airy
+  [73.42, 146.83, 220.00, 293.66, 440.00],   // D
+  [82.41, 164.81, 246.94, 329.63, 493.88],   // E minor wash
+  [87.31, 174.61, 261.63, 349.23, 523.25],   // C / F colour
 ];
 
 export const music = {
@@ -98,30 +122,36 @@ export const music = {
 
   start() {
     if (!ensureCtx() || musicNodes) return;
+    const t = ctx.currentTime;
     musicGain = ctx.createGain();
     musicGain.gain.value = 0;
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.value = 900;
-    filter.Q.value = 0.4;
     musicGain.connect(ctx.destination);
-    filter.connect(musicGain);
 
+    // soft lowpass (breathes via a slow LFO) feeding a feedback-delay reverb wash
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass'; filter.frequency.value = 1100; filter.Q.value = 0.25;
+    filter.connect(musicGain);
+    const delay = ctx.createDelay(1.0); delay.delayTime.value = 0.36;
+    const fb = ctx.createGain(); fb.gain.value = 0.46;
+    const wet = ctx.createGain(); wet.gain.value = 0.4;
+    filter.connect(delay); delay.connect(fb); fb.connect(delay); delay.connect(wet); wet.connect(musicGain);
+
+    // five voices: a low drone, three pads, and a high shimmer (gently detuned = chorus)
     const oscs = [];
-    for (let v = 0; v < 3; v++) {
+    const gains = [0.10, 0.085, 0.075, 0.06, 0.035];
+    for (let v = 0; v < 5; v++) {
       const o = ctx.createOscillator();
       const g = ctx.createGain();
-      o.type = v === 2 ? 'triangle' : 'sine';
-      g.gain.value = v === 2 ? 0.04 : 0.085;
+      o.type = v === 4 ? 'triangle' : 'sine';
+      o.detune.value = (v - 2) * 3;
+      g.gain.value = gains[v];
       o.connect(g).connect(filter);
       o.start();
       oscs.push(o);
     }
-    // slow shimmer
     const lfo = ctx.createOscillator();
     const lfoGain = ctx.createGain();
-    lfo.frequency.value = 0.07;
-    lfoGain.gain.value = 220;
+    lfo.frequency.value = 0.045; lfoGain.gain.value = 300;
     lfo.connect(lfoGain).connect(filter.frequency);
     lfo.start();
 
@@ -129,17 +159,17 @@ export const music = {
     const scheduleChord = () => {
       if (!musicNodes) return;
       const chord = CHORDS[step % CHORDS.length];
-      const t = ctx.currentTime;
+      const now = ctx.currentTime;
       oscs.forEach((o, i) => {
-        o.frequency.cancelScheduledValues(t);
-        o.frequency.setTargetAtTime(chord[i] * (i === 2 ? 0.5 : 1) * (1 + (i - 1) * 0.0015), t, 2.5);
+        o.frequency.cancelScheduledValues(now);
+        o.frequency.setTargetAtTime(chord[i], now, 4.0);   // slow morph between chords
       });
       step++;
-      musicNodes.timer = setTimeout(scheduleChord, 9000);
+      musicNodes.timer = setTimeout(scheduleChord, 15000);  // long, drifting changes
     };
-    musicNodes = { oscs, lfo, filter, timer: 0 };
+    musicNodes = { oscs, lfo, filter, delay, timer: 0 };
     scheduleChord();
-    musicGain.gain.setTargetAtTime(0.16 * this.volume, ctx.currentTime, 1.5);
+    musicGain.gain.setTargetAtTime(0.15 * this.volume, t, 3.0);   // slow fade-in
     this.on = true;
   },
 
@@ -149,15 +179,15 @@ export const music = {
     musicNodes = null;
     this.on = false;
     clearTimeout(nodes.timer);
-    if (musicGain) musicGain.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.4);
+    if (musicGain) musicGain.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.6);
     setTimeout(() => {
       nodes.oscs.forEach((o) => { try { o.stop(); } catch { /* already stopped */ } });
       try { nodes.lfo.stop(); } catch { /* already stopped */ }
-    }, 1200);
+    }, 1800);
   },
 
   setVolume(v) {
     this.volume = v;
-    if (musicNodes && musicGain) musicGain.gain.setTargetAtTime(0.16 * v, ctx.currentTime, 0.3);
+    if (musicNodes && musicGain) musicGain.gain.setTargetAtTime(0.15 * v, ctx.currentTime, 0.4);
   },
 };

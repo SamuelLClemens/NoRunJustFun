@@ -34,8 +34,17 @@ export const naturalVoice = {
   _queue: Promise.resolve(),
   _analyser: null,        // inline tap on playback for audio-aligned lip-sync
   _levelBuf: null,
+  _gain: null,            // user voice-volume node (analyser -> gain -> destination)
+  _volume: 1,             // 0..1, set from profile.voiceVol
 
   get available() { return this.state === 'ready'; },
+
+  // Set the spoken-voice volume (0..1). Persisted in profile.voiceVol; applied live.
+  setVolume(v) {
+    const n = Math.max(0, Math.min(1, Number(v)));
+    this._volume = Number.isFinite(n) ? n : 1;
+    if (this._gain) { try { this._gain.gain.value = this._volume; } catch { /* ok */ } }
+  },
 
   // Real-time loudness of the speech playing RIGHT NOW (0..1), or 0 when silent.
   // The avatar reads this each frame so the mouth tracks the actual audio — open
@@ -172,8 +181,10 @@ export const naturalVoice = {
           try {
             const an = ctx.createAnalyser();
             an.fftSize = 1024; an.smoothingTimeConstant = 0.6;
-            an.connect(ctx.destination);
-            this._analyser = an;
+            const g = ctx.createGain();
+            g.gain.value = this._volume;
+            an.connect(g); g.connect(ctx.destination);   // analyser -> volume -> output
+            this._analyser = an; this._gain = g;
           } catch { this._analyser = null; }
         }
         src.connect(this._analyser || ctx.destination);

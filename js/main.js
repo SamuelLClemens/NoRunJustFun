@@ -709,6 +709,8 @@ function sessionScreen(plan) {
   coach.enabled = profile.voiceOn;
   coach.voiceURI = profile.voiceURI;
   coach.naturalOn = profile.naturalOn;
+  coach.voiceVol = profile.voiceVol;                 // spoken-coach volume (system voice path)
+  try { naturalVoice.setVolume(profile.voiceVol); } catch { /* ok */ }
   if (profile.naturalOn && naturalVoice.state === 'off') naturalVoice.enable(); // warms up in the background; system voice covers until ready
   sound.sfxOn = profile.sfxOn;
   sound.setVolume(profile.sfxVol);
@@ -1064,7 +1066,7 @@ async function mountGardenCoach(slotEl, nameEl) {
 
 // Shared celebration card: a garden stage (Ginuana + greenery), a headline, affirmations,
 // and layered confetti. Used by both the birthday and the anniversary parties.
-function celebrationParty({ cls, ariaLabel, emoji, headingHTML, lead, okLabel }) {
+function celebrationParty({ cls, ariaLabel, emoji, headingHTML, lead, okLabel, song }) {
   if (document.querySelector('.overlay.party')) return false;   // a celebration is already on screen
   const ov = document.createElement('div');
   ov.className = 'overlay party ' + cls;
@@ -1116,7 +1118,7 @@ function celebrationParty({ cls, ariaLabel, emoji, headingHTML, lead, okLabel })
   celebrate(3600);
   setTimeout(() => celebrate(2800), 500);
   setTimeout(() => celebrate(2200), 1100);
-  try { sound.sparkle(); } catch { /* sfx optional */ }
+  try { if (song) sound.birthdaySong(); else sound.sparkle(); } catch { /* sfx optional */ }
   return true;
 }
 
@@ -1133,7 +1135,7 @@ function maybeBirthdayParty() {
   const name = store.profile.name;
   const age = ageFromBirthday(b);
   const shown = celebrationParty({
-    cls: 'birthday', ariaLabel: 'Birthday celebration', emoji: '🎂🎉',
+    cls: 'birthday', ariaLabel: 'Birthday celebration', emoji: '🎂🎉', song: true,
     headingHTML: `Happy birthday${name ? ', ' + esc(name) : ''}!`,
     lead: age != null ? `${age} years of you — and the world is better for it.` : 'Today is all about you.',
     okLabel: 'Thank you 💛',
@@ -1464,6 +1466,8 @@ function settingsScreen() {
 
       <section class="card">
         <strong>Sound</strong>
+        <label for="set-voicevol" class="vol-label">Voice volume <small>(your coach)</small></label>
+        <input type="range" id="set-voicevol" min="0" max="1" step="0.05" value="${p.voiceVol == null ? 0.95 : p.voiceVol}" aria-label="Voice volume">
         <label class="toggle"><input type="checkbox" id="set-sfx" ${p.sfxOn ? 'checked' : ''}> Gentle chimes</label>
         <label for="set-chimevol" class="vol-label">Chime volume</label>
         <input type="range" id="set-chimevol" min="0" max="1" step="0.05" value="${p.sfxVol}" aria-label="Chime volume">
@@ -1585,6 +1589,13 @@ function settingsScreen() {
     p.sfxVol = parseFloat(e.target.value);
     sound.setVolume(p.sfxVol); save();
     if (p.sfxOn) { sound.unlock(); sound.chime(); }   // preview the new level
+  });
+  const voiceVolEl = document.getElementById('set-voicevol');
+  if (voiceVolEl) voiceVolEl.addEventListener('input', (e) => {
+    p.voiceVol = parseFloat(e.target.value);
+    coach.voiceVol = p.voiceVol;
+    try { naturalVoice.setVolume(p.voiceVol); } catch { /* ok */ }
+    save();
   });
   document.getElementById('set-music').addEventListener('change', (e) => {
     p.musicOn = e.target.checked; save();
@@ -1852,6 +1863,7 @@ function maybeAutoEnableNaturalVoice() {
 
 // apply the saved chime volume + theme globally, before first paint
 sound.setVolume(store.profile.sfxVol);
+try { naturalVoice.setVolume(store.profile.voiceVol); } catch { /* ok */ }
 applyThemePref();
 buildTabbar();
 

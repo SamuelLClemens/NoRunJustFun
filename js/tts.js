@@ -196,6 +196,7 @@ export const coach = {
         if (voice) u.voice = voice;
         u.rate = rate;
         u.pitch = pitch;
+        u.volume = (this.voiceVol == null ? 1 : this.voiceVol);   // user voice-volume setting
         u.onstart = () => { if (onChunk) onChunk(line); };
         // Word-boundary events drive word-level lip-sync (see getMouthLevel). Not every
         // platform voice fires them; until one does, _boundaryOK stays false and the

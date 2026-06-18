@@ -13,6 +13,7 @@ function defaults() {
       voiceURI: '',
       style: 'gentle',          // gentle | cheerleader | funny
       voiceOn: true,
+      voiceVol: 0.95,           // 0..1 spoken-coach volume (natural + system voice) — user-controllable
       naturalOn: true,          // lifelike on-device voice ON by default — the user should not have
                                 // to choose it. Device-gated: maybeAutoEnableNaturalVoice + enable()
                                 // skip the download on Data Saver / 2g / slow devices (system voice
