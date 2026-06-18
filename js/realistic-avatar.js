@@ -444,7 +444,7 @@ export class RealisticAvatar {
       this.failed = false;
       this._aimArmsRest();
       // Coach GLBs export bulging eyeballs; seat them. The host is already fitted.
-      if (this._modelUrl.includes('coach-') && !this._modelUrl.includes('coach-host')) this._seatEyes(0.9);
+      if (this._modelUrl.includes('coach-') && !this._modelUrl.includes('coach-host')) this._seatEyes(0.78);
       // Snapshot the rest pose for the exercise player: the grounded position to pose
       // from, the lowest foot height for per-frame re-grounding, and each joint's rest
       // orientation in the model frame (so spec body-space angles retarget to this rig).
