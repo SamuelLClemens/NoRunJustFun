@@ -1,4 +1,4 @@
-// Garden Moves — app shell and screens.
+// Gardenoosh — app shell and screens.
 // Private by design: every byte of your data lives in localStorage on this
 // device. No accounts, no analytics, no tracking, no server. Ever.
 
@@ -110,20 +110,28 @@ function updateTabbar() {
   _tabbarEl.querySelectorAll('a').forEach((a) => a.classList.toggle('active', a.dataset.tab === active));
 }
 
-// Logo lockup — the veronica flower forms the exclamation mark.
+// Logo lockup — "Gardenoosh" with the brand veronica flowers growing on green stems
+// out of the letters, plus a couple of leaf sprouts (no exclamation mark).
 // Keep in sync with the static copy in index.html (.hello-logo).
 function logoSVG() {
-  return `<svg class="logo-svg" viewBox="0 0 494 92" role="img" aria-label="Garden Moves" xmlns="http://www.w3.org/2000/svg">
-    <title>Garden Moves</title>
-    <text x="12" y="74" font-family="Fredoka, 'Avenir Next Rounded', system-ui, sans-serif" font-weight="600" font-size="74" fill="var(--ink, #1F4D2E)" textLength="421" lengthAdjust="spacingAndGlyphs">Garden Moves</text>
-    <path d="M 452.3 21.5 A 4.7 4.7 0 0 1 461.6 21.0 C 460.6 28.5 460.0 36 459.6 42.5 A 3.1 3.1 0 0 1 453.4 42.8 C 453.2 35.5 452.7 28.5 452.3 21.5 Z" fill="var(--green-700, #2E6B3D)"/>
-    <path d="M 452.8 30.5 C 448 26.5 441.8 27.2 438.4 31.4 C 442 35.6 448.6 35.2 452.8 30.5 Z" fill="var(--green-500, #5BA869)"/>
-    <g transform="translate(457 70) rotate(10) scale(0.88)">
-      <g fill="#5B6BD0"><ellipse cy="-10" rx="7.4" ry="10.6"/><ellipse cy="-10" rx="7.4" ry="10.6" transform="rotate(90)"/><ellipse cy="-10" rx="7.4" ry="10.6" transform="rotate(180)"/><ellipse cy="-10" rx="7.4" ry="10.6" transform="rotate(270)"/></g>
-      <g fill="#7B8FE8"><ellipse cy="-9.6" rx="5.8" ry="8.8"/><ellipse cy="-9.6" rx="5.8" ry="8.8" transform="rotate(90)"/><ellipse cy="-9.6" rx="5.8" ry="8.8" transform="rotate(180)"/><ellipse cy="-9.6" rx="5.8" ry="8.8" transform="rotate(270)"/></g>
-      <circle r="6.2" fill="#5B6BD0"/><circle r="4.6" fill="#FFFFFF"/>
-      <circle cx="-1.7" cy="0.6" r="1.7" fill="#2E3A8C"/><circle cx="1.8" cy="-0.8" r="1.7" fill="#2E3A8C"/>
+  return `<svg class="logo-svg" viewBox="0 0 432 104" role="img" aria-label="Gardenoosh" xmlns="http://www.w3.org/2000/svg">
+    <title>Gardenoosh</title>
+    <g fill="none" stroke="var(--green-600, #3E8E4F)" stroke-width="4.5" stroke-linecap="round">
+      <path d="M150 46 C146 32 152 22 156 14"/>
+      <path d="M292 46 C288 30 296 20 300 12"/>
+      <path d="M396 44 C392 30 400 20 404 13"/>
     </g>
+    <g fill="var(--green-500, #5BA869)">
+      <ellipse cx="142" cy="32" rx="8" ry="4" transform="rotate(-32 142 32)"/>
+      <ellipse cx="304" cy="30" rx="8" ry="4" transform="rotate(30 304 30)"/>
+      <ellipse cx="388" cy="32" rx="7.5" ry="3.8" transform="rotate(-30 388 32)"/>
+      <path d="M92 90 q-11 -5 -17 -15 q12 -3 17 7 z"/>
+      <path d="M250 90 q11 -5 17 -15 q-12 -3 -17 7 z"/>
+    </g>
+    <text x="14" y="88" font-family="Fredoka, 'Avenir Next Rounded', system-ui, sans-serif" font-weight="600" font-size="66" fill="var(--ink, #1F4D2E)" textLength="404" lengthAdjust="spacingAndGlyphs">Gardenoosh</text>
+    <g transform="translate(156 12) scale(0.5)"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></g>
+    <g transform="translate(300 10) scale(0.56)"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></g>
+    <g transform="translate(404 11) scale(0.48)"><g fill="#5B6BD0"><ellipse cy="-7" rx="5" ry="7.6"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(90)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(180)"/><ellipse cy="-7" rx="5" ry="7.6" transform="rotate(270)"/></g><g fill="#7B8FE8"><ellipse cy="-6.6" rx="3.8" ry="5.8"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(90)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(180)"/><ellipse cy="-6.6" rx="3.8" ry="5.8" transform="rotate(270)"/></g><circle r="3.8" fill="#FFD45C"/></g>
   </svg>`;
 }
 
@@ -323,7 +331,7 @@ function soulScreen() {
           <div class="med-lib" id="soul-library">${libHTML}</div>
         </details>
       </section>
-      <section class="card soul-bedroom">
+      <section class="card reflective-section soul-bedroom">
         <h2>🔥 Playful · for the bedroom</h2>
         <p class="hint">For consenting adults — frank, spicy intimacy games and bold bedroom tips. Consent, comfort, and communication always come first.</p>
         <a class="btn btn-primary" href="#bedroom">Open</a>
@@ -610,7 +618,7 @@ function safetyHTML() {
 // a workout warning. The full, detailed safety notice still lives on the #safety screen.
 function welcomeHTML() {
   return `
-    <h2>Welcome to Garden Moves 💚</h2>
+    <h2>Welcome to Gardenoosh 💚</h2>
     <p>A calm space to move, learn, and reflect — Mind, Body, and Soul. Everything you do stays private, on this device.</p>
     <ul>
       <li>Go at your own pace. Every activity can be paused or skipped — that is self-care, not failure.</li>
@@ -1165,7 +1173,7 @@ function maybeAnniversaryParty() {
   const shown = celebrationParty({
     cls: 'anniversary', ariaLabel: 'Anniversary celebration', emoji: '🌱🎉',
     headingHTML: `Happy anniversary${name ? ', ' + esc(name) : ''}!`,
-    lead: years === 1 ? 'One year of growing with Garden Moves.' : `${years} years of growing with Garden Moves.`,
+    lead: years === 1 ? 'One year of growing with Gardenoosh.' : `${years} years of growing with Gardenoosh.`,
     okLabel: 'Here’s to more 🌼',
   });
   if (shown) { store.profile.lastAnniversaryParty = yr; save(); }

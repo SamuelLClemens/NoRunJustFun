@@ -31,7 +31,7 @@ export function tutorialScreen() {
   const steps = [
     {
       ic: '🌱', title: 'Welcome',
-      body: `<strong>Garden Moves</strong> is a free, private companion for your body, mind, and soul — move, grow, bloom. There is no account and nothing to sign up for — just open it and begin. Everything you do stays on this device.`,
+      body: `<strong>Gardenoosh</strong> is a free, private companion for your body, mind, and soul — move, grow, bloom. There is no account and nothing to sign up for — just open it and begin. Everything you do stays on this device.`,
     },
     {
       ic: '🧭', title: 'Pick a pillar',
