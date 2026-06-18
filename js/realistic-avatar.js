@@ -500,6 +500,10 @@ export class RealisticAvatar {
     // prefer per-eye morphs; fall back to a combined eyesClosed/blink
     if (!this._setMorph('blinkL', v)) this._setMorph('blink', v);
     this._setMorph('blinkR', v);
+    // The host's painted iris (depthTest off) is parented to the eye BONE, not the eyelid,
+    // so it would otherwise float fully visible over a closing lid. Hide it once the lid is
+    // more than half shut so the blink reads as a real blink.
+    if (this._hostIris) { const open = v < 0.5; for (const g of this._hostIris) g.visible = open; }
   }
 
   _frameCamera() {
@@ -706,6 +710,7 @@ export class RealisticAvatar {
     const irisMat = new THREE.MeshStandardMaterial({ color: 0x4a7fb0, roughness: 0.4, metalness: 0, depthTest: false, depthWrite: false });
     const pupilMat = new THREE.MeshStandardMaterial({ color: 0x070708, roughness: 0.25, depthTest: false, depthWrite: false });
     const glintMat = new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: false, depthWrite: false });
+    this._hostIris = [];                                         // refs so blink can hide the painted iris
     for (const [bone, pos] of [[eL, pL], [eR, pR]]) {
       const grp = new THREE.Group();
       const iris = new THREE.Mesh(new THREE.CircleGeometry(rIris, 28), irisMat); iris.renderOrder = 5; grp.add(iris);
@@ -717,6 +722,7 @@ export class RealisticAvatar {
       grp.quaternion.copy(quat);
       this.scene.add(grp);
       bone.attach(grp);                                          // reparent under the eye bone (keeps world xform)
+      this._hostIris.push(grp);
     }
   }
 
