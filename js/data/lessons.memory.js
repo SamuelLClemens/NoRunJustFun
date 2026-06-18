@@ -11,6 +11,8 @@
 
 import { makeDisclaimerSeg, makeLessonModule } from './lessons.shared.js';
 // Reading-level variants load lazily via ensureVariants() in lessons.shared.js.
+// Extension lessons (S2 expansion to 36) are authored separately and merged below.
+import { EXTRA_LESSONS_MEMORY, EXTRA_CURRICULUM_MEMORY } from './lessons.memory.ext.js';
 
 export const MEMORY_DISCLAIMER = "This is general educational information about memory and learning, not medical advice, and not a substitute for a doctor. The games here are for fun and practice, not a proven way to raise intelligence or prevent cognitive decline. If you are worried about your memory, please talk to a qualified professional.";
 
@@ -446,6 +448,11 @@ const LESSONS = {
 
 // Curriculum order for the duration-scaled study session (welcome is the intro).
 const CURRICULUM = ["how-memory-works", "spaced-repetition", "retrieval-practice", "memory-techniques", "lifestyle-and-memory", "brain-games-truth", "working-memory", "chunking", "attention-and-memory", "dual-coding", "interleaving", "elaboration", "sleep-and-memory", "exercise-and-memory", "stress-and-memory", "remembering-names", "the-major-system", "the-story-method", "prospective-memory", "memory-and-aging"];
+
+// Merge the extension lessons (20 -> 36), mirroring the money/communication/parenting
+// pattern. Must run BEFORE makeLessonModule, which reads LESSONS + CURRICULUM at build.
+Object.assign(LESSONS, EXTRA_LESSONS_MEMORY);
+CURRICULUM.push(...EXTRA_CURRICULUM_MEMORY);
 
 const mod = makeLessonModule({
   LESSONS, CURRICULUM,
